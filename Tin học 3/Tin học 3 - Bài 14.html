@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RÔ-BỐT THEO TỪNG BƯỚC - Tin học 3 Bài 14</title>
+  <!-- Tailwind CSS cho Giao diện V5 Modern Pastel -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            v5cream: '#FFF8E9',
+            v5green: '#53B77A',
+            v5coral: '#FFC65C',
+            v5peach: '#EF7469',
+            v5lavender: '#7766B7',
+            v5mint: '#A8E6CF',
+            v5softGreen: '#E8F5E9',
+          },
+          fontFamily: {
+            sans: ['Nunito', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #FFF8E9 0%, #E8F5E9 100%);
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .btn-bounce:hover {
+      transform: translateY(-2px);
+    }
+    .btn-bounce:active {
+      transform: translateY(1px);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+    }
+    /* Dynamic Speech Bubble Pointer */
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 24px;
+      border-width: 8px 12px 8px 0;
+      border-style: solid;
+      border-color: transparent white transparent transparent;
+      display: block;
+      width: 0;
+    }
+    /* Pulse Animations */
+    @keyframes subtlePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+    .animate-subtle { animation: subtlePulse 3s infinite ease-in-out; }
+  </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between font-sans antialiased">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="bg-white/80 backdrop-blur border-b-2 border-emerald-100 sticky top-0 z-30 px-4 py-2 shadow-sm">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <!-- Title & Lesson Info -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-v5green flex items-center justify-center text-white font-bold text-xl shadow-md">
+          🤖
+        </div>
+        <div>
+          <h1 class="font-extrabold text-lg md:text-xl text-emerald-800 leading-tight">RÔ-BỐT THEO TỪNG BƯỚC</h1>
+          <p class="text-xs text-emerald-600 font-medium">Tin học 3 • Bài 14: Em thực hiện công việc như thế nào?</p>
+        </div>
+      </div>
+
+      <!-- Level & Score Indicators -->
+      <div class="flex items-center gap-3">
+        <div class="bg-v5softGreen border border-emerald-200 px-3 py-1 rounded-xl text-sm font-bold text-emerald-700">
+          📍 Màn: <span id="currentLevelText" class="text-emerald-900">1</span>/4
+        </div>
+        <div class="bg-amber-50 border border-amber-200 px-3 py-1 rounded-xl text-sm font-bold text-amber-700">
+          ⭐ Điểm: <span id="scoreText" class="text-amber-900 text-base">0</span>/100
+        </div>
+      </div>
+
+      <!-- Controls & Sound Switches -->
+      <div class="flex items-center gap-2">
+        <button id="bgmToggleBtn" onclick="toggleBGM()" class="px-3 py-1.5 rounded-xl border-2 border-slate-200 text-xs font-bold bg-white hover:bg-slate-50 transition flex items-center gap-1">
+          <span id="bgmIcon">🎵</span> <span id="bgmText">Nhạc: BẬT</span>
+        </button>
+        <button id="sfxToggleBtn" onclick="toggleSFX()" class="px-3 py-1.5 rounded-xl border-2 border-slate-200 text-xs font-bold bg-white hover:bg-slate-50 transition flex items-center gap-1">
+          <span id="sfxIcon">🔊</span> <span id="sfxText">Hiệu ứng: BẬT</span>
+        </button>
+        <button onclick="showHintModal()" class="px-3 py-1.5 rounded-xl bg-v5coral text-amber-950 text-xs font-bold hover:brightness-105 shadow-sm transition">
+          💡 Gợi ý
+        </button>
+        <button onclick="resetCurrentLevel()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+          🔄 Làm lại
+        </button>
+        <button onclick="showWelcomeModal()" class="px-3 py-1.5 rounded-xl bg-v5lavender text-white text-xs font-bold hover:brightness-105 shadow-sm transition">
+          🏠 Trang chủ
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN GAME CONTAINER -->
+  <main class="max-w-6xl w-full mx-auto p-3 md:p-6 flex-grow flex flex-col justify-center">
+
+    <!-- MASCOT BÍP & INSTRUCTION BANNER -->
+    <div class="mb-4 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+      <!-- Mascot Bíp SVG -->
+      <div class="md:col-span-3 flex items-center justify-center bg-white/60 p-3 rounded-2xl border border-emerald-100 shadow-sm">
+        <div id="bipSvgContainer" class="w-24 h-24 md:w-28 md:h-28 transition-transform duration-300">
+          <!-- Dynamically Rendered SVG Robot Bíp -->
+        </div>
+      </div>
+
+      <!-- Speech Bubble & Instructions -->
+      <div class="md:col-span-9 relative bg-white p-4 rounded-2xl border-2 border-emerald-200 shadow-sm speech-bubble">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-2">
+          <span id="levelTitle" class="font-extrabold text-emerald-800 text-base md:text-lg">
+            MÀN 1: BUỔI SÁNG ĐẾN TRƯỜNG
+          </span>
+          <span id="modeBadge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+            Chế độ: Luyện tập
+          </span>
+        </div>
+        <p id="bipSpeechText" class="text-slate-700 font-medium text-sm md:text-base leading-relaxed">
+          Chào em! Rô-bốt Bíp rất vui được gặp em. Hãy giúp Bíp sắp xếp các việc cần làm buổi sáng theo đúng trình tự nhé!
+        </p>
+      </div>
+    </div>
+
+    <!-- GAME PLAY AREA CONTAINER (DYNAMIC LEVEL SCREENS) -->
+    <div class="glass-card rounded-3xl p-4 md:p-6 shadow-md border border-white min-h-[420px] flex flex-col justify-between">
+      
+      <!-- LEVEL CONTENT WRAPPER -->
+      <div id="levelContentArea" class="flex-grow flex flex-col justify-center">
+        <!-- Rendered by JS per level -->
+      </div>
+
+      <!-- BOTTOM CONTROL & ACTION BAR -->
+      <div class="mt-6 pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+        <div id="feedbackText" class="text-sm font-bold text-slate-600 flex items-center gap-2">
+          <span>💬 Thao tác các thẻ công việc để hoàn thành yêu cầu.</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="checkAnswerBtn" onclick="checkCurrentLevel()" class="btn-bounce bg-v5green hover:bg-emerald-600 text-white font-extrabold px-6 py-2.5 rounded-2xl shadow-md text-sm md:text-base transition">
+            ✨ KIỂM TRA
+          </button>
+          <button id="nextLevelBtn" onclick="goToNextLevel()" disabled class="btn-bounce bg-v5lavender hover:bg-purple-600 text-white font-extrabold px-6 py-2.5 rounded-2xl shadow-md text-sm md:text-base transition opacity-50 cursor-not-allowed">
+            TIẾP TỤC ➔
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="text-center py-3 text-xs font-medium text-slate-500">
+    Hệ thống Học tập Tin học Tiểu học • Thiết kế Mỹ thuật V5 • Hoạt động Ngoại tuyến (Offline)
+  </footer>
+
+  <!-- MODAL: WELCOME & GAME START -->
+  <div id="welcomeModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 md:p-8 shadow-2xl border-4 border-emerald-300 text-center relative animate-subtle">
+      <div class="w-20 h-20 mx-auto bg-v5softGreen rounded-full flex items-center justify-center mb-4 text-4xl shadow-inner border-2 border-emerald-200">
+        🤖
+      </div>
+      <h2 class="text-2xl md:text-3xl font-black text-emerald-800 mb-1">RÔ-BỐT THEO TỪNG BƯỚC</h2>
+      <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-4">Tin học 3 • Bài 14: Em thực hiện công việc như thế nào?</p>
+      
+      <p class="text-slate-600 text-sm md:text-base mb-6 leading-relaxed">
+        Chào mừng em đến với hành trình học tập cùng Rô-bốt Bíp! Em sẽ học cách sắp xếp công việc theo tuần tự và chia việc lớn thành việc nhỏ qua 4 màn chơi hấp dẫn.
+      </p>
+
+      <!-- Mode Selector -->
+      <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 mb-6 flex justify-center gap-4">
+        <label class="flex items-center gap-2 cursor-pointer font-bold text-sm text-slate-700">
+          <input type="radio" name="gameMode" value="practice" checked class="w-4 h-4 text-emerald-600 accent-emerald-600">
+          🟢 Chế độ Luyện tập (Có gợi ý)
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer font-bold text-sm text-slate-700">
+          <input type="radio" name="gameMode" value="challenge" class="w-4 h-4 text-emerald-600 accent-emerald-600">
+          🔥 Chế độ Thử thách
+        </label>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button onclick="startGame()" class="btn-bounce bg-v5green hover:bg-emerald-600 text-white font-extrabold px-8 py-3 rounded-2xl text-base shadow-lg transition">
+          🚀 BẮT ĐẦU CHƠI
+        </button>
+        <button onclick="showInstructionsModal()" class="btn-bounce bg-v5coral text-amber-950 font-extrabold px-6 py-3 rounded-2xl text-base shadow-md transition">
+          📖 HƯỚNG DẪN
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: INSTRUCTIONS -->
+  <div id="instructionsModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border-2 border-emerald-200">
+      <div class="flex justify-between items-center border-b pb-3 mb-4">
+        <h3 class="text-xl font-extrabold text-emerald-800 flex items-center gap-2">
+          📖 HƯỚNG DẪN CÁCH CHƠI
+        </h3>
+        <button onclick="closeInstructionsModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">✖</button>
+      </div>
+      <div class="space-y-3 text-sm text-slate-700 leading-relaxed max-h-96 overflow-y-auto pr-1">
+        <div class="bg-amber-50 p-3 rounded-xl border border-amber-200">
+          <strong>Màn 1: Buổi sáng đến trường</strong> — Chọn/Kéo các công việc theo đúng thứ tự từ lúc thức dậy cho tới khi tới lớp học.
+        </div>
+        <div class="bg-sky-50 p-3 rounded-xl border border-sky-200">
+          <strong>Màn 2: Vẽ ngôi nhà</strong> — Sắp xếp các bước thực hiện để hình vẽ ngôi nhà xuất hiện hoàn chỉnh từng nét.
+        </div>
+        <div class="bg-purple-50 p-3 rounded-xl border border-purple-200">
+          <strong>Màn 3: Chia việc lớn</strong> — Phân tích công việc "Đánh răng" thành 5 công việc nhỏ cụ thể.
+        </div>
+        <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200">
+          <strong>Màn 4: Điều khiển Rô-bốt</strong> — Lập trình chuỗi lệnh "Tiến", "Quay trái", "Quay phải" để dẫn đường cho Rô-bốt Bíp vượt qua chướng ngại vật về trường học!
+        </div>
+      </div>
+      <div class="mt-5 text-right">
+        <button onclick="closeInstructionsModal()" class="bg-v5green text-white font-bold px-6 py-2 rounded-xl text-sm hover:bg-emerald-600 transition">
+          ĐÃ HỔ HIỂU
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: HINT -->
+  <div id="hintModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-amber-300 text-center">
+      <div class="text-4xl mb-2">💡</div>
+      <h3 class="text-xl font-extrabold text-amber-800 mb-2">GỢI Ý TỪ RÔ-BỐT BÍP</h3>
+      <p id="hintContentText" class="text-slate-700 font-medium text-sm md:text-base leading-relaxed bg-amber-50 p-4 rounded-2xl border border-amber-200 mb-4">
+        Gợi ý sẽ xuất hiện tại đây.
+      </p>
+      <button onclick="closeHintModal()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-2 rounded-xl text-sm transition">
+        CẢM ƠN BÍP!
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: CERTIFICATE / END GAME SUMMARY -->
+  <div id="certificateModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl border-4 border-yellow-300 text-center relative my-8">
+      
+      <!-- Certificate Header -->
+      <div class="border-4 border-double border-amber-300 p-6 rounded-2xl bg-gradient-to-b from-amber-50/50 to-emerald-50/50">
+        <div class="text-5xl mb-2">🏆</div>
+        <h2 class="text-2xl md:text-3xl font-black text-amber-900 tracking-wide uppercase">BẰNG KHEN THÀNH TÍCH</h2>
+        <p class="text-xs font-extrabold text-emerald-700 uppercase tracking-widest mt-1">Học sinh xuất sắc môn Tin học 3</p>
+        
+        <p class="text-slate-600 text-sm mt-4">Tuyên dương em đã hoàn thành xuất sắc trò chơi học tập:</p>
+        <p class="text-lg font-black text-emerald-800 my-1">"RÔ-BỐT THEO TỪNG BƯỚC"</p>
+        <p class="text-xs text-slate-500 font-semibold mb-4">Môn Tin học 3 • Bài 14: Em thực hiện công việc như thế nào?</p>
+
+        <!-- Score & Details Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 bg-white p-4 rounded-xl border border-amber-200 my-4 shadow-inner">
+          <div>
+            <p class="text-xs text-slate-400 font-bold">TỔNG ĐIỂM</p>
+            <p id="certScoreText" class="text-2xl font-black text-emerald-600">100/100</p>
+          </div>
+          <div>
+            <p class="text-xs text-slate-400 font-bold">THỜI GIAN</p>
+            <p id="certTimeText" class="text-2xl font-black text-amber-600">03:45</p>
+          </div>
+          <div class="col-span-2 md:col-span-1">
+            <p class="text-xs text-slate-400 font-bold">XẾP LOẠI</p>
+            <p id="certRankText" class="text-xl font-black text-purple-600">Xuất Sắc 🌟</p>
+          </div>
+        </div>
+
+        <!-- Badges Earned -->
+        <div class="mb-4">
+          <p class="text-xs font-bold text-slate-500 mb-2 uppercase">Huy hiệu danh dự đã đạt được:</p>
+          <div class="flex flex-wrap justify-center gap-2">
+            <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs border border-emerald-200">
+              🏅 Nhà Tác Vụ Mẫu Mực
+            </span>
+            <span class="px-3 py-1 rounded-full bg-sky-100 text-sky-800 font-bold text-xs border border-sky-200">
+              📐 Kiến Trúc Sư Tí Hon
+            </span>
+            <span class="px-3 py-1 rounded-full bg-purple-100 text-purple-800 font-bold text-xs border border-purple-200">
+              ✨ Master Quy Trình
+            </span>
+            <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 font-bold text-xs border border-amber-200">
+              🤖 Lập Trình Viên Nhí
+            </span>
+          </div>
+        </div>
+
+        <!-- Pedagogical Commentary -->
+        <p id="certCommentText" class="text-sm font-semibold text-emerald-900 bg-emerald-100/70 p-3 rounded-xl border border-emerald-200 italic">
+          "Em nắm rất vững kiến thức về tuần tự công việc và chia việc lớn thành việc nhỏ!"
+        </p>
+      </div>
+
+      <!-- Canvas for image export (hidden) -->
+      <canvas id="certCanvas" width="800" height="600" class="hidden"></canvas>
+
+      <!-- Action Buttons -->
+      <div class="mt-6 flex flex-wrap gap-3 justify-center">
+        <button onclick="downloadCertificate()" class="btn-bounce bg-amber-500 hover:bg-amber-600 text-white font-extrabold px-6 py-2.5 rounded-2xl text-sm shadow-md transition flex items-center gap-2">
+          📥 IN / LƯU BẰNG KHEN
+        </button>
+        <button onclick="restartGame()" class="btn-bounce bg-v5green hover:bg-emerald-600 text-white font-extrabold px-6 py-2.5 rounded-2xl text-sm shadow-md transition flex items-center gap-2">
+          🔄 CHƠI LẠI
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- JAVASCRIPT LOGIC ENGINE -->
+  <script>
+    /* ==========================================================================
+       1. GAME CONFIGURATION & PEDAGOGICAL CONTENT (EDITABLE)
+       ========================================================================== */
+    const GAME_CONFIG = {
+      title: "RÔ-BỐT THEO TỪNG BƯỚC",
+      grade: "Tin học 3",
+      lesson: "Bài 14: Em thực hiện công việc như thế nào?",
+      totalLevels: 4,
+      pointsPerLevel: 25,
+      
+      // LEVEL DATA DEFINITIONS
+      level1Data: {
+        title: "MÀN 1: BUỔI SÁNG ĐẾN TRƯỜNG",
+        instruction: "Em hãy xếp 5 thẻ công việc theo đúng trình tự thời gian từ lúc thức dậy cho đến khi tới trường nhé!",
+        hint: "Bước đầu tiên trong ngày luôn là Thức dậy, sau đó vệ sinh cá nhân, ăn sáng rồi mới đi giày và tới trường em nhé!",
+        items: [
+          { id: 1, title: "Thức dậy", icon: "⏰", detail: "Thức dậy chào ngày mới" },
+          { id: 2, title: "Vệ sinh cá nhân", icon: "🪥", detail: "Đánh răng & rửa mặt" },
+          { id: 3, title: "Ăn sáng", icon: "🥣", detail: "Ăn sáng đủ chất" },
+          { id: 4, title: "Đi giày dép", icon: "👟", detail: "Đi giày chỉnh tề" },
+          { id: 5, title: "Đến trường", icon: "🏫", detail: "Vui vẻ tới lớp" }
+        ],
+        correctOrder: [1, 2, 3, 4, 5]
+      },
+
+      level2Data: {
+        title: "MÀN 2: VẼ NGÔI NHÀ",
+        instruction: "Hãy chọn thứ tự 4 bước để hoàn thiện bức tranh vẽ ngôi nhà. Hình vẽ minh họa sẽ tự xuất hiện từng nét tương ứng!",
+        hint: "Bắt đầu bằng khung nhà trước, sau đó vẽ mái nhà, tiếp đến cửa chính & cửa sổ, cuối cùng mới tô màu rực rỡ!",
+        items: [
+          { id: 1, title: "1. Vẽ khung nhà", detail: "Hình chữ nhật làm thân nhà" },
+          { id: 2, title: "2. Vẽ mái nhà", detail: "Hình tam giác phía trên" },
+          { id: 3, title: "3. Vẽ cửa chính & cửa sổ", detail: "Thêm cửa đi và cửa sổ" },
+          { id: 4, title: "4. Tô màu trang trí", detail: "Tô màu tươi sáng hoàn thiện" }
+        ],
+        correctOrder: [1, 2, 3, 4]
+      },
+
+      level3Data: {
+        title: "MÀN 3: CHIA VIỆC LỚN (ĐÁNH RĂNG)",
+        instruction: "Công việc lớn 'Đánh răng' được chia thành 5 công việc nhỏ. Em hãy kéo/chọn từng bước vào đúng vị trí nhé!",
+        hint: "Hãy suy nghĩ xem: Chuẩn bị cốc/bàn chải ➔ Lấy kem ➔ Chải răng ➔ Súc miệng ➔ Rửa sạch bàn chải.",
+        items: [
+          { id: 1, title: "Chuẩn bị cốc & bàn chải", detail: "Lấy dụng cụ đánh răng" },
+          { id: 2, title: "Lấy kem đánh răng", detail: "Cho kem lên bàn chải" },
+          { id: 3, title: "Chải răng nhẹ nhàng", detail: "Chải kĩ các mặt răng" },
+          { id: 4, title: "Súc miệng bằng nước sạch", detail: "Làm sạch bọt kem" },
+          { id: 5, title: "Rửa sạch & cất bàn chải", detail: "Cất gọn dụng cụ" }
+        ],
+        correctOrder: [1, 2, 3, 4, 5]
+      },
+
+      level4Data: {
+        title: "MÀN 4: ĐIỀU KHIỂN RÔ-BỐT BÍP",
+        instruction: "Tạo chuỗi lệnh điều khiển Rô-bốt Bíp di chuyển từ vị trí xuất phát về đích (Trường học) mà không va phải chướng ngại vật!",
+        hint: "Hãy đếm số ô cần tiến, quay mặt đúng hướng trước khi tiến tiếp. Tránh ao nước và cây xanh nhé!",
+        gridSize: 5,
+        startPos: { x: 0, y: 0, dir: 0 }, // dir: 0=East, 1=South, 2=West, 3=North
+        goalPos: { x: 4, y: 4 },
+        obstacles: [
+          { x: 1, y: 1, type: "tree", label: "🌳 Cây" },
+          { x: 2, y: 3, type: "water", label: "🌊 Ao nước" },
+          { x: 3, y: 1, type: "rock", label: "🪨 Đá" }
+        ]
+      }
+    };
+
+    /* ==========================================================================
+       2. WEB AUDIO API SYNTHESIZER ENGINE (NO EXTERNAL AUDIO FILES)
+       ========================================================================== */
+    class WebAudioSynth {
+      constructor() {
+        this.ctx = null;
+        this.bgmEnabled = true;
+        this.sfxEnabled = true;
+        this.bgmTimer = null;
+        this.noteIndex = 0;
+        // Pentatonic C major cheerful notes (Hz)
+        this.melody = [261.63, 329.63, 392.00, 523.25, 440.00, 392.00, 329.63, 293.66, 329.63, 392.00, 523.25, 440.00];
+      }
+
+      initCtx() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContextClass();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      startBGM() {
+        this.initCtx();
+        if (this.bgmTimer) clearInterval(this.bgmTimer);
+        if (!this.bgmEnabled) return;
+
+        this.bgmTimer = setInterval(() => {
+          if (!this.bgmEnabled || !this.ctx) return;
+          const freq = this.melody[this.noteIndex % this.melody.length];
+          this.noteIndex++;
+          this.playTone(freq, 'triangle', 0.2, 0.05);
+        }, 350);
+      }
+
+      stopBGM() {
+        if (this.bgmTimer) {
+          clearInterval(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      }
+
+      playTone(freq, type = 'sine', duration = 0.2, vol = 0.1) {
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {}
+      }
+
+      playSFX(type) {
+        if (!this.sfxEnabled) return;
+        this.initCtx();
+        if (type === 'click') {
+          this.playTone(450, 'sine', 0.05, 0.1);
+        } else if (type === 'correct') {
+          this.playTone(523.25, 'sine', 0.1, 0.12);
+          setTimeout(() => this.playTone(659.25, 'sine', 0.1, 0.12), 80);
+          setTimeout(() => this.playTone(783.99, 'sine', 0.2, 0.12), 160);
+        } else if (type === 'wrong') {
+          this.playTone(180, 'sawtooth', 0.25, 0.1);
+        } else if (type === 'clear') {
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((f, i) => {
+            setTimeout(() => this.playTone(f, 'triangle', 0.25, 0.15), i * 100);
+          });
+        } else if (type === 'win') {
+          const notes = [392.00, 523.25, 659.25, 783.99, 1046.50, 1318.51];
+          notes.forEach((f, i) => {
+            setTimeout(() => this.playTone(f, 'sine', 0.35, 0.15), i * 90);
+          });
+        }
+      }
+    }
+
+    const soundEngine = new WebAudioSynth();
+
+    /* ==========================================================================
+       3. GLOBAL GAME STATE MANAGEMENT
+       ========================================================================== */
+    const gameState = {
+      currentLevel: 1,
+      score: 0,
+      mode: 'practice', // 'practice' or 'challenge'
+      levelScores: [0, 0, 0, 0],
+      startTime: null,
+      endTime: null,
+      
+      // Level specific state variables
+      level1UserOrder: [],
+      level2UserOrder: [],
+      level3UserOrder: [],
+      level4Commands: [],
+      level4RobotState: { x: 0, y: 0, dir: 0 }
+    };
+
+    /* ==========================================================================
+       4. MASCOT BÍP SVG RENDERER (DYNAMIC EXPRESSIONS)
+       ========================================================================== */
+    function renderBipMascot(expression = 'happy') {
+      const container = document.getElementById('bipSvgContainer');
+      let eyeSvg = '';
+      let mouthSvg = '';
+      let accessory = '';
+
+      if (expression === 'happy') {
+        eyeSvg = `
+          <circle cx="35" cy="40" r="6" fill="#1e293b"/>
+          <circle cx="65" cy="40" r="6" fill="#1e293b"/>
+          <circle cx="37" cy="38" r="2" fill="#ffffff"/>
+          <circle cx="67" cy="38" r="2" fill="#ffffff"/>
+        `;
+        mouthSvg = `<path d="M 38 52 Q 50 64 62 52" stroke="#1e293b" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+      } else if (expression === 'thinking') {
+        eyeSvg = `
+          <circle cx="35" cy="38" r="6" fill="#1e293b"/>
+          <path d="M 59 42 Q 65 36 71 42" stroke="#1e293b" stroke-width="3" fill="none"/>
+        `;
+        mouthSvg = `<path d="M 40 56 Q 50 52 60 56" stroke="#1e293b" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+        accessory = `<text x="75" y="25" font-size="16" font-weight="bold" fill="#7766B7">💭</text>`;
+      } else if (expression === 'cheering') {
+        eyeSvg = `
+          <path d="M 29 40 Q 35 32 41 40" stroke="#1e293b" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M 59 40 Q 65 32 71 40" stroke="#1e293b" stroke-width="4" fill="none" stroke-linecap="round"/>
+        `;
+        mouthSvg = `<path d="M 36 50 Q 50 66 64 50 Z" fill="#EF7469" stroke="#1e293b" stroke-width="3"/>`;
+        accessory = `<text x="5" y="20" font-size="16">✨</text><text x="80" y="20" font-size="16">✨</text>`;
+      } else if (expression === 'confused') {
+        eyeSvg = `
+          <circle cx="35" cy="40" r="6" fill="#1e293b"/>
+          <text x="60" y="44" font-weight="bold" font-size="14" fill="#1e293b">?</text>
+        `;
+        mouthSvg = `<path d="M 38 56 Q 44 50 50 56 T 62 56" stroke="#1e293b" stroke-width="3" fill="none"/>`;
+      }
+
+      container.innerHTML = `
+        <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-md">
+          <!-- Antenna -->
+          <line x1="50" y1="18" x2="50" y2="8" stroke="#53B77A" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="50" cy="6" r="5" fill="#FFC65C"/>
+          
+          <!-- Body / Head Frame -->
+          <rect x="18" y="18" width="64" height="54" rx="16" fill="#A8E6CF" stroke="#53B77A" stroke-width="3"/>
+          <!-- Screen Face -->
+          <rect x="24" y="24" width="52" height="42" rx="12" fill="#FFFFFF"/>
+          
+          <!-- Eyes & Mouth -->
+          ${eyeSvg}
+          ${mouthSvg}
+          ${accessory}
+          
+          <!-- Cute Cheek Blush -->
+          <circle cx="28" cy="48" r="4" fill="#EF7469" opacity="0.4"/>
+          <circle cx="72" cy="48" r="4" fill="#EF7469" opacity="0.4"/>
+          
+          <!-- Ears -->
+          <rect x="12" y="36" width="6" height="12" rx="3" fill="#53B77A"/>
+          <rect x="82" y="36" width="6" height="12" rx="3" fill="#53B77A"/>
+        </svg>
+      `;
+    }
+
+    function setBipSpeech(text, expression = 'happy') {
+      document.getElementById('bipSpeechText').innerText = text;
+      renderBipMascot(expression);
+    }
+
+    /* ==========================================================================
+       5. LEVEL RENDERERS & LOGIC HANDLERS
+       ========================================================================== */
+
+    // --- LEVEL 1: BUỔI SÁNG ĐẾN TRƯỜNG ---
+    function renderLevel1() {
+      const area = document.getElementById('levelContentArea');
+      const data = GAME_CONFIG.level1Data;
+      
+      area.innerHTML = `
+        <!-- Timeline Dynamic Visual Banner -->
+        <div class="mb-6 bg-v5softGreen p-4 rounded-2xl border border-emerald-200">
+          <p class="text-xs font-extrabold text-emerald-800 uppercase mb-2 text-center">Tiến trình buổi sáng của em</p>
+          <div id="l1VisualTrack" class="flex justify-between items-center max-w-lg mx-auto relative">
+            <div class="absolute top-1/2 left-0 right-0 h-1 bg-emerald-200 -z-0 transform -translate-y-1/2"></div>
+            ${[1,2,3,4,5].map(step => `
+              <div id="l1StepNode_${step}" class="w-10 h-10 rounded-full bg-white border-2 border-emerald-300 flex items-center justify-center font-bold text-slate-400 z-10 transition-all shadow-sm">
+                ${step}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Interactive Sequence Slots & Items -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          <!-- Item Pool -->
+          <div class="bg-white p-4 rounded-2xl border border-slate-200">
+            <h4 class="text-xs font-extrabold text-slate-500 uppercase mb-3">Các thẻ công việc (Bấm để chọn):</h4>
+            <div id="l1ItemPool" class="flex flex-col gap-2">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- User Selected Sequence Slot List -->
+          <div class="bg-amber-50/60 p-4 rounded-2xl border-2 border-dashed border-amber-300">
+            <h4 class="text-xs font-extrabold text-amber-800 uppercase mb-3">Trình tự công việc đã xếp:</h4>
+            <div id="l1SequenceSlots" class="flex flex-col gap-2 min-h-[220px]">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      `;
+
+      updateLevel1UI();
+    }
+
+    function updateLevel1UI() {
+      const poolContainer = document.getElementById('l1ItemPool');
+      const slotsContainer = document.getElementById('l1SequenceSlots');
+      const data = GAME_CONFIG.level1Data;
+
+      // Unselected items
+      const unselected = data.items.filter(item => !gameState.level1UserOrder.includes(item.id));
+      
+      poolContainer.innerHTML = unselected.map(item => `
+        <button onclick="selectLevel1Item(${item.id})" class="btn-bounce flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-left transition shadow-sm">
+          <span class="text-2xl">${item.icon}</span>
+          <div>
+            <p class="font-bold text-slate-800 text-sm">${item.title}</p>
+            <p class="text-xs text-slate-500">${item.detail}</p>
+          </div>
+        </button>
+      `).join('');
+
+      if (unselected.length === 0) {
+        poolContainer.innerHTML = `<p class="text-xs text-slate-400 italic p-4 text-center">Đã xếp tất cả các thẻ!</p>`;
+      }
+
+      // Selected items sequence
+      slotsContainer.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        const itemId = gameState.level1UserOrder[i];
+        if (itemId) {
+          const item = data.items.find(x => x.id === itemId);
+          slotsContainer.innerHTML += `
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-white border-2 border-amber-300 shadow-sm animate-subtle">
+              <div class="flex items-center gap-3">
+                <span class="w-6 h-6 rounded-full bg-amber-400 text-amber-950 font-black text-xs flex items-center justify-center">${i+1}</span>
+                <span class="text-xl">${item.icon}</span>
+                <span class="font-bold text-slate-800 text-sm">${item.title}</span>
+              </div>
+              <button onclick="deselectLevel1Item(${item.id})" class="text-red-400 hover:text-red-600 font-bold px-2 text-sm">✖</button>
+            </div>
+          `;
+        } else {
+          slotsContainer.innerHTML += `
+            <div class="p-3 rounded-xl border-2 border-dashed border-amber-200 bg-white/40 text-xs font-bold text-amber-400 text-center">
+              [ Bước ${i+1} - Trống ]
+            </div>
+          `;
+        }
+      }
+
+      // Update Visual Track Nodes
+      for (let step = 1; step <= 5; step++) {
+        const node = document.getElementById(`l1StepNode_${step}`);
+        if (node) {
+          if (gameState.level1UserOrder[step - 1]) {
+            node.className = "w-10 h-10 rounded-full bg-v5green text-white border-2 border-emerald-500 flex items-center justify-center font-bold z-10 shadow-md scale-110";
+            node.innerText = "✓";
+          } else {
+            node.className = "w-10 h-10 rounded-full bg-white border-2 border-emerald-300 flex items-center justify-center font-bold text-slate-400 z-10 shadow-sm";
+            node.innerText = step;
+          }
+        }
+      }
+    }
+
+    function selectLevel1Item(id) {
+      if (gameState.level1UserOrder.length < 5) {
+        soundEngine.playSFX('click');
+        gameState.level1UserOrder.push(id);
+        updateLevel1UI();
+      }
+    }
+
+    function deselectLevel1Item(id) {
+      soundEngine.playSFX('click');
+      gameState.level1UserOrder = gameState.level1UserOrder.filter(x => x !== id);
+      updateLevel1UI();
+    }
+
+    // --- LEVEL 2: VẼ NGÔI NHÀ ---
+    function renderLevel2() {
+      const area = document.getElementById('levelContentArea');
+      
+      area.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          <!-- Left: Dynamic Drawing SVG Canvas -->
+          <div class="md:col-span-6 bg-sky-50/70 p-4 rounded-2xl border-2 border-sky-200 flex flex-col items-center justify-center min-h-[280px]">
+            <p class="text-xs font-extrabold text-sky-800 uppercase mb-2">Bản vẽ ngôi nhà trực quan</p>
+            <div id="l2HouseSvgContainer" class="w-full max-w-[260px] h-[220px]">
+              <!-- Dynamic SVG drawn based on ordered steps -->
+            </div>
+          </div>
+
+          <!-- Right: Ordering Controls -->
+          <div class="md:col-span-6 bg-white p-4 rounded-2xl border border-slate-200">
+            <h4 class="text-xs font-extrabold text-slate-500 uppercase mb-3">Sắp xếp 4 bước vẽ nhà:</h4>
+            <div id="l2StepList" class="flex flex-col gap-2">
+              <!-- Rendered items -->
+            </div>
+          </div>
+        </div>
+      `;
+
+      updateLevel2UI();
+    }
+
+    function updateLevel2UI() {
+      const listContainer = document.getElementById('l2StepList');
+      const data = GAME_CONFIG.level2Data;
+
+      listContainer.innerHTML = data.items.map((item, idx) => {
+        const orderIndex = gameState.level2UserOrder.indexOf(item.id);
+        const isSelected = orderIndex !== -1;
+
+        return `
+          <div onclick="toggleLevel2Step(${item.id})" class="cursor-pointer btn-bounce p-3 rounded-xl border-2 transition flex items-center justify-between ${isSelected ? 'bg-sky-50 border-sky-400' : 'bg-slate-50 border-slate-200 hover:border-sky-300'}">
+            <div>
+              <p class="font-bold text-slate-800 text-sm">${item.title}</p>
+              <p class="text-xs text-slate-500">${item.detail}</p>
+            </div>
+            <span class="w-8 h-8 rounded-full ${isSelected ? 'bg-sky-500 text-white' : 'bg-slate-200 text-slate-500'} font-black text-xs flex items-center justify-center shadow-sm">
+              ${isSelected ? orderIndex + 1 : '—'}
+            </span>
+          </div>
+        `;
+      }).join('');
+
+      renderHouseSVG();
+    }
+
+    function toggleLevel2Step(id) {
+      soundEngine.playSFX('click');
+      const idx = gameState.level2UserOrder.indexOf(id);
+      if (idx !== -1) {
+        gameState.level2UserOrder.splice(idx, 1);
+      } else {
+        if (gameState.level2UserOrder.length < 4) {
+          gameState.level2UserOrder.push(id);
+        }
+      }
+      updateLevel2UI();
+    }
+
+    function renderHouseSVG() {
+      const container = document.getElementById('l2HouseSvgContainer');
+      const order = gameState.level2UserOrder;
+
+      // Check which steps are activated
+      const hasBody = order.includes(1);
+      const hasRoof = order.includes(2);
+      const hasDoors = order.includes(3);
+      const hasColor = order.includes(4);
+
+      container.innerHTML = `
+        <svg viewBox="0 0 200 180" class="w-full h-full">
+          <!-- Background Grid / Sky -->
+          <rect x="0" y="0" width="200" height="180" rx="12" fill="${hasColor ? '#E0F2FE' : '#F8FAFC'}" stroke="#CBD5E1" stroke-width="2"/>
+          ${hasColor ? '<circle cx="170" cy="30" r="15" fill="#FDE047"/>' : ''}
+          ${hasColor ? '<rect x="0" y="140" width="200" height="40" fill="#86EFAC"/>' : ''}
+
+          <!-- Step 1: Body Rectangle -->
+          ${hasBody ? `
+            <rect x="45" y="75" width="110" height="70" fill="${hasColor ? '#FED7AA' : '#FFFFFF'}" stroke="#1E293B" stroke-width="3" rx="2"/>
+          ` : ''}
+
+          <!-- Step 2: Triangle Roof -->
+          ${hasRoof ? `
+            <polygon points="40,75 100,25 160,75" fill="${hasColor ? '#FCA5A5' : '#FFFFFF'}" stroke="#1E293B" stroke-width="3"/>
+          ` : ''}
+
+          <!-- Step 3: Main Door & Windows -->
+          ${hasDoors ? `
+            <!-- Door -->
+            <rect x="85" y="105" width="30" height="40" fill="${hasColor ? '#B45309' : '#FFFFFF'}" stroke="#1E293B" stroke-width="2"/>
+            <circle cx="110" cy="125" r="2" fill="#FEF08A"/>
+            <!-- Window Left -->
+            <rect x="55" y="90" width="20" height="20" fill="${hasColor ? '#BAE6FD' : '#FFFFFF'}" stroke="#1E293B" stroke-width="2"/>
+            <line x1="65" y1="90" x2="65" y2="110" stroke="#1E293B" stroke-width="1"/>
+            <line x1="55" y1="100" x2="75" y2="100" stroke="#1E293B" stroke-width="1"/>
+            <!-- Window Right -->
+            <rect x="125" y="90" width="20" height="20" fill="${hasColor ? '#BAE6FD' : '#FFFFFF'}" stroke="#1E293B" stroke-width="2"/>
+            <line x1="135" y1="90" x2="135" y2="110" stroke="#1E293B" stroke-width="1"/>
+            <line x1="125" y1="100" x2="145" y2="100" stroke="#1E293B" stroke-width="1"/>
+          ` : ''}
+        </svg>
+      `;
+    }
+
+    // --- LEVEL 3: CHIA VIỆC LỚN (ĐÁNH RĂNG) ---
+    function renderLevel3() {
+      const area = document.getElementById('levelContentArea');
+      
+      area.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          <!-- Tooth Mascot & Progress SVG -->
+          <div class="md:col-span-5 bg-purple-50/70 p-4 rounded-2xl border-2 border-purple-200 text-center flex flex-col items-center">
+            <p class="text-xs font-extrabold text-purple-800 uppercase mb-2">Mô phỏng "Đánh răng sạch đẹp"</p>
+            <div id="l3ToothSvgContainer" class="w-40 h-40">
+              <!-- Tooth SVG -->
+            </div>
+          </div>
+
+          <!-- Step Assignment Slots -->
+          <div class="md:col-span-7 bg-white p-4 rounded-2xl border border-slate-200">
+            <h4 class="text-xs font-extrabold text-slate-500 uppercase mb-3">Xếp 5 bước nhỏ của việc đánh răng:</h4>
+            <div id="l3SlotsContainer" class="flex flex-col gap-2">
+              <!-- Rendered slots -->
+            </div>
+          </div>
+        </div>
+      `;
+
+      updateLevel3UI();
+    }
+
+    function updateLevel3UI() {
+      const container = document.getElementById('l3SlotsContainer');
+      const data = GAME_CONFIG.level3Data;
+
+      container.innerHTML = [1, 2, 3, 4, 5].map((stepNum) => {
+        const assignedId = gameState.level3UserOrder[stepNum - 1];
+        const assignedItem = data.items.find(x => x.id === assignedId);
+
+        return `
+          <div class="flex items-center gap-2">
+            <span class="w-8 h-8 rounded-xl bg-purple-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
+              ${stepNum}
+            </span>
+            <select onchange="assignLevel3Step(${stepNum - 1}, this.value)" class="w-full p-2.5 rounded-xl border border-slate-300 font-bold text-xs md:text-sm bg-purple-50/30 text-slate-800 focus:outline-none focus:border-purple-500">
+              <option value="">-- Chọn công việc nhỏ cho Bước ${stepNum} --</option>
+              ${data.items.map(item => `
+                <option value="${item.id}" ${assignedId === item.id ? 'selected' : ''}>
+                  ${item.title} (${item.detail})
+                </option>
+              `).join('')}
+            </select>
+          </div>
+        `;
+      }).join('');
+
+      renderToothSVG();
+    }
+
+    function assignLevel3Step(index, value) {
+      soundEngine.playSFX('click');
+      const val = value ? parseInt(value) : null;
+      gameState.level3UserOrder[index] = val;
+      updateLevel3UI();
+    }
+
+    function renderToothSVG() {
+      const container = document.getElementById('l3ToothSvgContainer');
+      const filledCount = gameState.level3UserOrder.filter(x => x !== null && x !== undefined).length;
+
+      container.innerHTML = `
+        <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow">
+          <!-- Tooth Body -->
+          <path d="M 30 20 C 20 20 15 35 20 50 C 25 65 30 90 40 90 C 45 90 48 80 50 80 C 52 80 55 90 60 90 C 70 90 75 65 80 50 C 85 35 80 20 70 20 C 60 20 55 28 50 28 C 45 28 40 20 30 20 Z" fill="#FFFFFF" stroke="#7766B7" stroke-width="3"/>
+          
+          <!-- Eyes -->
+          <circle cx="38" cy="42" r="3" fill="#1e293b"/>
+          <circle cx="62" cy="42" r="3" fill="#1e293b"/>
+          
+          <!-- Mouth -->
+          <path d="M 42 54 Q 50 62 58 54" stroke="#1e293b" stroke-width="2" fill="none"/>
+
+          <!-- Sparkling Clean Stars if all steps filled -->
+          ${filledCount >= 5 ? `
+            <text x="15" y="25" font-size="14">✨</text>
+            <text x="75" y="25" font-size="14">✨</text>
+            <text x="75" y="75" font-size="14">✨</text>
+          ` : ''}
+
+          <!-- Toothbrush Illustration -->
+          ${filledCount >= 2 ? `
+            <rect x="10" y="55" width="80" height="8" rx="4" fill="#3B82F6" transform="rotate(-15 50 50)"/>
+            <rect x="65" y="47" width="20" height="10" fill="#FFFFFF" transform="rotate(-15 50 50)"/>
+          ` : ''}
+        </svg>
+      `;
+    }
+
+    // --- LEVEL 4: ĐIỀU KHIỂN RÔ-BỐT BÍP (5x5 GRID MAP) ---
+    function renderLevel4() {
+      const area = document.getElementById('levelContentArea');
+      
+      area.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+          <!-- Left: Grid Board SVG -->
+          <div class="md:col-span-6 bg-emerald-50/60 p-3 rounded-2xl border-2 border-emerald-200 flex flex-col items-center">
+            <p class="text-xs font-extrabold text-emerald-800 uppercase mb-2">Bản đồ di chuyển (5x5)</p>
+            <div id="l4GridBoard" class="w-full max-w-[300px] aspect-square bg-white rounded-xl border-2 border-emerald-300 p-1 grid grid-cols-5 gap-1 shadow-inner relative">
+              <!-- Dynamically populated 25 grid cells -->
+            </div>
+          </div>
+
+          <!-- Right: Program Queue Builder -->
+          <div class="md:col-span-6 bg-white p-4 rounded-2xl border border-slate-200">
+            <h4 class="text-xs font-extrabold text-slate-500 uppercase mb-2">Bảng lệnh của em:</h4>
+            
+            <!-- Command Buttons -->
+            <div class="flex flex-wrap gap-2 mb-3">
+              <button onclick="addLevel4Command('FORWARD')" class="btn-bounce bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm">
+                ⬆️ Tiến 1 bước
+              </button>
+              <button onclick="addLevel4Command('TURN_LEFT')" class="btn-bounce bg-sky-500 hover:bg-sky-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm">
+                ↩️ Quay trái
+              </button>
+              <button onclick="addLevel4Command('TURN_RIGHT')" class="btn-bounce bg-purple-500 hover:bg-purple-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-sm">
+                ↪️ Quay phải
+              </button>
+            </div>
+
+            <!-- Command Queue Display -->
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 min-h-[130px] max-h-[160px] overflow-y-auto mb-3">
+              <div id="l4CommandQueue" class="flex flex-wrap gap-1.5">
+                <!-- Badges -->
+              </div>
+            </div>
+
+            <!-- Program Control Buttons -->
+            <div class="flex gap-2">
+              <button onclick="runLevel4Program()" class="btn-bounce bg-v5green hover:bg-emerald-600 text-white font-extrabold px-4 py-2 rounded-xl text-xs flex-grow shadow-md">
+                ▶ CHẠY CHƯƠNG TRÌNH
+              </button>
+              <button onclick="clearLevel4Commands()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-2 rounded-xl text-xs">
+                🗑️ Xóa hết
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      resetLevel4Robot();
+      renderLevel4Grid();
+    }
+
+    function resetLevel4Robot() {
+      const data = GAME_CONFIG.level4Data;
+      gameState.level4RobotState = { ...data.startPos };
+    }
+
+    function renderLevel4Grid() {
+      const board = document.getElementById('l4GridBoard');
+      if (!board) return;
+
+      const data = GAME_CONFIG.level4Data;
+      const robot = gameState.level4RobotState;
+
+      board.innerHTML = '';
+      for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 5; c++) {
+          const isRobot = (robot.x === c && robot.y === r);
+          const isGoal = (data.goalPos.x === c && data.goalPos.y === r);
+          const obstacle = data.obstacles.find(o => o.x === c && o.y === r);
+
+          let cellContent = '';
+          if (isRobot) {
+            // Robot SVG with direction rotation angle (0: East=0deg, 1: South=90deg, 2: West=180deg, 3: North=270deg)
+            const rot = robot.dir * 90;
+            cellContent = `
+              <div class="w-full h-full flex items-center justify-center transition-all duration-300 transform" style="transform: rotate(${rot}deg)">
+                🤖
+              </div>
+            `;
+          } else if (isGoal) {
+            cellContent = `<div class="text-2xl animate-bounce">🏫</div>`;
+          } else if (obstacle) {
+            cellContent = `<div class="text-lg">${obstacle.label.split(' ')[0]}</div>`;
+          }
+
+          board.innerHTML += `
+            <div class="rounded-lg border border-slate-200 ${isRobot ? 'bg-amber-100 border-amber-400' : isGoal ? 'bg-emerald-100 border-emerald-400' : 'bg-slate-50'} flex items-center justify-center relative">
+              ${cellContent}
+            </div>
+          `;
+        }
+      }
+
+      // Render Program Queue
+      const queueContainer = document.getElementById('l4CommandQueue');
+      if (queueContainer) {
+        if (gameState.level4Commands.length === 0) {
+          queueContainer.innerHTML = `<span class="text-xs text-slate-400 italic">Chưa có lệnh nào. Hãy bấm các nút trên để thêm lệnh!</span>`;
+        } else {
+          queueContainer.innerHTML = gameState.level4Commands.map((cmd, i) => `
+            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${cmd === 'FORWARD' ? 'bg-emerald-100 text-emerald-800' : cmd === 'TURN_LEFT' ? 'bg-sky-100 text-sky-800' : 'bg-purple-100 text-purple-800'}">
+              ${i+1}. ${cmd === 'FORWARD' ? 'Tiến' : cmd === 'TURN_LEFT' ? 'Quay trái' : 'Quay phải'}
+            </span>
+          `).join('');
+        }
+      }
+    }
+
+    function addLevel4Command(cmd) {
+      soundEngine.playSFX('click');
+      gameState.level4Commands.push(cmd);
+      renderLevel4Grid();
+    }
+
+    function clearLevel4Commands() {
+      soundEngine.playSFX('click');
+      gameState.level4Commands = [];
+      resetLevel4Robot();
+      renderLevel4Grid();
+    }
+
+    async function runLevel4Program() {
+      soundEngine.playSFX('click');
+      resetLevel4Robot();
+      renderLevel4Grid();
+
+      const cmds = gameState.level4Commands;
+      const data = GAME_CONFIG.level4Data;
+
+      if (cmds.length === 0) {
+        setBipSpeech("Em chưa thêm lệnh nào vào danh sách kìa!", "thinking");
+        return;
+      }
+
+      setBipSpeech("Bíp đang di chuyển theo lệnh của em nè...", "happy");
+
+      // Direction vectors: 0: East (+x), 1: South (+y), 2: West (-x), 3: North (-y)
+      const dirs = [
+        { dx: 1, dy: 0 },
+        { dx: 0, dy: 1 },
+        { dx: -1, dy: 0 },
+        { dx: 0, dy: -1 }
+      ];
+
+      for (let i = 0; i < cmds.length; i++) {
+        await new Promise(res => setTimeout(res, 500));
+        const cmd = cmds[i];
+
+        if (cmd === 'TURN_LEFT') {
+          gameState.level4RobotState.dir = (gameState.level4RobotState.dir + 3) % 4;
+        } else if (cmd === 'TURN_RIGHT') {
+          gameState.level4RobotState.dir = (gameState.level4RobotState.dir + 1) % 4;
+        } else if (cmd === 'FORWARD') {
+          const curDir = dirs[gameState.level4RobotState.dir];
+          const newX = gameState.level4RobotState.x + curDir.dx;
+          const newY = gameState.level4RobotState.y + curDir.dy;
+
+          // Out of bounds check
+          if (newX < 0 || newX >= 5 || newY < 0 || newY >= 5) {
+            soundEngine.playSFX('wrong');
+            setBipSpeech("Ôi! Bíp bị đụng mép tường rồi. Em hãy chỉnh lại lệnh nhé!", "confused");
+            renderLevel4Grid();
+            return;
+          }
+
+          // Obstacle check
+          const hitObs = data.obstacles.find(o => o.x === newX && o.y === newY);
+          if (hitObs) {
+            soundEngine.playSFX('wrong');
+            setBipSpeech(`Á! Bíp vấp phải ${hitObs.label} rồi. Hãy tránh chướng ngại vật nhé!`, "confused");
+            renderLevel4Grid();
+            return;
+          }
+
+          gameState.level4RobotState.x = newX;
+          gameState.level4RobotState.y = newY;
+        }
+
+        renderLevel4Grid();
+      }
+
+      // Check final arrival at school goal
+      const rob = gameState.level4RobotState;
+      if (rob.x === data.goalPos.x && rob.y === data.goalPos.y) {
+        soundEngine.playSFX('correct');
+        setBipSpeech("HOAN HÔ! Bíp đã đến trường an toàn rồi! Em giỏi quá!", "cheering");
+        document.getElementById('feedbackText').innerHTML = `<span class="text-emerald-600 font-extrabold">🎉 Xuất sắc! Hãy bấm TIẾP TỤC để tổng kết nhé!</span>`;
+        enableNextButton();
+      } else {
+        setBipSpeech("Bíp dừng lại rồi nhưng chưa tới trường. Em bổ sung thêm lệnh nhé!", "thinking");
+      }
+    }
+
+
+    /* ==========================================================================
+       6. GAME FLOW & VERIFICATION ENGINE
+       ========================================================================== */
+    function loadLevel(levelNum) {
+      gameState.currentLevel = levelNum;
+      document.getElementById('currentLevelText').innerText = levelNum;
+      document.getElementById('nextLevelBtn').disabled = true;
+      document.getElementById('nextLevelBtn').classList.add('opacity-50', 'cursor-not-allowed');
+
+      const feedback = document.getElementById('feedbackText');
+      feedback.innerHTML = `<span>💬 Thao tác các yêu cầu phía trên để hoàn thành màn.</span>`;
+
+      if (levelNum === 1) {
+        document.getElementById('levelTitle').innerText = GAME_CONFIG.level1Data.title;
+        setBipSpeech(GAME_CONFIG.level1Data.instruction, "happy");
+        renderLevel1();
+      } else if (levelNum === 2) {
+        document.getElementById('levelTitle').innerText = GAME_CONFIG.level2Data.title;
+        setBipSpeech(GAME_CONFIG.level2Data.instruction, "happy");
+        renderLevel2();
+      } else if (levelNum === 3) {
+        document.getElementById('levelTitle').innerText = GAME_CONFIG.level3Data.title;
+        setBipSpeech(GAME_CONFIG.level3Data.instruction, "happy");
+        renderLevel3();
+      } else if (levelNum === 4) {
+        document.getElementById('levelTitle').innerText = GAME_CONFIG.level4Data.title;
+        setBipSpeech(GAME_CONFIG.level4Data.instruction, "happy");
+        renderLevel4();
+      }
+    }
+
+    function checkCurrentLevel() {
+      const lvl = gameState.currentLevel;
+
+      if (lvl === 1) {
+        const user = gameState.level1UserOrder;
+        const correct = GAME_CONFIG.level1Data.correctOrder;
+
+        if (user.length < 5) {
+          soundEngine.playSFX('wrong');
+          setBipSpeech("Em hãy xếp đủ 5 thẻ công việc trước khi kiểm tra nhé!", "thinking");
+          return;
+        }
+
+        if (JSON.stringify(user) === JSON.stringify(correct)) {
+          completeLevelSuccess("Giỏi lắm! Em đã sắp xếp đúng trình tự thời gian buổi sáng rồi!");
+        } else {
+          soundEngine.playSFX('wrong');
+          setBipSpeech("Trình tự chưa chính xác lắm. Thức dậy ➔ Vệ sinh ➔ Ăn sáng ➔ Đi giày ➔ Đến trường em nhé!", "confused");
+        }
+      } else if (lvl === 2) {
+        const user = gameState.level2UserOrder;
+        const correct = GAME_CONFIG.level2Data.correctOrder;
+
+        if (user.length < 4) {
+          soundEngine.playSFX('wrong');
+          setBipSpeech("Em chọn đủ 4 bước vẽ nhà theo thứ tự nhé!", "thinking");
+          return;
+        }
+
+        if (JSON.stringify(user) === JSON.stringify(correct)) {
+          completeLevelSuccess("Tuyệt vời! Bức tranh vẽ ngôi nhà đã hoàn thiện đúng từng bước!");
+        } else {
+          soundEngine.playSFX('wrong');
+          setBipSpeech("Chưa đúng lắm! Bắt đầu vẽ khung ➔ mái nhà ➔ cửa ➔ tô màu trang trí nhé!", "confused");
+        }
+      } else if (lvl === 3) {
+        const user = gameState.level3UserOrder;
+        const correct = GAME_CONFIG.level3Data.correctOrder;
+
+        if (user.length < 5 || user.includes(null)) {
+          soundEngine.playSFX('wrong');
+          setBipSpeech("Em chọn đủ công việc cho cả 5 bước nhé!", "thinking");
+          return;
+        }
+
+        if (JSON.stringify(user) === JSON.stringify(correct)) {
+          completeLevelSuccess("Chính xác! Em đã chia công việc Đánh răng thành 5 bước rất chuẩn!");
+        } else {
+          soundEngine.playSFX('wrong');
+          setBipSpeech("Em hãy suy nghĩ kỹ thứ tự từng bước nhỏ khi đánh răng nhé!", "confused");
+        }
+      } else if (lvl === 4) {
+        // Level 4 handles completion directly inside runLevel4Program()
+        runLevel4Program();
+      }
+    }
+
+    function completeLevelSuccess(praiseText) {
+      soundEngine.playSFX('clear');
+      setBipSpeech(praiseText, "cheering");
+
+      // Add score (only once per level)
+      if (gameState.levelScores[gameState.currentLevel - 1] === 0) {
+        gameState.levelScores[gameState.currentLevel - 1] = GAME_CONFIG.pointsPerLevel;
+        gameState.score += GAME_CONFIG.pointsPerLevel;
+        document.getElementById('scoreText').innerText = gameState.score;
+      }
+
+      document.getElementById('feedbackText').innerHTML = `<span class="text-emerald-600 font-extrabold">✨ Hoàn thành Màn ${gameState.currentLevel}! (+25 điểm)</span>`;
+      enableNextButton();
+    }
+
+    function enableNextButton() {
+      const btn = document.getElementById('nextLevelBtn');
+      btn.disabled = false;
+      btn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+
+    function goToNextLevel() {
+      soundEngine.playSFX('click');
+      if (gameState.currentLevel < GAME_CONFIG.totalLevels) {
+        loadLevel(gameState.currentLevel + 1);
+      } else {
+        finishGameAndShowSummary();
+      }
+    }
+
+    function resetCurrentLevel() {
+      soundEngine.playSFX('click');
+      if (gameState.currentLevel === 1) gameState.level1UserOrder = [];
+      if (gameState.currentLevel === 2) gameState.level2UserOrder = [];
+      if (gameState.currentLevel === 3) gameState.level3UserOrder = [];
+      if (gameState.currentLevel === 4) clearLevel4Commands();
+      loadLevel(gameState.currentLevel);
+    }
+
+    /* ==========================================================================
+       7. CERTIFICATE & GAME SUMMARY GENERATOR
+       ========================================================================== */
+    function finishGameAndShowSummary() {
+      gameState.endTime = new Date();
+      soundEngine.playSFX('win');
+
+      const elapsedSec = Math.floor((gameState.endTime - gameState.startTime) / 1000);
+      const mins = String(Math.floor(elapsedSec / 60)).padStart(2, '0');
+      const secs = String(elapsedSec % 60).padStart(2, '0');
+
+      document.getElementById('certScoreText').innerText = `${gameState.score}/100`;
+      document.getElementById('certTimeText').innerText = `${mins}:${secs}`;
+
+      if (gameState.score >= 100) {
+        document.getElementById('certRankText').innerText = "Xuất Sắc 🌟";
+        document.getElementById('certCommentText').innerText = "Em nắm rất vững kiến thức về tuần tự công việc và chia việc lớn thành việc nhỏ!";
+      } else {
+        document.getElementById('certRankText').innerText = "Hoàn Thành 🎯";
+        document.getElementById('certCommentText').innerText = "Em đã làm rất tốt! Hãy thử lại để đạt 100 điểm tuyệt đối nhé!";
+      }
+
+      document.getElementById('certificateModal').classList.remove('hidden');
+    }
+
+    function downloadCertificate() {
+      const canvas = document.getElementById('certCanvas');
+      const ctx = canvas.getContext('2d');
+
+      // Background Gradient
+      const grad = ctx.createLinearGradient(0, 0, 800, 600);
+      grad.addColorStop(0, '#FFF8E9');
+      grad.addColorStop(1, '#E8F5E9');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 800, 600);
+
+      // Border Frame
+      ctx.strokeStyle = '#53B77A';
+      ctx.lineWidth = 12;
+      ctx.strokeRect(20, 20, 760, 560);
+      ctx.strokeStyle = '#FFC65C';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(32, 32, 736, 536);
+
+      // Texts
+      ctx.fillStyle = '#065F46';
+      ctx.font = 'bold 36px Nunito, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('BẰNG KHEN THÀNH TÍCH TIN HỌC 3', 400, 100);
+
+      ctx.fillStyle = '#047857';
+      ctx.font = 'bold 22px Nunito, sans-serif';
+      ctx.fillText('Trò chơi: RÔ-BỐT THEO TỪNG BƯỚC', 400, 150);
+
+      ctx.fillStyle = '#1E293B';
+      ctx.font = '20px Nunito, sans-serif';
+      ctx.fillText(`Tổng điểm hoàn thành: ${gameState.score}/100 điểm`, 400, 230);
+      ctx.fillText(`Thời gian thực hiện: ${document.getElementById('certTimeText').innerText}`, 400, 270);
+
+      ctx.fillStyle = '#7766B7';
+      ctx.font = 'italic bold 20px Nunito, sans-serif';
+      ctx.fillText(document.getElementById('certCommentText').innerText, 400, 360);
+
+      ctx.fillStyle = '#059669';
+      ctx.font = 'bold 18px Nunito, sans-serif';
+      ctx.fillText('Rô-bốt Bíp tuyên dương thành tích học tập xuất sắc của em!', 400, 480);
+
+      // Export file
+      const link = document.createElement('a');
+      link.download = 'BangKhen_RobotTheoTungBuoc.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    /* ==========================================================================
+       8. MODALS & CONTROLS UI
+       ========================================================================== */
+    function showWelcomeModal() {
+      document.getElementById('welcomeModal').classList.remove('hidden');
+    }
+
+    function startGame() {
+      soundEngine.initCtx();
+      soundEngine.startBGM();
+
+      const modeRadios = document.getElementsByName('gameMode');
+      for (let r of modeRadios) {
+        if (r.checked) gameState.mode = r.value;
+      }
+
+      document.getElementById('modeBadge').innerText = `Chế độ: ${gameState.mode === 'practice' ? 'Luyện tập' : 'Thử thách'}`;
+      document.getElementById('welcomeModal').classList.add('hidden');
+
+      gameState.score = 0;
+      gameState.levelScores = [0, 0, 0, 0];
+      gameState.startTime = new Date();
+      document.getElementById('scoreText').innerText = 0;
+
+      loadLevel(1);
+    }
+
+    function restartGame() {
+      document.getElementById('certificateModal').classList.add('hidden');
+      showWelcomeModal();
+    }
+
+    function showInstructionsModal() {
+      document.getElementById('instructionsModal').classList.remove('hidden');
+    }
+
+    function closeInstructionsModal() {
+      document.getElementById('instructionsModal').classList.add('hidden');
+    }
+
+    function showHintModal() {
+      soundEngine.playSFX('click');
+      const text = GAME_CONFIG[`level${gameState.currentLevel}Data`].hint;
+      document.getElementById('hintContentText').innerText = text;
+      document.getElementById('hintModal').classList.remove('hidden');
+    }
+
+    function closeHintModal() {
+      document.getElementById('hintModal').classList.add('hidden');
+    }
+
+    function toggleBGM() {
+      soundEngine.bgmEnabled = !soundEngine.bgmEnabled;
+      document.getElementById('bgmText').innerText = `Nhạc: ${soundEngine.bgmEnabled ? 'BẬT' : 'TẮT'}`;
+      if (soundEngine.bgmEnabled) soundEngine.startBGM();
+      else soundEngine.stopBGM();
+    }
+
+    function toggleSFX() {
+      soundEngine.sfxEnabled = !soundEngine.sfxEnabled;
+      document.getElementById('sfxText').innerText = `Hiệu ứng: ${soundEngine.sfxEnabled ? 'BẬT' : 'TẮT'}`;
+    }
+
+    // Initialize initial Mascot rendering
+    window.onload = function() {
+      renderBipMascot('happy');
+    };
+  </script>
+</body>
+</html>

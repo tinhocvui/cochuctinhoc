@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RẼ NHÁNH THÔNG MINH - TIN HỌC 3 - BÀI 15</title>
+  <style>
+    /* ==========================================================================
+       BẢNG MÀU THIẾT KẾ V5 (PASTEL PALETTE) & CSS CUSTOM PROPERTIES
+       ========================================================================== */
+    :root {
+      --bg-cream: #FFF8E9;
+      --primary-coral: #EF7469;
+      --primary-green: #53B77A;
+      --primary-purple: #7766B7;
+      --primary-yellow: #FFC65C;
+      --accent-blue: #4A90E2;
+      --text-dark: #2D3748;
+      --text-muted: #718096;
+      --white: #FFFFFF;
+      --shadow-soft: 0 8px 24px rgba(119, 102, 183, 0.12);
+      --shadow-hover: 0 12px 28px rgba(119, 102, 183, 0.22);
+      --radius-sm: 12px;
+      --radius-md: 20px;
+      --radius-lg: 30px;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-cream);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      overflow-x: hidden;
+    }
+
+    /* Container chính chuẩn 16:9 responsive */
+    #game-container {
+      width: 100%;
+      max-width: 1024px;
+      min-height: 640px;
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      border: 4px solid #F3EAD3;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ==========================================================================
+       HEADER & THANH ĐIỀU HƯỚNG
+       ========================================================================== */
+    header {
+      background: linear-gradient(135deg, #FFFDF7, #FBF4E2);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #F0E6D2;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .header-title-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary-yellow);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+
+    .game-title-text {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary-purple);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .lesson-subtext {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .stat-pill {
+      background: var(--white);
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 2px solid #E2D9C5;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    .audio-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #E2D9C5;
+      background: var(--white);
+      color: var(--text-dark);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .btn-icon:hover {
+      transform: translateY(-2px);
+      background: var(--bg-cream);
+      border-color: var(--primary-purple);
+    }
+
+    .btn-icon.muted {
+      opacity: 0.5;
+      background: #EDF2F7;
+    }
+
+    /* ==========================================================================
+       KHU VỰC KHUYẾN NGHỊ / LINH VẬT BÍP & THÔNG BÁO
+       ========================================================================== */
+    .mascot-banner {
+      background: linear-gradient(90deg, #EBF8FF, #F3E8FF);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      border-bottom: 2px dashed #E2D9C5;
+    }
+
+    .mascot-avatar {
+      width: 60px;
+      height: 60px;
+      flex-shrink: 0;
+    }
+
+    .speech-bubble {
+      background: var(--white);
+      padding: 10px 16px;
+      border-radius: 16px;
+      border-top-left-radius: 2px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      flex-grow: 1;
+      position: relative;
+    }
+
+    /* ==========================================================================
+       MAN HÌNH CHÍNH & CÁC MÀN CHƠI
+       ========================================================================== */
+    main {
+      flex-grow: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Màn Welcome */
+    .welcome-box {
+      text-align: center;
+      margin: auto;
+      max-width: 650px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .welcome-hero-svg {
+      width: 200px;
+      height: 180px;
+      filter: drop-shadow(0 8px 16px rgba(119,102,183,0.2));
+    }
+
+    .btn-main {
+      background: linear-gradient(135deg, var(--primary-coral), #E05347);
+      color: var(--white);
+      font-size: 1.25rem;
+      font-weight: 800;
+      padding: 14px 40px;
+      border: none;
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(239, 116, 105, 0.4);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-main:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 24px rgba(239, 116, 105, 0.5);
+    }
+
+    .btn-secondary {
+      background: var(--white);
+      color: var(--primary-purple);
+      border: 2px solid var(--primary-purple);
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 10px 24px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #F3E8FF;
+      transform: translateY(-2px);
+    }
+
+    .mode-selector {
+      display: flex;
+      gap: 12px;
+      background: #F0E6D2;
+      padding: 4px;
+      border-radius: 999px;
+      margin-top: 5px;
+    }
+
+    .mode-btn {
+      padding: 8px 20px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+      background: var(--white);
+      color: var(--primary-purple);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    /* ==========================================================================
+       LAYOUT CÁC MÀN TƯƠNG TÁC
+       ========================================================================== */
+    .stage-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      flex-grow: 1;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .stage-content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .interactive-card {
+      background: #FAFAFA;
+      border: 2px solid #EAEAEA;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
+    }
+
+    /* Màn 1: Weather Choices */
+    .option-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .option-card {
+      background: var(--white);
+      border: 2px solid #E2E8F0;
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+
+    .option-card:hover {
+      border-color: var(--primary-purple);
+      background: #F9F5FF;
+      transform: translateX(4px);
+    }
+
+    .option-card.selected-correct {
+      background: #E6FFFA;
+      border-color: var(--primary-green);
+      color: #234E52;
+    }
+
+    .option-card.selected-wrong {
+      background: #FFF5F5;
+      border-color: var(--primary-coral);
+      color: #742A2A;
+    }
+
+    /* Màn 3: Drag & Connect Cards */
+    .match-column {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .match-item {
+      padding: 12px;
+      background: var(--white);
+      border: 2px solid #CBD5E0;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .match-item.selected {
+      border-color: var(--primary-purple);
+      background: #F3E8FF;
+      box-shadow: 0 0 0 3px rgba(119, 102, 183, 0.2);
+    }
+
+    .match-item.matched {
+      background: #EDFDFD;
+      border-color: var(--primary-green);
+      cursor: default;
+      opacity: 0.8;
+    }
+
+    /* Màn 4: Logic Builder */
+    .logic-builder-box {
+      background: var(--white);
+      border: 2px solid #E2E8F0;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .logic-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .logic-keyword {
+      background: var(--primary-purple);
+      color: var(--white);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .logic-select {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 2px solid #CBD5E0;
+      font-weight: 700;
+      font-family: inherit;
+      background: #FFF8E9;
+      cursor: pointer;
+    }
+
+    /* ==========================================================================
+       ACTION FOOTER BAR (GỢI Ý, LÀM LAI, TIẾP TỤC)
+       ========================================================================== */
+    .action-footer {
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 2px solid #F0E6D2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-action {
+      background: var(--white);
+      border: 2px solid #CBD5E0;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: #EDF2F7;
+      border-color: var(--text-dark);
+    }
+
+    .btn-next {
+      background: var(--primary-green);
+      color: var(--white);
+      border: none;
+      padding: 10px 24px;
+      border-radius: var(--radius-md);
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(83, 183, 122, 0.3);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-next:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(83, 183, 122, 0.4);
+    }
+
+    .btn-next:disabled {
+      background: #CBD5E0;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Modal Gợi ý & Hướng dẫn */
+    .modal-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(45, 55, 72, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .modal-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      max-width: 500px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--primary-purple);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Summary Badges */
+    .badge-grid {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+
+    .badge-item {
+      background: #FFFDF7;
+      border: 2px solid var(--primary-yellow);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      width: 130px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .badge-item-icon {
+      font-size: 2rem;
+      margin-bottom: 4px;
+    }
+
+    .badge-item-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--text-dark);
+    }
+
+    /* Particle Canvas */
+    #confetti-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 90;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- HEADER QUẢN LÝ TỔNG THỂ -->
+    <header>
+      <div class="header-title-box">
+        <div class="badge-icon">🤖</div>
+        <div>
+          <div class="game-title-text" id="ui-game-title">RẼ NHÁNH THÔNG MINH</div>
+          <div class="lesson-subtext" id="ui-lesson-subtitle">Tin học 3 - Bài 15: Công việc được thực hiện theo điều kiện</div>
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <div class="stat-pill">
+          <span>🚩 Màn:</span>
+          <span id="ui-stage-progress" style="color: var(--primary-purple);">1/4</span>
+        </div>
+
+        <div class="stat-pill">
+          <span>⭐ Điểm:</span>
+          <span id="ui-score" style="color: var(--primary-coral);">0</span>
+        </div>
+
+        <div class="audio-controls">
+          <button class="btn-icon" id="btn-toggle-bgm" title="Tắt/Bật Nhạc nền">🎵</button>
+          <button class="btn-icon" id="btn-toggle-sfx" title="Tắt/Bật Âm hiệu ứng">🔊</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- LINH VẬT BÍP HƯỚNG DẪN & BONG BÓNG HỘI THOẠI -->
+    <div class="mascot-banner">
+      <div class="mascot-avatar" id="mascot-svg-box">
+        <!-- SVG Bíp linh hoạt sẽ inject từ JS -->
+      </div>
+      <div class="speech-bubble" id="mascot-speech">
+        Chào bạn! Mình là Rô-bốt Bíp. Hãy cùng mình khám phá cách đưa ra quyết định thông minh theo điều kiện nhé!
+      </div>
+    </div>
+
+    <!-- KHU VỰC NỘI DUNG CHÍNH (CÁC MÀN CHƠI) -->
+    <main>
+
+      <!-- MÀN 0: CHÀO MỪNG / BẮT ĐẦU -->
+      <section class="screen active" id="screen-welcome">
+        <div class="welcome-box">
+          <div class="welcome-hero-svg">
+            <svg viewBox="0 0 200 180" width="100%" height="100%">
+              <circle cx="100" cy="100" r="70" fill="#F3E8FF"/>
+              <rect x="60" y="50" width="80" height="70" rx="16" fill="#7766B7"/>
+              <circle cx="80" cy="80" r="10" fill="#FFF"/>
+              <circle cx="120" cy="80" r="10" fill="#FFF"/>
+              <circle cx="80" cy="80" r="4" fill="#2D3748"/>
+              <circle cx="120" cy="80" r="4" fill="#2D3748"/>
+              <path d="M 85 105 Q 100 115 115 105" stroke="#FFF" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <line x1="100" y1="50" x2="100" y2="30" stroke="#7766B7" stroke-width="6"/>
+              <circle cx="100" cy="25" r="8" fill="#FFC65C"/>
+            </svg>
+          </div>
+          <div>
+            <h1 style="color: var(--primary-purple); font-size: 1.8rem; margin-bottom: 8px;">TRÒ CHƠI: RẼ NHÁNH THÔNG MINH</h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Học cách diễn đạt ý tưởng dạng: <b>NẾU [Điều kiện] THÌ [Hành động]</b></p>
+          </div>
+
+          <div class="mode-selector">
+            <button class="mode-btn active" id="mode-practice">🟢 Luyện Tập (Có gợi ý)</button>
+            <button class="mode-btn" id="mode-challenge">🔴 Thử Thách</button>
+          </div>
+
+          <div style="display: flex; gap: 12px; margin-top: 10px;">
+            <button class="btn-main" id="btn-start-game">🚀 BẮT ĐẦU CHƠI</button>
+            <button class="btn-secondary" id="btn-open-guide">📖 Hướng Dẫn</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MÀN 1: TRỜI MƯA HAY NẮNG? -->
+      <section class="screen" id="screen-stage1">
+        <h2 style="font-size: 1.1rem; color: var(--primary-purple); margin-bottom: 10px;">Màn 1: TRỜI MƯA HAY NẮNG? (Điều kiện thời tiết)</h2>
+        <div class="stage-content">
+          <div class="interactive-card" id="s1-visual-box">
+            <!-- Dynamic SVG Weather Visual -->
+          </div>
+          <div class="option-group" id="s1-options-box">
+            <!-- Options injected dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- MÀN 2: ĐÈN TÍN HIỆU GIAO THÔNG -->
+      <section class="screen" id="screen-stage2">
+        <h2 style="font-size: 1.1rem; color: var(--primary-purple); margin-bottom: 10px;">Màn 2: ĐÈN TÍN HIỆU GIAO THÔNG (Ngã tư thông minh)</h2>
+        <div class="stage-content">
+          <div class="interactive-card" id="s2-visual-box">
+            <!-- Dynamic SVG Traffic Intersection Visual -->
+          </div>
+          <div class="option-group" id="s2-options-box">
+            <!-- Options injected dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- MÀN 3: GHÉP CẤU TRÚC NẾU... THÌ... -->
+      <section class="screen" id="screen-stage3">
+        <h2 style="font-size: 1.1rem; color: var(--primary-purple); margin-bottom: 10px;">Màn 3: GHÉP CẤU TRÚC NẾU... THÌ...</h2>
+        <div class="stage-content" style="grid-template-columns: 1fr 1fr;">
+          <div>
+            <p style="font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; color: var(--primary-purple);">1. Chọn thẻ ĐIỀU KIỆN (NẾU...)</p>
+            <div class="match-column" id="s3-cond-col"></div>
+          </div>
+          <div>
+            <p style="font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; color: var(--primary-green);">2. Chọn thẻ HÀNH ĐỘNG tương ứng (THÌ...)</p>
+            <div class="match-column" id="s3-act-col"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MÀN 4: RÔ-BỐT CHỌN ĐƯỜNG (RẼ NHÁNH SỐ) -->
+      <section class="screen" id="screen-stage4">
+        <h2 style="font-size: 1.1rem; color: var(--primary-purple); margin-bottom: 10px;">Màn 4: LẬP TRÌNH BÍP CHỌN ĐƯỜNG</h2>
+        <div class="stage-content">
+          <div class="interactive-card" id="s4-visual-box">
+            <!-- Grid Map Visual -->
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+            <div class="logic-builder-box">
+              <p style="font-weight: 800; font-size: 0.95rem; color: var(--primary-purple);">THIẾT LẬP KHỐI LỆNH RẼ NHÁNH:</p>
+              <div class="logic-row">
+                <span class="logic-keyword">NẾU</span>
+                <select class="logic-select" id="s4-cond-select">
+                  <option value="obstacle">Phía trước có vật cản</option>
+                  <option value="clear">Phía trước trống trải</option>
+                </select>
+              </div>
+              <div class="logic-row">
+                <span class="logic-keyword" style="background: var(--primary-green);">THÌ</span>
+                <select class="logic-select" id="s4-act1-select">
+                  <option value="left">Rẽ trái sang đường vòng</option>
+                  <option value="straight">Đi thẳng tiếp tục</option>
+                </select>
+              </div>
+              <div class="logic-row">
+                <span class="logic-keyword" style="background: var(--primary-coral);">NẾU KHÔNG THÌ</span>
+                <select class="logic-select" id="s4-act2-select">
+                  <option value="straight">Đi thẳng tiếp tục</option>
+                  <option value="left">Rẽ trái sang đường vòng</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-main" id="s4-btn-run" style="font-size: 1rem; padding: 10px 20px; width: 100%; justify-content: center;">
+                ▶ CHẠY THỬ MÔ PHỎNG
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MÀN 5: TỔNG KẾT & HUY HIỆU -->
+      <section class="screen" id="screen-summary">
+        <div class="welcome-box">
+          <h2 style="color: var(--primary-green); font-size: 1.8rem;">🎉 HOÀN THÀNH XUẤT SẮC! 🎉</h2>
+          <p style="font-weight: 700; font-size: 1.1rem;">Tổng điểm của bạn: <span id="summary-score" style="color: var(--primary-coral); font-size: 1.5rem;">100</span> / 100</p>
+
+          <div class="badge-grid" id="summary-badges-box">
+            <!-- Badges injected -->
+          </div>
+
+          <div style="background: #F7FAFC; padding: 14px; border-radius: var(--radius-sm); text-align: left; font-size: 0.9rem; line-height: 1.5; border: 1px solid #E2E8F0;">
+            <b>📝 Nhận xét đánh giá kiến thức:</b>
+            <ul style="margin-left: 20px; margin-top: 5px;" id="summary-notes">
+              <li>Em đã hiểu rõ khái niệm công việc thực hiện theo điều kiện.</li>
+              <li>Sử dụng thành thạo cấu trúc cấu trúc "NẾU... THÌ...".</li>
+              <li>Áp dụng linh hoạt logic rẽ nhánh để giải quyết tình huống thực tế và lập trình.</li>
+            </ul>
+          </div>
+
+          <button class="btn-main" id="btn-restart-game">🔄 CHƠI LAI TỪ ĐẦU</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FOOTER CHỨC NĂNG DÙNG CHUNG CHO MÀN CHƠI -->
+    <div class="action-footer" id="game-action-footer" style="display: none;">
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-action" id="btn-hint">💡 Gợi ý</button>
+        <button class="btn-action" id="btn-reset-stage">🔄 Làm lại</button>
+        <button class="btn-action" id="btn-go-home">🏠 Trang chủ</button>
+      </div>
+      <button class="btn-next" id="btn-next-stage" disabled>
+        TIẾP TỤC ➔
+      </button>
+    </div>
+
+    <!-- MODAL HUỚNG DẪN / GỢI Ý -->
+    <div class="modal-overlay" id="modal-box">
+      <div class="modal-card">
+        <div class="modal-title" id="modal-title">💡 GỢI Ý TỪ BÍP</div>
+        <div id="modal-content" style="font-size: 0.95rem; line-height: 1.6; color: var(--text-dark); margin-bottom: 20px;">
+          Nội dung gợi ý...
+        </div>
+        <button class="btn-main" id="modal-btn-close" style="font-size: 0.95rem; padding: 8px 20px; width: 100%; justify-content: center;">Đã hiểu rồi!</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* ==========================================================================
+       CONFIG CẤU HÌNH TRÒ CHƠI (EASY EDITING FOR TEACHERS)
+       ========================================================================== */
+    const GAME_CONFIG = {
+      title: "RẼ NHÁNH THÔNG MINH",
+      lesson: "Tin học 3 - Bài 15: Công việc được thực hiện theo điều kiện",
+      totalStages: 4,
+      pointsPerStage: 25,
+      
+      // Dữ liệu Màn 1
+      stage1: {
+        scenarios: [
+          {
+            id: "rain",
+            weatherName: "Mưa lớn",
+            desc: "Trời đang đổ mưa rất to và mây đen xám xịt...",
+            svgType: "rain",
+            options: [
+              { text: "NẾU trời mưa lớn THÌ mang ô và mặc áo mưa.", correct: true },
+              { text: "NẾU trời mưa lớn THÌ đội mũ rộng vành chống nắng.", correct: false },
+              { text: "NẾU trời mưa lớn THÌ bật quạt máy.", correct: false }
+            ],
+            explanation: "Đúng rồi! Khi trời mưa lớn, chúng ta cần mang ô hoặc mặc áo mưa để không bị ướt!"
+          },
+          {
+            id: "sun",
+            weatherName: "Nắng gắt",
+            desc: "Trời nắng chói chang, nhiệt độ lên cao...",
+            svgType: "sun",
+            options: [
+              { text: "NẾU trời nắng gắt THÌ mang áo mưa giấy.", correct: false },
+              { text: "NẾU trời nắng gắt THÌ đội mũ rộng vành và đeo kính mát.", correct: true },
+              { text: "NẾU trời nắng gắt THÌ đốt lửa sưởi ấm.", correct: false }
+            ],
+            explanation: "Chính xác! Đội mũ rộng vành giúp em bảo vệ đầu và mắt dưới trời nắng gắt."
+          },
+          {
+            id: "wind",
+            weatherName: "Gió lạnh",
+            desc: "Gió mùa đông bắc thổi mạnh và trời trở lạnh...",
+            svgType: "wind",
+            options: [
+              { text: "NẾU trời gió lạnh THÌ mặc áo khoác ấm và quàng khăn.", correct: true },
+              { text: "NẾU trời gió lạnh THÌ ăn kem lạnh.", correct: false },
+              { text: "NẾU trời gió lạnh THÌ đi bơi ngoài trời.", correct: false }
+            ],
+            explanation: "Tốt lắm! Mặc áo khoác ấm giúp cơ thể em giữ nhiệt khi trời gió lạnh."
+          }
+        ]
+      },
+
+      // Dữ liệu Màn 2
+      stage2: {
+        scenarios: [
+          {
+            light: "red",
+            lightName: "Đèn Đỏ",
+            desc: "Đèn giao thông chuyển sang màu ĐỎ...",
+            options: [
+              { text: "NẾU đèn đỏ THÌ dừng lại trước vạch kẻ đường.", correct: true },
+              { text: "NẾU đèn đỏ THÌ tăng tốc chạy thật nhanh qua.", correct: false },
+              { text: "NẾU đèn đỏ THÌ bấm còi liên tục.", correct: false }
+            ],
+            explanation: "Chính xác! Đèn đỏ bắt buộc tất cả phương tiện và người đi bộ phải dừng lại."
+          },
+          {
+            light: "green",
+            lightName: "Đèn Xanh",
+            desc: "Đèn giao thông chuyển sang màu XANH...",
+            options: [
+              { text: "NẾU đèn xanh THÌ dừng lại quan sát 15 phút.", correct: false },
+              { text: "NẾU đèn xanh THÌ quan sát an toàn và đi qua đường.", correct: true },
+              { text: "NẾU đèn xanh THÌ quay đầu đi ngược chiều.", correct: false }
+            ],
+            explanation: "Đúng rồi! Đèn xanh cho phép em di chuyển an toàn qua đường."
+          },
+          {
+            light: "yellow",
+            lightName: "Đèn Vàng",
+            desc: "Đèn giao thông chuyển sang màu VÀNG...",
+            options: [
+              { text: "NẾU đèn vàng THÌ đi chậm lại và dừng lại an toàn.", correct: true },
+              { text: "NẾU đèn vàng THÌ nhảy múa giữa ngã tư.", correct: false },
+              { text: "NẾU đèn vàng THÌ nhắm mắt đi tiếp.", correct: false }
+            ],
+            explanation: "Tuyệt vời! Đèn vàng báo hiệu chuẩn bị đèn đỏ, em cần giảm tốc độ và dừng lại."
+          }
+        ]
+      },
+
+      // Dữ liệu Màn 3
+      stage3: {
+        pairs: [
+          {
+            id: 1,
+            cond: "NẾU gặp chướng ngại vật",
+            act: "THÌ rẽ sang hướng khác",
+            explain: "Trong đời sống & tin học: Khi phát hiện vật cản, rô-bốt sẽ chọn hướng đi khác!"
+          },
+          {
+            id: 2,
+            cond: "NẾU nháy đúp chuột vào biểu tượng phần mềm",
+            act: "THÌ phần mềm đó sẽ mở ra",
+            explain: "Thao tác máy tính: Điều kiện là nháy đúp chuột, kết quả là mở phần mềm."
+          },
+          {
+            id: 3,
+            cond: "NẾU máy tính báo pin yếu",
+            act: "THÌ cắm dây sạc điện vào máy",
+            explain: "Xử lý thiết bị: Cắm sạc kịp thời khi phát hiện điều kiện pin yếu."
+          }
+        ]
+      },
+
+      // Dữ liệu Màn 4
+      stage4: {
+        testCases: [
+          {
+            id: 1,
+            hasObstacle: true,
+            desc: "Thử nghiệm 1: Phía trước có HÒN ĐÁ LỚN 🪨"
+          },
+          {
+            id: 2,
+            hasObstacle: false,
+            desc: "Thử nghiệm 2: Đường đi TRỐNG TRẢI 🛣️"
+          },
+          {
+            id: 3,
+            hasObstacle: true,
+            desc: "Thử nghiệm 3: Phía trước có BIỂN CẢN 🚧"
+          }
+        ]
+      }
+    };
+
+    /* ==========================================================================
+       WEB AUDIO API SYNTHESIZER (NGUYÊN GỐC - KHÔNG TTS - KHÔNG FILE MẠNG)
+       ========================================================================== */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.isBGMOn = true;
+        this.isSFXOn = true;
+        this.bgmTimer = null;
+        this.step = 0;
+      }
+
+      init() {
+        if (!this.ctx) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playTone(freq, type, duration, gainVal = 0.1) {
+        if (!this.isSFXOn || !this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {}
+      }
+
+      playSFX(type) {
+        this.init();
+        if (!this.isSFXOn) return;
+
+        if (type === 'click') {
+          this.playTone(400, 'sine', 0.08, 0.05);
+        } else if (type === 'correct') {
+          this.playTone(523.25, 'triangle', 0.15, 0.1); // C5
+          setTimeout(() => this.playTone(659.25, 'triangle', 0.2, 0.1), 100); // E5
+        } else if (type === 'wrong') {
+          this.playTone(220, 'sawtooth', 0.25, 0.08); // A3
+        } else if (type === 'win') {
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((n, idx) => {
+            setTimeout(() => this.playTone(n, 'sine', 0.25, 0.1), idx * 120);
+          });
+        }
+      }
+
+      startBGM() {
+        this.init();
+        if (this.bgmTimer) clearInterval(this.bgmTimer);
+        if (!this.isBGMOn) return;
+
+        // Vòng lặp giai điệu nhẹ nhàng êm ái
+        const bgmNotes = [261.63, 329.63, 392.00, 523.25, 440.00, 349.23];
+        this.bgmTimer = setInterval(() => {
+          if (!this.isBGMOn || !this.ctx) return;
+          try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(bgmNotes[this.step % bgmNotes.length], this.ctx.currentTime);
+            gain.gain.setValueAtTime(0.02, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.6);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.6);
+            this.step++;
+          } catch(e){}
+        }, 600);
+      }
+
+      stopBGM() {
+        if (this.bgmTimer) {
+          clearInterval(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    /* ==========================================================================
+       SVG MASCOT & GRAPHICS GENERATOR
+       ========================================================================== */
+    function getBipMascotSVG(expression = 'normal') {
+      let mouth = '<path d="M 18 28 Q 25 34 32 28" stroke="#FFF" stroke-width="3" fill="none"/>';
+      let eyeLeft = '<circle cx="17" cy="20" r="3" fill="#2D3748"/>';
+      let eyeRight = '<circle cx="33" cy="20" r="3" fill="#2D3748"/>';
+
+      if (expression === 'happy') {
+        mouth = '<path d="M 16 26 Q 25 38 34 26" stroke="#FFF" stroke-width="3" fill="#FFC65C"/>';
+        eyeLeft = '<path d="M 14 20 Q 17 16 20 20" stroke="#2D3748" stroke-width="2" fill="none"/>';
+        eyeRight = '<path d="M 30 20 Q 33 16 36 20" stroke="#2D3748" stroke-width="2" fill="none"/>';
+      } else if (expression === 'thinking') {
+        mouth = '<circle cx="25" cy="28" r="3" fill="#FFF"/>';
+        eyeLeft = '<circle cx="17" cy="18" r="3" fill="#2D3748"/>';
+        eyeRight = '<circle cx="33" cy="18" r="4" fill="#2D3748"/>';
+      }
+
+      return `
+        <svg viewBox="0 0 50 50" width="100%" height="100%">
+          <rect x="10" y="10" width="30" height="26" rx="8" fill="#7766B7"/>
+          <rect x="13" y="13" width="24" height="20" rx="5" fill="#53B77A"/>
+          <circle cx="17" cy="20" r="5" fill="#FFF"/>
+          <circle cx="33" cy="20" r="5" fill="#FFF"/>
+          ${eyeLeft}
+          ${eyeRight}
+          ${mouth}
+          <line x1="25" y1="10" x2="25" y2="3" stroke="#7766B7" stroke-width="3"/>
+          <circle cx="25" cy="3" r="3" fill="#FFC65C"/>
+        </svg>
+      `;
+    }
+
+    /* ==========================================================================
+       QUẢN LÝ TRẠNG THÁI GAME & TƯƠNG TÁC LOGIC
+       ========================================================================== */
+    class GameController {
+      constructor() {
+        this.currentStage = 0; // 0 = welcome, 1..4 = stages, 5 = summary
+        this.score = 0;
+        this.isChallengeMode = false;
+        this.completedStages = [false, false, false, false];
+        
+        // Stage sub-index state
+        this.s1Index = 0;
+        this.s2Index = 0;
+        this.s3MatchedCount = 0;
+        this.s3SelectedCond = null;
+        this.s4TestCount = 0;
+
+        this.initUI();
+      }
+
+      initUI() {
+        // Elements
+        this.mascotBox = document.getElementById('mascot-svg-box');
+        this.speechBox = document.getElementById('mascot-speech');
+        this.scoreBox = document.getElementById('ui-score');
+        this.progressBox = document.getElementById('ui-stage-progress');
+        this.actionFooter = document.getElementById('game-action-footer');
+        this.btnNext = document.getElementById('btn-next-stage');
+
+        // Audio buttons
+        document.getElementById('btn-toggle-bgm').onclick = () => {
+          sound.isBGMOn = !sound.isBGMOn;
+          document.getElementById('btn-toggle-bgm').classList.toggle('muted', !sound.isBGMOn);
+          if (sound.isBGMOn) sound.startBGM(); else sound.stopBGM();
+        };
+
+        document.getElementById('btn-toggle-sfx').onclick = () => {
+          sound.isSFXOn = !sound.isSFXOn;
+          document.getElementById('btn-toggle-sfx').classList.toggle('muted', !sound.isSFXOn);
+        };
+
+        // Welcome screen buttons
+        document.getElementById('btn-start-game').onclick = () => {
+          sound.startBGM();
+          sound.playSFX('click');
+          this.goToStage(1);
+        };
+
+        document.getElementById('btn-open-guide').onclick = () => {
+          this.showModal("📖 HƯỚNG DẪN CHƠI", `
+            - Trò chơi gồm <b>4 màn học tập</b> về cấu trúc điều kiện <b>NẾU... THÌ...</b><br>
+            - Ở mỗi màn, hãy hoàn thành các nhiệm vụ bằng cách chọn đáp án hoặc ghép cặp.<br>
+            - Đạt tối đa <b>100 điểm</b> để giành trọn bộ 3 Huy Hiệu Logic!
+          `);
+        };
+
+        // Mode switch
+        document.getElementById('mode-practice').onclick = (e) => {
+          this.isChallengeMode = false;
+          document.getElementById('mode-practice').classList.add('active');
+          document.getElementById('mode-challenge').classList.remove('active');
+        };
+        document.getElementById('mode-challenge').onclick = (e) => {
+          this.isChallengeMode = true;
+          document.getElementById('mode-challenge').classList.add('active');
+          document.getElementById('mode-practice').classList.remove('active');
+        };
+
+        // Common footer buttons
+        document.getElementById('btn-go-home').onclick = () => this.goToStage(0);
+        document.getElementById('btn-reset-stage').onclick = () => this.resetCurrentStage();
+        document.getElementById('btn-hint').onclick = () => this.showStageHint();
+        this.btnNext.onclick = () => this.goToStage(this.currentStage + 1);
+
+        document.getElementById('modal-btn-close').onclick = () => {
+          document.getElementById('modal-box').style.display = 'none';
+        };
+
+        document.getElementById('btn-restart-game').onclick = () => {
+          this.score = 0;
+          this.completedStages = [false, false, false, false];
+          this.goToStage(0);
+        };
+
+        this.updateMascot('normal', "Chào mừng em! Nhấn BẮT ĐẦU CHƠI để cùng học bài nhé!");
+      }
+
+      updateMascot(expr, text) {
+        this.mascotBox.innerHTML = getBipMascotSVG(expr);
+        this.speechBox.innerHTML = text;
+      }
+
+      showModal(title, text) {
+        document.getElementById('modal-title').innerHTML = title;
+        document.getElementById('modal-content').innerHTML = text;
+        document.getElementById('modal-box').style.display = 'flex';
+        sound.playSFX('click');
+      }
+
+      goToStage(stageNum) {
+        this.currentStage = stageNum;
+        
+        // Hide all screens
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+
+        if (stageNum === 0) {
+          document.getElementById('screen-welcome').classList.add('active');
+          this.actionFooter.style.display = 'none';
+          this.updateMascot('normal', "Hãy chọn chế độ và bấm BẮT ĐẦU CHƠI nhé!");
+          return;
+        }
+
+        if (stageNum > 4) {
+          this.showSummary();
+          return;
+        }
+
+        // Show game action footer
+        this.actionFooter.style.display = 'flex';
+        this.btnNext.disabled = !this.completedStages[stageNum - 1];
+
+        // Update progress UI
+        this.progressBox.innerText = `${stageNum}/4`;
+        this.scoreBox.innerText = this.score;
+
+        document.getElementById(`screen-stage${stageNum}`).classList.add('active');
+
+        // Init specific stage
+        if (stageNum === 1) this.initStage1();
+        else if (stageNum === 2) this.initStage2();
+        else if (stageNum === 3) this.initStage3();
+        else if (stageNum === 4) this.initStage4();
+      }
+
+      awardPoints() {
+        if (!this.completedStages[this.currentStage - 1]) {
+          this.completedStages[this.currentStage - 1] = true;
+          this.score += GAME_CONFIG.pointsPerStage;
+          this.scoreBox.innerText = this.score;
+          this.btnNext.disabled = false;
+          sound.playSFX('win');
+          this.triggerConfetti();
+        }
+      }
+
+      resetCurrentStage() {
+        sound.playSFX('click');
+        if (this.currentStage === 1) { this.s1Index = 0; this.initStage1(); }
+        else if (this.currentStage === 2) { this.s2Index = 0; this.initStage2(); }
+        else if (this.currentStage === 3) { this.s3MatchedCount = 0; this.initStage3(); }
+        else if (this.currentStage === 4) { this.s4TestCount = 0; this.initStage4(); }
+      }
+
+      showStageHint() {
+        const hints = [
+          "💡 Màn 1: Đọc kỹ điều kiện thời tiết (mưa, nắng, gió) để chọn cách ứng phó phù hợp!",
+          "💡 Màn 2: Đèn Đỏ -> Dừng lại; Đèn Xanh -> Qua đường an toàn; Đèn Vàng -> Đi chậm & dừng lại.",
+          "💡 Màn 3: Chọn một thẻ NẾU ở cột trái, sau đó chọn thẻ THÌ tương ứng ở cột phải.",
+          "💡 Màn 4: Hãy kiểm tra logic: NẾU có vật cản THÌ Rẽ trái, NẾU KHÔNG THÌ Đi thẳng!"
+        ];
+        this.showModal("💡 GỢI Ý BÀI HỌC", hints[this.currentStage - 1] || "Hãy suy nghĩ kỹ nhé!");
+      }
+
+      /* ==========================================================================
+         LOGIC MÀN 1: TRỜI MƯA HAY NẮNG?
+         ========================================================================== */
+      initStage1() {
+        const currentData = GAME_CONFIG.stage1.scenarios[this.s1Index];
+        this.updateMascot('thinking', `Tình huống ${this.s1Index + 1}/3: ${currentData.desc}`);
+
+        // Visual SVG Weather
+        const visualBox = document.getElementById('s1-visual-box');
+        visualBox.innerHTML = this.getWeatherSVG(currentData.svgType);
+
+        // Options
+        const optBox = document.getElementById('s1-options-box');
+        optBox.innerHTML = '';
+        currentData.options.forEach((opt, idx) => {
+          const btn = document.createElement('div');
+          btn.className = 'option-card';
+          btn.innerHTML = `<span>📌</span> <span>${opt.text}</span>`;
+          btn.onclick = () => this.handleStage1Choice(opt, btn, currentData);
+          optBox.appendChild(btn);
+        });
+      }
+
+      getWeatherSVG(type) {
+        if (type === 'rain') {
+          return `
+            <svg viewBox="0 0 200 160" width="100%" height="100%">
+              <rect width="200" height="160" rx="16" fill="#EBF8FF"/>
+              <path d="M 40 60 Q 60 40 80 60 Q 100 40 120 60 Q 140 40 160 60 Q 170 80 150 90 L 50 90 Q 30 80 40 60 Z" fill="#718096"/>
+              <line x1="60" y1="100" x2="50" y2="120" stroke="#4A90E2" stroke-width="4" stroke-linecap="round"/>
+              <line x1="100" y1="100" x2="90" y2="120" stroke="#4A90E2" stroke-width="4" stroke-linecap="round"/>
+              <line x1="140" y1="100" x2="130" y2="120" stroke="#4A90E2" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+          `;
+        } else if (type === 'sun') {
+          return `
+            <svg viewBox="0 0 200 160" width="100%" height="100%">
+              <rect width="200" height="160" rx="16" fill="#FFFDF0"/>
+              <circle cx="100" cy="80" r="35" fill="#FFC65C"/>
+              <line x1="100" y1="30" x2="100" y2="15" stroke="#FFC65C" stroke-width="5" stroke-linecap="round"/>
+              <line x1="100" y1="130" x2="100" y2="145" stroke="#FFC65C" stroke-width="5" stroke-linecap="round"/>
+              <line x1="50" y1="80" x2="35" y2="80" stroke="#FFC65C" stroke-width="5" stroke-linecap="round"/>
+              <line x1="150" y1="80" x2="165" y2="80" stroke="#FFC65C" stroke-width="5" stroke-linecap="round"/>
+            </svg>
+          `;
+        } else {
+          return `
+            <svg viewBox="0 0 200 160" width="100%" height="100%">
+              <rect width="200" height="160" rx="16" fill="#F0F4F8"/>
+              <path d="M 30 50 Q 80 30 130 50 Q 170 60 180 50" stroke="#CBD5E0" stroke-width="6" fill="none" stroke-linecap="round"/>
+              <path d="M 20 90 Q 70 70 120 90 Q 150 100 170 90" stroke="#A0AEC0" stroke-width="5" fill="none" stroke-linecap="round"/>
+            </svg>
+          `;
+        }
+      }
+
+      handleStage1Choice(opt, el, data) {
+        if (opt.correct) {
+          sound.playSFX('correct');
+          el.classList.add('selected-correct');
+          this.updateMascot('happy', data.explanation);
+          
+          setTimeout(() => {
+            this.s1Index++;
+            if (this.s1Index < GAME_CONFIG.stage1.scenarios.length) {
+              this.initStage1();
+            } else {
+              this.awardPoints();
+              this.updateMascot('happy', "Chúc mừng em đã xuất sắc hoàn thành Màn 1! Bấm TIẾP TỤC để sang màn 2.");
+            }
+          }, 1200);
+        } else {
+          sound.playSFX('wrong');
+          el.classList.add('selected-wrong');
+          this.updateMascot('thinking', "Chưa chính xác rồi. Em hãy suy nghĩ xem nếu thời tiết như thế này thì phải làm sao nhé!");
+        }
+      }
+
+      /* ==========================================================================
+         LOGIC MÀN 2: ĐÈN TÍN HIỆU GIAO THÔNG
+         ========================================================================== */
+      initStage2() {
+        const currentData = GAME_CONFIG.stage2.scenarios[this.s2Index];
+        this.updateMascot('thinking', `Tình huống ${this.s2Index + 1}/3: ${currentData.desc}`);
+
+        // Traffic Light SVG
+        const visualBox = document.getElementById('s2-visual-box');
+        visualBox.innerHTML = this.getTrafficLightSVG(currentData.light);
+
+        // Options
+        const optBox = document.getElementById('s2-options-box');
+        optBox.innerHTML = '';
+        currentData.options.forEach((opt) => {
+          const btn = document.createElement('div');
+          btn.className = 'option-card';
+          btn.innerHTML = `<span>🚦</span> <span>${opt.text}</span>`;
+          btn.onclick = () => this.handleStage2Choice(opt, btn, currentData);
+          optBox.appendChild(btn);
+        });
+      }
+
+      getTrafficLightSVG(activeLight) {
+        return `
+          <svg viewBox="0 0 200 160" width="100%" height="100%">
+            <rect width="200" height="160" rx="16" fill="#EDF2F7"/>
+            <!-- Vạch sang đường -->
+            <rect x="20" y="120" width="160" height="25" fill="#CBD5E0"/>
+            <rect x="40" y="120" width="15" height="25" fill="#FFF"/>
+            <rect x="70" y="120" width="15" height="25" fill="#FFF"/>
+            <rect x="100" y="120" width="15" height="25" fill="#FFF"/>
+            <rect x="130" y="120" width="15" height="25" fill="#FFF"/>
+
+            <!-- Đèn giao thông -->
+            <rect x="80" y="10" width="40" height="95" rx="10" fill="#2D3748"/>
+            <circle cx="100" cy="28" r="10" fill="${activeLight === 'red' ? '#EF7469' : '#4A5568'}"/>
+            <circle cx="100" cy="57" r="10" fill="${activeLight === 'yellow' ? '#FFC65C' : '#4A5568'}"/>
+            <circle cx="100" cy="86" r="10" fill="${activeLight === 'green' ? '#53B77A' : '#4A5568'}"/>
+          </svg>
+        `;
+      }
+
+      handleStage2Choice(opt, el, data) {
+        if (opt.correct) {
+          sound.playSFX('correct');
+          el.classList.add('selected-correct');
+          this.updateMascot('happy', data.explanation);
+
+          setTimeout(() => {
+            this.s2Index++;
+            if (this.s2Index < GAME_CONFIG.stage2.scenarios.length) {
+              this.initStage2();
+            } else {
+              this.awardPoints();
+              this.updateMascot('happy', "Tuyệt vời! Em đã nắm rất vững quy tắc đèn giao thông theo điều kiện. Bấm TIẾP TỤC nhé!");
+            }
+          }, 1200);
+        } else {
+          sound.playSFX('wrong');
+          el.classList.add('selected-wrong');
+          this.updateMascot('thinking', "Hãy chú ý màu đèn giao thông để chọn hành động đúng nhất nhé!");
+        }
+      }
+
+      /* ==========================================================================
+         LOGIC MÀN 3: GHÉP CẤU TRÚC NẾU... THÌ...
+         ========================================================================== */
+      initStage3() {
+        this.s3MatchedCount = 0;
+        this.s3SelectedCond = null;
+        this.updateMascot('normal', "Em hãy chọn 1 thẻ ĐIỀU KIỆN (cột trái) rồi chọn thẻ HÀNH ĐỘNG tương ứng (cột phải)!");
+
+        const condCol = document.getElementById('s3-cond-col');
+        const actCol = document.getElementById('s3-act-col');
+        condCol.innerHTML = '';
+        actCol.innerHTML = '';
+
+        const pairs = GAME_CONFIG.stage3.pairs;
+        
+        // Shuffle actions
+        const shuffledActs = [...pairs].sort(() => Math.random() - 0.5);
+
+        pairs.forEach(p => {
+          const item = document.createElement('div');
+          item.className = 'match-item';
+          item.innerText = p.cond;
+          item.dataset.id = p.id;
+          item.onclick = () => this.selectStage3Cond(item, p);
+          condCol.appendChild(item);
+        });
+
+        shuffledActs.forEach(p => {
+          const item = document.createElement('div');
+          item.className = 'match-item';
+          item.innerText = p.act;
+          item.dataset.id = p.id;
+          item.onclick = () => this.selectStage3Act(item, p);
+          actCol.appendChild(item);
+        });
+      }
+
+      selectStage3Cond(el, pairData) {
+        if (el.classList.contains('matched')) return;
+        sound.playSFX('click');
+
+        document.querySelectorAll('#s3-cond-col .match-item').forEach(i => i.classList.remove('selected'));
+        el.classList.add('selected');
+        this.s3SelectedCond = { el, data: pairData };
+      }
+
+      selectStage3Act(el, pairData) {
+        if (el.classList.contains('matched') || !this.s3SelectedCond) return;
+
+        if (this.s3SelectedCond.data.id === pairData.id) {
+          sound.playSFX('correct');
+          this.s3SelectedCond.el.classList.remove('selected');
+          this.s3SelectedCond.el.classList.add('matched');
+          el.classList.add('matched');
+
+          this.updateMascot('happy', pairData.explain);
+          this.s3SelectedCond = null;
+          this.s3MatchedCount++;
+
+          if (this.s3MatchedCount === GAME_CONFIG.stage3.pairs.length) {
+            setTimeout(() => {
+              this.awardPoints();
+              this.updateMascot('happy', "Giỏi lắm! Em đã ghép đúng toàn bộ các cặp NẾU... THÌ... rồi đấy!");
+            }, 800);
+          }
+        } else {
+          sound.playSFX('wrong');
+          this.updateMascot('thinking', "Cặp này chưa khớp rồi! Hãy kiểm tra lại mối quan hệ giữa điều kiện và hành động nhé.");
+        }
+      }
+
+      /* ==========================================================================
+         LOGIC MÀN 4: RÔ-BỐT CHỌN ĐƯỜNG
+         ========================================================================== */
+      initStage4() {
+        this.s4TestCount = 0;
+        this.updateMascot('thinking', "Hãy thiết lập khối lệnh rẽ nhánh và nhấn CHẠY THỬ MÔ PHỎNG!");
+
+        const visualBox = document.getElementById('s4-visual-box');
+        visualBox.innerHTML = this.getGridMapSVG(false);
+
+        document.getElementById('s4-btn-run').onclick = () => this.runStage4Simulation();
+      }
+
+      getGridMapSVG(hasObstacle) {
+        return `
+          <svg viewBox="0 0 220 160" width="100%" height="100%">
+            <rect width="220" height="160" rx="16" fill="#E2E8F0"/>
+            <!-- Đường đi thẳng -->
+            <rect x="20" y="70" width="180" height="30" fill="#CBD5E0"/>
+            <!-- Đường rẽ trái vòng lên -->
+            <path d="M 80 70 Q 80 20 130 20 L 170 20 L 170 70" stroke="#CBD5E0" stroke-width="30" fill="none"/>
+
+            <!-- Rô-bốt Bíp -->
+            <circle cx="40" cy="85" r="14" fill="#7766B7"/>
+            <circle cx="40" cy="85" r="8" fill="#FFF"/>
+
+            <!-- Vật cản nếu có -->
+            ${hasObstacle ? `
+              <rect x="100" y="72" width="25" height="25" rx="5" fill="#EF7469"/>
+              <text x="107" y="89" fill="#FFF" font-weight="bold" font-size="14">🪨</text>
+            ` : ''}
+
+            <!-- Cờ đích -->
+            <text x="180" y="90" font-size="20">🚩</text>
+          </svg>
+        `;
+      }
+
+      runStage4Simulation() {
+        const cond = document.getElementById('s4-cond-select').value;
+        const act1 = document.getElementById('s4-act1-select').value;
+        const act2 = document.getElementById('s4-act2-select').value;
+
+        // Logic chuẩn: Nếu obstacle -> left, Nếu không -> straight
+        if (cond === 'obstacle' && act1 === 'left' && act2 === 'straight') {
+          sound.playSFX('correct');
+          this.s4TestCount++;
+
+          const testCase = GAME_CONFIG.stage4.testCases[(this.s4TestCount - 1) % 3];
+          document.getElementById('s4-visual-box').innerHTML = this.getGridMapSVG(testCase.hasObstacle);
+
+          if (testCase.hasObstacle) {
+            this.updateMascot('happy', `${testCase.desc} ➔ Bíp phát hiện vật cản ➔ RẼ TRÁI chính xác!`);
+          } else {
+            this.updateMascot('happy', `${testCase.desc} ➔ Đường trống ➔ ĐI THẲNG chính xác!`);
+          }
+
+          if (this.s4TestCount >= 3) {
+            setTimeout(() => {
+              this.awardPoints();
+              this.updateMascot('happy', "Xuất sắc! Em đã lập trình logic rẽ nhánh chuẩn xác cho Rô-bốt Bíp!");
+            }, 1000);
+          }
+        } else {
+          sound.playSFX('wrong');
+          this.updateMascot('thinking', "Khối lệnh chưa tối ưu! Gợi ý: NẾU [Phía trước có vật cản] THÌ [Rẽ trái] NẾU KHÔNG THÌ [Đi thẳng].");
+        }
+      }
+
+      /* ==========================================================================
+         MAN HÌNH TỔNG KẾT VÀ HUY HIỆU
+         ========================================================================== */
+      showSummary() {
+        this.actionFooter.style.display = 'none';
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('screen-summary').classList.add('active');
+
+        document.getElementById('summary-score').innerText = this.score;
+
+        // Display badges
+        const badgeBox = document.getElementById('summary-badges-box');
+        badgeBox.innerHTML = `
+          <div class="badge-item">
+            <div class="badge-item-icon">🥇</div>
+            <div class="badge-item-title">Huy hiệu Rẽ nhánh Thông minh</div>
+          </div>
+          <div class="badge-item">
+            <div class="badge-item-icon">⚡</div>
+            <div class="badge-item-title">Dũng sĩ Logic</div>
+          </div>
+          <div class="badge-item">
+            <div class="badge-item-icon">🛠️</div>
+            <div class="badge-item-title">Kiến trúc sư Thuật toán</div>
+          </div>
+        `;
+
+        sound.playSFX('win');
+        this.triggerConfetti();
+        this.updateMascot('happy', "Chúc mừng em đã hoàn thành xuất sắc toàn bộ khóa học RẼ NHÁNH THÔNG MINH!");
+      }
+
+      /* Hiệu ứng pháo hoa ăn mừng Canvas */
+      triggerConfetti() {
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+
+        const particles = [];
+        const colors = ['#EF7469', '#53B77A', '#7766B7', '#FFC65C', '#4A90E2'];
+
+        for (let i = 0; i < 60; i++) {
+          particles.push({
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            vx: (Math.random() - 0.5) * 12,
+            vy: (Math.random() - 0.5) * 12,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            size: Math.random() * 6 + 4,
+            alpha: 1
+          });
+        }
+
+        let animFrame;
+        const render = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          let active = false;
+
+          particles.forEach(p => {
+            if (p.alpha > 0) {
+              active = true;
+              p.x += p.vx;
+              p.y += p.vy;
+              p.vy += 0.15; // gravity
+              p.alpha -= 0.015;
+
+              ctx.globalAlpha = Math.max(0, p.alpha);
+              ctx.fillStyle = p.color;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          });
+
+          if (active) {
+            animFrame = requestAnimationFrame(render);
+          } else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            cancelAnimationFrame(animFrame);
+          }
+        };
+
+        render();
+      }
+    }
+
+    // Initialize Game on Window Load
+    window.onload = () => {
+      window.gameApp = new GameController();
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,3248 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LẬP TRÌNH THEO THỨ TỰ - Tin học 5 Bài 10: Cấu trúc tuần tự</title>
+  <style>
+    /* ==========================================================================
+       TIÊU CHUẨN MỸ THUẬT V5 - BẢNG MÀU PASTEL & XỨ SỞ CÔNG NGHỆ
+       Hoàn toàn ngoại tuyến, không phụ thuộc thư viện hay phông chữ mạng
+       ========================================================================== */
+    :root {
+      --bg-cream: #F8F7FF;
+      --bg-peach: #FFF0F3;
+      --bg-mint: #E8F8F5;
+      --bg-lavender: #EFEAFC;
+      --primary-purple: #58429B;
+      --primary-purple-dark: #3F2E73;
+      --accent-mint: #4ABDAA;
+      --accent-mint-dark: #359484;
+      --accent-gold: #F2BE4A;
+      --accent-gold-dark: #D49B27;
+      --accent-pink: #F6B6C8;
+      --accent-pink-dark: #D9859D;
+      --text-main: #2B234A;
+      --text-muted: #5E547E;
+      --card-bg: #FFFFFF;
+      --card-border: #DFD8F5;
+      --success: #2BAE66;
+      --success-bg: #E6F9EE;
+      --error: #E04F5F;
+      --error-bg: #FDECEE;
+      --warning: #E69500;
+      --warning-bg: #FFF8E6;
+
+      /* Màu khối lệnh Scratch chuẩn trực quan */
+      --block-event: #FFBF00;
+      --block-event-border: #CC9900;
+      --block-motion: #4C97FF;
+      --block-motion-border: #3373CC;
+      --block-looks: #9966FF;
+      --block-looks-border: #774DCB;
+      --block-sound: #CF63CF;
+      --block-sound-border: #A63FA6;
+      --block-control: #FFAB19;
+      --block-control-border: #CF8B17;
+
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --shadow-soft: 0 10px 28px rgba(88, 66, 155, 0.11);
+      --shadow-card: 0 6px 18px rgba(88, 66, 155, 0.08);
+      --font-sans: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: radial-gradient(circle at 15% 15%, var(--bg-peach) 0%, var(--bg-cream) 45%, var(--bg-mint) 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 10px 14px;
+      overflow-x: hidden;
+      line-height: 1.45;
+    }
+
+    /* Hộp chứa chính ưu tiên tỉ lệ 16:9, tương thích 1366x768, 1920x1080 và màn nhỏ */
+    .app-shell {
+      width: 100%;
+      max-width: 1380px;
+      min-height: calc(100vh - 20px);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(8px);
+      border: 3px solid #E5DEFA;
+      border-radius: 28px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ==========================================================================
+       THANH ĐẦU TRANG (HEADER) & ĐIỀU KHIỂN ÂM THANH
+       ========================================================================== */
+    .top-bar {
+      background: linear-gradient(90deg, var(--primary-purple) 0%, #6D54B5 55%, var(--accent-mint) 100%);
+      color: #FFFFFF;
+      padding: 10px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: var(--accent-gold);
+      color: #2B234A;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 5px 11px;
+      border-radius: 999px;
+      box-shadow: 0 3px 0 var(--accent-gold-dark);
+      letter-spacing: 0.3px;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+    }
+
+    .header-stats {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stat-pill {
+      background: rgba(255, 255, 255, 0.18);
+      border: 1.5px solid rgba(255, 255, 255, 0.38);
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-pill .score-num {
+      color: #FFE47A;
+      font-size: 1.1rem;
+      font-weight: 900;
+    }
+
+    /* Công tắc âm thanh: Đúng 2 công tắc độc lập Nhạc nền & Hiệu ứng + Âm lượng */
+    .audio-controls {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: rgba(34, 24, 68, 0.35);
+      padding: 5px 10px;
+      border-radius: 999px;
+    }
+
+    .toggle-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      color: #FFFFFF;
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      min-height: 44px;
+      transition: transform 0.15s ease, background 0.2s ease;
+    }
+
+    .toggle-switch:hover {
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    .toggle-switch[aria-pressed="true"] {
+      background: var(--accent-mint);
+      border-color: #FFFFFF;
+      color: #103831;
+    }
+
+    .toggle-switch .indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #FF6B6B;
+      display: inline-block;
+    }
+
+    .toggle-switch[aria-pressed="true"] .indicator {
+      background: #0F5E4E;
+      box-shadow: 0 0 6px #FFFFFF;
+    }
+
+    .vol-slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.8rem;
+      padding: 0 4px;
+    }
+
+    .vol-slider-wrap input[type="range"] {
+      width: 68px;
+      accent-color: var(--accent-gold);
+      cursor: pointer;
+    }
+
+    /* ==========================================================================
+       HỆ THỐNG NÚT BẤM TACTILE 3D (Tối thiểu 44x44px, rõ focus bàn phím)
+       ========================================================================== */
+    button, .btn {
+      font-family: inherit;
+      font-size: 0.98rem;
+      font-weight: 700;
+      min-height: 44px;
+      min-width: 44px;
+      padding: 9px 18px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
+      text-decoration: none;
+    }
+
+    button:focus-visible, .interactive-item:focus-visible {
+      outline: 3px solid var(--accent-gold);
+      outline-offset: 3px;
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(3px);
+    }
+
+    button:disabled {
+      opacity: 0.52;
+      cursor: not-allowed;
+      filter: grayscale(0.35);
+    }
+
+    .btn-primary {
+      background: var(--primary-purple);
+      color: #FFFFFF;
+      box-shadow: 0 5px 0 var(--primary-purple-dark);
+    }
+    .btn-primary:hover:not(:disabled) {
+      filter: brightness(1.08);
+    }
+
+    .btn-mint {
+      background: var(--accent-mint);
+      color: #0D352E;
+      box-shadow: 0 5px 0 var(--accent-mint-dark);
+    }
+    .btn-mint:hover:not(:disabled) {
+      filter: brightness(1.06);
+    }
+
+    .btn-gold {
+      background: var(--accent-gold);
+      color: #2B234A;
+      box-shadow: 0 5px 0 var(--accent-gold-dark);
+    }
+    .btn-gold:hover:not(:disabled) {
+      filter: brightness(1.06);
+    }
+
+    .btn-pink {
+      background: var(--accent-pink);
+      color: #3D1A28;
+      box-shadow: 0 5px 0 var(--accent-pink-dark);
+    }
+
+    .btn-outline {
+      background: #FFFFFF;
+      color: var(--primary-purple);
+      border: 2px solid var(--primary-purple);
+      box-shadow: 0 4px 0 #D8CEF2;
+    }
+    .btn-outline:hover:not(:disabled) {
+      background: var(--bg-lavender);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #FFFFFF;
+      box-shadow: 0 5px 0 #1E824A;
+    }
+
+    .btn-danger {
+      background: var(--error);
+      color: #FFFFFF;
+      box-shadow: 0 5px 0 #AD3240;
+    }
+
+    /* ==========================================================================
+       THANH TIẾN ĐỘ 4 MÀN CHƠI & CHẾ ĐỘ LUYỆN TẬP / THỬ THÁCH
+       ========================================================================== */
+    .sub-nav {
+      background: var(--bg-lavender);
+      padding: 8px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 2px solid var(--card-border);
+    }
+
+    .level-stepper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .level-tab {
+      background: #FFFFFF;
+      color: var(--text-muted);
+      border: 2px solid #D5C9F0;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .level-tab.active {
+      background: var(--primary-purple);
+      color: #FFFFFF;
+      border-color: var(--primary-purple-dark);
+      box-shadow: 0 3px 0 var(--primary-purple-dark);
+    }
+
+    .level-tab.completed {
+      background: var(--success-bg);
+      color: #16693B;
+      border-color: var(--success);
+    }
+
+    .mode-selector {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #FFFFFF;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 2px solid #D5C9F0;
+    }
+
+    .mode-btn {
+      min-height: 36px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      background: transparent;
+      color: var(--text-muted);
+      box-shadow: none;
+    }
+
+    .mode-btn.active {
+      background: var(--accent-gold);
+      color: #2B234A;
+      font-weight: 800;
+    }
+
+    /* ==========================================================================
+       BỐ CỤC MÀN HÌNH CHÍNH (WELCOME, PLAY, SUMMARY)
+       ========================================================================== */
+    .screen {
+      display: none;
+      flex: 1;
+      padding: 16px 20px;
+      overflow-y: auto;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Màn hình Chào mừng */
+    .welcome-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      align-items: center;
+      margin: auto 0;
+    }
+
+    .welcome-card {
+      background: #FFFFFF;
+      border: 3px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .book-tag {
+      display: inline-block;
+      background: var(--bg-mint);
+      color: #146B5C;
+      border: 2px solid var(--accent-mint);
+      font-weight: 800;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+
+    .game-hero-title {
+      font-size: clamp(1.7rem, 3vw, 2.45rem);
+      color: var(--primary-purple);
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .game-hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .objective-list {
+      background: var(--bg-cream);
+      border-left: 5px solid var(--accent-gold);
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 18px;
+    }
+
+    .objective-list h3 {
+      font-size: 1rem;
+      color: var(--primary-purple);
+      margin-bottom: 6px;
+    }
+
+    .objective-list ul {
+      padding-left: 20px;
+      font-size: 0.96rem;
+    }
+
+    .objective-list li {
+      margin-bottom: 5px;
+    }
+
+    .welcome-illustration {
+      background: linear-gradient(165deg, #EFEAFC 0%, #FFF5F7 55%, #E8F8F5 100%);
+      border: 3px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+      position: relative;
+    }
+
+    /* ==========================================================================
+       BỐ CỤC MÀN CHƠI 2 CỘT: SÂN KHẤU + TRỢ LÝ PIXEL (TRÁI) | TƯƠNG TÁC (PHẢI)
+       ========================================================================== */
+    .play-layout {
+      display: grid;
+      grid-template-columns: 430px 1fr;
+      gap: 18px;
+      flex: 1;
+      align-items: stretch;
+    }
+
+    .left-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Hộp sân khấu Scratch mô phỏng */
+    .stage-card {
+      background: #FFFFFF;
+      border: 3px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .stage-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 2px solid #F0ECFA;
+      padding-bottom: 8px;
+    }
+
+    .stage-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .flag-btn {
+      background: #E8F9EE;
+      border: 2px solid #2BAE66;
+      color: #16693B;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      min-height: 44px;
+    }
+
+    .stop-btn {
+      background: #FDECEE;
+      border: 2px solid #E04F5F;
+      color: #9E2432;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      min-height: 44px;
+    }
+
+    .reset-stage-btn {
+      background: #F2EEFC;
+      border: 2px solid #8A73C9;
+      color: var(--primary-purple);
+      padding: 6px 11px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      min-height: 44px;
+    }
+
+    .stage-viewport {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: #E9F6FF;
+      border: 2px solid #C9BFEF;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .sim-disclaimer {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      text-align: right;
+      font-style: italic;
+    }
+
+    /* Thanh tiến trình lệnh đang chạy */
+    .exec-tracker {
+      background: var(--bg-cream);
+      border: 2px solid #E2DAF7;
+      border-radius: 10px;
+      padding: 7px 10px;
+      font-size: 0.86rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .exec-badge {
+      background: var(--primary-purple);
+      color: #FFFFFF;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    /* Hộp nhân vật đồng hành Pixel + Bong bóng chữ (KHÔNG GIỌNG ĐỌC) */
+    .mascot-card {
+      background: linear-gradient(135deg, #FFF7FA 0%, #F3EEFF 100%);
+      border: 3px solid #E5D4F7;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 12px;
+      align-items: center;
+      box-shadow: var(--shadow-card);
+    }
+
+    .pixel-avatar-wrap {
+      width: 96px;
+      height: 96px;
+      background: #FFFFFF;
+      border: 2px solid #D6C6F7;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .speech-bubble {
+      background: #FFFFFF;
+      border: 2px solid #D4C5F5;
+      border-radius: 14px;
+      padding: 10px 13px;
+      position: relative;
+      font-size: 0.93rem;
+      color: var(--text-main);
+    }
+
+    .speech-bubble.correct {
+      background: var(--success-bg);
+      border-color: var(--success);
+      color: #124D2B;
+    }
+
+    .speech-bubble.wrong {
+      background: var(--error-bg);
+      border-color: var(--error);
+      color: #7D1B27;
+    }
+
+    .speech-bubble.hint {
+      background: var(--warning-bg);
+      border-color: var(--warning);
+      color: #6B4500;
+    }
+
+    .pixel-name-tag {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--primary-purple);
+      text-transform: uppercase;
+      margin-bottom: 3px;
+      display: block;
+    }
+
+    /* ==========================================================================
+       CỘT PHẢI: KHU VỰC NHIỆM VỤ & TƯƠNG TÁC TIN HỌC THỰC CHẤT
+       ========================================================================== */
+    .workspace-card {
+      background: #FFFFFF;
+      border: 3px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .task-header {
+      border-bottom: 2px dashed #E2DAF7;
+      padding-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .task-title-group h2 {
+      font-size: 1.25rem;
+      color: var(--primary-purple);
+      font-weight: 900;
+    }
+
+    .task-desc {
+      font-size: 0.98rem;
+      color: var(--text-main);
+      margin-top: 3px;
+    }
+
+    /* Bộ chuyển đổi 3 lượt nhiệm vụ nhỏ trong mỗi màn */
+    .subtask-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .subtask-pill {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      background: var(--bg-lavender);
+      color: var(--primary-purple);
+      border: 2px solid #D3C5F5;
+      min-height: 40px;
+    }
+
+    .subtask-pill.active {
+      background: var(--accent-gold);
+      color: #2B234A;
+      border-color: var(--accent-gold-dark);
+    }
+
+    .subtask-pill.done {
+      background: var(--success);
+      color: #FFFFFF;
+      border-color: #1E824A;
+    }
+
+    /* ==========================================================================
+       KHỐI LỆNH SCRATCH MÔ PHỎNG (CÓ KHỚP NỐI PUZZLE DỌC)
+       ========================================================================== */
+    .scratch-block {
+      position: relative;
+      padding: 10px 16px;
+      border-radius: 8px;
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 0.93rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+      margin-bottom: 6px;
+      min-height: 44px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    /* Tạo rãnh khớp ghép hình ở cạnh trên và mấu lồi ở cạnh dưới */
+    .scratch-block::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 22px;
+      width: 28px;
+      height: 7px;
+      background: inherit;
+      border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;
+      z-index: 2;
+    }
+
+    .scratch-block.type-event {
+      background: var(--block-event);
+      color: #2B234A;
+      border: 2px solid var(--block-event-border);
+      border-top-left-radius: 20px;
+      border-top-right-radius: 16px;
+    }
+    .scratch-block.type-motion {
+      background: var(--block-motion);
+      border: 2px solid var(--block-motion-border);
+    }
+    .scratch-block.type-looks {
+      background: var(--block-looks);
+      border: 2px solid var(--block-looks-border);
+    }
+    .scratch-block.type-sound {
+      background: var(--block-sound);
+      border: 2px solid var(--block-sound-border);
+    }
+    .scratch-block.type-control {
+      background: var(--block-control);
+      color: #2B234A;
+      border: 2px solid var(--block-control-border);
+    }
+
+    .scratch-block.running-highlight {
+      outline: 4px solid #FFF200;
+      box-shadow: 0 0 16px rgba(255, 242, 0, 0.95);
+      transform: scale(1.02);
+      z-index: 5;
+    }
+
+    .scratch-block.selected-block {
+      outline: 3px dashed var(--primary-purple);
+      transform: translateY(-2px);
+    }
+
+    .block-param-pill {
+      background: rgba(255, 255, 255, 0.92);
+      color: #2B234A;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.88rem;
+    }
+
+    /* Khu vực bảng 2 cột của Màn 1, Màn 2, Màn 4 */
+    .dual-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .panel-box {
+      background: var(--bg-cream);
+      border: 2px solid #DED6F7;
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      min-height: 250px;
+    }
+
+    .panel-box h3 {
+      font-size: 0.96rem;
+      color: var(--primary-purple);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Thẻ câu chuyện / hành động ở Màn 1 */
+    .story-card {
+      background: #FFFFFF;
+      border: 2px solid #D5C9F2;
+      border-radius: 12px;
+      padding: 9px 12px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      min-height: 48px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: background 0.15s, border-color 0.15s, transform 0.12s;
+    }
+
+    .story-card:hover {
+      border-color: var(--primary-purple);
+      background: #F6F3FF;
+    }
+
+    .story-step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--primary-purple);
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Khe thả khối lệnh dọc ở Màn 2 */
+    .slot-chain {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .drop-slot {
+      border: 2px dashed #B9A7E8;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 10px;
+      min-height: 50px;
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .drop-slot.drag-over {
+      background: var(--bg-mint);
+      border-color: var(--accent-mint-dark);
+    }
+
+    .slot-placeholder {
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      font-weight: 600;
+      padding-left: 8px;
+    }
+
+    /* Màn 3: Điều chỉnh tham số & quan sát sân khấu */
+    .param-select {
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: #2B234A;
+      background: #FFFFFF;
+      border: 2px solid var(--primary-purple);
+      border-radius: 999px;
+      padding: 3px 10px;
+      cursor: pointer;
+    }
+
+    .option-card {
+      background: #FFFFFF;
+      border: 2.5px solid #D6C9F2;
+      border-radius: 14px;
+      padding: 12px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      transition: all 0.15s ease;
+    }
+
+    .option-card:hover {
+      border-color: var(--primary-purple);
+      background: #F8F5FF;
+    }
+
+    .option-card.selected {
+      border-color: var(--accent-mint-dark);
+      background: var(--bg-mint);
+      box-shadow: 0 4px 0 var(--accent-mint-dark);
+    }
+
+    /* Nút điều hướng chân màn chơi */
+    .workspace-footer {
+      border-top: 2px solid #EFEAFC;
+      padding-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .footer-left, .footer-right {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ==========================================================================
+       MÀN HÌNH TỔNG KẾT & HUY HIỆU (SUMMARY SCREEN)
+       ========================================================================== */
+    .summary-container {
+      max-width: 980px;
+      margin: auto;
+      background: #FFFFFF;
+      border: 3px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-soft);
+      text-align: center;
+    }
+
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 18px 0;
+    }
+
+    .badge-item {
+      background: var(--bg-cream);
+      border: 2px solid #DED4F7;
+      border-radius: 16px;
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-item.unlocked {
+      background: linear-gradient(180deg, #FFFDF2 0%, #FFF3C4 100%);
+      border-color: var(--accent-gold-dark);
+    }
+
+    .takeaway-box {
+      text-align: left;
+      background: var(--bg-mint);
+      border: 2px solid var(--accent-mint);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+
+    /* ==========================================================================
+       MODAL HƯỚNG DẪN & CONFETTI KHI HOÀN THÀNH MÀN
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(33, 23, 66, 0.58);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border: 3px solid var(--primary-purple);
+      border-radius: 22px;
+      max-width: 680px;
+      width: 100%;
+      padding: 22px;
+      box-shadow: var(--shadow-soft);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .confetti-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 90;
+      overflow: hidden;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      animation: confettiFall 1.8s ease-out forwards;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(85vh) rotate(520deg); opacity: 0; }
+    }
+
+    /* Tôn trọng prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Responsive cho màn hình nhỏ và máy tính bảng */
+    @media (max-width: 1024px) {
+      .welcome-grid, .play-layout, .dual-panel {
+        grid-template-columns: 1fr;
+      }
+      .badge-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Lớp hiệu ứng ngôi sao / pháo giấy (tối đa ~2 giây khi hoàn thành màn) -->
+  <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <!-- ==================== THANH ĐẦU TRANG ==================== -->
+    <header class="top-bar">
+      <div class="brand-group">
+        <span class="brand-badge">TIN HỌC 5 • BÀI 10</span>
+        <h1 class="brand-title" id="headerGameTitle">LẬP TRÌNH THEO THỨ TỰ</h1>
+      </div>
+
+      <div class="header-stats">
+        <div class="stat-pill" title="Tiến độ màn chơi">
+          <span>Màn:</span>
+          <strong id="headerProgressText">1/4</strong>
+        </div>
+        <div class="stat-pill" title="Điểm số hiện tại (Tối đa 100 điểm)">
+          <span>Điểm:</span>
+          <span class="score-num" id="headerScoreText">0</span>
+          <span>/ 100</span>
+        </div>
+
+        <!-- Đúng 2 công tắc âm thanh độc lập: Nhạc nền & Hiệu ứng (Tuyệt đối không có giọng đọc) -->
+        <div class="audio-controls" role="group" aria-label="Điều khiển âm thanh">
+          <button type="button" id="btnToggleBgm" class="toggle-switch" aria-pressed="true" title="Bật hoặc tắt Nhạc nền">
+            <span class="indicator"></span>
+            <span>Nhạc nền</span>
+          </button>
+          <button type="button" id="btnToggleSfx" class="toggle-switch" aria-pressed="true" title="Bật hoặc tắt Hiệu ứng âm thanh">
+            <span class="indicator"></span>
+            <span>Hiệu ứng</span>
+          </button>
+          <div class="vol-slider-wrap">
+            <label for="masterVolume">Âm lượng</label>
+            <input type="range" id="masterVolume" min="0" max="100" value="70" />
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==================== THANH ĐIỀU HƯỚNG MÀN & CHẾ ĐỘ ==================== -->
+    <nav class="sub-nav" id="subNavBar" aria-label="Tiến độ màn chơi và chế độ">
+      <div class="level-stepper" id="levelStepper">
+        <!-- Tự động sinh từ GAME_CONFIG -->
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div class="mode-selector" role="group" aria-label="Chọn chế độ chơi">
+          <button type="button" id="btnModePractice" class="mode-btn active">Luyện tập</button>
+          <button type="button" id="btnModeChallenge" class="mode-btn">Thử thách</button>
+        </div>
+        <button type="button" id="btnOpenGuide" class="btn-outline" style="min-height:38px; padding:5px 12px; font-size:0.86rem;">
+          Hướng dẫn
+        </button>
+        <button type="button" id="btnGoHome" class="btn-outline" style="min-height:38px; padding:5px 12px; font-size:0.86rem;">
+          Trang chủ
+        </button>
+      </div>
+    </nav>
+
+    <!-- ==================== MÀN HÌNH 1: CHÀO MỪNG ==================== -->
+    <main id="screenWelcome" class="screen active">
+      <div class="welcome-grid">
+        <div class="welcome-card">
+          <span class="book-tag">Kết nối tri thức với cuộc sống • Trang 52–55</span>
+          <h2 class="game-hero-title">LẬP TRÌNH THEO THỨ TỰ</h2>
+          <p class="game-hero-subtitle">Bài 10: Cấu trúc tuần tự • Cùng trợ lí Pixel khám phá Xứ sở Lập trình!</p>
+
+          <div class="objective-list">
+            <h3>🎯 Sau bài học này em sẽ:</h3>
+            <ul>
+              <li>Nhận ra được <strong>cấu trúc tuần tự</strong> trong các hoạt động và kịch bản chương trình.</li>
+              <li>Sử dụng và ghép được các <strong>khối lệnh Scratch liên tiếp theo đúng thứ tự</strong> từ trên xuống dưới.</li>
+              <li>Chạy thử chương trình, quan sát nhân vật thực thi từng lệnh và sửa được lệnh đặt sai vị trí.</li>
+            </ul>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+            <button type="button" id="btnStartGame" class="btn-primary" style="font-size:1.12rem; padding:12px 28px;">
+              ▶ Bắt đầu khám phá
+            </button>
+            <button type="button" id="btnWelcomeGuide" class="btn-gold" style="font-size:1.02rem; padding:12px 22px;">
+              📖 Hướng dẫn cách chơi
+            </button>
+          </div>
+        </div>
+
+        <!-- Tranh minh họa SVG lớn đa lớp ở màn chào mừng -->
+        <div class="welcome-illustration">
+          <svg viewBox="0 0 500 360" width="100%" height="auto" role="img" aria-label="Minh họa trợ lí Pixel, Mèo hoạt hình và các khối lệnh cấu trúc tuần tự">
+            <defs>
+              <linearGradient id="heroSky" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#58429B" />
+                <stop offset="60%" stop-color="#6F57C2" />
+                <stop offset="100%" stop-color="#4ABDAA" />
+              </linearGradient>
+            </defs>
+            <!-- Nền xứ sở công nghệ -->
+            <rect x="10" y="10" width="480" height="340" rx="22" fill="url(#heroSky)" />
+            <circle cx="80" cy="65" r="35" fill="#F2BE4A" opacity="0.25" />
+            <circle cx="430" cy="90" r="48" fill="#F6B6C8" opacity="0.22" />
+
+            <!-- Sơ đồ 3 khối lệnh tuần tự minh họa trực quan -->
+            <g transform="translate(36, 48)">
+              <!-- Khối 1: Cờ xanh -->
+              <path d="M0,16 Q0,0 20,0 L195,0 Q205,0 205,10 L205,36 Q205,44 195,44 L55,44 L48,51 L30,51 L23,44 L8,44 Q0,44 0,36 Z" fill="#FFBF00" stroke="#CC9900" stroke-width="2"/>
+              <text x="16" y="27" fill="#2B234A" font-size="13" font-weight="bold">🚩 Khi bấm vào cờ xanh</text>
+
+              <!-- Khối 2: Di chuyển -->
+              <g transform="translate(0, 46)">
+                <path d="M0,6 L23,6 L30,13 L48,13 L55,6 L195,6 Q205,6 205,14 L205,40 Q205,48 195,48 L55,48 L48,55 L30,55 L23,48 L8,48 Q0,48 0,40 Z" fill="#4C97FF" stroke="#3373CC" stroke-width="2"/>
+                <text x="16" y="32" fill="#FFFFFF" font-size="13" font-weight="bold">🐾 di chuyển 100 bước</text>
+              </g>
+
+              <!-- Khối 3: Nói Xin chào -->
+              <g transform="translate(0, 94)">
+                <path d="M0,6 L23,6 L30,13 L48,13 L55,6 L215,6 Q225,6 225,14 L225,40 Q225,48 215,48 L55,48 L48,55 L30,55 L23,48 L8,48 Q0,48 0,40 Z" fill="#9966FF" stroke="#774DCB" stroke-width="2"/>
+                <text x="16" y="32" fill="#FFFFFF" font-size="13" font-weight="bold">💬 nói "Xin chào!" 2 giây</text>
+              </g>
+
+              <!-- Khối 4: Đổi trang phục -->
+              <g transform="translate(0, 142)">
+                <path d="M0,6 L23,6 L30,13 L48,13 L55,6 L215,6 Q225,6 225,14 L225,40 Q225,48 215,48 L8,48 Q0,48 0,40 Z" fill="#CF63CF" stroke="#A63FA6" stroke-width="2"/>
+                <text x="16" y="32" fill="#FFFFFF" font-size="13" font-weight="bold">🎵 phát âm thanh Meo</text>
+              </g>
+
+              <!-- Mũi tên chỉ thứ tự từ trên xuống -->
+              <path d="M242,20 L242,175" stroke="#FFE47A" stroke-width="4" stroke-dasharray="6,4" />
+              <polygon points="242,188 234,172 250,172" fill="#FFE47A" />
+              <text x="235" y="210" fill="#FFE47A" font-size="12" font-weight="bold" text-anchor="middle">THỨ TỰ 1 → 2 → 3 → 4</text>
+            </g>
+
+            <!-- Sân khấu nhỏ bên phải với Mèo và Trợ lí Pixel -->
+            <g transform="translate(285, 52)">
+              <rect x="0" y="0" width="180" height="190" rx="16" fill="#FFFDF9" stroke="#F2BE4A" stroke-width="4" />
+              <rect x="0" y="138" width="180" height="52" rx="10" fill="#A3E4D7" />
+              <!-- Nhân vật Mèo Scratch chibi -->
+              <g transform="translate(52, 65)">
+                <ellipse cx="38" cy="78" rx="26" ry="8" fill="rgba(0,0,0,0.12)" />
+                <rect x="22" y="38" width="32" height="34" rx="12" fill="#FF9F43" stroke="#58429B" stroke-width="2.5" />
+                <polygon points="16,22 22,2 34,14" fill="#FF9F43" stroke="#58429B" stroke-width="2.5" />
+                <polygon points="60,22 54,2 42,14" fill="#FF9F43" stroke="#58429B" stroke-width="2.5" />
+                <circle cx="38" cy="26" r="22" fill="#FF9F43" stroke="#58429B" stroke-width="2.5" />
+                <ellipse cx="38" cy="32" rx="14" ry="9" fill="#FFF3E0" />
+                <circle cx="30" cy="22" r="3.5" fill="#2B234A" />
+                <circle cx="46" cy="22" r="3.5" fill="#2B234A" />
+                <polygon points="38,27 34,31 42,31" fill="#E04F5F" />
+                <path d="M33,34 Q38,39 43,34" fill="none" stroke="#2B234A" stroke-width="2" />
+              </g>
+              <!-- Bong bóng Xin chào -->
+              <rect x="18" y="14" width="144" height="36" rx="10" fill="#58429B" />
+              <text x="90" y="37" fill="#FFFFFF" font-size="13" font-weight="bold" text-anchor="middle">Xin chào các bạn! 🐾</text>
+            </g>
+
+            <!-- Nhãn chân tranh -->
+            <rect x="36" y="285" width="428" height="44" rx="12" fill="rgba(255,255,255,0.18)" />
+            <text x="250" y="312" fill="#FFFFFF" font-size="14" font-weight="bold" text-anchor="middle">
+              ✨ Hoàn thành 4 màn chơi • Nhận 4 Huy hiệu Lập trình viên Nhí ✨
+            </text>
+          </svg>
+        </div>
+      </div>
+    </main>
+
+    <!-- ==================== MÀN HÌNH 2: SÂN CHƠI CHÍNH (4 MÀN) ==================== -->
+    <main id="screenPlay" class="screen">
+      <div class="play-layout">
+        <!-- CỘT TRÁI: SÂN KHẤU ĐỘNG + TRỢ LÍ PIXEL -->
+        <div class="left-column">
+          <div class="stage-card">
+            <div class="stage-toolbar">
+              <div class="stage-controls">
+                <button type="button" id="btnStageGreenFlag" class="flag-btn" title="Bấm Cờ xanh để chạy chương trình tuần tự">
+                  🚩 Chạy (Cờ xanh)
+                </button>
+                <button type="button" id="btnStageStop" class="stop-btn" title="Dừng chương trình đang chạy">
+                  🛑 Dừng
+                </button>
+                <button type="button" id="btnStageReset" class="reset-stage-btn" title="Đặt lại vị trí ban đầu của nhân vật">
+                  ↺ Đặt lại
+                </button>
+              </div>
+              <span class="exec-badge" id="stageSceneBadge">Cảnh 1: Công viên</span>
+            </div>
+
+            <!-- Sân khấu SVG động: bối cảnh đổi theo từng màn, mèo di chuyển thật theo lệnh -->
+            <div class="stage-viewport">
+              <svg id="stageSvg" viewBox="0 0 400 300" width="100%" height="100%" role="img" aria-label="Sân khấu thực thi chương trình của Mèo">
+                <!-- Lớp nền cảnh vật thay đổi theo màn 1, 2, 3, 4 -->
+                <g id="stageBackgroundLayer"></g>
+
+                <!-- Vạch đích / Mục tiêu trên sân khấu -->
+                <g id="stageTargetMarker" transform="translate(300, 175)">
+                  <ellipse cx="0" cy="48" rx="28" ry="8" fill="rgba(74, 189, 170, 0.35)" />
+                  <pole>
+                    <line x1="0" y1="48" x2="0" y2="-10" stroke="#58429B" stroke-width="4" />
+                    <polygon points="0,-10 38,2 0,14" fill="#F2BE4A" stroke="#D49B27" stroke-width="2" />
+                  </pole>
+                  <text x="0" y="65" fill="#2B234A" font-size="11" font-weight="bold" text-anchor="middle" id="stageTargetLabel">ĐÍCH</text>
+                </g>
+
+                <!-- Nhân vật Mèo hoạt hình thực thi tuần tự -->
+                <g id="stageCatSprite" transform="translate(75, 175)" style="transition: transform 0.55s ease;">
+                  <!-- Bóng đổ dưới chân -->
+                  <ellipse cx="0" cy="50" rx="26" ry="7" fill="rgba(0,0,0,0.16)" />
+
+                  <!-- Đuôi mèo -->
+                  <path id="catTail" d="M-18,32 Q-38,18 -32,4" fill="none" stroke="#E67E22" stroke-width="7" stroke-linecap="round" />
+
+                  <!-- Thân & Trang phục (Đổi theo lệnh Đổi trang phục) -->
+                  <rect id="catBody" x="-18" y="8" width="36" height="36" rx="14" fill="#FF9F43" stroke="#2B234A" stroke-width="2.5" />
+                  <path id="catScarf" d="M-16,12 Q0,20 16,12 L14,22 Q0,27 -14,22 Z" fill="#4ABDAA" />
+
+                  <!-- Chân trái & Chân phải -->
+                  <rect id="catLegLeft" x="-14" y="38" width="10" height="13" rx="5" fill="#E67E22" stroke="#2B234A" stroke-width="2" />
+                  <rect id="catLegRight" x="4" y="38" width="10" height="13" rx="5" fill="#E67E22" stroke="#2B234A" stroke-width="2" />
+
+                  <!-- Tay trái & Tay phải (vẫy tay khi đổi trang phục) -->
+                  <rect id="catArmLeft" x="-27" y="12" width="11" height="20" rx="5" fill="#FF9F43" stroke="#2B234A" stroke-width="2" />
+                  <rect id="catArmRight" x="16" y="12" width="11" height="20" rx="5" fill="#FF9F43" stroke="#2B234A" stroke-width="2" transform="rotate(0, 21, 16)" />
+
+                  <!-- Đầu & Tai mèo -->
+                  <polygon points="-20,-14 -14,-36 -2,-22" fill="#FF9F43" stroke="#2B234A" stroke-width="2.5" />
+                  <polygon points="20,-14 14,-36 2,-22" fill="#FF9F43" stroke="#2B234A" stroke-width="2.5" />
+                  <circle cx="0" cy="-8" r="23" fill="#FF9F43" stroke="#2B234A" stroke-width="2.5" />
+                  <ellipse cx="0" cy="-2" rx="15" ry="10" fill="#FFF5E6" />
+
+                  <!-- Mắt & Miệng -->
+                  <circle cx="-8" cy="-11" r="3.5" fill="#2B234A" />
+                  <circle cx="8" cy="-11" r="3.5" fill="#2B234A" />
+                  <circle cx="-9" cy="-12.5" r="1.2" fill="#FFFFFF" />
+                  <circle cx="7" cy="-12.5" r="1.2" fill="#FFFFFF" />
+                  <polygon points="0,-6 -4,-2 4,-2" fill="#E04F5F" />
+                  <path d="M-5,1 Q0,6 5,1" fill="none" stroke="#2B234A" stroke-width="2" stroke-linecap="round" />
+
+                  <!-- Biểu tượng đồng hồ chờ khi chạy lệnh Đợi -->
+                  <g id="catWaitIndicator" opacity="0" transform="translate(26, -38)">
+                    <circle cx="0" cy="0" r="13" fill="#FFAB19" stroke="#FFFFFF" stroke-width="2" />
+                    <text x="0" y="4" font-size="11" text-anchor="middle" fill="#2B234A" font-weight="bold">⏳</text>
+                  </g>
+
+                  <!-- Biểu tượng nốt nhạc bay lên khi chạy lệnh Phát âm thanh -->
+                  <g id="catSoundNotes" opacity="0" transform="translate(-32, -42)">
+                    <circle cx="0" cy="0" r="15" fill="#CF63CF" stroke="#FFFFFF" stroke-width="2" />
+                    <text x="0" y="5" font-size="13" text-anchor="middle" fill="#FFFFFF" font-weight="bold">♪♫</text>
+                  </g>
+
+                  <!-- Bong bóng lời nói bằng CHỮ của Mèo trên sân khấu -->
+                  <g id="catSpeechGroup" opacity="0" transform="translate(0, -68)">
+                    <rect x="-85" y="-26" width="170" height="36" rx="12" fill="#FFFFFF" stroke="#58429B" stroke-width="2.5" />
+                    <polygon points="-6,10 6,10 0,20" fill="#FFFFFF" stroke="#58429B" stroke-width="2" />
+                    <text id="catSpeechText" x="0" y="-4" fill="#2B234A" font-size="12.5" font-weight="bold" text-anchor="middle">Xin chào!</text>
+                  </g>
+                </g>
+              </svg>
+            </div>
+
+            <!-- Thanh hiển thị lệnh đang chạy tuần tự -->
+            <div class="exec-tracker">
+              <span>Trạng thái chạy:</span>
+              <strong id="execStatusText" style="color:var(--primary-purple);">Sẵn sàng chạy tuần tự</strong>
+            </div>
+            <div class="sim-disclaimer">Giao diện mô phỏng phục vụ học tập</div>
+          </div>
+
+          <!-- Hộp Trợ lí Pixel với biểu cảm SVG & Bong bóng chữ hướng dẫn -->
+          <div class="mascot-card">
+            <div class="pixel-avatar-wrap" id="pixelAvatarBox" aria-hidden="true">
+              <!-- SVG Pixel cập nhật theo biểu cảm: normal, happy, thinking, surprised -->
+            </div>
+            <div id="pixelSpeechBox" class="speech-bubble" role="status" aria-live="polite">
+              <span class="pixel-name-tag">🤖 Trợ lí Pixel</span>
+              <p id="pixelMessageText">Chào mừng em! Hãy quan sát các khối lệnh từ trên xuống dưới nhé.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- CỘT PHẢI: KHÔNG GIAN TƯƠNG TÁC CỦA TỪNG MÀN -->
+        <div class="workspace-card">
+          <div>
+            <div class="task-header">
+              <div class="task-title-group">
+                <h2 id="levelMainTitle">MÀN 1 – ĐỌC CHƯƠNG TRÌNH</h2>
+                <p class="task-desc" id="levelSubDesc">Quan sát khối lệnh và sắp xếp đúng thứ tự hoạt động của Mèo.</p>
+              </div>
+              <div class="subtask-pills" id="subtaskPillsContainer" aria-label="Các nhiệm vụ trong màn">
+                <!-- 3 nút nhiệm vụ 1, 2, 3 -->
+              </div>
+            </div>
+
+            <!-- Nội dung động của màn hiện tại -->
+            <div id="interactiveStageContainer" style="margin-top:14px;"></div>
+          </div>
+
+          <!-- Chân trang điều khiển: Gợi ý (2 mức), Làm lại màn, Kiểm tra, Tiếp tục -->
+          <div class="workspace-footer">
+            <div class="footer-left">
+              <button type="button" id="btnHint" class="btn-gold" title="Xem gợi ý từng bước (Có 2 mức gợi ý)">
+                💡 Gợi ý (<span id="hintStepLabel">Mức 1/2</span>)
+              </button>
+              <button type="button" id="btnResetLevel" class="btn-outline" title="Làm lại nhiệm vụ này từ đầu">
+                🔄 Làm lại màn
+              </button>
+            </div>
+            <div class="footer-right">
+              <button type="button" id="btnCheckAnswer" class="btn-mint">
+                ✔ Kiểm tra kết quả
+              </button>
+              <button type="button" id="btnNextAction" class="btn-primary" disabled>
+                Tiếp tục ➔
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ==================== MÀN HÌNH 3: TỔNG KẾT & HUY HIỆU ==================== -->
+    <main id="screenSummary" class="screen">
+      <div class="summary-container">
+        <span class="book-tag">HOÀN THÀNH HÀNH TRÌNH • TIN HỌC 5 BÀI 10</span>
+        <h2 class="game-hero-title" style="margin-top:6px;">BẢNG THÀNH TÍCH LẬP TRÌNH TUẦN TỰ</h2>
+        <p style="font-size:1.15rem; margin:8px 0;">
+          Tổng điểm đạt được: <strong id="finalScoreDisplay" style="font-size:1.8rem; color:var(--primary-purple);">100 / 100</strong> điểm
+        </p>
+
+        <!-- 4 Huy hiệu của 4 màn -->
+        <div class="badge-grid" id="summaryBadgeGrid"></div>
+
+        <!-- 3 Nhận xét kiến thức cốt lõi bám sát SGK -->
+        <div class="takeaway-box">
+          <h3 style="color:#0D473C; margin-bottom:8px;">📌 Ghi nhớ kiến thức Bài 10 – Cấu trúc tuần tự:</h3>
+          <ul style="padding-left:20px; font-size:0.97rem; color:#103831;">
+            <li><strong>1. Khái niệm cấu trúc tuần tự:</strong> Là cấu trúc mà các việc (hoặc các lệnh) được thực hiện <strong>lần lượt theo đúng thứ tự từ đầu đến cuối</strong>, hết việc này mới đến việc tiếp theo.</li>
+            <li><strong>2. Ghép khối lệnh trong Scratch:</strong> Chương trình cấu trúc tuần tự được tạo bằng cách <strong>ghép các khối lệnh nối tiếp nhau từ trên xuống dưới</strong> dưới khối lệnh sự kiện (như <em>Khi bấm vào cờ xanh</em>).</li>
+            <li><strong>3. Kiểm tra và gỡ lỗi thứ tự:</strong> Nếu đặt sai thứ tự khối lệnh (ví dụ: nói trước khi di chuyển tới đích), nhân vật sẽ hành động sai kịch bản. Ta cần sắp xếp lại đúng trình tự.</li>
+          </ul>
+        </div>
+
+        <div style="display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin-top:16px;">
+          <button type="button" id="btnDownloadCert" class="btn-mint">
+            📥 Lưu phiếu thành tích (.html)
+          </button>
+          <button type="button" id="btnPlayAgain" class="btn-primary">
+            🔁 Chơi lại từ đầu
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ==================== MODAL HƯỚNG DẪN CHƠI (CHỈ CHỮ + HÌNH MINH HỌA) ==================== -->
+  <div id="guideModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="guideModalTitle">
+    <div class="modal-card">
+      <h2 id="guideModalTitle" style="color:var(--primary-purple); margin-bottom:10px;">
+        📖 Hướng dẫn trò chơi: LẬP TRÌNH THEO THỨ TỰ
+      </h2>
+      <p style="margin-bottom:12px;">
+        Chào mừng em đến với trò chơi học tập <strong>Bài 10: Cấu trúc tuần tự</strong> (Tin học 5). Cùng trợ lí <strong>Pixel</strong> vượt qua 4 màn chơi (mỗi màn 25 điểm, tổng 100 điểm):
+      </p>
+      <ul style="padding-left:20px; margin-bottom:14px; font-size:0.95rem;">
+        <li style="margin-bottom:6px;"><strong>Màn 1 – Đọc chương trình:</strong> Quan sát chuỗi khối lệnh của Mèo và chọn các thẻ hành động theo đúng thứ tự thực hiện từ trên xuống dưới.</li>
+        <li style="margin-bottom:6px;"><strong>Màn 2 – Ghép khối lệnh:</strong> Kéo thả (hoặc nháy chọn khối lệnh rồi nháy vào ô trống) để ghép các khối lệnh khớp vào nhau theo chiều dọc.</li>
+        <li style="margin-bottom:6px;"><strong>Màn 3 – Chạy thử:</strong> Bấm nút <strong>🚩 Chạy (Cờ xanh)</strong> để xem Mèo thực thi từng lệnh trên sân khấu, dùng nút <strong>Dừng / Đặt lại</strong> và thiết lập đúng tham số.</li>
+        <li style="margin-bottom:6px;"><strong>Màn 4 – Tìm lệnh sai vị trí:</strong> Chạy thử chương trình đang bị lỗi thứ tự, phát hiện khối lệnh đặt sai chỗ và đổi lại vị trí cho đúng.</li>
+      </ul>
+      <div style="background:var(--bg-cream); border:2px solid #DED4F7; border-radius:12px; padding:10px 14px; margin-bottom:16px; font-size:0.9rem;">
+        <strong>💡 Mẹo thao tác:</strong> Em có thể dùng <strong>chuột kéo thả</strong>, hoặc <strong>nháy chuột / phím Enter</strong> để chọn lệnh và đưa vào vị trí mong muốn. Nút <strong>Gợi ý</strong> luôn có 2 mức hỗ trợ từng bước!
+      </div>
+      <div style="text-align:right;">
+        <button type="button" id="btnCloseGuide" class="btn-primary">Đã hiểu, đóng hướng dẫn</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       PHẦN 1: CẤU HÌNH TRÒ CHƠI (GAME_CONFIG)
+       Giáo viên có thể chỉnh sửa trực tiếp câu hỏi, khối lệnh, gợi ý, giải thích
+       và âm lượng tại đối tượng GAME_CONFIG dưới đây.
+       ========================================================================== */
+    const GAME_CONFIG = {
+      gameTitle: "LẬP TRÌNH THEO THỨ TỰ",
+      subjectInfo: "Tin học 5 – Kết nối tri thức với cuộc sống • Bài 10: Cấu trúc tuần tự (Trang 52–55)",
+      pointsPerLevel: 25,
+      maxScore: 100,
+      audio: {
+        defaultMasterVolume: 0.7,
+        bgmBaseGain: 0.12, // Âm lượng nhạc nền êm dịu 12%
+        sfxBaseGain: 0.25
+      },
+      badges: [
+        { id: "b1", title: "Nhà Đọc Lệnh Tinh Anh", desc: "Đọc hiểu đúng thứ tự khối lệnh tuần tự" },
+        { id: "b2", title: "Kiến Trúc Sư Khối Lệnh", desc: "Ghép chuỗi khối lệnh Scratch chuẩn xác" },
+        { id: "b3", title: "Đạo Diễn Sân Khấu Số", desc: "Điều khiển Cờ xanh và chạy thử thành thạo" },
+        { id: "b4", title: "Chuyên Gia Gỡ Lỗi Nhí", desc: "Phát hiện và sửa đúng các lệnh sai vị trí" }
+      ],
+
+      /* Dữ liệu chi tiết của 4 màn chơi - mỗi màn có 3 lượt tương tác thực chất */
+      levels: [
+        /* ---------------- MÀN 1: ĐỌC CHƯƠNG TRÌNH ---------------- */
+        {
+          id: 1,
+          name: "MÀN 1 – ĐỌC CHƯƠNG TRÌNH",
+          sceneTitle: "Cảnh 1: Đường công viên",
+          targetLabel: "GHẾ ĐÁ",
+          shortInstruction: "Quan sát chương trình Scratch và xếp đúng thứ tự các hành động của Mèo từ đầu đến cuối.",
+          subtasks: [
+            {
+              id: "1.1",
+              title: "Nhiệm vụ 1.1: Câu chuyện «Xin chào»",
+              prompt: "Quan sát 4 khối lệnh bên trái. Hãy nháy chọn các thẻ hành động bên phải theo ĐÚNG THỨ TỰ từ 1 đến 4 mà Mèo sẽ thực hiện khi bấm cờ xanh.",
+              programBlocks: [
+                { id: "b_flag", type: "event", text: "🚩 Khi bấm vào cờ xanh", action: "start" },
+                { id: "b_move80", type: "motion", text: "🐾 di chuyển 80 bước", action: "move", value: 80 },
+                { id: "b_say_hi", type: "looks", text: "💬 nói \"Xin chào!\" trong 2 giây", action: "say", value: "Xin chào!" },
+                { id: "b_sound_meow", type: "sound", text: "🎵 phát âm thanh Meo đến hết", action: "sound", value: "Meo" }
+              ],
+              shuffledCards: [
+                { cardId: "c_say", text: "Mèo hiện bóng chữ nói «Xin chào!» trong 2 giây" },
+                { cardId: "c_sound", text: "Mèo phát ra tiếng kêu «Meo» vui nhộn" },
+                { cardId: "c_flag", text: "Bắt đầu chương trình khi người chơi bấm vào Cờ xanh" },
+                { cardId: "c_move", text: "Mèo bước về phía trước 80 bước trên đường công viên" }
+              ],
+              correctOrder: ["c_flag", "c_move", "c_say", "c_sound"],
+              hint1: "Trong cấu trúc tuần tự, khối lệnh ở trên cùng luôn được thực hiện đầu tiên, sau đó lần lượt xuống dưới.",
+              hint2: "Thứ tự đúng là: (1) Bấm cờ xanh ➔ (2) Bước 80 bước ➔ (3) Nói «Xin chào!» ➔ (4) Phát tiếng kêu «Meo».",
+              successMsg: "Chính xác! Em đã đọc đúng thứ tự 4 bước của câu chuyện «Xin chào» từ trên xuống dưới.",
+              errorMsg: "Thứ tự thẻ hành động chưa khớp với thứ tự các khối lệnh từ trên xuống dưới. Em hãy đối chiếu lại từng khối lệnh nhé!"
+            },
+            {
+              id: "1.2",
+              title: "Nhiệm vụ 1.2: Mèo vẫy tay chào bạn",
+              prompt: "Đọc chương trình thứ hai (có lệnh Đợi và Đổi trang phục). Hãy xếp 4 thẻ hành động theo đúng thứ tự thực hiện của Mèo.",
+              programBlocks: [
+                { id: "b2_say", type: "looks", text: "💬 nói \"Chào bạn nhé!\" trong 2 giây", action: "say", value: "Chào bạn nhé!" },
+                { id: "b2_wait", type: "control", text: "⏳ đợi 1 giây", action: "wait", value: 1 },
+                { id: "b2_costume", type: "looks", text: "👕 đổi trang phục sang mèo-vẫy-tay", action: "costume", value: "wave" },
+                { id: "b2_move", type: "motion", text: "🐾 di chuyển 90 bước", action: "move", value: 90 }
+              ],
+              shuffledCards: [
+                { cardId: "s_costume", text: "Mèo đổi sang tư thế giơ tay vẫy chào" },
+                { cardId: "s_move", text: "Mèo tiến về phía trước 90 bước" },
+                { cardId: "s_say", text: "Mèo nói lời chào «Chào bạn nhé!» trong 2 giây" },
+                { cardId: "s_wait", text: "Mèo tạm dừng và đợi trong 1 giây" }
+              ],
+              correctOrder: ["s_say", "s_wait", "s_costume", "s_move"],
+              hint1: "Hãy nhìn khối lệnh màu tím đầu tiên và khối lệnh màu cam «đợi 1 giây» ngay phía dưới nó.",
+              hint2: "Thứ tự đúng: (1) Nói «Chào bạn nhé!» ➔ (2) Đợi 1 giây ➔ (3) Đổi sang tư thế vẫy tay ➔ (4) Tiến lên 90 bước.",
+              successMsg: "Tuyệt vời! Lệnh nào đứng trên thì thực hiện trước, lệnh đứng dưới thực hiện sau.",
+              errorMsg: "Chưa đúng thứ tự rồi. Em lưu ý Mèo nói trước, sau đó đợi 1 giây rồi mới đổi trang phục và di chuyển nhé!"
+            },
+            {
+              id: "1.3",
+              title: "Nhiệm vụ 1.3: Khám phá lệnh Đợi ở giữa",
+              prompt: "Quan sát chương trình 4 lệnh dưới đây. Hãy xếp các thẻ mô tả đúng trình tự thời gian diễn ra trên sân khấu.",
+              programBlocks: [
+                { id: "b3_flag", type: "event", text: "🚩 Khi bấm vào cờ xanh", action: "start" },
+                { id: "b3_move", type: "motion", text: "🐾 di chuyển 100 bước", action: "move", value: 100 },
+                { id: "b3_wait", type: "control", text: "⏳ đợi 2 giây", action: "wait", value: 2 },
+                { id: "b3_say", type: "looks", text: "💬 nói \"Tớ đến ghế đá rồi!\" trong 2 giây", action: "say", value: "Tớ đến ghế đá rồi!" }
+              ],
+              shuffledCards: [
+                { cardId: "p_wait", text: "Mèo đứng yên nghỉ tại chỗ trong 2 giây" },
+                { cardId: "p_say", text: "Mèo thông báo «Tớ đến ghế đá rồi!»" },
+                { cardId: "p_flag", text: "Nhận tín hiệu bắt đầu từ nút Cờ xanh" },
+                { cardId: "p_move", text: "Mèo đi bộ 100 bước tới gần ghế đá" }
+              ],
+              correctOrder: ["p_flag", "p_move", "p_wait", "p_say"],
+              hint1: "Lệnh «đợi 2 giây» nằm giữa lệnh di chuyển và lệnh nói.",
+              hint2: "Thứ tự đúng: (1) Bấm Cờ xanh ➔ (2) Đi bộ 100 bước ➔ (3) Đứng nghỉ 2 giây ➔ (4) Thông báo «Tớ đến ghế đá rồi!».",
+              successMsg: "Xuất sắc! Em đã hoàn thành cả 3 thử thách Đọc chương trình của Màn 1.",
+              errorMsg: "Em hãy kiểm tra lại vị trí của bước «Đứng nghỉ 2 giây» và bước «Đi bộ 100 bước» nhé!"
+            }
+          ]
+        },
+
+        /* ---------------- MÀN 2: GHÉP KHỐI LỆNH ---------------- */
+        {
+          id: 2,
+          name: "MÀN 2 – GHÉP KHỐI LỆNH",
+          sceneTitle: "Cảnh 2: Cổng trường Tiểu học",
+          targetLabel: "CỔNG TRƯỜNG",
+          shortInstruction: "Kéo thả (hoặc nháy chọn) các khối lệnh rời vào khung chương trình để ghép thành chuỗi lệnh tuần tự khớp theo chiều dọc.",
+          subtasks: [
+            {
+              id: "2.1",
+              title: "Nhiệm vụ 2.1: Ghép chuỗi lệnh «Xin chào»",
+              prompt: "Hãy ghép 4 khối lệnh theo đúng yêu cầu: (1) Khi bấm vào cờ xanh ➔ (2) di chuyển 100 bước ➔ (3) nói «Xin chào!» trong 2 giây ➔ (4) đổi trang phục sang mèo-b.",
+              availableBlocks: [
+                { id: "m2_say", type: "looks", text: "💬 nói \"Xin chào!\" trong 2 giây", action: "say", value: "Xin chào!" },
+                { id: "m2_costume", type: "looks", text: "👕 đổi trang phục sang mèo-b", action: "costume", value: "wave" },
+                { id: "m2_flag", type: "event", text: "🚩 Khi bấm vào cờ xanh", action: "start" },
+                { id: "m2_move", type: "motion", text: "🐾 di chuyển 100 bước", action: "move", value: 100 }
+              ],
+              correctSequence: ["m2_flag", "m2_move", "m2_say", "m2_costume"],
+              hint1: "Khối lệnh sự kiện màu vàng «Khi bấm vào cờ xanh» luôn có đầu bo tròn và phải đặt ở vị trí số 1 trên cùng.",
+              hint2: "Ghép lần lượt: Khi bấm vào cờ xanh ➔ di chuyển 100 bước ➔ nói «Xin chào!» trong 2 giây ➔ đổi trang phục sang mèo-b.",
+              successMsg: "Ghép khối chuẩn xác! Các rãnh khớp nối đã ghép liền mạch và Mèo đã thực hiện đúng kịch bản.",
+              errorMsg: "Chuỗi khối lệnh chưa đúng thứ tự yêu cầu. Em hãy kiểm tra lại thứ tự Di chuyển ➔ Nói ➔ Đổi trang phục nhé!"
+            },
+            {
+              id: "2.2",
+              title: "Nhiệm vụ 2.2: Kịch bản «Chào buổi sáng ở cổng trường»",
+              prompt: "Ghép 4 khối lệnh để Mèo thực hiện tuần tự: (1) Khi bấm vào cờ xanh ➔ (2) nói «Chào thầy cô ạ!» trong 2 giây ➔ (3) đợi 1 giây ➔ (4) phát âm thanh Meo đến hết.",
+              availableBlocks: [
+                { id: "m22_wait", type: "control", text: "⏳ đợi 1 giây", action: "wait", value: 1 },
+                { id: "m22_sound", type: "sound", text: "🎵 phát âm thanh Meo đến hết", action: "sound", value: "Meo" },
+                { id: "m22_flag", type: "event", text: "🚩 Khi bấm vào cờ xanh", action: "start" },
+                { id: "m22_say", type: "looks", text: "💬 nói \"Chào thầy cô ạ!\" trong 2 giây", action: "say", value: "Chào thầy cô ạ!" }
+              ],
+              correctSequence: ["m22_flag", "m22_say", "m22_wait", "m22_sound"],
+              hint1: "Sau khối Cờ xanh, Mèo cần nói «Chào thầy cô ạ!» trước rồi mới đợi 1 giây.",
+              hint2: "Thứ tự 4 khối: Khi bấm vào cờ xanh ➔ nói «Chào thầy cô ạ!» 2 giây ➔ đợi 1 giây ➔ phát âm thanh Meo đến hết.",
+              successMsg: "Tuyệt lắm! Các khối lệnh đã khớp dọc hoàn hảo theo đúng kịch bản chào buổi sáng.",
+              errorMsg: "Thứ tự ghép chưa đúng. Em nhớ đặt lệnh Nói trước lệnh Đợi 1 giây và Phát âm thanh ở cuối cùng nhé!"
+            },
+            {
+              id: "2.3",
+              title: "Nhiệm vụ 2.3: Bước vào cổng trường (5 khối lệnh)",
+              prompt: "Ghép 5 khối lệnh theo đúng thứ tự: (1) Khi bấm vào cờ xanh ➔ (2) di chuyển 60 bước ➔ (3) đợi 1 giây ➔ (4) di chuyển 60 bước ➔ (5) nói «Tớ vào lớp đây!» trong 2 giây.",
+              availableBlocks: [
+                { id: "m23_move2", type: "motion", text: "🐾 di chuyển 60 bước (lần 2)", action: "move", value: 60 },
+                { id: "m23_say", type: "looks", text: "💬 nói \"Tớ vào lớp đây!\" trong 2 giây", action: "say", value: "Tớ vào lớp đây!" },
+                { id: "m23_flag", type: "event", text: "🚩 Khi bấm vào cờ xanh", action: "start" },
+                { id: "m23_wait", type: "control", text: "⏳ đợi 1 giây", action: "wait", value: 1 },
+                { id: "m23_move1", type: "motion", text: "🐾 di chuyển 60 bước (lần 1)", action: "move", value: 60 }
+              ],
+              correctSequence: ["m23_flag", "m23_move1", "m23_wait", "m23_move2", "m23_say"],
+              hint1: "Mèo đi 2 chặng 60 bước, có nghỉ «đợi 1 giây» ở giữa hai chặng trước khi nói câu cuối.",
+              hint2: "Thứ tự: Cờ xanh ➔ di chuyển 60 bước (lần 1) ➔ đợi 1 giây ➔ di chuyển 60 bước (lần 2) ➔ nói «Tớ vào lớp đây!».",
+              successMsg: "Hoàn hảo! Em đã chinh phục Màn 2 và nắm vững cách ghép các khối lệnh tuần tự.",
+              errorMsg: "Hãy kiểm tra lại: Mèo cần đi 60 bước (lần 1), sau đó đợi 1 giây, đi tiếp 60 bước (lần 2) rồi mới nói nhé!"
+            }
+          ]
+        },
+
+        /* ---------------- MÀN 3: CHẠY THỬ ---------------- */
+        {
+          id: 3,
+          name: "MÀN 3 – CHẠY THỬ",
+          sceneTitle: "Cảnh 3: Sân khấu Tài năng",
+          targetLabel: "MICRO VÀNG",
+          shortInstruction: "Sử dụng nút Cờ xanh (Chạy), Dừng và Đặt lại trên sân khấu để kiểm nghiệm chương trình thực thi tuần tự.",
+          subtasks: [
+            {
+              id: "3.1",
+              title: "Nhiệm vụ 3.1: Chạy thử và quan sát lệnh đang chạy",
+              prompt: "Bước 1: Em hãy nhấn nút «🚩 Chạy (Cờ xanh)» trên sân khấu để xem Mèo thực hiện 4 lệnh. Bước 2: Cho biết ngay sau khi «di chuyển 90 bước», khối lệnh nào được làm sáng và thực hiện tiếp theo?",
+              requireRunFirst: true,
+              programBlocks: [
+                { id: "r31_flag", type: "event", text: "🚩 Khi bấm vào cờ xanh", action: "start" },
+                { id: "r31_move", type: "motion", text: "🐾 di chuyển 90 bước", action: "move", value: 90 },
+                { id: "r31_costume", type: "looks", text: "👕 đổi trang phục sang mèo-biểu-diễn", action: "costume", value: "celebrate" },
+                { id: "r31_sound", type: "sound", text: "🎵 phát âm thanh Meo đến hết", action: "sound", value: "Meo" }
+              ],
+              options: [
+                { id: "opt_a", text: "Khối lệnh «phát âm thanh Meo đến hết» chạy ngay lập tức (bỏ qua đổi trang phục)." },
+                { id: "opt_b", text: "Khối lệnh «đổi trang phục sang mèo-biểu-diễn» sáng lên và thực hiện, rồi mới tới phát âm thanh." },
+                { id: "opt_c", text: "Cả 3 khối lệnh Di chuyển, Đổi trang phục và Phát âm thanh chạy cùng một lúc." }
+              ],
+              correctOption: "opt_b",
+              hint1: "Em nhớ bấm nút «🚩 Chạy (Cờ xanh)» phía trên sân khấu trước để quan sát viền sáng màu vàng chạy qua từng khối lệnh nhé!",
+              hint2: "Ngay dưới lệnh «di chuyển 90 bước» là lệnh «đổi trang phục sang mèo-biểu-diễn». Các lệnh chạy lần lượt từng bước chứ không chạy cùng lúc.",
+              successMsg: "Chính xác! Khi bấm Cờ xanh, máy tính thực hiện tuần tự từng lệnh một từ trên xuống dưới.",
+              errorMsg: "Em hãy bấm nút «🚩 Chạy (Cờ xanh)» trên sân khấu để chạy thử chương trình, sau đó chọn đáp án mô tả đúng lệnh chạy ngay sau bước di chuyển nhé!"
+            },
+            {
+              id: "3.2",
+              title: "Nhiệm vụ 3.2: Thử nghiệm Đặt lại & Chọn kịch bản đúng",
+              prompt: "Em hãy bấm «↺ Đặt lại» rồi bấm «🚩 Chạy (Cờ xanh)» để kiểm tra chương trình mẫu. Nếu muốn Mèo ĐẾN ĐÍCH (Micro vàng, cách 110 bước) TRƯỚC rồi mới nói «Bắt đầu hát!», nhận xét nào dưới đây là đúng?",
+              requireRunFirst: true,
+              programBlocks: [
+                { id: "r32_flag", type: "event", text: "🚩 Khi bấm vào cờ xanh", action: "start" },
+                { id: "r32_move", type: "motion", text: "🐾 di chuyển 110 bước", action: "move", value: 110 },
+                { id: "r32_wait", type: "control", text: "⏳ đợi 1 giây", action: "wait", value: 1 },
+                { id: "r32_say", type: "looks", text: "💬 nói \"Bắt đầu hát!\" trong 2 giây", action: "say", value: "Bắt đầu hát!" }
+              ],
+              options: [
+                { id: "opt_1", text: "Chương trình hiện tại ĐÃ ĐÚNG: Mèo đi 110 bước tới Micro vàng, đợi 1 giây rồi mới nói «Bắt đầu hát!»." },
+                { id: "opt_2", text: "Chương trình hiện tại làm Mèo nói «Bắt đầu hát!» trước khi bước đi." },
+                { id: "opt_3", text: "Nút Đặt lại (↺) dùng để xóa hết các khối lệnh trong chương trình." }
+              ],
+              correctOption: "opt_1",
+              hint1: "Hãy bấm nút «🚩 Chạy (Cờ xanh)» để quan sát xem Mèo di chuyển tới Micro vàng trước hay nói trước.",
+              hint2: "Trong chương trình này, lệnh «di chuyển 110 bước» nằm trên lệnh «nói», nên Mèo đã tới đích trước khi nói.",
+              successMsg: "Rất chuẩn! Em đã biết kết hợp nút Cờ xanh và nút Đặt lại để kiểm tra hoạt động của nhân vật trên sân khấu.",
+              errorMsg: "Em nhớ bấm nút «🚩 Chạy (Cờ xanh)» để chạy thử trên sân khấu rồi chọn nhận xét đúng nhất nhé!"
+            },
+            {
+              id: "3.3",
+              title: "Nhiệm vụ 3.3: Thiết lập tham số & Chạy thử về đích",
+              prompt: "Em hãy chọn đúng các giá trị trong khối lệnh để Mèo: (1) Di chuyển đúng 120 bước tới Micro vàng ➔ (2) Đợi 1 giây ➔ (3) Nói «Cảm ơn các bạn!», sau đó bấm «🚩 Chạy (Cờ xanh)» và nhấn Kiểm tra.",
+              isParamConfigTask: true,
+              requireRunFirst: true,
+              targetParams: {
+                steps: "120",
+                waitSec: "1",
+                greeting: "Cảm ơn các bạn!"
+              },
+              hint1: "Hãy chọn 3 ô thông số trong các khối lệnh: 120 bước, đợi 1 giây, và câu nói «Cảm ơn các bạn!».",
+              hint2: "Sau khi chọn đủ 3 thông số (120 bước, 1 giây, Cảm ơn các bạn!), em hãy bấm nút «🚩 Chạy (Cờ xanh)» trên sân khấu rồi bấm Kiểm tra kết quả.",
+              successMsg: "Tuyệt vời! Em đã thiết lập thông số và chạy thử thành công chương trình tuần tự trên sân khấu!",
+              errorMsg: "Em cần chọn đúng thông số (120 bước, đợi 1 giây, nói «Cảm ơn các bạn!») VÀ bấm nút «🚩 Chạy (Cờ xanh)» để kiểm chứng trên sân khấu nhé!"
+            }
+          ]
+        },
+
+        /* ---------------- MÀN 4: TÌM LỆNH SAI VỊ TRÍ ---------------- */
+        {
+          id: 4,
+          name: "MÀN 4 – TÌM LỆNH SAI VỊ TRÍ",
+          sceneTitle: "Cảnh 4: Đảo Kho Báu Ngôi Sao",
+          targetLabel: "RƯƠNG SAO",
+          shortInstruction: "Chương trình dưới đây có khối lệnh đặt sai thứ tự! Hãy sắp xếp lại (dùng nút Lên ▲ / Xuống ▼ hoặc nháy đổi chỗ) rồi chạy kiểm tra.",
+          subtasks: [
+            {
+              id: "4.1",
+              title: "Nhiệm vụ 4.1: Sửa lỗi «Khoe tìm thấy rương trước khi đi»",
+              prompt: "Yêu cầu: Mèo phải đi 110 bước tới Rương Sao TRƯỚC, sau đó mới nói «Tìm thấy kho báu rồi!». Hiện tại chương trình đang bị ngược. Em hãy đổi lại vị trí khối lệnh cho đúng!",
+              initialBlocks: [
+                { id: "d41_flag", type: "event", text: "🚩 Khi bấm vào cờ xanh", action: "start" },
+                { id: "d41_say", type: "looks", text: "💬 nói \"Tìm thấy kho báu rồi!\" trong 2 giây", action: "say", value: "Tìm thấy kho báu rồi!" },
+                { id: "d41_move", type: "motion", text: "🐾 di chuyển 110 bước", action: "move", value: 110 },
+                { id: "d41_sound", type: "sound", text: "🎵 phát âm thanh Meo đến hết", action: "sound", value: "Meo" }
+              ],
+              correctOrder: ["d41_flag", "d41_move", "d41_say", "d41_sound"],
+              hint1: "Em có thể bấm Cờ xanh để xem lỗi: Mèo đứng ở vạch xuất phát đã vội nói «Tìm thấy kho báu rồi!» trước khi đi.",
+              hint2: "Hãy đưa khối «di chuyển 110 bước» lên vị trí số 2 (ngay dưới Cờ xanh), và đưa khối «nói...» xuống vị trí số 3.",
+              successMsg: "Sửa lỗi thành công! Giờ thì Mèo đã đi tới Rương Sao trước rồi mới reo lên vui mừng.",
+              errorMsg: "Vị trí các khối lệnh vẫn chưa đúng. Em nhớ: (1) Cờ xanh ➔ (2) Di chuyển 110 bước ➔ (3) Nói ➔ (4) Phát âm thanh nhé!"
+            },
+            {
+              id: "4.2",
+              title: "Nhiệm vụ 4.2: Sửa lỗi khối Cờ xanh và lệnh Đợi đặt sai chỗ",
+              prompt: "Yêu cầu: (1) Khi bấm vào cờ xanh ➔ (2) di chuyển 100 bước ➔ (3) đợi 1 giây ➔ (4) đổi trang phục sang mèo-chiến-thắng. Hãy sắp xếp lại chương trình bị xáo trộn bên dưới!",
+              initialBlocks: [
+                { id: "d42_move", type: "motion", text: "🐾 di chuyển 100 bước", action: "move", value: 100 },
+                { id: "d42_flag", type: "event", text: "🚩 Khi bấm vào cờ xanh", action: "start" },
+                { id: "d42_costume", type: "looks", text: "👕 đổi trang phục sang mèo-chiến-thắng", action: "costume", value: "celebrate" },
+                { id: "d42_wait", type: "control", text: "⏳ đợi 1 giây", action: "wait", value: 1 }
+              ],
+              correctOrder: ["d42_flag", "d42_move", "d42_wait", "d42_costume"],
+              hint1: "Khối sự kiện «Khi bấm vào cờ xanh» bị đặt ở vị trí thứ 2, cần đưa lên vị trí số 1 trên cùng!",
+              hint2: "Thứ tự đúng: (1) Khi bấm vào cờ xanh ➔ (2) di chuyển 100 bước ➔ (3) đợi 1 giây ➔ (4) đổi trang phục sang mèo-chiến-thắng.",
+              successMsg: "Chuẩn xác! Khối Cờ xanh đã về đúng đầu chương trình và lệnh Đợi 1 giây đã đứng trước khi đổi trang phục.",
+              errorMsg: "Em kiểm tra lại nhé: Khối Cờ xanh phải ở trên cùng, tiếp theo là Di chuyển 100 bước, Đợi 1 giây, và cuối cùng là Đổi trang phục."
+            },
+            {
+              id: "4.3",
+              title: "Nhiệm vụ 4.3: Thử thách Gỡ lỗi tổng hợp 5 khối lệnh",
+              prompt: "Sắp xếp lại 5 khối lệnh để Mèo thực hiện đúng kịch bản mở Rương Sao: (1) Khi bấm vào cờ xanh ➔ (2) di chuyển 110 bước ➔ (3) đợi 1 giây ➔ (4) đổi trang phục sang mèo-chiến-thắng ➔ (5) nói «Hoàn thành nhiệm vụ!» trong 2 giây.",
+              initialBlocks: [
+                { id: "d43_flag", type: "event", text: "🚩 Khi bấm vào cờ xanh", action: "start" },
+                { id: "d43_say", type: "looks", text: "💬 nói \"Hoàn thành nhiệm vụ!\" trong 2 giây", action: "say", value: "Hoàn thành nhiệm vụ!" },
+                { id: "d43_costume", type: "looks", text: "👕 đổi trang phục sang mèo-chiến-thắng", action: "costume", value: "celebrate" },
+                { id: "d43_move", type: "motion", text: "🐾 di chuyển 110 bước", action: "move", value: 110 },
+                { id: "d43_wait", type: "control", text: "⏳ đợi 1 giây", action: "wait", value: 1 }
+              ],
+              correctOrder: ["d43_flag", "d43_move", "d43_wait", "d43_costume", "d43_say"],
+              hint1: "Mèo phải «di chuyển 110 bước» ngay sau khi bấm Cờ xanh, sau đó «đợi 1 giây» trước khi đổi trang phục.",
+              hint2: "Thứ tự chuẩn 5 bước: (1) Cờ xanh ➔ (2) di chuyển 110 bước ➔ (3) đợi 1 giây ➔ (4) đổi trang phục ➔ (5) nói «Hoàn thành nhiệm vụ!».",
+              successMsg: "Chúc mừng em! Em đã sửa hoàn chỉnh kịch bản 5 khối lệnh và hoàn thành xuất sắc cả 4 màn chơi!",
+              errorMsg: "Chưa đúng thứ tự 5 bước rồi. Em hãy xếp: Cờ xanh ➔ Di chuyển 110 bước ➔ Đợi 1 giây ➔ Đổi trang phục ➔ Nói «Hoàn thành nhiệm vụ!»."
+            }
+          ]
+        }
+      ]
+    };
+
+    /* ==========================================================================
+       PHẦN 2: BỘ TỔNG HỢP ÂM THANH NGUYÊN GỐC (WEB AUDIO API SYNTHESIZER)
+       - Chỉ tạo nhạc nền êm dịu và hiệu ứng âm thanh (SFX)
+       - TUYỆT ĐỐI KHÔNG GIỌNG ĐỌC, KHÔNG TTS, KHÔNG speechSynthesis
+       ========================================================================== */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.bgmEnabled = true;
+        this.sfxEnabled = true;
+        this.masterVolume = GAME_CONFIG.audio.defaultMasterVolume;
+        this.bgmTimer = null;
+        this.bgmNoteIndex = 0;
+        this.isBgmPlaying = false;
+
+        // Giai điệu nhạc nền nguyên gốc vui tươi nhẹ nhàng (Pentatonic C Major)
+        this.melodyNotes = [
+          { freq: 523.25, dur: 0.28 }, // C5
+          { freq: 587.33, dur: 0.28 }, // D5
+          { freq: 659.25, dur: 0.35 }, // E5
+          { freq: 783.99, dur: 0.35 }, // G5
+          { freq: 659.25, dur: 0.28 }, // E5
+          { freq: 783.99, dur: 0.45 }, // G5
+          { freq: 880.00, dur: 0.32 }, // A5
+          { freq: 783.99, dur: 0.32 }, // G5
+          { freq: 659.25, dur: 0.32 }, // E5
+          { freq: 587.33, dur: 0.32 }, // D5
+          { freq: 523.25, dur: 0.50 }, // C5
+          { freq: 0,      dur: 0.25 }  // Nghỉ ngắn
+        ];
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+          this.ctx.resume();
+        }
+      }
+
+      setMasterVolume(val0to1) {
+        this.masterVolume = Math.max(0, Math.min(1, val0to1));
+      }
+
+      startBgm() {
+        this.initContext();
+        if (!this.ctx || !this.bgmEnabled) return;
+        this.stopBgm();
+        this.isBgmPlaying = true;
+
+        const playNextNote = () => {
+          if (!this.isBgmPlaying || !this.bgmEnabled || document.hidden) return;
+          const note = this.melodyNotes[this.bgmNoteIndex % this.melodyNotes.length];
+          this.bgmNoteIndex++;
+
+          if (note.freq > 0 && this.masterVolume > 0.01) {
+            this.playTone(
+              note.freq,
+              note.dur * 0.85,
+              "sine",
+              GAME_CONFIG.audio.bgmBaseGain * this.masterVolume
+            );
+          }
+          this.bgmTimer = setTimeout(playNextNote, note.dur * 1000);
+        };
+
+        playNextNote();
+      }
+
+      stopBgm() {
+        this.isBgmPlaying = false;
+        if (this.bgmTimer) {
+          clearTimeout(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      }
+
+      playTone(freq, duration, waveType = "sine", peakGain = 0.15, delaySec = 0) {
+        if (!this.ctx || this.masterVolume <= 0.001) return;
+        try {
+          const startTime = this.ctx.currentTime + delaySec;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = waveType;
+          osc.frequency.setValueAtTime(freq, startTime);
+
+          gain.gain.setValueAtTime(0.0001, startTime);
+          gain.gain.linearRampToValueAtTime(peakGain, startTime + 0.025);
+          gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(startTime);
+          osc.stop(startTime + duration + 0.02);
+        } catch (e) {
+          // Bỏ qua an toàn nếu trình duyệt chặn âm thanh
+        }
+      }
+
+      playSfx(type) {
+        if (!this.sfxEnabled || this.masterVolume <= 0.001) return;
+        this.initContext();
+        if (!this.ctx) return;
+        const v = GAME_CONFIG.audio.sfxBaseGain * this.masterVolume;
+
+        switch (type) {
+          case "click":
+            this.playTone(660, 0.07, "triangle", v * 0.6);
+            break;
+          case "snap":
+            this.playTone(520, 0.06, "sine", v * 0.7);
+            this.playTone(780, 0.09, "triangle", v * 0.8, 0.05);
+            break;
+          case "step":
+            this.playTone(587.33, 0.1, "sine", v * 0.65);
+            break;
+          case "meow":
+            // Hiệu ứng âm thanh nốt nhạc mô phỏng tiếng kêu vui nhộn bằng synth
+            this.playTone(740, 0.12, "triangle", v * 0.85, 0);
+            this.playTone(880, 0.15, "triangle", v * 0.9, 0.1);
+            this.playTone(659, 0.22, "sine", v * 0.75, 0.22);
+            break;
+          case "correct":
+            this.playTone(523.25, 0.12, "triangle", v, 0);
+            this.playTone(659.25, 0.12, "triangle", v, 0.1);
+            this.playTone(783.99, 0.25, "triangle", v, 0.2);
+            break;
+          case "wrong":
+            this.playTone(260, 0.16, "sawtooth", v * 0.55, 0);
+            this.playTone(220, 0.24, "sawtooth", v * 0.55, 0.15);
+            break;
+          case "levelUp":
+            [523.25, 659.25, 783.99, 1046.5].forEach((f, idx) => {
+              this.playTone(f, 0.2, "triangle", v * 0.95, idx * 0.11);
+            });
+            break;
+          case "victory":
+            [523.25, 659.25, 783.99, 880, 1046.5].forEach((f, idx) => {
+              this.playTone(f, 0.25, "triangle", v, idx * 0.12);
+            });
+            break;
+        }
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    // Tạm dừng nhạc nền khi người dùng chuyển tab ẩn đi
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        sound.stopBgm();
+      } else if (appState.hasStarted && sound.bgmEnabled) {
+        sound.startBgm();
+      }
+    });
+
+    /* ==========================================================================
+       PHẦN 3: TRẠNG THÁI TRÒ CHƠI & MÁY ẢO SÂN KHẤU (VIRTUAL MACHINE)
+       ========================================================================== */
+    const appState = {
+      hasStarted: false,
+      mode: "practice", // 'practice' | 'challenge'
+      currentLevelIdx: 0, // 0..3
+      currentSubtaskIdx: 0, // 0..2
+      score: 0,
+      completedLevels: [false, false, false, false],
+      completedSubtasks: {
+        "1.1": false, "1.2": false, "1.3": false,
+        "2.1": false, "2.2": false, "2.3": false,
+        "3.1": false, "3.2": false, "3.3": false,
+        "4.1": false, "4.2": false, "4.3": false
+      },
+      hintLevelUsed: 0, // 0, 1, 2
+
+      // Dữ liệu tương tác tạm thời của từng màn
+      m1SelectedOrder: [],
+      m2Slots: [],
+      m2SelectedBlockId: null,
+      m3HasRunSimulation: false,
+      m3SelectedOption: null,
+      m3Params: { steps: "60", waitSec: "2", greeting: "Xin chào!" },
+      m4BlockList: [],
+      m4SelectedIdx: null,
+
+      // Trạng thái máy ảo thực thi lệnh trên sân khấu SVG
+      vmRunning: false,
+      vmTimerIds: [],
+      catX: 75,
+      catCostume: "normal"
+    };
+
+    /* ==========================================================================
+       PHẦN 4: ĐỒ HỌA SVG ĐỘNG (TRỢ LÍ PIXEL & BỐI CẢNH 4 MÀN CHƠI)
+       ========================================================================== */
+    function renderPixelMascot(expression = "normal") {
+      const box = document.getElementById("pixelAvatarBox");
+      if (!box) return;
+
+      let eyesSvg = `
+        <circle cx="36" cy="40" r="4.5" fill="#4ABDAA" />
+        <circle cx="60" cy="40" r="4.5" fill="#4ABDAA" />
+      `;
+      let mouthSvg = `<path d="M40,51 Q48,57 56,51" fill="none" stroke="#4ABDAA" stroke-width="3" stroke-linecap="round" />`;
+      let antennaColor = "#F2BE4A";
+
+      if (expression === "happy") {
+        eyesSvg = `
+          <path d="M31,41 Q36,34 41,41" fill="none" stroke="#4ABDAA" stroke-width="3.5" stroke-linecap="round" />
+          <path d="M55,41 Q60,34 65,41" fill="none" stroke="#4ABDAA" stroke-width="3.5" stroke-linecap="round" />
+        `;
+        mouthSvg = `<path d="M38,49 Q48,60 58,49 Z" fill="#4ABDAA" />`;
+        antennaColor = "#2BAE66";
+      } else if (expression === "thinking") {
+        eyesSvg = `
+          <circle cx="36" cy="38" r="4.5" fill="#F2BE4A" />
+          <rect x="54" y="37" width="11" height="4" rx="2" fill="#F2BE4A" />
+        `;
+        mouthSvg = `<line x1="41" y1="52" x2="55" y2="50" stroke="#F2BE4A" stroke-width="3" stroke-linecap="round" />`;
+        antennaColor = "#FFAB19";
+      } else if (expression === "surprised") {
+        eyesSvg = `
+          <circle cx="36" cy="40" r="5.5" fill="#FF6B6B" />
+          <circle cx="60" cy="40" r="5.5" fill="#FF6B6B" />
+        `;
+        mouthSvg = `<circle cx="48" cy="52" r="5" fill="none" stroke="#FF6B6B" stroke-width="3" />`;
+        antennaColor = "#E04F5F";
+      }
+
+      box.innerHTML = `
+        <svg viewBox="0 0 96 96" width="88" height="88" role="img" aria-label="Trợ lí lập trình Pixel">
+          <!-- Ăng-ten -->
+          <line x1="48" y1="8" x2="48" y2="18" stroke="#58429B" stroke-width="4" />
+          <circle cx="48" cy="8" r="6" fill="${antennaColor}" />
+          <!-- Tai nghe hai bên -->
+          <rect x="12" y="32" width="8" height="20" rx="4" fill="#F6B6C8" stroke="#58429B" stroke-width="2" />
+          <rect x="76" y="32" width="8" height="20" rx="4" fill="#F6B6C8" stroke="#58429B" stroke-width="2" />
+          <!-- Đầu rô-bốt chibi -->
+          <rect x="18" y="18" width="60" height="46" rx="16" fill="#FFFFFF" stroke="#58429B" stroke-width="3" />
+          <!-- Màn hình khuôn mặt -->
+          <rect x="25" y="25" width="46" height="32" rx="10" fill="#2B234A" />
+          ${eyesSvg}
+          ${mouthSvg}
+          <!-- Thân và bảng điều khiển -->
+          <rect x="26" y="66" width="44" height="24" rx="10" fill="#58429B" />
+          <rect x="33" y="71" width="30" height="14" rx="4" fill="#E8F8F5" />
+          <circle cx="40" cy="78" r="2.5" fill="#FFBF00" />
+          <circle cx="48" cy="78" r="2.5" fill="#4C97FF" />
+          <circle cx="56" cy="78" r="2.5" fill="#9966FF" />
+        </svg>
+      `;
+    }
+
+    function setPixelFeedback(message, mood = "normal", bubbleClass = "") {
+      renderPixelMascot(mood);
+      const bubble = document.getElementById("pixelSpeechBox");
+      const msgEl = document.getElementById("pixelMessageText");
+      bubble.className = "speech-bubble " + bubbleClass;
+      msgEl.textContent = message;
+    }
+
+    /* Vẽ bối cảnh sân khấu thay đổi riêng biệt theo từng màn 1, 2, 3, 4 */
+    function renderStageBackground(levelId) {
+      const bgLayer = document.getElementById("stageBackgroundLayer");
+      const sceneBadge = document.getElementById("stageSceneBadge");
+      const targetLabel = document.getElementById("stageTargetLabel");
+      const lvlCfg = GAME_CONFIG.levels[levelId - 1];
+
+      sceneBadge.textContent = lvlCfg.sceneTitle;
+      targetLabel.textContent = lvlCfg.targetLabel;
+
+      if (levelId === 1) {
+        // Màn 1: Công viên nắng ấm và ghế đá
+        bgLayer.innerHTML = `
+          <rect x="0" y="0" width="400" height="210" fill="#DFF5FF" />
+          <circle cx="345" cy="45" r="26" fill="#FFE066" />
+          <ellipse cx="90" cy="50" rx="34" ry="15" fill="#FFFFFF" opacity="0.85" />
+          <ellipse cx="230" cy="38" rx="42" ry="16" fill="#FFFFFF" opacity="0.85" />
+          <!-- Đồi cỏ xanh & lối đi công viên -->
+          <path d="M0,210 Q120,165 260,195 T400,185 L400,300 L0,300 Z" fill="#A8E6CF" />
+          <rect x="0" y="210" width="400" height="90" fill="#F7E7CE" />
+          <line x1="0" y1="210" x2="400" y2="210" stroke="#7BC6A4" stroke-width="4" />
+          <!-- Cây xanh công viên -->
+          <rect x="34" y="135" width="12" height="55" fill="#8D6E63" />
+          <circle cx="40" cy="125" r="28" fill="#58D68D" />
+          <!-- Ghế đá ở vạch đích -->
+          <rect x="275" y="182" width="54" height="10" rx="3" fill="#95A5A6" />
+          <rect x="282" y="192" width="8" height="16" fill="#7F8C8D" />
+          <rect x="314" y="192" width="8" height="16" fill="#7F8C8D" />
+        `;
+      } else if (levelId === 2) {
+        // Màn 2: Cổng trường Tiểu học
+        bgLayer.innerHTML = `
+          <rect x="0" y="0" width="400" height="210" fill="#FFF3E6" />
+          <rect x="0" y="210" width="400" height="90" fill="#E2E0EC" />
+          <!-- Tòa nhà trường học phía xa -->
+          <rect x="190" y="72" width="185" height="138" rx="6" fill="#FFE5B4" stroke="#E6B87D" stroke-width="2" />
+          <polygon points="180,72 282,30 385,72" fill="#E04F5F" />
+          <rect x="242" y="82" width="80" height="22" rx="4" fill="#FFFFFF" stroke="#58429B" stroke-width="1.5" />
+          <text x="282" y="97" font-size="10" font-weight="bold" fill="#58429B" text-anchor="middle">TRƯỜNG TIỂU HỌC</text>
+          <rect x="215" y="120" width="28" height="32" rx="3" fill="#85C1E9" />
+          <rect x="320" y="120" width="28" height="32" rx="3" fill="#85C1E9" />
+          <rect x="265" y="148" width="35" height="62" rx="4" fill="#58429B" />
+        `;
+      } else if (levelId === 3) {
+        // Màn 3: Sân khấu Âm nhạc & Tài năng
+        bgLayer.innerHTML = `
+          <rect x="0" y="0" width="400" height="210" fill="#2E1F5E" />
+          <!-- Ánh đèn sân khấu -->
+          <polygon points="80,0 20,210 150,210" fill="rgba(242, 190, 74, 0.18)" />
+          <polygon points="310,0 240,210 380,210" fill="rgba(74, 189, 170, 0.2)" />
+          <!-- Rèm sân khấu -->
+          <path d="M0,0 L45,0 Q35,105 0,180 Z" fill="#E04F5F" />
+          <path d="M400,0 L355,0 Q365,105 400,180 Z" fill="#E04F5F" />
+          <!-- Sàn gỗ sân khấu -->
+          <rect x="0" y="210" width="400" height="90" fill="#6E473B" />
+          <line x1="0" y1="210" x2="400" y2="210" stroke="#F2BE4A" stroke-width="5" />
+          <!-- Ngôi sao trang trí -->
+          <circle cx="200" cy="55" r="22" fill="#F2BE4A" opacity="0.85" />
+        `;
+      } else {
+        // Màn 4: Đảo Kho Báu Ngôi Sao
+        bgLayer.innerHTML = `
+          <rect x="0" y="0" width="400" height="195" fill="#D4F1F9" />
+          <!-- Biển xanh -->
+          <rect x="0" y="185" width="400" height="35" fill="#4ABDAA" />
+          <!-- Bãi cát vàng trên đảo -->
+          <path d="M0,215 Q180,190 400,210 L400,300 L0,300 Z" fill="#F9E29C" />
+          <!-- Cây dừa -->
+          <path d="M48,215 Q38,150 62,115" fill="none" stroke="#8D6E63" stroke-width="9" stroke-linecap="round" />
+          <ellipse cx="42" cy="115" rx="22" ry="8" fill="#2BAE66" transform="rotate(-20 42 115)" />
+          <ellipse cx="78" cy="115" rx="22" ry="8" fill="#2BAE66" transform="rotate(20 78 115)" />
+          <!-- Rương kho báu ở vạch đích -->
+          <rect x="278" y="178" width="44" height="30" rx="5" fill="#D49B27" stroke="#5D4037" stroke-width="2.5" />
+          <line x1="278" y1="192" x2="322" y2="192" stroke="#5D4037" stroke-width="2.5" />
+          <rect x="296" y="188" width="8" height="9" fill="#FFF200" stroke="#5D4037" stroke-width="1.5" />
+        `;
+      }
+    }
+
+    /* ==========================================================================
+       PHẦN 5: MÁY ẢO SÂN KHẤU THỰC THI TUẦN TỰ (VIRTUAL MACHINE EXECUTOR)
+       Thực thi đúng từng khối lệnh theo thứ tự trong mảng blocks
+       ========================================================================== */
+    function resetStageCat() {
+      stopStageExecution();
+      appState.catX = 75;
+      appState.catCostume = "normal";
+      updateCatSvgVisual({
+        x: 75,
+        speech: "",
+        wait: false,
+        sound: false,
+        costume: "normal"
+      });
+      document.getElementById("execStatusText").textContent = "Đã đặt lại vị trí xuất phát";
+      clearBlockHighlights();
+    }
+
+    function stopStageExecution() {
+      appState.vmRunning = false;
+      appState.vmTimerIds.forEach(id => clearTimeout(id));
+      appState.vmTimerIds = [];
+      clearBlockHighlights();
+      const waitEl = document.getElementById("catWaitIndicator");
+      const soundEl = document.getElementById("catSoundNotes");
+      if (waitEl) waitEl.setAttribute("opacity", "0");
+      if (soundEl) soundEl.setAttribute("opacity", "0");
+    }
+
+    function clearBlockHighlights() {
+      document.querySelectorAll(".scratch-block.running-highlight").forEach(el => {
+        el.classList.remove("running-highlight");
+      });
+    }
+
+    function updateCatSvgVisual({ x, speech, wait, sound: showSound, costume }) {
+      const sprite = document.getElementById("stageCatSprite");
+      if (!sprite) return;
+      if (typeof x === "number") {
+        appState.catX = Math.max(45, Math.min(325, x));
+        sprite.setAttribute("transform", `translate(${appState.catX}, 175)`);
+      }
+
+      const speechGrp = document.getElementById("catSpeechGroup");
+      const speechTxt = document.getElementById("catSpeechText");
+      if (speech) {
+        speechTxt.textContent = speech;
+        speechGrp.setAttribute("opacity", "1");
+      } else if (speech === "") {
+        speechGrp.setAttribute("opacity", "0");
+      }
+
+      const waitEl = document.getElementById("catWaitIndicator");
+      if (waitEl) waitEl.setAttribute("opacity", wait ? "1" : "0");
+
+      const soundEl = document.getElementById("catSoundNotes");
+      if (soundEl) soundEl.setAttribute("opacity", showSound ? "1" : "0");
+
+      // Thay đổi trang phục trực quan của Mèo
+      const scarf = document.getElementById("catScarf");
+      const armRight = document.getElementById("catArmRight");
+      const body = document.getElementById("catBody");
+      if (costume === "wave") {
+        scarf.setAttribute("fill", "#F6B6C8");
+        armRight.setAttribute("transform", "rotate(-125, 21, 16)");
+        body.setAttribute("fill", "#FFA94D");
+      } else if (costume === "celebrate") {
+        scarf.setAttribute("fill", "#FFBF00");
+        armRight.setAttribute("transform", "rotate(-140, 21, 16)");
+        body.setAttribute("fill", "#9966FF");
+      } else if (costume === "normal") {
+        scarf.setAttribute("fill", "#4ABDAA");
+        armRight.setAttribute("transform", "rotate(0, 21, 16)");
+        body.setAttribute("fill", "#FF9F43");
+      }
+    }
+
+    /**
+     * Thực thi tuần tự danh sách khối lệnh trên sân khấu SVG
+     * @param {Array} blocks Danh sách khối lệnh cần thực thi tuần tự
+     * @param {Function} onComplete Callback sau khi chạy hết chuỗi lệnh
+     */
+    function executeProgramOnStage(blocks, onComplete) {
+      resetStageCat();
+      if (!blocks || blocks.length === 0) {
+        document.getElementById("execStatusText").textContent = "Chưa có khối lệnh để chạy";
+        if (onComplete) onComplete();
+        return;
+      }
+
+      appState.vmRunning = true;
+      let cumulativeTime = 0;
+
+      blocks.forEach((blk, index) => {
+        const stepDur = 900; // Mỗi bước mô phỏng trực quan 0.9 giây
+        const timerId = setTimeout(() => {
+          if (!appState.vmRunning) return;
+
+          clearBlockHighlights();
+          const domBlock = document.querySelector(`[data-vm-block-id="${blk.id}"]`);
+          if (domBlock) domBlock.classList.add("running-highlight");
+
+          document.getElementById("execStatusText").textContent =
+            `Đang chạy bước ${index + 1}/${blocks.length}: ${blk.text}`;
+
+          if (blk.action === "start") {
+            sound.playSfx("step");
+            updateCatSvgVisual({ x: 75, speech: "", wait: false, sound: false, costume: "normal" });
+          } else if (blk.action === "move") {
+            sound.playSfx("step");
+            // Chuyển đổi số bước Scratch (ví dụ 100 bước) sang tọa độ sân khấu
+            const deltaPx = Math.round((blk.value || 80) * 1.9);
+            updateCatSvgVisual({
+              x: appState.catX + deltaPx,
+              speech: "",
+              wait: false,
+              sound: false
+            });
+          } else if (blk.action === "say") {
+            sound.playSfx("step");
+            updateCatSvgVisual({
+              speech: blk.value || "Xin chào!",
+              wait: false,
+              sound: false
+            });
+          } else if (blk.action === "wait") {
+            sound.playSfx("click");
+            updateCatSvgVisual({
+              speech: "",
+              wait: true,
+              sound: false
+            });
+          } else if (blk.action === "costume") {
+            sound.playSfx("snap");
+            updateCatSvgVisual({
+              speech: "",
+              wait: false,
+              sound: false,
+              costume: blk.value || "wave"
+            });
+          } else if (blk.action === "sound") {
+            sound.playSfx("meow");
+            updateCatSvgVisual({
+              wait: false,
+              sound: true
+            });
+          }
+        }, cumulativeTime);
+
+        appState.vmTimerIds.push(timerId);
+        cumulativeTime += stepDur;
+      });
+
+      const finishTimer = setTimeout(() => {
+        if (!appState.vmRunning) return;
+        clearBlockHighlights();
+        document.getElementById("execStatusText").textContent =
+          `Đã thực thi xong ${blocks.length} lệnh theo thứ tự!`;
+        appState.vmRunning = false;
+        if (onComplete) onComplete();
+      }, cumulativeTime + 150);
+
+      appState.vmTimerIds.push(finishTimer);
+    }
+
+    /* Lấy chương trình hiện tại của màn/nhiệm vụ để chạy khi bấm Cờ xanh trên sân khấu */
+    function getCurrentStageProgram() {
+      const lvl = GAME_CONFIG.levels[appState.currentLevelIdx];
+      const sub = lvl.subtasks[appState.currentSubtaskIdx];
+
+      if (lvl.id === 1) {
+        return sub.programBlocks;
+      } else if (lvl.id === 2) {
+        // Chạy đúng chuỗi khối lệnh mà học sinh đã ghép vào các khe
+        return appState.m2Slots
+          .filter(Boolean)
+          .map(bId => sub.availableBlocks.find(b => b.id === bId))
+          .filter(Boolean);
+      } else if (lvl.id === 3) {
+        if (sub.isParamConfigTask) {
+          return [
+            { id: "p33_flag", type: "event", text: "🚩 Khi bấm vào cờ xanh", action: "start" },
+            { id: "p33_move", type: "motion", text: `🐾 di chuyển ${appState.m3Params.steps} bước`, action: "move", value: Number(appState.m3Params.steps) },
+            { id: "p33_wait", type: "control", text: `⏳ đợi ${appState.m3Params.waitSec} giây`, action: "wait", value: Number(appState.m3Params.waitSec) },
+            { id: "p33_say", type: "looks", text: `💬 nói "${appState.m3Params.greeting}" trong 2 giây`, action: "say", value: appState.m3Params.greeting }
+          ];
+        }
+        return sub.programBlocks;
+      } else if (lvl.id === 4) {
+        return appState.m4BlockList;
+      }
+      return [];
+    }
+
+    /* ==========================================================================
+       PHẦN 6: HIỂN THỊ GIAO DIỆN 4 MÀN CHƠI & CÁC LƯỢT TƯƠNG TÁC
+       ========================================================================== */
+    function updateHeaderAndStepper() {
+      document.getElementById("headerProgressText").textContent = `${appState.currentLevelIdx + 1}/4`;
+      document.getElementById("headerScoreText").textContent = `${appState.score}`;
+
+      const stepper = document.getElementById("levelStepper");
+      stepper.innerHTML = "";
+
+      GAME_CONFIG.levels.forEach((lvl, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        const isDone = appState.completedLevels[idx];
+        const isCurrent = idx === appState.currentLevelIdx;
+        btn.className = "level-tab" + (isCurrent ? " active" : "") + (isDone ? " completed" : "");
+
+        // Cho phép xem lại màn đã hoàn thành hoặc màn hiện tại
+        const canAccess = isDone || idx === 0 || appState.completedLevels[idx - 1] || isCurrent;
+        btn.disabled = !canAccess;
+        btn.innerHTML = `${isDone ? "✅" : "🎯"} Màn ${idx + 1}`;
+        btn.addEventListener("click", () => {
+          sound.playSfx("click");
+          loadLevel(idx, 0);
+        });
+        stepper.appendChild(btn);
+      });
+    }
+
+    function loadLevel(levelIdx, subtaskIdx = 0) {
+      appState.currentLevelIdx = levelIdx;
+      appState.currentSubtaskIdx = subtaskIdx;
+      appState.hintLevelUsed = 0;
+
+      const lvl = GAME_CONFIG.levels[levelIdx];
+      const sub = lvl.subtasks[subtaskIdx];
+
+      // Cập nhật tiêu đề và sân khấu
+      document.getElementById("levelMainTitle").textContent = lvl.name;
+      document.getElementById("levelSubDesc").textContent = lvl.shortInstruction;
+      renderStageBackground(lvl.id);
+      resetStageCat();
+      updateHeaderAndStepper();
+
+      // Khởi tạo dữ liệu riêng của từng nhiệm vụ
+      if (lvl.id === 1) {
+        appState.m1SelectedOrder = [];
+      } else if (lvl.id === 2) {
+        appState.m2Slots = new Array(sub.correctSequence.length).fill(null);
+        appState.m2SelectedBlockId = null;
+      } else if (lvl.id === 3) {
+        appState.m3HasRunSimulation = false;
+        appState.m3SelectedOption = null;
+        appState.m3Params = { steps: "60", waitSec: "2", greeting: "Xin chào!" };
+      } else if (lvl.id === 4) {
+        appState.m4BlockList = sub.initialBlocks.map(b => ({ ...b }));
+        appState.m4SelectedIdx = null;
+      }
+
+      renderSubtaskPills(lvl);
+      renderInteractiveWorkspace(lvl, sub);
+      updateFooterButtons();
+
+      // Chế độ Luyện tập tự động gợi mở thân thiện
+      if (appState.mode === "practice") {
+        setPixelFeedback(`💡 Gợi ý Luyện tập: ${sub.hint1}`, "normal", "hint");
+        document.getElementById("hintStepLabel").textContent = "Mức 1/2";
+      } else {
+        setPixelFeedback(sub.prompt, "normal", "");
+        document.getElementById("hintStepLabel").textContent = "Mức 1/2";
+      }
+    }
+
+    function renderSubtaskPills(lvl) {
+      const container = document.getElementById("subtaskPillsContainer");
+      container.innerHTML = "";
+      lvl.subtasks.forEach((st, idx) => {
+        const pill = document.createElement("button");
+        pill.type = "button";
+        const isDone = appState.completedSubtasks[st.id];
+        const isCurrent = idx === appState.currentSubtaskIdx;
+        pill.className = "subtask-pill" + (isCurrent ? " active" : "") + (isDone ? " done" : "");
+        pill.textContent = `${isDone ? "✔ " : ""}Lượt ${idx + 1}/3`;
+        pill.addEventListener("click", () => {
+          sound.playSfx("click");
+          loadLevel(appState.currentLevelIdx, idx);
+        });
+        container.appendChild(pill);
+      });
+    }
+
+    function renderInteractiveWorkspace(lvl, sub) {
+      const container = document.getElementById("interactiveStageContainer");
+      container.innerHTML = "";
+
+      const promptBanner = document.createElement("div");
+      promptBanner.style.cssText = "background:#F4F0FF; border:2px solid #D5C8F5; border-radius:12px; padding:10px 14px; margin-bottom:12px; font-weight:700; color:#2B234A;";
+      promptBanner.innerHTML = `<span style="color:var(--primary-purple);">${sub.title}:</span> ${sub.prompt}`;
+      container.appendChild(promptBanner);
+
+      if (lvl.id === 1) {
+        renderLevel1Workspace(container, sub);
+      } else if (lvl.id === 2) {
+        renderLevel2Workspace(container, sub);
+      } else if (lvl.id === 3) {
+        renderLevel3Workspace(container, sub);
+      } else if (lvl.id === 4) {
+        renderLevel4Workspace(container, sub);
+      }
+    }
+
+    /* ---------------- GIAO DIỆN MÀN 1: ĐỌC CHƯƠNG TRÌNH ---------------- */
+    function renderLevel1Workspace(container, sub) {
+      const grid = document.createElement("div");
+      grid.className = "dual-panel";
+
+      // Cột trái: Chương trình Scratch
+      const leftBox = document.createElement("div");
+      leftBox.className = "panel-box";
+      leftBox.innerHTML = `<h3><span>🧩 Chương trình Scratch</span> <span style="font-size:0.8rem; color:var(--text-muted);">Từ trên xuống dưới</span></h3>`;
+
+      sub.programBlocks.forEach(blk => {
+        const bEl = document.createElement("div");
+        bEl.className = `scratch-block type-${blk.type}`;
+        bEl.setAttribute("data-vm-block-id", blk.id);
+        bEl.textContent = blk.text;
+        leftBox.appendChild(bEl);
+      });
+
+      // Cột phải: Thẻ câu chuyện để học sinh chọn theo thứ tự 1 -> 4
+      const rightBox = document.createElement("div");
+      rightBox.className = "panel-box";
+      rightBox.innerHTML = `
+        <h3>
+          <span>📋 Xếp thứ tự hoạt động (1 ➔ ${sub.shuffledCards.length})</span>
+          <button type="button" id="btnClearM1Order" class="btn-outline" style="min-height:32px; padding:3px 10px; font-size:0.78rem;">Xóa chọn lại</button>
+        </h3>
+      `;
+
+      const cardsWrap = document.createElement("div");
+      sub.shuffledCards.forEach(card => {
+        const orderIdx = appState.m1SelectedOrder.indexOf(card.cardId);
+        const cardEl = document.createElement("div");
+        cardEl.className = "story-card interactive-item";
+        cardEl.tabIndex = 0;
+        if (orderIdx !== -1) {
+          cardEl.style.borderColor = "var(--accent-mint-dark)";
+          cardEl.style.background = "var(--bg-mint)";
+        }
+
+        cardEl.innerHTML = `
+          <span>${card.text}</span>
+          <span class="story-step-num" style="background:${orderIdx !== -1 ? 'var(--accent-mint-dark)' : '#C8BBE8'}">
+            ${orderIdx !== -1 ? orderIdx + 1 : "?"}
+          </span>
+        `;
+
+        const toggleSelectCard = () => {
+          sound.playSfx("snap");
+          const existingIdx = appState.m1SelectedOrder.indexOf(card.cardId);
+          if (existingIdx !== -1) {
+            appState.m1SelectedOrder.splice(existingIdx, 1);
+          } else {
+            appState.m1SelectedOrder.push(card.cardId);
+          }
+          renderInteractiveWorkspace(GAME_CONFIG.levels[0], sub);
+        };
+
+        cardEl.addEventListener("click", toggleSelectCard);
+        cardEl.addEventListener("keydown", e => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggleSelectCard();
+          }
+        });
+        cardsWrap.appendChild(cardEl);
+      });
+
+      rightBox.appendChild(cardsWrap);
+      grid.appendChild(leftBox);
+      grid.appendChild(rightBox);
+      container.appendChild(grid);
+
+      const clearBtn = rightBox.querySelector("#btnClearM1Order");
+      if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+          sound.playSfx("click");
+          appState.m1SelectedOrder = [];
+          renderInteractiveWorkspace(GAME_CONFIG.levels[0], sub);
+        });
+      }
+    }
+
+    /* ---------------- GIAO DIỆN MÀN 2: GHÉP KHỐI LỆNH (KÉO THẢ + NHÁY CHỌN) ---------------- */
+    function renderLevel2Workspace(container, sub) {
+      const grid = document.createElement("div");
+      grid.className = "dual-panel";
+
+      // Cột trái: Kho khối lệnh rời
+      const paletteBox = document.createElement("div");
+      paletteBox.className = "panel-box";
+      paletteBox.innerHTML = `<h3><span>🧰 Kho khối lệnh rời</span> <span style="font-size:0.78rem; color:var(--text-muted);">Kéo hoặc nháy chọn</span></h3>`;
+
+      sub.availableBlocks.forEach(blk => {
+        const isPlaced = appState.m2Slots.includes(blk.id);
+        if (isPlaced) return;
+
+        const bEl = document.createElement("div");
+        bEl.className = `scratch-block type-${blk.type} interactive-item` +
+          (appState.m2SelectedBlockId === blk.id ? " selected-block" : "");
+        bEl.tabIndex = 0;
+        bEl.draggable = true;
+        bEl.textContent = blk.text;
+
+        bEl.addEventListener("dragstart", e => {
+          e.dataTransfer.setData("text/plain", blk.id);
+          appState.m2SelectedBlockId = blk.id;
+        });
+
+        const selectBlockForSlot = () => {
+          sound.playSfx("click");
+          // Nếu người chơi nháy trực tiếp vào khối lệnh, tự động điền vào ô trống đầu tiên hoặc chọn để đặt
+          const firstEmptyIdx = appState.m2Slots.findIndex(s => s === null);
+          if (appState.m2SelectedBlockId === blk.id && firstEmptyIdx !== -1) {
+            appState.m2Slots[firstEmptyIdx] = blk.id;
+            appState.m2SelectedBlockId = null;
+            sound.playSfx("snap");
+          } else {
+            appState.m2SelectedBlockId = blk.id;
+          }
+          renderInteractiveWorkspace(GAME_CONFIG.levels[1], sub);
+        };
+
+        bEl.addEventListener("click", selectBlockForSlot);
+        bEl.addEventListener("keydown", e => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            selectBlockForSlot();
+          }
+        });
+
+        paletteBox.appendChild(bEl);
+      });
+
+      if (appState.m2Slots.every(Boolean)) {
+        const doneNote = document.createElement("p");
+        doneNote.style.cssText = "color:var(--success); font-weight:700; font-size:0.9rem; margin-top:12px;";
+        doneNote.textContent = "✨ Đã đưa hết các khối lệnh sang khung ghép! Nhấn vào khối lệnh bên phải nếu muốn tháo ra.";
+        paletteBox.appendChild(doneNote);
+      }
+
+      // Cột phải: Khung ghép chuỗi khối lệnh dọc
+      const chainBox = document.createElement("div");
+      chainBox.className = "panel-box";
+      chainBox.innerHTML = `<h3><span>🔗 Chuỗi lệnh ghép dọc</span> <span style="font-size:0.78rem; color:var(--text-muted);">Khớp từ trên xuống</span></h3>`;
+
+      const slotChain = document.createElement("div");
+      slotChain.className = "slot-chain";
+
+      appState.m2Slots.forEach((placedBlockId, slotIdx) => {
+        const slotEl = document.createElement("div");
+        slotEl.className = "drop-slot interactive-item";
+        slotEl.tabIndex = 0;
+
+        slotEl.addEventListener("dragover", e => {
+          e.preventDefault();
+          slotEl.classList.add("drag-over");
+        });
+        slotEl.addEventListener("dragleave", () => {
+          slotEl.classList.remove("drag-over");
+        });
+        slotEl.addEventListener("drop", e => {
+          e.preventDefault();
+          slotEl.classList.remove("drag-over");
+          const draggedId = e.dataTransfer.getData("text/plain") || appState.m2SelectedBlockId;
+          if (draggedId) {
+            const oldPos = appState.m2Slots.indexOf(draggedId);
+            if (oldPos !== -1) appState.m2Slots[oldPos] = null;
+            appState.m2Slots[slotIdx] = draggedId;
+            appState.m2SelectedBlockId = null;
+            sound.playSfx("snap");
+            renderInteractiveWorkspace(GAME_CONFIG.levels[1], sub);
+          }
+        });
+
+        if (placedBlockId) {
+          const blkObj = sub.availableBlocks.find(b => b.id === placedBlockId);
+          const placedEl = document.createElement("div");
+          placedEl.className = `scratch-block type-${blkObj.type}`;
+          placedEl.setAttribute("data-vm-block-id", blkObj.id);
+          placedEl.style.marginBottom = "0";
+          placedEl.innerHTML = `
+            <span style="flex:1;">${blkObj.text}</span>
+            <span title="Tháo khối lệnh này" style="background:rgba(0,0,0,0.22); padding:2px 8px; border-radius:6px; font-size:0.8rem;">✖ Tháo</span>
+          `;
+          placedEl.addEventListener("click", e => {
+            e.stopPropagation();
+            sound.playSfx("click");
+            appState.m2Slots[slotIdx] = null;
+            renderInteractiveWorkspace(GAME_CONFIG.levels[1], sub);
+          });
+          slotEl.appendChild(placedEl);
+        } else {
+          slotEl.innerHTML = `<span class="slot-placeholder">Vị trí ${slotIdx + 1}: Nháy hoặc thả khối lệnh vào đây</span>`;
+          slotEl.addEventListener("click", () => {
+            if (appState.m2SelectedBlockId) {
+              appState.m2Slots[slotIdx] = appState.m2SelectedBlockId;
+              appState.m2SelectedBlockId = null;
+              sound.playSfx("snap");
+              renderInteractiveWorkspace(GAME_CONFIG.levels[1], sub);
+            } else {
+              // Nếu chưa chọn khối nào, lấy khối đầu tiên còn lại trong kho
+              const remaining = sub.availableBlocks.find(b => !appState.m2Slots.includes(b.id));
+              if (remaining) {
+                appState.m2Slots[slotIdx] = remaining.id;
+                sound.playSfx("snap");
+                renderInteractiveWorkspace(GAME_CONFIG.levels[1], sub);
+              }
+            }
+          });
+        }
+
+        slotChain.appendChild(slotEl);
+      });
+
+      chainBox.appendChild(slotChain);
+      grid.appendChild(paletteBox);
+      grid.appendChild(chainBox);
+      container.appendChild(grid);
+    }
+
+    /* ---------------- GIAO DIỆN MÀN 3: CHẠY THỬ ---------------- */
+    function renderLevel3Workspace(container, sub) {
+      const grid = document.createElement("div");
+      grid.className = "dual-panel";
+
+      // Cột trái: Chương trình cần chạy thử trên sân khấu
+      const leftBox = document.createElement("div");
+      leftBox.className = "panel-box";
+      leftBox.innerHTML = `
+        <h3>
+          <span>🚀 Kịch bản Chạy thử</span>
+          <span style="font-size:0.8rem; color:${appState.m3HasRunSimulation ? 'var(--success)' : 'var(--error)'};">
+            ${appState.m3HasRunSimulation ? "✔ Đã bấm Cờ xanh chạy thử" : "⚠ Hãy bấm Cờ xanh để chạy thử"}
+          </span>
+        </h3>
+      `;
+
+      if (sub.isParamConfigTask) {
+        // Nhiệm vụ 3.3: Cho phép chỉnh trực tiếp thông số trong khối lệnh tuần tự
+        const bFlag = document.createElement("div");
+        bFlag.className = "scratch-block type-event";
+        bFlag.setAttribute("data-vm-block-id", "p33_flag");
+        bFlag.textContent = "🚩 Khi bấm vào cờ xanh";
+        leftBox.appendChild(bFlag);
+
+        // Khối di chuyển có menu chọn số bước
+        const bMove = document.createElement("div");
+        bMove.className = "scratch-block type-motion";
+        bMove.setAttribute("data-vm-block-id", "p33_move");
+        bMove.innerHTML = `
+          <span>🐾 di chuyển</span>
+          <select id="selParamSteps" class="param-select" aria-label="Chọn số bước di chuyển">
+            <option value="60" ${appState.m3Params.steps === "60" ? "selected" : ""}>60</option>
+            <option value="120" ${appState.m3Params.steps === "120" ? "selected" : ""}>120</option>
+            <option value="30" ${appState.m3Params.steps === "30" ? "selected" : ""}>30</option>
+          </select>
+          <span>bước</span>
+        `;
+        leftBox.appendChild(bMove);
+
+        // Khối đợi có menu chọn số giây
+        const bWait = document.createElement("div");
+        bWait.className = "scratch-block type-control";
+        bWait.setAttribute("data-vm-block-id", "p33_wait");
+        bWait.innerHTML = `
+          <span>⏳ đợi</span>
+          <select id="selParamWait" class="param-select" aria-label="Chọn số giây đợi">
+            <option value="2" ${appState.m3Params.waitSec === "2" ? "selected" : ""}>2</option>
+            <option value="1" ${appState.m3Params.waitSec === "1" ? "selected" : ""}>1</option>
+            <option value="5" ${appState.m3Params.waitSec === "5" ? "selected" : ""}>5</option>
+          </select>
+          <span>giây</span>
+        `;
+        leftBox.appendChild(bWait);
+
+        // Khối nói có menu chọn câu nói
+        const bSay = document.createElement("div");
+        bSay.className = "scratch-block type-looks";
+        bSay.setAttribute("data-vm-block-id", "p33_say");
+        bSay.innerHTML = `
+          <span>💬 nói</span>
+          <select id="selParamGreeting" class="param-select" aria-label="Chọn câu nói">
+            <option value="Xin chào!" ${appState.m3Params.greeting === "Xin chào!" ? "selected" : ""}>"Xin chào!"</option>
+            <option value="Cảm ơn các bạn!" ${appState.m3Params.greeting === "Cảm ơn các bạn!" ? "selected" : ""}>"Cảm ơn các bạn!"</option>
+            <option value="Tạm biệt!" ${appState.m3Params.greeting === "Tạm biệt!" ? "selected" : ""}>"Tạm biệt!"</option>
+          </select>
+          <span>2 giây</span>
+        `;
+        leftBox.appendChild(bSay);
+
+        setTimeout(() => {
+          const sSteps = document.getElementById("selParamSteps");
+          const sWait = document.getElementById("selParamWait");
+          const sGreet = document.getElementById("selParamGreeting");
+          if (sSteps) sSteps.addEventListener("change", e => { sound.playSfx("snap"); appState.m3Params.steps = e.target.value; });
+          if (sWait) sWait.addEventListener("change", e => { sound.playSfx("snap"); appState.m3Params.waitSec = e.target.value; });
+          if (sGreet) sGreet.addEventListener("change", e => { sound.playSfx("snap"); appState.m3Params.greeting = e.target.value; });
+        }, 0);
+      } else {
+        sub.programBlocks.forEach(blk => {
+          const bEl = document.createElement("div");
+          bEl.className = `scratch-block type-${blk.type}`;
+          bEl.setAttribute("data-vm-block-id", blk.id);
+          bEl.textContent = blk.text;
+          leftBox.appendChild(bEl);
+        });
+      }
+
+      // Nút bấm nhanh Cờ xanh ngay trong bảng nhiệm vụ để học sinh dễ thao tác
+      const quickRunBtn = document.createElement("button");
+      quickRunBtn.type = "button";
+      quickRunBtn.className = "flag-btn";
+      quickRunBtn.style.marginTop = "10px";
+      quickRunBtn.style.width = "100%";
+      quickRunBtn.innerHTML = "🚩 Bấm Cờ xanh Chạy thử ngay trên sân khấu";
+      quickRunBtn.addEventListener("click", () => {
+        triggerGreenFlagRun();
+      });
+      leftBox.appendChild(quickRunBtn);
+
+      // Cột phải: Quan sát và trả lời / xác nhận kết quả chạy thử
+      const rightBox = document.createElement("div");
+      rightBox.className = "panel-box";
+
+      if (sub.isParamConfigTask) {
+        rightBox.innerHTML = `
+          <h3>📋 Yêu cầu thông số cần đạt</h3>
+          <div style="background:#FFFFFF; border:2px solid #D5C9F2; border-radius:12px; padding:12px; font-size:0.93rem;">
+            <p style="margin-bottom:8px;">Em hãy chỉnh 3 ô chọn trong các khối lệnh bên trái sao cho:</p>
+            <ol style="padding-left:20px; line-height:1.7;">
+              <li>Khối di chuyển: <strong>120 bước</strong> (để Mèo đi tới đúng Micro vàng).</li>
+              <li>Khối đợi: <strong>1 giây</strong>.</li>
+              <li>Khối nói: <strong>"Cảm ơn các bạn!"</strong>.</li>
+            </ol>
+            <p style="margin-top:10px; color:var(--primary-purple); font-weight:700;">
+              Sau khi chỉnh xong, hãy bấm nút «🚩 Chạy (Cờ xanh)» để xem Mèo biểu diễn rồi bấm «Kiểm tra kết quả»!
+            </p>
+          </div>
+        `;
+      } else {
+        rightBox.innerHTML = `<h3>🔍 Quan sát sân khấu và chọn kết luận đúng</h3>`;
+        sub.options.forEach(opt => {
+          const card = document.createElement("div");
+          card.className = "option-card interactive-item" + (appState.m3SelectedOption === opt.id ? " selected" : "");
+          card.tabIndex = 0;
+          card.innerHTML = `
+            <span style="font-size:1.2rem;">${appState.m3SelectedOption === opt.id ? "🔘" : "⚪"}</span>
+            <span style="font-weight:600; font-size:0.92rem;">${opt.text}</span>
+          `;
+          const pickOpt = () => {
+            sound.playSfx("click");
+            appState.m3SelectedOption = opt.id;
+            renderInteractiveWorkspace(GAME_CONFIG.levels[2], sub);
+          };
+          card.addEventListener("click", pickOpt);
+          card.addEventListener("keydown", e => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              pickOpt();
+            }
+          });
+          rightBox.appendChild(card);
+        });
+      }
+
+      grid.appendChild(leftBox);
+      grid.appendChild(rightBox);
+      container.appendChild(grid);
+    }
+
+    /* ---------------- GIAO DIỆN MÀN 4: TÌM LỆNH SAI VỊ TRÍ ---------------- */
+    function renderLevel4Workspace(container, sub) {
+      const box = document.createElement("div");
+      box.className = "panel-box";
+      box.innerHTML = `
+        <h3>
+          <span>🛠️ Sắp xếp lại khối lệnh bị đặt sai vị trí (Nháy chọn 2 khối để đổi chỗ hoặc dùng nút ▲ / ▼)</span>
+          <button type="button" id="btnTestDebugScript" class="flag-btn" style="min-height:36px; padding:4px 12px; font-size:0.82rem;">
+            🚩 Chạy thử chuỗi hiện tại
+          </button>
+        </h3>
+      `;
+
+      const listWrap = document.createElement("div");
+      listWrap.style.display = "flex";
+      listWrap.style.flexDirection = "column";
+      listWrap.style.gap = "6px";
+
+      appState.m4BlockList.forEach((blk, idx) => {
+        const row = document.createElement("div");
+        row.style.cssText = "display:flex; align-items:center; gap:8px;";
+
+        const stepBadge = document.createElement("span");
+        stepBadge.className = "story-step-num";
+        stepBadge.textContent = idx + 1;
+
+        const bEl = document.createElement("div");
+        bEl.className = `scratch-block type-${blk.type} interactive-item` +
+          (appState.m4SelectedIdx === idx ? " selected-block" : "");
+        bEl.style.marginBottom = "0";
+        bEl.style.flex = "1";
+        bEl.tabIndex = 0;
+        bEl.setAttribute("data-vm-block-id", blk.id);
+        bEl.textContent = blk.text;
+
+        bEl.addEventListener("click", () => {
+          sound.playSfx("click");
+          if (appState.m4SelectedIdx === null) {
+            appState.m4SelectedIdx = idx;
+          } else if (appState.m4SelectedIdx === idx) {
+            appState.m4SelectedIdx = null;
+          } else {
+            // Đổi chỗ 2 khối lệnh
+            const temp = appState.m4BlockList[appState.m4SelectedIdx];
+            appState.m4BlockList[appState.m4SelectedIdx] = appState.m4BlockList[idx];
+            appState.m4BlockList[idx] = temp;
+            appState.m4SelectedIdx = null;
+            sound.playSfx("snap");
+          }
+          renderInteractiveWorkspace(GAME_CONFIG.levels[3], sub);
+        });
+
+        const moveControls = document.createElement("div");
+        moveControls.style.cssText = "display:flex; gap:4px;";
+
+        const btnUp = document.createElement("button");
+        btnUp.type = "button";
+        btnUp.className = "btn-outline";
+        btnUp.style.cssText = "min-height:40px; min-width:40px; padding:4px 8px;";
+        btnUp.disabled = idx === 0;
+        btnUp.title = "Chuyển khối lệnh này lên trên";
+        btnUp.textContent = "▲";
+        btnUp.addEventListener("click", () => {
+          if (idx > 0) {
+            sound.playSfx("snap");
+            const tmp = appState.m4BlockList[idx - 1];
+            appState.m4BlockList[idx - 1] = appState.m4BlockList[idx];
+            appState.m4BlockList[idx] = tmp;
+            appState.m4SelectedIdx = null;
+            renderInteractiveWorkspace(GAME_CONFIG.levels[3], sub);
+          }
+        });
+
+        const btnDown = document.createElement("button");
+        btnDown.type = "button";
+        btnDown.className = "btn-outline";
+        btnDown.style.cssText = "min-height:40px; min-width:40px; padding:4px 8px;";
+        btnDown.disabled = idx === appState.m4BlockList.length - 1;
+        btnDown.title = "Chuyển khối lệnh này xuống dưới";
+        btnDown.textContent = "▼";
+        btnDown.addEventListener("click", () => {
+          if (idx < appState.m4BlockList.length - 1) {
+            sound.playSfx("snap");
+            const tmp = appState.m4BlockList[idx + 1];
+            appState.m4BlockList[idx + 1] = appState.m4BlockList[idx];
+            appState.m4BlockList[idx] = tmp;
+            appState.m4SelectedIdx = null;
+            renderInteractiveWorkspace(GAME_CONFIG.levels[3], sub);
+          }
+        });
+
+        moveControls.appendChild(btnUp);
+        moveControls.appendChild(btnDown);
+
+        row.appendChild(stepBadge);
+        row.appendChild(bEl);
+        row.appendChild(moveControls);
+        listWrap.appendChild(row);
+      });
+
+      box.appendChild(listWrap);
+      container.appendChild(box);
+
+      const testBtn = box.querySelector("#btnTestDebugScript");
+      if (testBtn) {
+        testBtn.addEventListener("click", () => {
+          triggerGreenFlagRun();
+        });
+      }
+    }
+
+    /* ==========================================================================
+       PHẦN 7: KIỂM TRA ĐÁP ÁN THẬT, CHẤM ĐIỂM & GỢI Ý TỪNG BƯỚC
+       ========================================================================== */
+    function triggerGreenFlagRun() {
+      sound.playSfx("click");
+      appState.m3HasRunSimulation = true;
+      const blocksToRun = getCurrentStageProgram();
+      executeProgramOnStage(blocksToRun);
+
+      // Cập nhật nhãn trạng thái ở Màn 3 nếu đang ở Màn 3
+      const lvl = GAME_CONFIG.levels[appState.currentLevelIdx];
+      if (lvl.id === 3) {
+        const sub = lvl.subtasks[appState.currentSubtaskIdx];
+        renderInteractiveWorkspace(lvl, sub);
+      }
+    }
+
+    function checkCurrentSubtaskAnswer() {
+      const lvl = GAME_CONFIG.levels[appState.currentLevelIdx];
+      const sub = lvl.subtasks[appState.currentSubtaskIdx];
+      let isCorrect = false;
+
+      if (lvl.id === 1) {
+        isCorrect =
+          appState.m1SelectedOrder.length === sub.correctOrder.length &&
+          appState.m1SelectedOrder.every((id, i) => id === sub.correctOrder[i]);
+      } else if (lvl.id === 2) {
+        isCorrect =
+          appState.m2Slots.length === sub.correctSequence.length &&
+          appState.m2Slots.every((id, i) => id === sub.correctSequence[i]);
+      } else if (lvl.id === 3) {
+        if (sub.requireRunFirst && !appState.m3HasRunSimulation) {
+          sound.playSfx("wrong");
+          setPixelFeedback(
+            "Em hãy bấm nút «🚩 Chạy (Cờ xanh)» để chạy thử chương trình trên sân khấu và quan sát nhân vật trước khi kiểm tra nhé!",
+            "thinking",
+            "wrong"
+          );
+          return;
+        }
+        if (sub.isParamConfigTask) {
+          isCorrect =
+            appState.m3Params.steps === sub.targetParams.steps &&
+            appState.m3Params.waitSec === sub.targetParams.waitSec &&
+            appState.m3Params.greeting === sub.targetParams.greeting;
+        } else {
+          isCorrect = appState.m3SelectedOption === sub.correctOption;
+        }
+      } else if (lvl.id === 4) {
+        const currentIds = appState.m4BlockList.map(b => b.id);
+        isCorrect =
+          currentIds.length === sub.correctOrder.length &&
+          currentIds.every((id, i) => id === sub.correctOrder[i]);
+      }
+
+      if (isCorrect) {
+        sound.playSfx("correct");
+        appState.completedSubtasks[sub.id] = true;
+
+        // Chạy minh họa chương trình đúng trên sân khấu để học sinh thấy thành quả trực quan
+        const prog = getCurrentStageProgram();
+        executeProgramOnStage(prog);
+
+        // Kiểm tra xem cả 3 nhiệm vụ của màn hiện tại đã hoàn thành hết chưa
+        const allSubtasksInLevelDone = lvl.subtasks.every(st => appState.completedSubtasks[st.id]);
+
+        if (allSubtasksInLevelDone && !appState.completedLevels[appState.currentLevelIdx]) {
+          // Cộng đúng 25 điểm duy nhất 1 lần cho mỗi màn
+          appState.completedLevels[appState.currentLevelIdx] = true;
+          appState.score = Math.min(
+            GAME_CONFIG.maxScore,
+            appState.completedLevels.filter(Boolean).length * GAME_CONFIG.pointsPerLevel
+          );
+          sound.playSfx("levelUp");
+          spawnConfetti();
+          setPixelFeedback(
+            `🎉 ${sub.successMsg} Em đã hoàn thành trọn vẹn ${lvl.name} và nhận +25 điểm!`,
+            "happy",
+            "correct"
+          );
+        } else {
+          setPixelFeedback(`🌟 ${sub.successMsg} Hãy bấm «Tiếp tục» để sang nhiệm vụ kế tiếp nhé!`, "happy", "correct");
+        }
+
+        renderSubtaskPills(lvl);
+        updateHeaderAndStepper();
+        updateFooterButtons();
+      } else {
+        sound.playSfx("wrong");
+        // Ở Màn 2 và Màn 4, nếu học sinh ghép sai và bấm kiểm tra, vẫn chạy thử chuỗi đã ghép để thấy lỗi trực quan
+        if (lvl.id === 2 || lvl.id === 4) {
+          const prog = getCurrentStageProgram();
+          if (prog.length > 0) executeProgramOnStage(prog);
+        }
+        setPixelFeedback(`💡 Chưa chính xác: ${sub.errorMsg}`, "surprised", "wrong");
+      }
+    }
+
+    function updateFooterButtons() {
+      const lvl = GAME_CONFIG.levels[appState.currentLevelIdx];
+      const sub = lvl.subtasks[appState.currentSubtaskIdx];
+      const nextBtn = document.getElementById("btnNextAction");
+      const isSubDone = appState.completedSubtasks[sub.id];
+
+      nextBtn.disabled = !isSubDone;
+
+      if (appState.currentSubtaskIdx < lvl.subtasks.length - 1) {
+        nextBtn.textContent = "Nhiệm vụ tiếp theo ➔";
+      } else if (appState.currentLevelIdx < GAME_CONFIG.levels.length - 1) {
+        nextBtn.textContent = `Sang Màn ${appState.currentLevelIdx + 2} ➔`;
+      } else {
+        nextBtn.textContent = "🏆 Xem Bảng Tổng Kết";
+      }
+    }
+
+    function handleNextButtonClick() {
+      sound.playSfx("click");
+      const lvl = GAME_CONFIG.levels[appState.currentLevelIdx];
+      if (appState.currentSubtaskIdx < lvl.subtasks.length - 1) {
+        loadLevel(appState.currentLevelIdx, appState.currentSubtaskIdx + 1);
+      } else if (appState.currentLevelIdx < GAME_CONFIG.levels.length - 1) {
+        loadLevel(appState.currentLevelIdx + 1, 0);
+      } else {
+        showSummaryScreen();
+      }
+    }
+
+    function showHintStep() {
+      sound.playSfx("click");
+      const lvl = GAME_CONFIG.levels[appState.currentLevelIdx];
+      const sub = lvl.subtasks[appState.currentSubtaskIdx];
+
+      if (appState.hintLevelUsed === 0) {
+        appState.hintLevelUsed = 1;
+        setPixelFeedback(`💡 Gợi ý mức 1: ${sub.hint1}`, "thinking", "hint");
+        document.getElementById("hintStepLabel").textContent = "Mức 2/2";
+      } else {
+        appState.hintLevelUsed = 2;
+        setPixelFeedback(`🔑 Gợi ý chi tiết mức 2: ${sub.hint2}`, "happy", "hint");
+        document.getElementById("hintStepLabel").textContent = "Đã mở 2/2";
+      }
+    }
+
+    /* Hiệu ứng ngôi sao/pháo giấy ngắn (~1.8 giây) khi hoàn thành màn */
+    function spawnConfetti() {
+      const layer = document.getElementById("confettiLayer");
+      layer.innerHTML = "";
+      const colors = ["#58429B", "#4ABDAA", "#F2BE4A", "#F6B6C8", "#4C97FF", "#2BAE66"];
+      for (let i = 0; i < 36; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti-piece";
+        piece.style.left = Math.random() * 100 + "vw";
+        piece.style.top = "-10px";
+        piece.style.background = colors[i % colors.length];
+        piece.style.animationDelay = (Math.random() * 0.35) + "s";
+        layer.appendChild(piece);
+      }
+      setTimeout(() => {
+        layer.innerHTML = "";
+      }, 2000);
+    }
+
+    /* ==========================================================================
+       PHẦN 8: MÀN HÌNH TỔNG KẾT & XUẤT PHIẾU THÀNH TÍCH THẬT (.HTML)
+       ========================================================================== */
+    function showSummaryScreen() {
+      stopStageExecution();
+      sound.playSfx("victory");
+      spawnConfetti();
+
+      document.getElementById("screenWelcome").classList.remove("active");
+      document.getElementById("screenPlay").classList.remove("active");
+      document.getElementById("screenSummary").classList.add("active");
+
+      document.getElementById("finalScoreDisplay").textContent = `${appState.score} / ${GAME_CONFIG.maxScore}`;
+
+      const badgeGrid = document.getElementById("summaryBadgeGrid");
+      badgeGrid.innerHTML = "";
+
+      GAME_CONFIG.badges.forEach((b, idx) => {
+        const unlocked = appState.completedLevels[idx];
+        const item = document.createElement("div");
+        item.className = "badge-item" + (unlocked ? " unlocked" : "");
+        item.innerHTML = `
+          <div style="font-size:2rem;">${unlocked ? "🏅" : "🔒"}</div>
+          <strong style="color:var(--primary-purple); font-size:0.95rem;">${b.title}</strong>
+          <span style="font-size:0.82rem; color:var(--text-muted);">${b.desc}</span>
+          <span style="font-size:0.78rem; font-weight:800; color:${unlocked ? 'var(--success)' : 'var(--text-muted)'};">
+            ${unlocked ? "✔ Đã đạt (+25đ)" : "Chưa mở khóa"}
+          </span>
+        `;
+        badgeGrid.appendChild(item);
+      });
+    }
+
+    function downloadCertificateFile() {
+      sound.playSfx("click");
+      const dateStr = new Date().toLocaleDateString("vi-VN");
+      const certHtml = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Phiếu Thành Tích - Lập Trình Theo Thứ Tự</title>
+<style>
+  body { font-family: "Segoe UI", Arial, sans-serif; background: #F8F7FF; padding: 30px; text-align: center; color: #2B234A; }
+  .cert-box { max-width: 720px; margin: auto; background: #FFFFFF; border: 6px double #58429B; border-radius: 24px; padding: 32px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+  h1 { color: #58429B; margin-bottom: 8px; }
+  .score { font-size: 28px; color: #2BAE66; font-weight: bold; margin: 16px 0; }
+  ul { text-align: left; background: #E8F8F5; padding: 18px 32px; border-radius: 14px; line-height: 1.6; }
+</style>
+</head>
+<body>
+  <div class="cert-box">
+    <p><strong>TIN HỌC 5 – KẾT NỐI TRI THỨC VỚI CUỘC SỐNG • BÀI 10: CẤU TRÚC TUẦN TỰ</strong></p>
+    <h1>PHIẾU CHỨNG NHẬN HOÀN THÀNH TRÒ CHƠI</h1>
+    <h2>LẬP TRÌNH THEO THỨ TỰ</h2>
+    <p class="score">Điểm số đạt được: ${appState.score} / ${GAME_CONFIG.maxScore} điểm</p>
+    <p>Ngày hoàn thành: ${dateStr}</p>
+    <ul>
+      <li>Đã nhận biết được cấu trúc tuần tự trong kịch bản và chương trình.</li>
+      <li>Đã thực hành ghép nối các khối lệnh Scratch liên tiếp theo đúng thứ tự từ trên xuống dưới.</li>
+      <li>Đã chạy thử chương trình bằng Cờ xanh và gỡ lỗi các khối lệnh đặt sai vị trí.</li>
+    </ul>
+  </div>
+</body>
+</html>`;
+
+      const blob = new Blob([certHtml], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Phieu-Thanh-Tich-Bai-10-Cau-Truc-Tuan-Tu.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    /* ==========================================================================
+       PHẦN 9: KHỞI TẠO SỰ KIỆN & QUẢN LÝ LUỒNG CHƠI
+       ========================================================================== */
+    function switchScreen(screenId) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(screenId).classList.add("active");
+    }
+
+    function resetFullGame() {
+      stopStageExecution();
+      appState.score = 0;
+      appState.completedLevels = [false, false, false, false];
+      Object.keys(appState.completedSubtasks).forEach(k => {
+        appState.completedSubtasks[k] = false;
+      });
+      loadLevel(0, 0);
+      switchScreen("screenPlay");
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      renderPixelMascot("normal");
+      updateHeaderAndStepper();
+
+      // Nút Bắt đầu ở màn chào mừng -> Kích hoạt nhạc nền Web Audio API
+      document.getElementById("btnStartGame").addEventListener("click", () => {
+        appState.hasStarted = true;
+        sound.initContext();
+        sound.playSfx("click");
+        if (sound.bgmEnabled) sound.startBgm();
+        switchScreen("screenPlay");
+        loadLevel(appState.currentLevelIdx, appState.currentSubtaskIdx);
+      });
+
+      // Nút Trang chủ
+      document.getElementById("btnGoHome").addEventListener("click", () => {
+        sound.playSfx("click");
+        stopStageExecution();
+        sound.stopBgm();
+        switchScreen("screenWelcome");
+      });
+
+      // Công tắc Nhạc nền độc lập
+      const btnBgm = document.getElementById("btnToggleBgm");
+      btnBgm.addEventListener("click", () => {
+        sound.bgmEnabled = !sound.bgmEnabled;
+        btnBgm.setAttribute("aria-pressed", String(sound.bgmEnabled));
+        if (sound.bgmEnabled && appState.hasStarted) {
+          sound.startBgm();
+        } else {
+          sound.stopBgm();
+        }
+      });
+
+      // Công tắc Hiệu ứng (SFX) độc lập
+      const btnSfx = document.getElementById("btnToggleSfx");
+      btnSfx.addEventListener("click", () => {
+        sound.sfxEnabled = !sound.sfxEnabled;
+        btnSfx.setAttribute("aria-pressed", String(sound.sfxEnabled));
+        if (sound.sfxEnabled) sound.playSfx("click");
+      });
+
+      // Thanh âm lượng chung
+      document.getElementById("masterVolume").addEventListener("input", e => {
+        const val = Number(e.target.value) / 100;
+        sound.setMasterVolume(val);
+      });
+
+      // Chọn chế độ Luyện tập / Thử thách
+      const btnPractice = document.getElementById("btnModePractice");
+      const btnChallenge = document.getElementById("btnModeChallenge");
+      btnPractice.addEventListener("click", () => {
+        sound.playSfx("click");
+        appState.mode = "practice";
+        btnPractice.classList.add("active");
+        btnChallenge.classList.remove("active");
+        loadLevel(appState.currentLevelIdx, appState.currentSubtaskIdx);
+      });
+      btnChallenge.addEventListener("click", () => {
+        sound.playSfx("click");
+        appState.mode = "challenge";
+        btnChallenge.classList.add("active");
+        btnPractice.classList.remove("active");
+        loadLevel(appState.currentLevelIdx, appState.currentSubtaskIdx);
+      });
+
+      // Điều khiển Sân khấu Scratch (Cờ xanh, Dừng, Đặt lại)
+      document.getElementById("btnStageGreenFlag").addEventListener("click", () => {
+        triggerGreenFlagRun();
+      });
+      document.getElementById("btnStageStop").addEventListener("click", () => {
+        sound.playSfx("click");
+        stopStageExecution();
+        document.getElementById("execStatusText").textContent = "Đã dừng chương trình";
+      });
+      document.getElementById("btnStageReset").addEventListener("click", () => {
+        sound.playSfx("click");
+        resetStageCat();
+      });
+
+      // Nút Gợi ý, Làm lại màn, Kiểm tra, Tiếp tục
+      document.getElementById("btnHint").addEventListener("click", showHintStep);
+      document.getElementById("btnResetLevel").addEventListener("click", () => {
+        sound.playSfx("click");
+        loadLevel(appState.currentLevelIdx, appState.currentSubtaskIdx);
+      });
+      document.getElementById("btnCheckAnswer").addEventListener("click", checkCurrentSubtaskAnswer);
+      document.getElementById("btnNextAction").addEventListener("click", handleNextButtonClick);
+
+      // Nút Chơi lại & Lưu phiếu thành tích ở màn cuối
+      document.getElementById("btnPlayAgain").addEventListener("click", () => {
+        sound.playSfx("click");
+        if (sound.bgmEnabled) sound.startBgm();
+        resetFullGame();
+      });
+      document.getElementById("btnDownloadCert").addEventListener("click", downloadCertificateFile);
+
+      // Modal Hướng dẫn
+      const guideModal = document.getElementById("guideModal");
+      const openGuide = () => {
+        sound.playSfx("click");
+        guideModal.classList.add("open");
+      };
+      const closeGuide = () => {
+        sound.playSfx("click");
+        guideModal.classList.remove("open");
+      };
+      document.getElementById("btnOpenGuide").addEventListener("click", openGuide);
+      document.getElementById("btnWelcomeGuide").addEventListener("click", openGuide);
+      document.getElementById("btnCloseGuide").addEventListener("click", closeGuide);
+      guideModal.addEventListener("click", e => {
+        if (e.target === guideModal) closeGuide();
+      });
+    });
+  </script>
+</body>
+</html>

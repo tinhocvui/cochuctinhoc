@@ -1,0 +1,3286 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HỌA SĨ KĨ THUẬT SỐ – Tin học 5 Bài 8A</title>
+  <style>
+    /* ==========================================================================
+       TIÊU CHUẨN MỸ THUẬT V5 – BẢNG MÀU XỨ SỞ CÔNG NGHỆ PASTEL
+       Hoạt động hoàn toàn ngoại tuyến, không dùng thư viện hay font ngoài.
+       ========================================================================== */
+    :root {
+      --bg-cream: #F8F7FF;
+      --bg-panel: #FFFFFF;
+      --primary-purple: #58429B;
+      --primary-purple-light: #7B61C4;
+      --primary-purple-soft: #EDE9FE;
+      --accent-mint: #4ABDAA;
+      --accent-mint-dark: #359685;
+      --accent-mint-soft: #E0F7F4;
+      --accent-gold: #F2BE4A;
+      --accent-gold-dark: #D49B22;
+      --accent-gold-soft: #FEF5DC;
+      --accent-peach: #F6B6C8;
+      --accent-peach-dark: #D97E98;
+      --accent-peach-soft: #FFF0F5;
+      --text-main: #2A2246;
+      --text-muted: #655B85;
+      --success: #28A745;
+      --warning: #E67E22;
+      --danger: #DC3545;
+      --border-soft: #DCD4F5;
+      --shadow-soft: 0 8px 24px rgba(88, 66, 155, 0.11);
+      --shadow-btn: 0 4px 0 rgba(88, 66, 155, 0.22);
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --font-sans: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: linear-gradient(135deg, #F8F7FF 0%, #ECE8FF 50%, #E2F8F4 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      padding: 10px;
+    }
+
+    /* Tôn trọng prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Khung chính ưu tiên tỉ lệ 16:9, responsive */
+    #app-shell {
+      width: 100%;
+      max-width: 1320px;
+      min-height: 720px;
+      background: var(--bg-cream);
+      border-radius: 26px;
+      box-shadow: 0 14px 42px rgba(88, 66, 155, 0.16);
+      border: 3px solid #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Bối cảnh trang trí đa lớp thay đổi theo tiến độ */
+    .studio-backdrop {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+      opacity: 0.55;
+      transition: background 0.5s ease;
+    }
+
+    /* Thanh Header điều hướng trên cùng */
+    .top-bar {
+      position: relative;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.94);
+      border-bottom: 2px solid var(--border-soft);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: var(--primary-purple);
+      color: #FFF;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: 999px;
+      letter-spacing: 0.4px;
+    }
+
+    .brand-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--primary-purple);
+    }
+
+    /* Cụm tiến độ màn 1/4 -> 4/4 */
+    .stage-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary-purple-soft);
+      padding: 5px 8px;
+      border-radius: 999px;
+    }
+
+    .stage-pill {
+      min-width: 44px;
+      min-height: 38px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background: transparent;
+      color: var(--primary-purple);
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .stage-pill:hover:not(:disabled) {
+      background: rgba(88, 66, 155, 0.12);
+    }
+
+    .stage-pill.active {
+      background: var(--primary-purple);
+      color: #FFF;
+      box-shadow: 0 3px 10px rgba(88, 66, 155, 0.3);
+    }
+
+    .stage-pill.done {
+      background: var(--accent-mint-soft);
+      color: var(--accent-mint-dark);
+      border-color: var(--accent-mint);
+    }
+
+    .stage-pill:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* Cụm công cụ điểm số và âm thanh */
+    .status-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .score-chip {
+      background: linear-gradient(135deg, #FEF5DC, #FDE4A6);
+      border: 2px solid var(--accent-gold);
+      color: #6B4900;
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 7px 14px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Nút bấm chuẩn V5 >= 44x44px */
+    .btn {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      border: 2px solid transparent;
+      font-family: inherit;
+      font-size: 0.96rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s ease;
+      box-shadow: var(--shadow-btn);
+      background: #FFF;
+      color: var(--text-main);
+    }
+
+    .btn:focus-visible,
+    .stage-pill:focus-visible,
+    .tool-btn:focus-visible,
+    .swatch-btn:focus-visible,
+    .label-card:focus-visible,
+    .drop-zone:focus-visible {
+      outline: 3px solid var(--accent-gold);
+      outline-offset: 2px;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(88, 66, 155, 0.2);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      background: var(--primary-purple);
+      color: #FFF;
+      border-color: #422F7A;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-purple-light);
+    }
+
+    .btn-mint {
+      background: var(--accent-mint);
+      color: #FFF;
+      border-color: var(--accent-mint-dark);
+    }
+
+    .btn-gold {
+      background: var(--accent-gold);
+      color: #3D2800;
+      border-color: var(--accent-gold-dark);
+    }
+
+    .btn-peach {
+      background: var(--accent-peach);
+      color: #4F1B2D;
+      border-color: var(--accent-peach-dark);
+    }
+
+    .btn-outline {
+      background: #FFF;
+      color: var(--primary-purple);
+      border-color: var(--border-soft);
+    }
+
+    .audio-toggle {
+      padding: 6px 12px;
+      font-size: 0.88rem;
+      border-radius: 999px;
+      border: 2px solid var(--border-soft);
+      background: #FFF;
+    }
+
+    .audio-toggle.on {
+      background: var(--accent-mint-soft);
+      border-color: var(--accent-mint);
+      color: #165B4F;
+    }
+
+    .audio-toggle.off {
+      background: #F3F1F8;
+      color: var(--text-muted);
+    }
+
+    /* Khu vực thân chính */
+    .main-stage {
+      position: relative;
+      z-index: 5;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 18px;
+      gap: 12px;
+    }
+
+    /* Màn hình Chào mừng */
+    .welcome-screen {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      border: 2px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .welcome-info h1 {
+      font-size: 2.35rem;
+      color: var(--primary-purple);
+      line-height: 1.15;
+      margin: 8px 0 12px;
+    }
+
+    .lesson-tag {
+      display: inline-block;
+      background: var(--accent-peach-soft);
+      color: #8A2C4A;
+      border: 2px solid var(--accent-peach);
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+    }
+
+    .welcome-desc {
+      font-size: 1.08rem;
+      line-height: 1.55;
+      color: var(--text-main);
+      margin-bottom: 16px;
+    }
+
+    .mode-selector {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .mode-card {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border-soft);
+      background: #FFF;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mode-card.selected {
+      border-color: var(--primary-purple);
+      background: var(--primary-purple-soft);
+      box-shadow: 0 4px 12px rgba(88, 66, 155, 0.14);
+    }
+
+    .mode-card h3 {
+      font-size: 1.02rem;
+      color: var(--primary-purple);
+      margin-bottom: 4px;
+    }
+
+    .mode-card p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .welcome-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .welcome-art {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #F2EEFF 0%, #E3FAF6 100%);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      border: 2px solid var(--border-soft);
+    }
+
+    /* Bố cục màn chơi tương tác */
+    .play-layout {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    /* Cột trái: Linh vật Pixel + Nhiệm vụ + Phản hồi */
+    .mascot-sidebar {
+      background: #FFF;
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--border-soft);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .stage-header-card {
+      background: var(--primary-purple-soft);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      border-left: 5px solid var(--primary-purple);
+    }
+
+    .stage-header-card .stage-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--primary-purple);
+      text-transform: uppercase;
+    }
+
+    .stage-header-card h2 {
+      font-size: 1.15rem;
+      color: var(--text-main);
+      margin-top: 2px;
+    }
+
+    .mascot-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #F9F7FF, #EEFBF9);
+      padding: 10px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-soft);
+    }
+
+    .mascot-svg-wrap {
+      width: 82px;
+      height: 82px;
+      flex-shrink: 0;
+    }
+
+    .speech-bubble {
+      position: relative;
+      background: #FFF;
+      border: 2px solid var(--primary-purple);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 0.94rem;
+      line-height: 1.42;
+      color: var(--text-main);
+      box-shadow: 0 4px 10px rgba(88, 66, 155, 0.08);
+      flex: 1;
+    }
+
+    .speech-bubble.good {
+      border-color: var(--accent-mint-dark);
+      background: #F2FBF9;
+    }
+
+    .speech-bubble.warn {
+      border-color: var(--accent-gold-dark);
+      background: #FFFDF5;
+    }
+
+    /* Danh sách bước nhiệm vụ */
+    .checklist-box {
+      background: #FAF9FF;
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .checklist-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--primary-purple);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.9rem;
+      line-height: 1.35;
+      padding: 7px 8px;
+      border-radius: 10px;
+      background: #FFF;
+      border: 1px solid #EAE6F8;
+      transition: all 0.2s ease;
+    }
+
+    .step-item.active {
+      border-color: var(--primary-purple);
+      background: var(--primary-purple-soft);
+      font-weight: 700;
+    }
+
+    .step-item.completed {
+      border-color: var(--accent-mint);
+      background: var(--accent-mint-soft);
+      color: #15574C;
+    }
+
+    .step-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #E4DFF5;
+      color: var(--primary-purple);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .step-item.completed .step-icon {
+      background: var(--accent-mint);
+      color: #FFF;
+    }
+
+    /* Hộp gợi ý 2 cấp độ */
+    .hint-panel {
+      background: var(--accent-gold-soft);
+      border: 2px dashed var(--accent-gold-dark);
+      border-radius: var(--radius-md);
+      padding: 9px 11px;
+      font-size: 0.88rem;
+      line-height: 1.4;
+      color: #5C4000;
+      display: none;
+    }
+
+    .hint-panel.visible {
+      display: block;
+    }
+
+    /* Cột phải: Xưởng vẽ MS Paint mô phỏng */
+    .paint-window {
+      background: #F3F2F9;
+      border-radius: var(--radius-lg);
+      border: 3px solid var(--primary-purple);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .paint-titlebar {
+      background: linear-gradient(90deg, var(--primary-purple) 0%, #7B61C4 100%);
+      color: #FFF;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
+
+    .paint-title-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+    }
+
+    .sim-disclaimer {
+      font-size: 0.78rem;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    /* Thanh Ribbon Paint mô phỏng */
+    .paint-ribbon {
+      background: #FFFFFF;
+      border-bottom: 2px solid var(--border-soft);
+      padding: 8px 12px;
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .ribbon-group {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 6px 10px;
+      border-radius: 12px;
+      border: 2px solid #E7E2F8;
+      background: #FBF9FF;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .ribbon-group.pulse-guide {
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 0 3px rgba(242, 190, 74, 0.35);
+    }
+
+    .ribbon-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .ribbon-label {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 4px;
+      padding-top: 3px;
+      border-top: 1px solid #ECE8F8;
+    }
+
+    .tool-btn {
+      min-width: 46px;
+      min-height: 46px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      border: 2px solid #E2DCF5;
+      background: #FFF;
+      color: var(--text-main);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      transition: all 0.15s ease;
+    }
+
+    .tool-btn:hover:not(:disabled) {
+      border-color: var(--primary-purple);
+      background: var(--primary-purple-soft);
+    }
+
+    .tool-btn.active {
+      background: var(--primary-purple);
+      color: #FFF;
+      border-color: #3E2B78;
+      box-shadow: 0 3px 8px rgba(88, 66, 155, 0.28);
+    }
+
+    .tool-btn.highlight-hint {
+      border-color: var(--accent-gold-dark);
+      box-shadow: 0 0 0 3px rgba(242, 190, 74, 0.5);
+    }
+
+    /* Bảng màu Colors */
+    .color-palette {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .active-color-preview {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 3px solid var(--text-main);
+      box-shadow: inset 0 0 0 2px #FFF;
+    }
+
+    .swatches-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 34px);
+      gap: 5px;
+    }
+
+    .swatch-btn {
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+      min-height: 34px;
+      border-radius: 8px;
+      border: 2px solid rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: transform 0.12s ease;
+    }
+
+    .swatch-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .swatch-btn.active {
+      outline: 3px solid var(--primary-purple);
+      outline-offset: 1px;
+      transform: scale(1.08);
+    }
+
+    /* Vùng làm việc chính bên trong cửa sổ Paint */
+    .paint-workspace {
+      flex: 1;
+      background: #E5E1F4;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 410px;
+    }
+
+    .canvas-container {
+      background: #FFFFFF;
+      border: 2px solid #9D93C4;
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(42, 34, 70, 0.12);
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      max-width: 780px;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #paint-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    /* Giao diện riêng cho Màn 1: Nhận biết Xưởng vẽ */
+    .stage1-board {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 6px;
+    }
+
+    .stage1-labels-tray {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: #FFF;
+      padding: 10px;
+      border-radius: 12px;
+      border: 2px dashed var(--primary-purple);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .label-card {
+      min-height: 44px;
+      padding: 8px 14px;
+      background: linear-gradient(135deg, #58429B, #7259C4);
+      color: #FFF;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border-radius: 10px;
+      border: 2px solid #3C2A75;
+      cursor: grab;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 3px 0 rgba(42, 34, 70, 0.25);
+      transition: all 0.15s ease;
+    }
+
+    .label-card.selected {
+      background: var(--accent-gold);
+      color: #3D2800;
+      border-color: var(--accent-gold-dark);
+      transform: translateY(-3px) scale(1.03);
+    }
+
+    .label-card.matched {
+      background: var(--accent-mint);
+      border-color: var(--accent-mint-dark);
+      opacity: 0.55;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .stage1-diagram {
+      flex: 1;
+      background: #FFF;
+      border-radius: 12px;
+      border: 2px solid var(--border-soft);
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: auto 1fr;
+      gap: 10px;
+    }
+
+    .drop-zone {
+      border: 2px dashed #A396D1;
+      border-radius: 12px;
+      background: #FAF8FF;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      min-height: 110px;
+    }
+
+    .drop-zone.canvas-zone {
+      grid-column: 1 / -1;
+      min-height: 175px;
+      background: #FFFFFF;
+      border-style: solid;
+    }
+
+    .drop-zone:hover,
+    .drop-zone.drag-over {
+      border-color: var(--primary-purple);
+      background: var(--primary-purple-soft);
+    }
+
+    .drop-zone.filled {
+      border-style: solid;
+      border-color: var(--accent-mint);
+      background: var(--accent-mint-soft);
+    }
+
+    .drop-zone.quiz-target:hover {
+      border-color: var(--accent-gold-dark);
+      box-shadow: 0 0 0 3px rgba(242, 190, 74, 0.35);
+    }
+
+    .zone-slot-badge {
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      background: #EAE5F9;
+      color: var(--primary-purple);
+    }
+
+    .drop-zone.filled .zone-slot-badge {
+      background: var(--accent-mint);
+      color: #FFF;
+    }
+
+    /* Thanh điều khiển dưới chân màn chơi */
+    .bottom-bar {
+      position: relative;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.95);
+      border-top: 2px solid var(--border-soft);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .bottom-left, .bottom-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Màn hình Tổng kết */
+    .summary-screen {
+      flex: 1;
+      background: #FFF;
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--border-soft);
+      padding: 22px 26px;
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 22px;
+      align-items: center;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .badge-showcase {
+      background: linear-gradient(160deg, #F5F0FF 0%, #E2FAF6 100%);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      border: 2px solid var(--border-soft);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .final-artwork-preview {
+      width: 100%;
+      max-width: 340px;
+      aspect-ratio: 16 / 9;
+      background: #FFF;
+      border: 3px solid var(--primary-purple);
+      border-radius: 12px;
+      object-fit: contain;
+    }
+
+    .takeaway-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 14px 0 18px;
+    }
+
+    .takeaway-card {
+      background: #FAF8FF;
+      border-left: 5px solid var(--accent-mint);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.96rem;
+      line-height: 1.45;
+    }
+
+    /* Modal Hướng dẫn */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(42, 34, 70, 0.55);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #FFF;
+      max-width: 680px;
+      width: 100%;
+      border-radius: var(--radius-lg);
+      border: 3px solid var(--primary-purple);
+      padding: 22px 24px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-card h2 {
+      color: var(--primary-purple);
+      margin-bottom: 12px;
+      font-size: 1.4rem;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .guide-item {
+      background: var(--bg-cream);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+
+    .guide-item strong {
+      color: var(--primary-purple);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* Confetti Canvas phủ trên khi hoàn thành màn */
+    #confetti-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive cho màn hình nhỏ & 1366x768 */
+    @media (max-width: 1024px) {
+      .welcome-screen,
+      .summary-screen {
+        grid-template-columns: 1fr;
+      }
+      .play-layout {
+        grid-template-columns: 1fr;
+      }
+      .stage1-diagram {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .guide-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app-shell">
+    <!-- Bối cảnh SVG đa lớp mở khóa dần theo màn -->
+    <div class="studio-backdrop" id="studio-backdrop" aria-hidden="true"></div>
+
+    <!-- Canvas pháo giấy chúc mừng (tối đa 2 giây) -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- THANH ĐIỀU HƯỚNG TRÊN CÙNG -->
+    <header class="top-bar">
+      <div class="brand-group">
+        <span class="brand-badge">TIN HỌC 5 • BÀI 8A</span>
+        <span class="brand-title" id="ui-game-title">HỌA SĨ KĨ THUẬT SỐ</span>
+      </div>
+
+      <!-- Tiến độ 4 màn chơi -->
+      <nav class="stage-pills" id="stage-nav" aria-label="Tiến độ màn chơi">
+        <button type="button" class="stage-pill" data-stage="1">Màn 1</button>
+        <button type="button" class="stage-pill" data-stage="2">Màn 2</button>
+        <button type="button" class="stage-pill" data-stage="3">Màn 3</button>
+        <button type="button" class="stage-pill" data-stage="4">Màn 4</button>
+      </nav>
+
+      <!-- Điểm số & Công tắc âm thanh độc lập (Không có giọng đọc) -->
+      <div class="status-controls">
+        <div class="score-chip" aria-live="polite">
+          <span>★ Điểm:</span>
+          <span id="ui-score">0</span><span>/ 100</span>
+        </div>
+        <button type="button" id="btn-bgm" class="btn audio-toggle on" aria-pressed="true" title="Bật hoặc tắt Nhạc nền">
+          🎵 Nhạc nền: BẬT
+        </button>
+        <button type="button" id="btn-sfx" class="btn audio-toggle on" aria-pressed="true" title="Bật hoặc tắt Hiệu ứng âm thanh">
+          🔔 Hiệu ứng: BẬT
+        </button>
+        <button type="button" id="btn-mute-all" class="btn btn-outline" title="Tắt nhanh toàn bộ âm thanh">
+          🔇 Tắt nhanh
+        </button>
+      </div>
+    </header>
+
+    <!-- KHU VỰC NỘI DUNG CHÍNH -->
+    <main class="main-stage">
+      <!-- 1. MÀN HÌNH CHÀO MỪNG -->
+      <section id="screen-welcome" class="welcome-screen">
+        <div class="welcome-info">
+          <span class="lesson-tag">Kết nối tri thức với cuộc sống • Trang 37–42</span>
+          <h1>HỌA SĨ KĨ THUẬT SỐ</h1>
+          <p class="welcome-desc">
+            Chào mừng em đến với <strong>Xưởng vẽ Kĩ thuật số</strong> cùng trợ lí <strong>Pixel</strong>!
+            Em sẽ khám phá cửa sổ phần mềm đồ họa Paint, tự tay vẽ bóng bay, nhân bản hình bằng công cụ
+            <em>Select – Copy – Paste</em> và sáng tạo bức tranh <strong>Chùm bóng bay sắc màu</strong> để xuất ra tệp ảnh thật nhé!
+          </p>
+
+          <div class="mode-selector" role="radiogroup" aria-label="Chọn chế độ chơi">
+            <div class="mode-card selected" id="mode-practice" tabindex="0" role="radio" aria-checked="true">
+              <h3>🌱 Chế độ Luyện tập</h3>
+              <p>Hiển thị sẵn gợi ý bước 1 và đánh dấu trực quan công cụ cần dùng.</p>
+            </div>
+            <div class="mode-card" id="mode-challenge" tabindex="0" role="radio" aria-checked="false">
+              <h3>🚀 Chế độ Thử thách</h3>
+              <p>Ẩn gợi ý ban đầu để em tự khám phá; vẫn có thể bấm nút Gợi ý khi cần.</p>
+            </div>
+          </div>
+
+          <div class="welcome-actions">
+            <button type="button" id="btn-start-game" class="btn btn-primary" style="font-size:1.12rem; padding:12px 26px;">
+              ▶ Bắt đầu vào Xưởng vẽ
+            </button>
+            <button type="button" id="btn-open-guide" class="btn btn-gold" style="font-size:1.05rem;">
+              📖 Hướng dẫn cách chơi
+            </button>
+          </div>
+        </div>
+
+        <!-- Minh họa lớn SVG Xưởng Paint & Linh vật Pixel -->
+        <div class="welcome-art">
+          <svg viewBox="0 0 420 300" width="100%" height="270" role="img" aria-label="Minh họa Xưởng vẽ Paint và trợ lí Pixel">
+            <defs>
+              <linearGradient id="skyGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#EDE7FF"/>
+                <stop offset="100%" stop-color="#D7F7F0"/>
+              </linearGradient>
+            </defs>
+            <rect x="10" y="10" width="400" height="280" rx="22" fill="url(#skyGrad)" stroke="#58429B" stroke-width="3"/>
+            <!-- Khung cửa sổ Paint minh họa -->
+            <rect x="35" y="32" width="250" height="195" rx="12" fill="#FFFFFF" stroke="#58429B" stroke-width="3"/>
+            <rect x="35" y="32" width="250" height="28" rx="10" fill="#58429B"/>
+            <circle cx="52" cy="46" r="5" fill="#F6B6C8"/>
+            <circle cx="68" cy="46" r="5" fill="#F2BE4A"/>
+            <circle cx="84" cy="46" r="5" fill="#4ABDAA"/>
+            <text x="102" y="50" fill="#FFF" font-size="11" font-weight="bold">Paint - Xưởng vẽ số</text>
+            <!-- Chùm bóng bay trên khung canvas -->
+            <line x1="115" y1="135" x2="145" y2="205" stroke="#58429B" stroke-width="2.5"/>
+            <line x1="160" y1="120" x2="145" y2="205" stroke="#58429B" stroke-width="2.5"/>
+            <line x1="200" y1="142" x2="145" y2="205" stroke="#58429B" stroke-width="2.5"/>
+            <ellipse cx="115" cy="108" rx="26" ry="32" fill="#F6B6C8" stroke="#58429B" stroke-width="2.5"/>
+            <ellipse cx="160" cy="95" rx="28" ry="34" fill="#4ABDAA" stroke="#58429B" stroke-width="2.5"/>
+            <ellipse cx="202" cy="116" rx="24" ry="30" fill="#F2BE4A" stroke="#58429B" stroke-width="2.5"/>
+            <circle cx="106" cy="96" r="5" fill="#FFF" opacity="0.7"/>
+            <circle cx="150" cy="82" r="6" fill="#FFF" opacity="0.7"/>
+            <!-- Bảng pha màu cầu vồng -->
+            <g transform="translate(48, 215)">
+              <ellipse cx="55" cy="28" rx="52" ry="26" fill="#F2BE4A" stroke="#58429B" stroke-width="2.5"/>
+              <circle cx="28" cy="24" r="8" fill="#FF5964"/>
+              <circle cx="48" cy="16" r="8" fill="#4ABDAA"/>
+              <circle cx="72" cy="18" r="8" fill="#58429B"/>
+              <circle cx="84" cy="32" r="8" fill="#F6B6C8"/>
+              <circle cx="45" cy="36" r="7" fill="#FFF"/>
+            </g>
+            <!-- Linh vật Pixel Chibi -->
+            <g transform="translate(295, 78)">
+              <rect x="12" y="38" width="76" height="66" rx="18" fill="#58429B"/>
+              <rect x="20" y="46" width="60" height="46" rx="12" fill="#E6FAF7" stroke="#4ABDAA" stroke-width="2"/>
+              <circle cx="38" cy="66" r="5" fill="#2A2246"/>
+              <circle cx="62" cy="66" r="5" fill="#2A2246"/>
+              <path d="M 40 78 Q 50 86 60 78" fill="none" stroke="#2A2246" stroke-width="3" stroke-linecap="round"/>
+              <line x1="50" y1="16" x2="50" y2="38" stroke="#58429B" stroke-width="4"/>
+              <circle cx="50" cy="14" r="8" fill="#F2BE4A" stroke="#58429B" stroke-width="2.5"/>
+              <!-- Thân và bảng điều khiển -->
+              <rect x="22" y="108" width="56" height="52" rx="14" fill="#4ABDAA" stroke="#58429B" stroke-width="2.5"/>
+              <rect x="31" y="118" width="38" height="24" rx="6" fill="#FFF"/>
+              <circle cx="41" cy="130" r="4" fill="#F6B6C8"/>
+              <circle cx="51" cy="130" r="4" fill="#F2BE4A"/>
+              <circle cx="61" cy="130" r="4" fill="#58429B"/>
+              <!-- Tay cầm cọ vẽ -->
+              <line x1="22" y1="122" x2="0" y2="100" stroke="#58429B" stroke-width="6" stroke-linecap="round"/>
+              <polygon points="-8,92 4,96 -2,106" fill="#F6B6C8" stroke="#58429B" stroke-width="1.5"/>
+            </g>
+          </svg>
+          <p style="font-size:0.88rem; color:var(--text-muted); font-weight:700; margin-top:6px;">
+            Trợ lí lập trình Pixel & Xưởng đồ họa MS Paint mô phỏng
+          </p>
+        </div>
+      </section>
+
+      <!-- 2. MÀN HÌNH CHƠI CHÍNH (4 MÀN) -->
+      <section id="screen-play" class="play-layout hidden">
+        <!-- Cột trái: Linh vật Pixel + Bước nhiệm vụ -->
+        <aside class="mascot-sidebar">
+          <div class="stage-header-card">
+            <div class="stage-num" id="ui-stage-num">MÀN 1 / 4 • 25 ĐIỂM</div>
+            <h2 id="ui-stage-title">Nhận biết Xưởng vẽ</h2>
+          </div>
+
+          <div class="mascot-box">
+            <div class="mascot-svg-wrap" id="mascot-avatar"></div>
+            <div class="speech-bubble" id="mascot-speech" aria-live="polite">
+              Chào họa sĩ nhí! Hãy cùng Pixel khám phá các công cụ trong cửa sổ Paint nhé!
+            </div>
+          </div>
+
+          <div class="checklist-box">
+            <div class="checklist-title">
+              <span>📋 Nhiệm vụ cần hoàn thành</span>
+              <span id="ui-step-progress">0/4</span>
+            </div>
+            <div id="ui-steps-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+          </div>
+
+          <!-- Khung hiển thị gợi ý 2 cấp độ -->
+          <div id="ui-hint-box" class="hint-panel" aria-live="polite"></div>
+        </aside>
+
+        <!-- Cột phải: Cửa sổ phần mềm đồ họa mô phỏng -->
+        <div class="paint-window">
+          <div class="paint-titlebar">
+            <div class="paint-title-left">
+              <span>🎨 Phần mềm đồ họa Paint</span>
+              <span id="ui-canvas-status" style="font-weight:400; opacity:0.9;">— Chưa lưu</span>
+            </div>
+            <span class="sim-disclaimer">Giao diện mô phỏng phục vụ học tập</span>
+          </div>
+
+          <!-- Thanh công cụ Ribbon Paint (dùng cho Màn 2, 3, 4) -->
+          <div class="paint-ribbon" id="paint-ribbon">
+            <!-- Nhóm Clipboard: Copy / Paste -->
+            <div class="ribbon-group" id="group-clipboard">
+              <div class="ribbon-controls">
+                <button type="button" class="tool-btn" id="btn-tool-copy" title="Sao chép vùng đã chọn (Ctrl+C)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  <span>Copy</span>
+                </button>
+                <button type="button" class="tool-btn" id="btn-tool-paste" title="Dán hình vừa sao chép (Ctrl+V)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+                  <span>Paste</span>
+                </button>
+              </div>
+              <div class="ribbon-label">Clipboard (Sao chép)</div>
+            </div>
+
+            <!-- Nhóm Image: Select -->
+            <div class="ribbon-group" id="group-select">
+              <div class="ribbon-controls">
+                <button type="button" class="tool-btn" data-tool="select" id="btn-tool-select" title="Công cụ Chọn vùng (Select)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-dasharray="3 2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                  <span>Select</span>
+                </button>
+                <button type="button" class="tool-btn" id="btn-tool-delete" title="Xóa quả bóng đang chọn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                  <span>Xóa chọn</span>
+                </button>
+              </div>
+              <div class="ribbon-label">Image (Chọn hình)</div>
+            </div>
+
+            <!-- Nhóm Tools: Tô màu, Cọ vẽ, Nhãn trang trí -->
+            <div class="ribbon-group" id="group-tools">
+              <div class="ribbon-controls">
+                <button type="button" class="tool-btn" data-tool="fill" id="btn-tool-fill" title="Công cụ Tô màu (Fill with color)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 11l-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11z"/><path d="M20 15c0 2.5-2 3.5-2 5a2 2 0 0 0 4 0c0-1.5-2-2.5-2-5z" fill="currentColor"/></svg>
+                  <span>Tô màu</span>
+                </button>
+                <button type="button" class="tool-btn" data-tool="stamp" id="btn-tool-stamp" title="Thêm đám mây & ngôi sao trang trí">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.3 9 8.5 12 2"/></svg>
+                  <span>Trang trí</span>
+                </button>
+              </div>
+              <div class="ribbon-label">Tools (Công cụ)</div>
+            </div>
+
+            <!-- Nhóm Shapes: Hình bầu dục/tròn, Đường thẳng -->
+            <div class="ribbon-group" id="group-shapes">
+              <div class="ribbon-controls">
+                <button type="button" class="tool-btn" data-tool="oval" id="btn-tool-oval" title="Công cụ Hình tròn / Bầu dục (Oval)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><ellipse cx="12" cy="12" rx="9" ry="7"/></svg>
+                  <span>Hình tròn</span>
+                </button>
+                <button type="button" class="tool-btn" data-tool="line" id="btn-tool-line" title="Công cụ Đường thẳng vẽ dây bóng (Line)">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="4" y1="20" x2="20" y2="4"/></svg>
+                  <span>Đường thẳng</span>
+                </button>
+              </div>
+              <div class="ribbon-label">Shapes (Hình mẫu)</div>
+            </div>
+
+            <!-- Nhóm Colors: Bảng màu -->
+            <div class="ribbon-group" id="group-colors">
+              <div class="ribbon-controls color-palette">
+                <div class="active-color-preview" id="active-color-box" title="Màu đang chọn"></div>
+                <div class="swatches-grid" id="swatches-container"></div>
+              </div>
+              <div class="ribbon-label">Colors (Bảng màu)</div>
+            </div>
+
+            <!-- Nhóm Xuất tác phẩm (hiện nổi bật ở Màn 4) -->
+            <div class="ribbon-group hidden" id="group-export">
+              <div class="ribbon-controls">
+                <button type="button" class="tool-btn" id="btn-save-artwork" style="background:#E0F7F4; border-color:#4ABDAA;" title="Lưu bản vẽ trong lượt chơi">
+                  💾 <span>Lưu bài</span>
+                </button>
+                <button type="button" class="tool-btn" id="btn-export-png" style="background:#FEF5DC; border-color:#F2BE4A;" title="Tải tệp ảnh PNG về máy tính">
+                  🖼️ <span>Xuất PNG</span>
+                </button>
+              </div>
+              <div class="ribbon-label">Lưu & Xuất ảnh</div>
+            </div>
+          </div>
+
+          <!-- Khu vực làm việc: Chứa Sơ đồ Màn 1 hoặc Canvas vẽ Màn 2-4 -->
+          <div class="paint-workspace">
+            <!-- Bảng tương tác riêng của Màn 1 -->
+            <div id="stage1-container" class="stage1-board hidden">
+              <div class="stage1-labels-tray" id="stage1-tray" aria-label="Khay thẻ tên bộ phận cửa sổ Paint"></div>
+              <div class="stage1-diagram" id="stage1-zones"></div>
+            </div>
+
+            <!-- Khung Canvas tương tác thực cho Màn 2, 3, 4 -->
+            <div id="canvas-wrapper" class="canvas-container">
+              <canvas id="paint-canvas" width="760" height="428"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. MÀN HÌNH TỔNG KẾT & HUY HIỆU -->
+      <section id="screen-summary" class="summary-screen hidden">
+        <div class="badge-showcase">
+          <!-- Huy hiệu SVG Họa sĩ Kĩ thuật số -->
+          <svg width="135" height="135" viewBox="0 0 140 140" role="img" aria-label="Huy hiệu Họa sĩ Kĩ thuật số Xuất sắc">
+            <circle cx="70" cy="70" r="62" fill="#FEF5DC" stroke="#F2BE4A" stroke-width="5"/>
+            <circle cx="70" cy="70" r="50" fill="#58429B"/>
+            <polygon points="70,26 81,50 107,53 88,71 93,97 70,84 47,97 52,71 33,53 59,50" fill="#F2BE4A"/>
+            <circle cx="70" cy="66" r="14" fill="#4ABDAA"/>
+            <text x="70" y="124" text-anchor="middle" fill="#58429B" font-size="11" font-weight="bold">HỌA SĨ SỐ</text>
+          </svg>
+          <h2 style="color:var(--primary-purple); font-size:1.55rem;">HỌA SĨ KĨ THUẬT SỐ XUẤT SẮC!</h2>
+          <p style="font-weight:800; font-size:1.2rem; color:var(--accent-mint-dark);">
+            Tổng điểm đạt được: <span id="summary-score">100</span> / 100 điểm
+          </p>
+          <img id="summary-artwork-img" class="final-artwork-preview" alt="Bức tranh Chùm bóng bay của em" />
+          <button type="button" id="btn-summary-download" class="btn btn-gold">
+            ⬇️ Tải bức tranh PNG về máy
+          </button>
+        </div>
+
+        <div>
+          <span class="lesson-tag">Tổng kết kiến thức Bài 8A</span>
+          <h2 style="color:var(--primary-purple); font-size:1.65rem; margin-top:8px;">
+            Chúc mừng em đã hoàn thành xuất sắc 4 nhiệm vụ!
+          </h2>
+          <div class="takeaway-list" id="summary-takeaways"></div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button type="button" id="btn-review-stages" class="btn btn-outline">
+              🔍 Xem lại các màn đã chơi
+            </button>
+            <button type="button" id="btn-replay-all" class="btn btn-primary">
+              🔄 Chơi lại từ đầu
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- THANH ĐIỀU KHIỂN DƯỚI CÙNG -->
+    <footer class="bottom-bar" id="bottom-bar">
+      <div class="bottom-left">
+        <button type="button" id="btn-home" class="btn btn-outline">🏠 Trang chủ</button>
+        <button type="button" id="btn-hint" class="btn btn-gold">💡 Gợi ý (Mức 1)</button>
+        <button type="button" id="btn-reset-stage" class="btn btn-peach">↺ Làm lại màn</button>
+      </div>
+      <div class="bottom-right">
+        <span id="ui-mode-indicator" style="font-size:0.9rem; font-weight:700; color:var(--text-muted);">
+          Chế độ: Luyện tập
+        </span>
+        <button type="button" id="btn-next-stage" class="btn btn-mint" disabled>
+          Tiếp tục màn sau ➔
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- MODAL HƯỚNG DẪN (CHỈ DÙNG CHỮ & BIỂU TƯỢNG MINH HỌA, KHÔNG GIỌNG ĐỌC) -->
+  <div class="modal-backdrop" id="modal-guide" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+    <div class="modal-card">
+      <h2 id="guide-title">📖 Hướng dẫn trò chơi HỌA SĨ KĨ THUẬT SỐ</h2>
+      <div class="guide-grid">
+        <div class="guide-item">
+          <strong>1. Màn 1 – Nhận biết Xưởng vẽ</strong>
+          Kéo thả thẻ tên (hoặc nháy chọn thẻ rồi nháy vào ô đích) để gắn đúng 5 bộ phận của cửa sổ Paint, sau đó tìm đúng công cụ theo yêu cầu của Pixel.
+        </div>
+        <div class="guide-item">
+          <strong>2. Màn 2 – Vẽ bóng bay</strong>
+          Chọn công cụ <em>Hình tròn (Oval)</em> kéo vẽ thân bóng, chọn <em>Đường thẳng (Line)</em> kéo vẽ dây bóng nối với đáy bóng, rồi dùng <em>Tô màu (Fill)</em> tô màu cho bóng.
+        </div>
+        <div class="guide-item">
+          <strong>3. Màn 3 – Nhân bản hình</strong>
+          Dùng công cụ <em>Select</em> kéo bao quanh quả bóng mẫu, nhấn <em>Copy</em> rồi <em>Paste</em> để tạo quả bóng thứ hai, kéo góc để đổi kích thước và di chuyển sang bên cạnh.
+        </div>
+        <div class="guide-item">
+          <strong>4. Màn 4 – Chùm bóng màu & Xuất ảnh</strong>
+          Tạo ít nhất 3 quả bóng có 3 màu sắc khác nhau, thêm mây/ngôi sao trang trí, nhấn <em>Lưu bài</em> và tải ảnh PNG thật về máy tính!
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end;">
+        <button type="button" id="btn-close-guide" class="btn btn-primary">Đã hiểu, đóng hướng dẫn</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       CẤU HÌNH TRÒ CHƠI (GAME_CONFIG)
+       Giáo viên có thể chỉnh sửa câu hỏi, gợi ý, màu sắc, ngưỡng hoàn thành tại đây.
+       ========================================================================== */
+    const GAME_CONFIG = {
+      title: "HỌA SĨ KĨ THUẬT SỐ",
+      gradeLesson: "Tin học 5 – Bài 8A: Làm quen với phần mềm đồ họa (Trang 37–42)",
+      pointsPerStage: 25,
+      audio: {
+        bgmVolume: 0.12, // Âm lượng nhạc nền nhẹ nhàng 12%
+        sfxVolume: 0.25
+      },
+      // Bảng màu vẽ trên Canvas
+      palette: [
+        { id: "pink", name: "Hồng đào", hex: "#F66D9B" },
+        { id: "mint", name: "Xanh ngọc", hex: "#38C1A6" },
+        { id: "gold", name: "Vàng nắng", hex: "#F5B82E" },
+        { id: "purple", name: "Tím oải hương", hex: "#7B61C4" },
+        { id: "coral", name: "Cam san hô", hex: "#FF785A" },
+        { id: "sky", name: "Xanh da trời", hex: "#4BA3E3" },
+        { id: "lime", name: "Xanh lá non", hex: "#7BC950" },
+        { id: "berry", name: "Đỏ dâu", hex: "#E63956" }
+      ],
+      // Nội dung chi tiết 4 màn chơi
+      stages: {
+        1: {
+          title: "Màn 1: Nhận biết Xưởng vẽ",
+          intro: "Chào họa sĩ nhí! Trước khi vẽ, em hãy gắn đúng nhãn tên cho 5 khu vực trong cửa sổ Paint rồi trả lời 3 câu đố công cụ của Pixel nhé!",
+          hints: [
+            "Gợi ý mức 1: Em có thể kéo thẻ tên màu tím thả vào ô nét đứt, hoặc nháy vào thẻ tên rồi nháy vào ô tương ứng trên màn hình.",
+            "Gợi ý mức 2: Khung nét đứt là Chọn (Select), Lọ mực là Tô màu (Fill), các hình tròn/vuông là Hình mẫu (Shapes), các ô màu là Bảng màu (Colors), vùng trắng lớn là Trang vẽ (Canvas)."
+          ],
+          zones: [
+            {
+              id: "select",
+              label: "Công cụ Chọn (Select)",
+              shortDesc: "Khung chữ nhật nét đứt",
+              explainRight: "Chính xác! Công cụ Select (khung nét đứt) dùng để chọn một vùng hình cần sao chép, di chuyển hoặc đổi kích thước.",
+              explainWrong: "Chưa đúng rồi! Hãy quan sát biểu tượng hình chữ nhật nét đứt hoặc tên nhóm công cụ nhé."
+            },
+            {
+              id: "fill",
+              label: "Công cụ Tô màu (Fill)",
+              shortDesc: "Biểu tượng lọ mực đang đổ",
+              explainRight: "Tuyệt vời! Công cụ Fill with color (lọ mực) giúp tô màu nhanh cho một vùng khép kín.",
+              explainWrong: "Ối, đó chưa phải vị trí của công cụ đó. Em hãy nhìn kỹ biểu tượng minh họa trong từng ô nhé!"
+            },
+            {
+              id: "shapes",
+              label: "Nhóm Hình mẫu (Shapes)",
+              shortDesc: "Hình tròn, chữ nhật, đường thẳng...",
+              explainRight: "Đúng rồi! Nhóm Shapes chứa các hình có sẵn như hình tròn, bầu dục, đường thẳng để vẽ nhanh.",
+              explainWrong: "Thử lại nhé! Hãy đối chiếu tên thẻ với hình vẽ minh họa trong ô."
+            },
+            {
+              id: "colors",
+              label: "Bảng màu (Colors)",
+              shortDesc: "Nhiều ô màu sắc cầu vồng",
+              explainRight: "Chuẩn luôn! Bảng màu Colors giúp em chọn màu nét vẽ và màu tô cho bức tranh.",
+              explainWrong: "Chưa khớp rồi! Hãy tìm ô có nhiều màu sắc hoặc đúng biểu tượng công cụ nhé."
+            },
+            {
+              id: "canvas",
+              label: "Trang vẽ (Canvas)",
+              shortDesc: "Vùng giấy trắng lớn để vẽ tranh",
+              explainRight: "Xuất sắc! Trang vẽ (Canvas) là tờ giấy trắng nơi chúng mình tạo nên các bức tranh kĩ thuật số.",
+              explainWrong: "Gần đúng thôi! Trang vẽ là vùng giấy trắng rộng lớn ở phía dưới thanh công cụ."
+            }
+          ],
+          toolQuizzes: [
+            {
+              targetId: "shapes",
+              question: "Câu đố 1/3: Em hãy nháy vào khu vực chứa công cụ giúp vẽ nhanh một HÌNH TRÒN hoặc ĐƯỜNG THẲNG có sẵn!",
+              successMsg: "Chính xác! Nhóm Hình mẫu (Shapes) giúp ta vẽ hình tròn, bầu dục và đường thẳng thật đều!",
+              failMsg: "Chưa đúng khu vực rồi! Để vẽ hình tròn hay đường thẳng có sẵn, em cần tìm nhóm Hình mẫu (Shapes)."
+            },
+            {
+              targetId: "fill",
+              question: "Câu đố 2/3: Sau khi vẽ xong hình quả bóng, em nháy vào công cụ nào để ĐỔ MÀU phủ kín bên trong quả bóng?",
+              successMsg: "Giỏi lắm! Lọ mực Tô màu (Fill with color) sẽ đổ đầy màu vào bên trong hình khép kín.",
+              failMsg: "Chưa đúng! Để tô kín màu bên trong quả bóng, em hãy chọn biểu tượng Lọ mực (Công cụ Tô màu)."
+            },
+            {
+              targetId: "select",
+              question: "Câu đố 3/3: Muốn SAO CHÉP hoặc DI CHUYỂN quả bóng bay sang chỗ khác, đầu tiên em phải dùng công cụ nào để bao quanh nó?",
+              successMsg: "Hoàn hảo! Em đã nắm vững toàn bộ 5 bộ phận quan trọng của xưởng vẽ Paint!",
+              failMsg: "Hãy suy nghĩ thêm nhé! Trước khi sao chép hay di chuyển, ta phải dùng Công cụ Chọn (Select - khung nét đứt)."
+            }
+          ]
+        },
+        2: {
+          title: "Màn 2: Vẽ bóng bay",
+          intro: "Bây giờ chúng mình cùng vẽ quả bóng bay đầu tiên! Em hãy làm lần lượt 3 bước: (1) Vẽ thân bóng bằng Hình tròn, (2) Vẽ dây bóng bằng Đường thẳng, (3) Tô màu cho bóng.",
+          minRadius: 24,
+          hints: [
+            "Gợi ý mức 1: Bước 1 chọn nút 'Hình tròn' (Oval) rồi kéo chuột trên trang trắng. Bước 2 chọn 'Đường thẳng' kéo từ đáy quả bóng xuống. Bước 3 chọn 'Tô màu', chọn màu rồi nháy vào giữa quả bóng.",
+            "Gợi ý mức 2: Hãy nhìn nút công cụ đang sáng viền vàng trên thanh Ribbon! Khi vẽ dây bóng, nhớ bắt đầu kéo từ sát đáy quả bóng xuống phía dưới nhé."
+          ]
+        },
+        3: {
+          title: "Màn 3: Nhân bản hình",
+          intro: "Trên trang vẽ đã có sẵn 1 quả bóng bay. Em hãy dùng công cụ Select để chọn nó, bấm Copy rồi Paste để tạo quả bóng thứ hai, sau đó đổi kích thước và kéo sang bên cạnh nhé!",
+          hints: [
+            "Gợi ý mức 1: (1) Chọn nút 'Select' rồi kéo khung nét đứt bao trùm cả quả bóng. (2) Bấm nút 'Copy' rồi bấm 'Paste'. (3) Kéo ô vuông nhỏ ở góc khung chọn để đổi kích thước. (4) Kéo quả bóng mới sang bên phải.",
+            "Gợi ý mức 2: Khi kéo khung Select ở Bước 1, em nhớ kéo rộng ra ngoài quả bóng một chút để bao trọn thân bóng. Sau khi Paste, kéo chấm vuông màu tím ở góc khung chọn để phóng to/thu nhỏ."
+          ]
+        },
+        4: {
+          title: "Màn 4: Chùm bóng màu & Xuất ảnh",
+          intro: "Nhiệm vụ cuối cùng! Em hãy tạo một chùm gồm ít nhất 3 quả bóng bay có 3 màu sắc khác nhau, đóng dấu thêm mây/ngôi sao trang trí rồi bấm 'Lưu bài' nhé!",
+          hints: [
+            "Gợi ý mức 1: Em có thể dùng Select + Copy + Paste (hoặc công cụ Hình tròn + Đường thẳng) để có đủ 3 quả bóng, dùng công cụ 'Tô màu' đổi thành 3 màu khác nhau, chọn 'Trang trí' nháy lên nền, rồi bấm 'Lưu bài'.",
+            "Gợi ý mức 2: Hãy kiểm tra xem 3 quả bóng đã có 3 màu khác nhau chưa (ví dụ: Hồng, Xanh ngọc, Vàng), sau đó nháy nút 'Trang trí' (ngôi sao) chấm lên trang vẽ và nháy nút 'Lưu bài' ở góc phải thanh công cụ."
+          ]
+        }
+      },
+      takeaways: [
+        "1. Nhóm công cụ Shapes (Hình mẫu) và Fill with color (Lọ mực tô màu) giúp em nhanh chóng vẽ và tô màu các hình cơ bản như quả bóng bay.",
+        "2. Quy trình nhân bản hình trong phần mềm đồ họa: Dùng công cụ Select bao quanh hình ➔ Nhấn Copy (Ctrl+C) ➔ Nhấn Paste (Ctrl+V).",
+        "3. Khi một vùng hình đang được chọn (Select), em có thể kéo các chấm vuông ở góc khung chọn để thay đổi kích thước (Resize) hoặc kéo hình sang vị trí mới."
+      ]
+    };
+
+    /* ==========================================================================
+       BỘ TỔNG HỢP ÂM THANH WEB AUDIO API (KHÔNG DÙNG FILE NGOÀI, KHÔNG GIỌNG ĐỌC)
+       ========================================================================== */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.bgmEnabled = true;
+        this.sfxEnabled = true;
+        this.bgmTimer = null;
+        this.isPlayingBgm = false;
+        this.noteIndex = 0;
+        // Giai điệu pentatonic vui tươi, êm dịu nguyên gốc
+        this.melody = [
+          523.25, 659.25, 783.99, 659.25, 880.00, 783.99, 659.25, 587.33,
+          523.25, 587.33, 659.25, 783.99, 659.25, 587.33, 523.25, 392.00
+        ];
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+          this.ctx.resume();
+        }
+      }
+
+      startBGM() {
+        this.initContext();
+        this.stopBGM();
+        if (!this.ctx || !this.bgmEnabled || document.hidden) return;
+        this.isPlayingBgm = true;
+
+        const playStep = () => {
+          if (!this.bgmEnabled || !this.isPlayingBgm || document.hidden || !this.ctx) return;
+          const freq = this.melody[this.noteIndex % this.melody.length];
+          this.noteIndex++;
+
+          try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(freq, now);
+
+            const vol = GAME_CONFIG.audio.bgmVolume;
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(vol, now + 0.06);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.44);
+          } catch (e) {
+            // Bỏ qua nếu trình duyệt chặn tự động phát
+          }
+          this.bgmTimer = window.setTimeout(playStep, 480);
+        };
+
+        playStep();
+      }
+
+      stopBGM() {
+        this.isPlayingBgm = false;
+        if (this.bgmTimer) {
+          clearTimeout(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      }
+
+      playSFX(type) {
+        if (!this.sfxEnabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const vol = GAME_CONFIG.audio.sfxVolume;
+
+        const tone = (freq, startOffset, duration, wave = "sine", peak = vol) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = wave;
+          osc.frequency.setValueAtTime(freq, now + startOffset);
+          gain.gain.setValueAtTime(0.001, now + startOffset);
+          gain.gain.linearRampToValueAtTime(peak, now + startOffset + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + startOffset + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + startOffset);
+          osc.stop(now + startOffset + duration + 0.02);
+        };
+
+        if (type === "click") {
+          tone(660, 0, 0.07, "sine", vol * 0.6);
+        } else if (type === "right") {
+          tone(523.25, 0, 0.11, "triangle", vol);
+          tone(659.25, 0.09, 0.14, "triangle", vol);
+          tone(783.99, 0.18, 0.22, "triangle", vol);
+        } else if (type === "wrong") {
+          tone(310, 0, 0.14, "sine", vol * 0.7);
+          tone(250, 0.12, 0.2, "sine", vol * 0.7);
+        } else if (type === "stageClear") {
+          tone(523.25, 0, 0.12, "triangle", vol);
+          tone(659.25, 0.1, 0.12, "triangle", vol);
+          tone(783.99, 0.2, 0.12, "triangle", vol);
+          tone(1046.5, 0.3, 0.35, "triangle", vol);
+        } else if (type === "victory") {
+          [523.25, 659.25, 783.99, 1046.5, 987.77, 1046.5].forEach((f, idx) => {
+            tone(f, idx * 0.11, 0.22, "triangle", vol);
+          });
+        }
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    /* ==========================================================================
+       QUẢN LÝ TRẠNG THÁI TRÒ CHƠI & ĐỒ HỌA LINH VẬT PIXEL
+       ========================================================================== */
+    const state = {
+      screen: "welcome", // welcome | play | summary
+      mode: "practice",  // practice | challenge
+      currentStage: 1,
+      unlockedStage: 1,
+      completedStages: { 1: false, 2: false, 3: false, 4: false },
+      score: 0,
+      hintLevel: 0,
+      // Trạng thái công cụ Paint
+      activeTool: "oval",
+      activeColor: GAME_CONFIG.palette[0].hex,
+      // Dữ liệu Màn 1
+      stage1: {
+        matchedZones: {},
+        selectedCardId: null,
+        quizIndex: 0,
+        quizDone: false
+      },
+      // Danh sách quả bóng bay trên Canvas (Màn 2, 3, 4)
+      balloons: [],
+      decorations: [],
+      selectedBalloonId: null,
+      clipboardBalloon: null,
+      selectionRect: null,
+      // Cờ kiểm tra bước nhiệm vụ của Màn 2, 3, 4
+      stageFlags: {
+        2: { bodyDrawn: false, stringDrawn: false, colored: false },
+        3: { selected: false, pasted: false, resized: false, moved: false },
+        4: { threeBalloons: false, threeColors: false, decorated: false, saved: false }
+      },
+      savedDataUrl: null
+    };
+
+    // Hàm dựng SVG linh vật Pixel theo cảm xúc: happy | think | excited | proud
+    function getPixelMascotSVG(mood = "happy") {
+      let eyes = `<circle cx="34" cy="44" r="4.5" fill="#2A2246"/><circle cx="56" cy="44" r="4.5" fill="#2A2246"/>`;
+      let mouth = `<path d="M 36 55 Q 45 62 54 55" fill="none" stroke="#2A2246" stroke-width="3" stroke-linecap="round"/>`;
+      let antennaColor = "#F2BE4A";
+
+      if (mood === "think") {
+        eyes = `<circle cx="34" cy="42" r="4.5" fill="#2A2246"/><rect x="51" y="40" width="10" height="3.5" rx="1.5" fill="#2A2246"/>`;
+        mouth = `<path d="M 38 56 Q 45 53 52 56" fill="none" stroke="#2A2246" stroke-width="3" stroke-linecap="round"/>`;
+        antennaColor = "#F6B6C8";
+      } else if (mood === "excited" || mood === "proud") {
+        eyes = `<path d="M 29 45 Q 34 38 39 45" fill="none" stroke="#2A2246" stroke-width="3" stroke-linecap="round"/>
+                <path d="M 51 45 Q 56 38 61 45" fill="none" stroke="#2A2246" stroke-width="3" stroke-linecap="round"/>`;
+        mouth = `<path d="M 34 53 Q 45 65 56 53 Z" fill="#F6B6C8" stroke="#2A2246" stroke-width="2.5"/>`;
+        antennaColor = "#4ABDAA";
+      }
+
+      return `
+        <svg viewBox="0 0 90 90" width="100%" height="100%" role="img" aria-label="Trợ lí Pixel">
+          <line x1="45" y1="6" x2="45" y2="22" stroke="#58429B" stroke-width="3.5"/>
+          <circle cx="45" cy="7" r="6" fill="${antennaColor}" stroke="#58429B" stroke-width="2"/>
+          <rect x="13" y="20" width="64" height="50" rx="15" fill="#58429B"/>
+          <rect x="20" y="27" width="50" height="36" rx="10" fill="#E8FBF8" stroke="#4ABDAA" stroke-width="2"/>
+          <circle cx="27" cy="50" r="4" fill="#F6B6C8" opacity="0.7"/>
+          <circle cx="63" cy="50" r="4" fill="#F6B6C8" opacity="0.7"/>
+          ${eyes}
+          ${mouth}
+          <rect x="25" y="72" width="40" height="16" rx="6" fill="#4ABDAA" stroke="#58429B" stroke-width="2"/>
+          <circle cx="35" cy="80" r="2.8" fill="#FFF"/>
+          <circle cx="45" cy="80" r="2.8" fill="#F2BE4A"/>
+          <circle cx="55" cy="80" r="2.8" fill="#F6B6C8"/>
+        </svg>
+      `;
+    }
+
+    // Cập nhật bối cảnh Xưởng vẽ phía sau theo số màn đã hoàn thành
+    function updateStudioBackdrop() {
+      const doneCount = Object.values(state.completedStages).filter(Boolean).length;
+      const backdrop = document.getElementById("studio-backdrop");
+      const balloonsSvg = [];
+      const colors = ["#F6B6C8", "#4ABDAA", "#F2BE4A", "#7B61C4"];
+      for (let i = 0; i < doneCount + 1; i++) {
+        const cx = 120 + i * 280;
+        const cy = 90 + (i % 2) * 45;
+        balloonsSvg.push(`
+          <g opacity="0.32">
+            <line x1="${cx}" y1="${cy + 36}" x2="${cx}" y2="${cy + 95}" stroke="#58429B" stroke-width="2"/>
+            <ellipse cx="${cx}" cy="${cy}" rx="28" ry="35" fill="${colors[i % colors.length]}"/>
+          </g>
+        `);
+      }
+      backdrop.innerHTML = `
+        <svg viewBox="0 0 1320 760" width="100%" height="100%" preserveAspectRatio="none">
+          <circle cx="80" cy="680" r="140" fill="#EDE7FF"/>
+          <circle cx="1240" cy="120" r="160" fill="#E0F7F4"/>
+          ${balloonsSvg.join("")}
+        </svg>
+      `;
+    }
+
+    function setMascotFeedback(text, mood = "happy", bubbleType = "normal") {
+      document.getElementById("mascot-avatar").innerHTML = getPixelMascotSVG(mood);
+      const bubble = document.getElementById("mascot-speech");
+      bubble.textContent = text;
+      bubble.className = "speech-bubble";
+      if (bubbleType === "good") bubble.classList.add("good");
+      if (bubbleType === "warn") bubble.classList.add("warn");
+    }
+
+    /* ==========================================================================
+       HIỆU ỨNG CONFETTI CHÚC MỪNG (TỐI ĐA 1.8 GIÂY, TÔN TRỌNG REDUCED MOTION)
+       ========================================================================== */
+    let confettiAnimId = null;
+    function triggerConfetti() {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const canvas = document.getElementById("confetti-canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+
+      const particles = Array.from({ length: 55 }, () => ({
+        x: canvas.width * 0.5 + (Math.random() - 0.5) * 260,
+        y: canvas.height * 0.35,
+        vx: (Math.random() - 0.5) * 9,
+        vy: -Math.random() * 8 - 3,
+        size: 7 + Math.random() * 6,
+        color: ["#58429B", "#4ABDAA", "#F2BE4A", "#F6B6C8"][Math.floor(Math.random() * 4)],
+        rot: Math.random() * Math.PI
+      }));
+
+      const start = performance.now();
+      function frame(now) {
+        const elapsed = now - start;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (elapsed > 1800) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          confettiAnimId = null;
+          return;
+        }
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.25;
+          p.rot += 0.08;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
+          ctx.restore();
+        });
+        confettiAnimId = requestAnimationFrame(frame);
+      }
+      if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+      confettiAnimId = requestAnimationFrame(frame);
+    }
+
+    /* ==========================================================================
+       QUẢN LÝ ĐIỂM SỐ, TIẾN ĐỘ MÀN & DANH SÁCH NHIỆM VỤ
+       ========================================================================== */
+    function updateHeaderUI() {
+      document.getElementById("ui-score").textContent = state.score;
+      document.getElementById("ui-mode-indicator").textContent =
+        "Chế độ: " + (state.mode === "practice" ? "Luyện tập 🌱" : "Thử thách 🚀");
+
+      const pills = document.querySelectorAll("#stage-nav .stage-pill");
+      pills.forEach(btn => {
+        const stg = Number(btn.dataset.stage);
+        btn.classList.toggle("active", state.screen === "play" && state.currentStage === stg);
+        btn.classList.toggle("done", Boolean(state.completedStages[stg]));
+        btn.disabled = stg > state.unlockedStage;
+        btn.textContent = state.completedStages[stg] ? `Màn ${stg} ✓` : `Màn ${stg}`;
+      });
+
+      const nextBtn = document.getElementById("btn-next-stage");
+      const currentDone = Boolean(state.completedStages[state.currentStage]);
+      nextBtn.disabled = !currentDone;
+      nextBtn.textContent = state.currentStage === 4 ? "Xem Bảng Thành Tích 🏆" : "Tiếp tục màn sau ➔";
+    }
+
+    function markStageCompleted(stageNum) {
+      if (!state.completedStages[stageNum]) {
+        state.completedStages[stageNum] = true;
+        state.score = Math.min(100, state.score + GAME_CONFIG.pointsPerStage);
+        if (stageNum < 4 && state.unlockedStage < stageNum + 1) {
+          state.unlockedStage = stageNum + 1;
+        }
+        sound.playSFX("stageClear");
+        triggerConfetti();
+        updateStudioBackdrop();
+      }
+      updateHeaderUI();
+    }
+
+    function renderStageChecklist() {
+      const listEl = document.getElementById("ui-steps-list");
+      const progEl = document.getElementById("ui-step-progress");
+      let items = [];
+
+      if (state.currentStage === 1) {
+        const matchedCount = Object.keys(state.stage1.matchedZones).length;
+        items = [
+          {
+            label: `Gắn đúng 5 thẻ tên bộ phận Paint (${matchedCount}/5)`,
+            done: matchedCount === 5
+          },
+          {
+            label: "Câu đố 1: Tìm nhóm công cụ vẽ Hình tròn / Đường thẳng",
+            done: state.stage1.quizIndex > 0 || state.stage1.quizDone
+          },
+          {
+            label: "Câu đố 2: Tìm công cụ Lọ mực Tô màu bên trong hình",
+            done: state.stage1.quizIndex > 1 || state.stage1.quizDone
+          },
+          {
+            label: "Câu đố 3: Tìm công cụ Chọn vùng (Select) để sao chép",
+            done: state.stage1.quizDone
+          }
+        ];
+      } else if (state.currentStage === 2) {
+        const f = state.stageFlags[2];
+        items = [
+          { label: "Bước 1: Chọn 'Hình tròn' và kéo vẽ thân quả bóng bay", done: f.bodyDrawn },
+          { label: "Bước 2: Chọn 'Đường thẳng' kéo vẽ dây nối từ đáy quả bóng", done: f.stringDrawn },
+          { label: "Bước 3: Chọn 'Tô màu', chọn màu yêu thích và nháy vào thân bóng", done: f.colored }
+        ];
+      } else if (state.currentStage === 3) {
+        const f = state.stageFlags[3];
+        items = [
+          { label: "Bước 1: Dùng 'Select' kéo khung nét đứt bao trọn quả bóng số 1", done: f.selected },
+          { label: "Bước 2: Nhấn 'Copy' rồi nhấn 'Paste' để tạo quả bóng thứ hai", done: f.pasted },
+          { label: "Bước 3: Kéo chấm vuông ở góc khung chọn để đổi kích thước bóng", done: f.resized },
+          { label: "Bước 4: Kéo di chuyển quả bóng thứ hai sang vùng trống bên cạnh", done: f.moved }
+        ];
+      } else if (state.currentStage === 4) {
+        const f = state.stageFlags[4];
+        items = [
+          { label: `Bước 1: Có ít nhất 3 quả bóng bay trên trang vẽ (${state.balloons.length}/3)`, done: f.threeBalloons },
+          { label: "Bước 2: Tô 3 quả bóng bằng 3 màu sắc hoàn toàn khác nhau", done: f.threeColors },
+          { label: "Bước 3: Chọn 'Trang trí' và nháy thêm mây/ngôi sao lên bức tranh", done: f.decorated },
+          { label: "Bước 4: Nhấn nút 'Lưu bài' (và có thể Xuất ảnh PNG về máy)", done: f.saved }
+        ];
+      }
+
+      const doneCount = items.filter(i => i.done).length;
+      progEl.textContent = `${doneCount}/${items.length}`;
+
+      let activeFound = false;
+      listEl.innerHTML = items
+        .map((it, idx) => {
+          let cls = "step-item";
+          if (it.done) {
+            cls += " completed";
+          } else if (!activeFound) {
+            cls += " active";
+            activeFound = true;
+          }
+          return `
+            <div class="${cls}">
+              <span class="step-icon">${it.done ? "✓" : idx + 1}</span>
+              <span>${it.label}</span>
+            </div>
+          `;
+        })
+        .join("");
+
+      updatePracticeVisualGuides();
+    }
+
+    // Đánh dấu trực quan công cụ gợi ý khi ở chế độ Luyện tập hoặc bật Gợi ý
+    function updatePracticeVisualGuides() {
+      document.querySelectorAll(".tool-btn").forEach(b => b.classList.remove("highlight-hint"));
+      const shouldHighlight = state.mode === "practice" || state.hintLevel >= 1;
+      if (!shouldHighlight) return;
+
+      if (state.currentStage === 2) {
+        const f = state.stageFlags[2];
+        if (!f.bodyDrawn) document.getElementById("btn-tool-oval").classList.add("highlight-hint");
+        else if (!f.stringDrawn) document.getElementById("btn-tool-line").classList.add("highlight-hint");
+        else if (!f.colored) document.getElementById("btn-tool-fill").classList.add("highlight-hint");
+      } else if (state.currentStage === 3) {
+        const f = state.stageFlags[3];
+        if (!f.selected) document.getElementById("btn-tool-select").classList.add("highlight-hint");
+        else if (!f.pasted) {
+          document.getElementById("btn-tool-copy").classList.add("highlight-hint");
+          document.getElementById("btn-tool-paste").classList.add("highlight-hint");
+        }
+      } else if (state.currentStage === 4) {
+        const f = state.stageFlags[4];
+        if (!f.threeBalloons) document.getElementById("btn-tool-select").classList.add("highlight-hint");
+        else if (!f.threeColors) document.getElementById("btn-tool-fill").classList.add("highlight-hint");
+        else if (!f.decorated) document.getElementById("btn-tool-stamp").classList.add("highlight-hint");
+        else if (!f.saved) document.getElementById("btn-save-artwork").classList.add("highlight-hint");
+      }
+    }
+
+    /* ==========================================================================
+       MÀN 1: NHẬN BIẾT XƯỞNG VẼ (KÉO THẢ / NHÁY CHỌN + 3 CÂU ĐỐ CÔNG CỤ)
+       ========================================================================== */
+    function initStage1() {
+      state.stage1 = {
+        matchedZones: {},
+        selectedCardId: null,
+        quizIndex: 0,
+        quizDone: false
+      };
+      renderStage1Board();
+      renderStageChecklist();
+    }
+
+    function getZoneIllustrationSVG(zoneId) {
+      if (zoneId === "select") {
+        return `<svg width="64" height="48" viewBox="0 0 64 48">
+          <rect x="8" y="6" width="48" height="36" rx="4" fill="#F0ECFF" stroke="#58429B" stroke-width="2.5" stroke-dasharray="5 3"/>
+          <circle cx="56" cy="42" r="4" fill="#4ABDAA"/>
+        </svg>`;
+      }
+      if (zoneId === "fill") {
+        return `<svg width="64" height="48" viewBox="0 0 64 48">
+          <polygon points="22,12 40,26 26,40 10,26" fill="#4ABDAA" stroke="#58429B" stroke-width="2.2"/>
+          <path d="M 42 26 Q 52 34 46 42 Q 40 42 42 26 Z" fill="#F6B6C8"/>
+        </svg>`;
+      }
+      if (zoneId === "shapes") {
+        return `<svg width="78" height="48" viewBox="0 0 78 48">
+          <circle cx="20" cy="24" r="13" fill="#F6B6C8" stroke="#58429B" stroke-width="2"/>
+          <rect x="38" y="12" width="26" height="24" rx="3" fill="#F2BE4A" stroke="#58429B" stroke-width="2"/>
+          <line x1="12" y1="42" x2="66" y2="6" stroke="#58429B" stroke-width="2.5"/>
+        </svg>`;
+      }
+      if (zoneId === "colors") {
+        return `<svg width="84" height="48" viewBox="0 0 84 48">
+          <rect x="6" y="8" width="16" height="14" rx="3" fill="#F66D9B"/>
+          <rect x="25" y="8" width="16" height="14" rx="3" fill="#38C1A6"/>
+          <rect x="44" y="8" width="16" height="14" rx="3" fill="#F5B82E"/>
+          <rect x="63" y="8" width="16" height="14" rx="3" fill="#7B61C4"/>
+          <rect x="6" y="26" width="16" height="14" rx="3" fill="#FF785A"/>
+          <rect x="25" y="26" width="16" height="14" rx="3" fill="#4BA3E3"/>
+          <rect x="44" y="26" width="16" height="14" rx="3" fill="#7BC950"/>
+          <rect x="63" y="26" width="16" height="14" rx="3" fill="#E63956"/>
+        </svg>`;
+      }
+      return `<svg width="180" height="82" viewBox="0 0 180 82">
+        <rect x="4" y="4" width="172" height="74" rx="8" fill="#FFFFFF" stroke="#B8AED8" stroke-width="2"/>
+        <ellipse cx="65" cy="36" rx="18" ry="22" fill="#F6B6C8" stroke="#58429B" stroke-width="2"/>
+        <line x1="65" y1="58" x2="65" y2="74" stroke="#58429B" stroke-width="2"/>
+        <text x="118" y="44" text-anchor="middle" fill="#655B85" font-size="11" font-weight="bold">Vùng giấy trắng vẽ hình</text>
+      </svg>`;
+    }
+
+    function renderStage1Board() {
+      const tray = document.getElementById("stage1-tray");
+      const zonesEl = document.getElementById("stage1-zones");
+      const zonesData = GAME_CONFIG.stages[1].zones;
+      const allMatched = Object.keys(state.stage1.matchedZones).length === zonesData.length;
+
+      // Xáo trộn nhẹ thứ tự thẻ trên khay
+      const cardOrder = ["shapes", "canvas", "select", "colors", "fill"];
+      if (!allMatched) {
+        tray.innerHTML = cardOrder
+          .map(id => {
+            const z = zonesData.find(item => item.id === id);
+            const matched = Boolean(state.stage1.matchedZones[id]);
+            const selected = state.stage1.selectedCardId === id;
+            return `
+              <button type="button"
+                class="label-card ${matched ? "matched" : ""} ${selected ? "selected" : ""}"
+                draggable="${!matched}"
+                data-card-id="${z.id}">
+                🏷️ ${z.label}
+              </button>
+            `;
+          })
+          .join("");
+      } else {
+        const currentQuiz = GAME_CONFIG.stages[1].toolQuizzes[state.stage1.quizIndex];
+        tray.innerHTML = `
+          <div style="font-weight:800; color:var(--primary-purple); font-size:0.98rem; text-align:center;">
+            🎯 ${state.stage1.quizDone ? "Đã hoàn thành cả 3 câu đố công cụ!" : currentQuiz.question}
+          </div>
+        `;
+      }
+
+      zonesEl.innerHTML = zonesData
+        .map(z => {
+          const isFilled = Boolean(state.stage1.matchedZones[z.id]);
+          const extraCls = z.id === "canvas" ? "canvas-zone" : "";
+          const quizModeCls = allMatched && !state.stage1.quizDone ? "quiz-target" : "";
+          return `
+            <div class="drop-zone ${extraCls} ${isFilled ? "filled" : ""} ${quizModeCls}"
+                 tabindex="0"
+                 role="button"
+                 aria-label="Khu vực ${z.shortDesc}"
+                 data-zone-id="${z.id}">
+              <div>${getZoneIllustrationSVG(z.id)}</div>
+              <div style="font-size:0.82rem; color:var(--text-muted); text-align:center;">${z.shortDesc}</div>
+              <div class="zone-slot-badge">
+                ${isFilled ? "✓ " + z.label : "Nháy hoặc thả thẻ tên vào đây"}
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function handleStage1MatchAttempt(cardId, zoneId) {
+      const zonesData = GAME_CONFIG.stages[1].zones;
+      const targetZone = zonesData.find(z => z.id === zoneId);
+      if (!targetZone || state.stage1.matchedZones[zoneId]) return;
+
+      if (cardId === zoneId) {
+        state.stage1.matchedZones[zoneId] = true;
+        state.stage1.selectedCardId = null;
+        sound.playSFX("right");
+
+        const matchedCount = Object.keys(state.stage1.matchedZones).length;
+        if (matchedCount === zonesData.length) {
+          const firstQuiz = GAME_CONFIG.stages[1].toolQuizzes[0];
+          setMascotFeedback(
+            `Tuyệt vời! Em đã gắn đủ 5 thẻ tên! Bây giờ sang lượt 2: ${firstQuiz.question}`,
+            "excited",
+            "good"
+          );
+        } else {
+          setMascotFeedback(targetZone.explainRight, "excited", "good");
+        }
+        renderStage1Board();
+        renderStageChecklist();
+      } else {
+        sound.playSFX("wrong");
+        setMascotFeedback(targetZone.explainWrong, "think", "warn");
+      }
+    }
+
+    function handleStage1QuizClick(zoneId) {
+      if (state.stage1.quizDone) return;
+      const quizzes = GAME_CONFIG.stages[1].toolQuizzes;
+      const currentQuiz = quizzes[state.stage1.quizIndex];
+      if (!currentQuiz) return;
+
+      if (zoneId === currentQuiz.targetId) {
+        sound.playSFX("right");
+        state.stage1.quizIndex++;
+        if (state.stage1.quizIndex >= quizzes.length) {
+          state.stage1.quizDone = true;
+          setMascotFeedback(currentQuiz.successMsg, "proud", "good");
+          renderStage1Board();
+          renderStageChecklist();
+          markStageCompleted(1);
+        } else {
+          const nextQ = quizzes[state.stage1.quizIndex];
+          setMascotFeedback(`${currentQuiz.successMsg} Tiếp theo: ${nextQ.question}`, "excited", "good");
+          renderStage1Board();
+          renderStageChecklist();
+        }
+      } else {
+        sound.playSFX("wrong");
+        setMascotFeedback(currentQuiz.failMsg, "think", "warn");
+      }
+    }
+
+    /* ==========================================================================
+       TRÌNH VẼ CANVAS TƯƠNG TÁC THỰC (MÀN 2, 3, 4)
+       Hỗ trợ vẽ Oval, vẽ dây Line, Tô màu Fill, Select, Copy/Paste, Resize, Move
+       ========================================================================== */
+    const paintCanvas = document.getElementById("paint-canvas");
+    const pCtx = paintCanvas.getContext("2d");
+
+    const pointerState = {
+      isDown: false,
+      mode: null, // drawOval | drawLine | selectBox | moveBalloon | resizeBalloon
+      startX: 0,
+      startY: 0,
+      currX: 0,
+      currY: 0,
+      targetBalloonId: null,
+      origRx: 0,
+      origRy: 0,
+      origX: 0,
+      origY: 0
+    };
+
+    function getCanvasCoords(evt) {
+      const rect = paintCanvas.getBoundingClientRect();
+      const scaleX = paintCanvas.width / rect.width;
+      const scaleY = paintCanvas.height / rect.height;
+      return {
+        x: (evt.clientX - rect.left) * scaleX,
+        y: (evt.clientY - rect.top) * scaleY
+      };
+    }
+
+    function createDefaultBalloon(x, y, rx, ry, color, hasString = true) {
+      return {
+        id: "b_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
+        x,
+        y,
+        rx,
+        ry,
+        color,
+        hasString,
+        stringEndX: x,
+        stringEndY: y + ry + 75
+      };
+    }
+
+    // Kiểm tra điểm (x,y) có nằm trong thân quả bóng hay không
+    function hitTestBalloon(b, x, y) {
+      const dx = (x - b.x) / b.rx;
+      const dy = (y - b.y) / b.ry;
+      return dx * dx + dy * dy <= 1.15;
+    }
+
+    // Kiểm tra điểm (x,y) có trúng tay nắm đổi kích thước (góc dưới phải của khung chọn)
+    function hitTestResizeHandle(b, x, y) {
+      const hx = b.x + b.rx + 8;
+      const hy = b.y + b.ry + 8;
+      return Math.abs(x - hx) <= 16 && Math.abs(y - hy) <= 16;
+    }
+
+    function drawSingleBalloon(ctx, b, isSelected = false) {
+      ctx.save();
+      // Dây bóng bay
+      if (b.hasString) {
+        ctx.beginPath();
+        ctx.moveTo(b.x, b.y + b.ry);
+        const midX = (b.x + b.stringEndX) / 2 + 8;
+        const midY = (b.y + b.ry + b.stringEndY) / 2;
+        ctx.quadraticCurveTo(midX, midY, b.stringEndX, b.stringEndY);
+        ctx.strokeStyle = "#4A3A7A";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
+
+      // Nút thắt đáy bóng
+      ctx.beginPath();
+      ctx.moveTo(b.x - 6, b.y + b.ry + 6);
+      ctx.lineTo(b.x + 6, b.y + b.ry + 6);
+      ctx.lineTo(b.x, b.y + b.ry - 2);
+      ctx.closePath();
+      ctx.fillStyle = b.color === "#FFFFFF" ? "#DCD4F5" : b.color;
+      ctx.fill();
+      ctx.strokeStyle = "#3E2E6B";
+      ctx.lineWidth = 2.2;
+      ctx.stroke();
+
+      // Thân quả bóng
+      ctx.beginPath();
+      ctx.ellipse(b.x, b.y, b.rx, b.ry, 0, 0, Math.PI * 2);
+      ctx.fillStyle = b.color;
+      ctx.fill();
+      ctx.strokeStyle = "#3E2E6B";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Ánh sáng phản chiếu trên quả bóng
+      ctx.beginPath();
+      ctx.ellipse(b.x - b.rx * 0.34, b.y - b.ry * 0.32, Math.max(4, b.rx * 0.16), Math.max(6, b.ry * 0.22), -0.4, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255, 255, 255, 0.65)";
+      ctx.fill();
+
+      // Khung chọn Select nét đứt và tay nắm Resize
+      if (isSelected) {
+        const bx = b.x - b.rx - 8;
+        const by = b.y - b.ry - 8;
+        const bw = b.rx * 2 + 16;
+        const bh = b.ry * 2 + 16;
+        ctx.strokeStyle = "#58429B";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.strokeRect(bx, by, bw, bh);
+        ctx.setLineDash([]);
+
+        // 4 chấm vuông ở 4 góc, nổi bật chấm góc dưới-phải để kéo Resize
+        const corners = [
+          [bx, by],
+          [bx + bw, by],
+          [bx, by + bh],
+          [bx + bw, by + bh]
+        ];
+        corners.forEach(([cx, cy], idx) => {
+          ctx.fillStyle = idx === 3 ? "#F2BE4A" : "#FFFFFF";
+          ctx.strokeStyle = "#58429B";
+          ctx.lineWidth = 2;
+          ctx.fillRect(cx - 6, cy - 6, 12, 12);
+          ctx.strokeRect(cx - 6, cy - 6, 12, 12);
+        });
+      }
+      ctx.restore();
+    }
+
+    function drawDecorations(ctx) {
+      state.decorations.forEach(d => {
+        ctx.save();
+        if (d.type === "cloud") {
+          ctx.fillStyle = "#EBF7FF";
+          ctx.strokeStyle = "#7BAFD4";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, 18, 0, Math.PI * 2);
+          ctx.arc(d.x + 16, d.y - 6, 20, 0, Math.PI * 2);
+          ctx.arc(d.x + 34, d.y, 16, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+        } else {
+          // Ngôi sao lấp lánh
+          ctx.fillStyle = "#F5B82E";
+          ctx.strokeStyle = "#C98A00";
+          ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          for (let i = 0; i < 5; i++) {
+            const outerAngle = (i * 72 - 90) * (Math.PI / 180);
+            const innerAngle = ((i * 72 + 36) - 90) * (Math.PI / 180);
+            const ox = d.x + Math.cos(outerAngle) * 14;
+            const oy = d.y + Math.sin(outerAngle) * 14;
+            const ix = d.x + Math.cos(innerAngle) * 6;
+            const iy = d.y + Math.sin(innerAngle) * 6;
+            if (i === 0) ctx.moveTo(ox, oy);
+            else ctx.lineTo(ox, oy);
+            ctx.lineTo(ix, iy);
+          }
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+        ctx.restore();
+      });
+    }
+
+    function renderPaintCanvas(includeUI = true) {
+      pCtx.clearRect(0, 0, paintCanvas.width, paintCanvas.height);
+
+      // Nền giấy trắng trang vẽ
+      pCtx.fillStyle = "#FFFFFF";
+      pCtx.fillRect(0, 0, paintCanvas.width, paintCanvas.height);
+
+      // Hướng dẫn mờ trực quan trên Canvas theo từng màn
+      if (includeUI && state.currentStage === 2 && state.balloons.length === 0) {
+        pCtx.save();
+        pCtx.strokeStyle = "rgba(88, 66, 155, 0.25)";
+        pCtx.setLineDash([6, 6]);
+        pCtx.lineWidth = 2;
+        pCtx.beginPath();
+        pCtx.ellipse(380, 165, 58, 72, 0, 0, Math.PI * 2);
+        pCtx.stroke();
+        pCtx.fillStyle = "rgba(88, 66, 155, 0.45)";
+        pCtx.font = "bold 15px sans-serif";
+        pCtx.textAlign = "center";
+        pCtx.fillText("Kéo chuột tại đây để vẽ thân quả bóng", 380, 170);
+        pCtx.restore();
+      }
+
+      if (includeUI && state.currentStage === 2 && state.balloons.length > 0 && !state.stageFlags[2].stringDrawn) {
+        const b = state.balloons[0];
+        pCtx.save();
+        pCtx.strokeStyle = "rgba(74, 189, 170, 0.65)";
+        pCtx.setLineDash([5, 5]);
+        pCtx.lineWidth = 2.5;
+        pCtx.beginPath();
+        pCtx.moveTo(b.x, b.y + b.ry);
+        pCtx.lineTo(b.x, b.y + b.ry + 85);
+        pCtx.stroke();
+        pCtx.fillStyle = "#2E8577";
+        pCtx.font = "bold 13px sans-serif";
+        pCtx.textAlign = "center";
+        pCtx.fillText("Kéo đường thẳng từ đáy bóng xuống", b.x + 120, b.y + b.ry + 45);
+        pCtx.restore();
+      }
+
+      // Vẽ các chi tiết trang trí
+      drawDecorations(pCtx);
+
+      // Vẽ tất cả quả bóng bay
+      state.balloons.forEach(b => {
+        const isSel = includeUI && b.id === state.selectedBalloonId;
+        drawSingleBalloon(pCtx, b, isSel);
+      });
+
+      // Vẽ hình xem trước khi đang nhấn giữ kéo chuột
+      if (includeUI && pointerState.isDown) {
+        pCtx.save();
+        if (pointerState.mode === "drawOval") {
+          const cx = (pointerState.startX + pointerState.currX) / 2;
+          const cy = (pointerState.startY + pointerState.currY) / 2;
+          const rx = Math.max(4, Math.abs(pointerState.currX - pointerState.startX) / 2);
+          const ry = Math.max(4, Math.abs(pointerState.currY - pointerState.startY) / 2);
+          pCtx.beginPath();
+          pCtx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+          pCtx.strokeStyle = "#58429B";
+          pCtx.lineWidth = 2.5;
+          pCtx.setLineDash([4, 3]);
+          pCtx.stroke();
+        } else if (pointerState.mode === "drawLine") {
+          pCtx.beginPath();
+          pCtx.moveTo(pointerState.startX, pointerState.startY);
+          pCtx.lineTo(pointerState.currX, pointerState.currY);
+          pCtx.strokeStyle = "#4A3A7A";
+          pCtx.lineWidth = 3;
+          pCtx.stroke();
+        } else if (pointerState.mode === "selectBox") {
+          const rx = Math.min(pointerState.startX, pointerState.currX);
+          const ry = Math.min(pointerState.startY, pointerState.currY);
+          const rw = Math.abs(pointerState.currX - pointerState.startX);
+          const rh = Math.abs(pointerState.currY - pointerState.startY);
+          pCtx.strokeStyle = "#58429B";
+          pCtx.lineWidth = 2;
+          pCtx.setLineDash([6, 4]);
+          pCtx.strokeRect(rx, ry, rw, rh);
+          pCtx.fillStyle = "rgba(88, 66, 155, 0.08)";
+          pCtx.fillRect(rx, ry, rw, rh);
+        }
+        pCtx.restore();
+      }
+    }
+
+    function setActiveTool(toolName) {
+      state.activeTool = toolName;
+      document.querySelectorAll(".paint-ribbon .tool-btn[data-tool]").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tool === toolName);
+      });
+    }
+
+    function setActiveColor(hex) {
+      state.activeColor = hex;
+      document.getElementById("active-color-box").style.backgroundColor = hex;
+      document.querySelectorAll(".swatch-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.hex === hex);
+      });
+    }
+
+    // Khởi tạo Màn 2, 3, 4
+    function initCanvasStage(stageNum) {
+      state.selectedBalloonId = null;
+      state.clipboardBalloon = null;
+      state.decorations = [];
+      document.getElementById("ui-canvas-status").textContent = "— Đang thiết kế";
+      document.getElementById("group-export").classList.toggle("hidden", stageNum !== 4);
+
+      if (stageNum === 2) {
+        state.balloons = [];
+        state.stageFlags[2] = { bodyDrawn: false, stringDrawn: false, colored: false };
+        setActiveTool("oval");
+      } else if (stageNum === 3) {
+        state.balloons = [
+          createDefaultBalloon(230, 165, 52, 65, GAME_CONFIG.palette[0].hex, true)
+        ];
+        state.stageFlags[3] = { selected: false, pasted: false, resized: false, moved: false };
+        setActiveTool("select");
+      } else if (stageNum === 4) {
+        // Bắt đầu Màn 4 với 2 quả bóng có sẵn từ Màn 3 để học sinh tạo thêm quả thứ 3, đổi 3 màu và trang trí
+        state.balloons = [
+          createDefaultBalloon(220, 165, 50, 62, GAME_CONFIG.palette[0].hex, true),
+          createDefaultBalloon(370, 150, 58, 72, GAME_CONFIG.palette[0].hex, true)
+        ];
+        state.stageFlags[4] = {
+          threeBalloons: false,
+          threeColors: false,
+          decorated: false,
+          saved: false
+        };
+        setActiveTool("select");
+      }
+
+      renderPaintCanvas();
+      renderStageChecklist();
+    }
+
+    // Kiểm tra tiến độ Màn 4 sau mỗi thao tác trên Canvas
+    function evaluateStage4Progress() {
+      if (state.currentStage !== 4) return;
+      const f = state.stageFlags[4];
+      f.threeBalloons = state.balloons.length >= 3;
+
+      const coloredSet = new Set(
+        state.balloons
+          .filter(b => b.color && b.color.toUpperCase() !== "#FFFFFF")
+          .map(b => b.color.toUpperCase())
+      );
+      f.threeColors = state.balloons.length >= 3 && coloredSet.size >= 3;
+      f.decorated = state.decorations.length >= 1;
+
+      renderStageChecklist();
+    }
+
+    // Xử lý sự kiện Pointer trên Canvas
+    paintCanvas.addEventListener("pointerdown", evt => {
+      if (state.screen !== "play" || state.currentStage === 1) return;
+      const pt = getCanvasCoords(evt);
+      pointerState.isDown = true;
+      pointerState.startX = pt.x;
+      pointerState.startY = pt.y;
+      pointerState.currX = pt.x;
+      pointerState.currY = pt.y;
+
+      // 1. Công cụ Tô màu (Fill)
+      if (state.activeTool === "fill") {
+        pointerState.isDown = false;
+        const hit = [...state.balloons].reverse().find(b => hitTestBalloon(b, pt.x, pt.y));
+        if (!hit) {
+          sound.playSFX("wrong");
+          setMascotFeedback(
+            "Em hãy nháy chuột vào chính giữa bên trong thân quả bóng bay để đổ màu nhé!",
+            "think",
+            "warn"
+          );
+          return;
+        }
+        if (state.currentStage === 2 && !state.stageFlags[2].stringDrawn) {
+          sound.playSFX("wrong");
+          setMascotFeedback(
+            "Trước khi tô màu, em hãy chọn công cụ 'Đường thẳng' để vẽ dây nối cho quả bóng đã nhé!",
+            "think",
+            "warn"
+          );
+          return;
+        }
+        hit.color = state.activeColor;
+        sound.playSFX("right");
+        renderPaintCanvas();
+
+        if (state.currentStage === 2) {
+          state.stageFlags[2].colored = true;
+          renderStageChecklist();
+          setMascotFeedback(
+            "Tuyệt đẹp! Em đã hoàn thành quả bóng bay rực rỡ bằng 3 công cụ Oval, Line và Fill with color!",
+            "proud",
+            "good"
+          );
+          markStageCompleted(2);
+        } else if (state.currentStage === 4) {
+          evaluateStage4Progress();
+          if (state.stageFlags[4].threeColors) {
+            setMascotFeedback(
+              "Rất rực rỡ! Đã có đủ 3 quả bóng với 3 màu sắc khác nhau! Hãy thêm trang trí và bấm 'Lưu bài' nhé!",
+              "excited",
+              "good"
+            );
+          } else {
+            setMascotFeedback(
+              "Đã đổi màu quả bóng! Hãy chọn thêm màu khác trên Bảng màu để 3 quả bóng có 3 màu khác nhau nhé.",
+              "happy",
+              "good"
+            );
+          }
+        }
+        return;
+      }
+
+      // 2. Công cụ đóng dấu Trang trí (Mây & Ngôi sao)
+      if (state.activeTool === "stamp") {
+        pointerState.isDown = false;
+        const type = state.decorations.length % 2 === 0 ? "star" : "cloud";
+        state.decorations.push({ x: pt.x, y: pt.y, type });
+        sound.playSFX("right");
+        renderPaintCanvas();
+        if (state.currentStage === 4) {
+          evaluateStage4Progress();
+          setMascotFeedback(
+            "Lung linh quá! Bây giờ nếu đã đủ 3 quả bóng 3 màu, em hãy nhấn nút 'Lưu bài' trên thanh công cụ nhé!",
+            "excited",
+            "good"
+          );
+        }
+        return;
+      }
+
+      // 3. Công cụ Select (Chọn vùng / Đổi kích thước / Di chuyển)
+      if (state.activeTool === "select") {
+        const selectedBalloon = state.balloons.find(b => b.id === state.selectedBalloonId);
+        if (selectedBalloon && hitTestResizeHandle(selectedBalloon, pt.x, pt.y)) {
+          pointerState.mode = "resizeBalloon";
+          pointerState.targetBalloonId = selectedBalloon.id;
+          pointerState.origRx = selectedBalloon.rx;
+          pointerState.origRy = selectedBalloon.ry;
+          return;
+        }
+
+        const hitBalloon = [...state.balloons].reverse().find(b => hitTestBalloon(b, pt.x, pt.y));
+        if (hitBalloon && hitBalloon.id === state.selectedBalloonId) {
+          pointerState.mode = "moveBalloon";
+          pointerState.targetBalloonId = hitBalloon.id;
+          pointerState.origX = hitBalloon.x;
+          pointerState.origY = hitBalloon.y;
+          return;
+        }
+
+        pointerState.mode = "selectBox";
+        return;
+      }
+
+      // 4. Công cụ Hình tròn / Bầu dục (Oval)
+      if (state.activeTool === "oval") {
+        if (state.currentStage === 2 && state.stageFlags[2].bodyDrawn) {
+          pointerState.isDown = false;
+          sound.playSFX("wrong");
+          setMascotFeedback(
+            "Em đã vẽ xong thân quả bóng rồi! Bây giờ hãy chọn công cụ 'Đường thẳng' để vẽ dây bóng nhé.",
+            "think",
+            "warn"
+          );
+          return;
+        }
+        pointerState.mode = "drawOval";
+        return;
+      }
+
+      // 5. Công cụ Đường thẳng (Line)
+      if (state.activeTool === "line") {
+        if (state.currentStage === 2 && !state.stageFlags[2].bodyDrawn) {
+          pointerState.isDown = false;
+          sound.playSFX("wrong");
+          setMascotFeedback(
+            "Chưa có thân bóng! Em hãy chọn công cụ 'Hình tròn' (Oval) để vẽ thân quả bóng trước khi vẽ dây nhé.",
+            "think",
+            "warn"
+          );
+          return;
+        }
+        pointerState.mode = "drawLine";
+      }
+    });
+
+    window.addEventListener("pointermove", evt => {
+      if (!pointerState.isDown) return;
+      const pt = getCanvasCoords(evt);
+      pointerState.currX = pt.x;
+      pointerState.currY = pt.y;
+
+      if (pointerState.mode === "moveBalloon") {
+        const b = state.balloons.find(item => item.id === pointerState.targetBalloonId);
+        if (b) {
+          const dx = pt.x - pointerState.startX;
+          const dy = pt.y - pointerState.startY;
+          b.x = Math.max(60, Math.min(paintCanvas.width - 60, pointerState.origX + dx));
+          b.y = Math.max(65, Math.min(paintCanvas.height - 110, pointerState.origY + dy));
+          b.stringEndX = b.x;
+          b.stringEndY = b.y + b.ry + 75;
+        }
+      } else if (pointerState.mode === "resizeBalloon") {
+        const b = state.balloons.find(item => item.id === pointerState.targetBalloonId);
+        if (b) {
+          const dx = pt.x - pointerState.startX;
+          const dy = pt.y - pointerState.startY;
+          b.rx = Math.max(30, Math.min(95, pointerState.origRx + dx * 0.6));
+          b.ry = Math.max(38, Math.min(115, pointerState.origRy + dy * 0.6));
+          b.stringEndY = b.y + b.ry + 75;
+        }
+      }
+
+      renderPaintCanvas();
+    });
+
+    window.addEventListener("pointerup", () => {
+      if (!pointerState.isDown) return;
+      const mode = pointerState.mode;
+      pointerState.isDown = false;
+      pointerState.mode = null;
+
+      // Kết thúc vẽ Hình tròn (Oval)
+      if (mode === "drawOval") {
+        const cx = (pointerState.startX + pointerState.currX) / 2;
+        const cy = (pointerState.startY + pointerState.currY) / 2;
+        const rx = Math.abs(pointerState.currX - pointerState.startX) / 2;
+        const ry = Math.abs(pointerState.currY - pointerState.startY) / 2;
+
+        if (rx < GAME_CONFIG.stages[2].minRadius || ry < GAME_CONFIG.stages[2].minRadius) {
+          sound.playSFX("wrong");
+          setMascotFeedback(
+            "Quả bóng còn hơi nhỏ quá! Em hãy nhấn giữ và kéo chuột rộng hơn để vẽ quả bóng bay rõ đẹp nhé.",
+            "think",
+            "warn"
+          );
+          renderPaintCanvas();
+          return;
+        }
+
+        const newBalloon = createDefaultBalloon(
+          cx,
+          cy,
+          rx,
+          ry,
+          state.currentStage === 2 ? "#FFFFFF" : state.activeColor,
+          state.currentStage !== 2
+        );
+        state.balloons.push(newBalloon);
+        state.selectedBalloonId = newBalloon.id;
+        sound.playSFX("right");
+
+        if (state.currentStage === 2) {
+          state.stageFlags[2].bodyDrawn = true;
+          setActiveTool("line");
+          setMascotFeedback(
+            "Giỏi lắm! Em đã vẽ được thân quả bóng! Bước 2: Hãy kéo công cụ 'Đường thẳng' từ đáy quả bóng xuống dưới để tạo dây bóng.",
+            "excited",
+            "good"
+          );
+        } else if (state.currentStage === 4) {
+          evaluateStage4Progress();
+          setMascotFeedback(
+            "Em vừa vẽ thêm một quả bóng mới! Hãy kiểm tra màu sắc để có đủ 3 quả bóng 3 màu khác nhau nhé.",
+            "excited",
+            "good"
+          );
+        }
+        renderPaintCanvas();
+        renderStageChecklist();
+        return;
+      }
+
+      // Kết thúc vẽ Đường thẳng (Line - Dây bóng)
+      if (mode === "drawLine") {
+        const target = state.balloons[state.balloons.length - 1];
+        if (!target) return;
+        const bottomX = target.x;
+        const bottomY = target.y + target.ry;
+        const distStart = Math.hypot(pointerState.startX - bottomX, pointerState.startY - bottomY);
+        const lineLen = Math.hypot(
+          pointerState.currX - pointerState.startX,
+          pointerState.currY - pointerState.startY
+        );
+
+        if (distStart > 75 || lineLen < 35 || pointerState.currY <= bottomY + 15) {
+          sound.playSFX("wrong");
+          setMascotFeedback(
+            "Dây bóng chưa nối đúng vào đáy bóng! Em hãy đặt chuột ngay sát đáy quả bóng rồi kéo thẳng xuống phía dưới nhé.",
+            "think",
+            "warn"
+          );
+          renderPaintCanvas();
+          return;
+        }
+
+        target.hasString = true;
+        target.stringEndX = pointerState.currX;
+        target.stringEndY = pointerState.currY;
+        sound.playSFX("right");
+
+        if (state.currentStage === 2) {
+          state.stageFlags[2].stringDrawn = true;
+          setActiveTool("fill");
+          setMascotFeedback(
+            "Dây bóng đã nối chắc chắn! Bước 3: Em hãy chọn công cụ 'Tô màu' (Lọ mực), chọn màu yêu thích rồi nháy vào giữa quả bóng nhé!",
+            "excited",
+            "good"
+          );
+        }
+        renderPaintCanvas();
+        renderStageChecklist();
+        return;
+      }
+
+      // Kết thúc kéo khung chọn Select
+      if (mode === "selectBox") {
+        const minX = Math.min(pointerState.startX, pointerState.currX);
+        const maxX = Math.max(pointerState.startX, pointerState.currX);
+        const minY = Math.min(pointerState.startY, pointerState.currY);
+        const maxY = Math.max(pointerState.startY, pointerState.currY);
+
+        // Nếu chỉ nháy đơn vào quả bóng
+        if (maxX - minX < 12 && maxY - minY < 12) {
+          const clicked = [...state.balloons].reverse().find(b => hitTestBalloon(b, pointerState.currX, pointerState.currY));
+          if (clicked) {
+            if (state.currentStage === 3 && !state.stageFlags[3].selected) {
+              sound.playSFX("wrong");
+              setMascotFeedback(
+                "Ở Bước 1 này, em hãy nhấn giữ chuột và KÉO khung chữ nhật nét đứt bao trọn xung quanh quả bóng nhé!",
+                "think",
+                "warn"
+              );
+            } else {
+              state.selectedBalloonId = clicked.id;
+            }
+          } else {
+            state.selectedBalloonId = null;
+          }
+          renderPaintCanvas();
+          return;
+        }
+
+        // Kiểm tra có quả bóng nào nằm gọn trong khung Select vừa kéo không
+        const enclosed = state.balloons.find(
+          b =>
+            minX <= b.x - b.rx + 12 &&
+            maxX >= b.x + b.rx - 12 &&
+            minY <= b.y - b.ry + 12 &&
+            maxY >= b.y + b.ry - 12
+        );
+
+        if (enclosed) {
+          state.selectedBalloonId = enclosed.id;
+          sound.playSFX("right");
+          if (state.currentStage === 3 && !state.stageFlags[3].selected) {
+            state.stageFlags[3].selected = true;
+            setMascotFeedback(
+              "Chính xác! Em đã bao chọn quả bóng bằng Select! Bước 2: Hãy nhấn nút 'Copy' rồi nhấn nút 'Paste' trên thanh công cụ.",
+              "excited",
+              "good"
+            );
+            renderStageChecklist();
+          }
+        } else {
+          sound.playSFX("wrong");
+          setMascotFeedback(
+            "Khung chọn của em chưa bao trọn quả bóng bay (nếu cắt ngang hình sẽ bị thiếu nét). Hãy kéo rộng hơn bao quanh cả quả bóng nhé!",
+            "think",
+            "warn"
+          );
+        }
+        renderPaintCanvas();
+        return;
+      }
+
+      // Kết thúc kéo Resize đổi kích thước
+      if (mode === "resizeBalloon") {
+        const b = state.balloons.find(item => item.id === pointerState.targetBalloonId);
+        if (b && (Math.abs(b.rx - pointerState.origRx) > 5 || Math.abs(b.ry - pointerState.origRy) > 5)) {
+          sound.playSFX("right");
+          if (state.currentStage === 3 && state.stageFlags[3].pasted && !state.stageFlags[3].resized) {
+            state.stageFlags[3].resized = true;
+            renderStageChecklist();
+            checkStage3Completion();
+            if (!state.completedStages[3]) {
+              setMascotFeedback(
+                "Tuyệt vời! Quả bóng thứ hai đã được đổi kích thước! Bây giờ em hãy kéo nó sang vùng trống bên cạnh để 2 quả bóng không đè lên nhau nhé.",
+                "excited",
+                "good"
+              );
+            }
+          }
+        }
+        renderPaintCanvas();
+        return;
+      }
+
+      // Kết thúc kéo Move di chuyển quả bóng
+      if (mode === "moveBalloon") {
+        if (state.currentStage === 3 && state.stageFlags[3].pasted && state.balloons.length >= 2) {
+          const b1 = state.balloons[0];
+          const b2 = state.balloons[1];
+          const centerDist = Math.hypot(b1.x - b2.x, b1.y - b2.y);
+          if (centerDist > b1.rx + b2.rx + 10) {
+            state.stageFlags[3].moved = true;
+            sound.playSFX("right");
+            renderStageChecklist();
+            checkStage3Completion();
+            if (!state.completedStages[3]) {
+              setMascotFeedback(
+                "Đã đặt quả bóng ở vị trí rất đẹp! Đừng quên kéo ô vuông màu vàng ở góc khung chọn để đổi kích thước quả bóng nhé!",
+                "excited",
+                "good"
+              );
+            }
+          }
+        }
+        renderPaintCanvas();
+      }
+    });
+
+    function checkStage3Completion() {
+      const f = state.stageFlags[3];
+      if (f.selected && f.pasted && f.resized && f.moved) {
+        setMascotFeedback(
+          "Xuất sắc! Em đã thành thạo quy trình Select ➔ Copy ➔ Paste ➔ Đổi kích thước và Di chuyển hình!",
+          "proud",
+          "good"
+        );
+        markStageCompleted(3);
+      }
+    }
+
+    // Chức năng Copy & Paste
+    function handleCopyAction() {
+      const sel = state.balloons.find(b => b.id === state.selectedBalloonId);
+      if (!sel) {
+        sound.playSFX("wrong");
+        setMascotFeedback(
+          "Chưa có hình nào được chọn! Em hãy dùng công cụ 'Select' kéo bao quanh quả bóng trước khi nhấn Copy nhé.",
+          "think",
+          "warn"
+        );
+        return;
+      }
+      state.clipboardBalloon = { ...sel };
+      sound.playSFX("click");
+      setMascotFeedback(
+        "Đã sao chép (Copy) quả bóng vào bộ nhớ đệm! Bây giờ em hãy nhấn nút 'Paste' (Dán) để tạo ra bản sao nhé!",
+        "happy",
+        "good"
+      );
+    }
+
+    function handlePasteAction() {
+      if (!state.clipboardBalloon) {
+        sound.playSFX("wrong");
+        setMascotFeedback(
+          "Bộ nhớ tạm chưa có hình! Em hãy chọn quả bóng bằng 'Select' rồi nhấn 'Copy' trước khi nhấn 'Paste' nhé.",
+          "think",
+          "warn"
+        );
+        return;
+      }
+      const offset = 35 + state.balloons.length * 18;
+      const clone = createDefaultBalloon(
+        Math.min(paintCanvas.width - 90, state.clipboardBalloon.x + offset),
+        Math.min(paintCanvas.height - 130, state.clipboardBalloon.y + 12),
+        state.clipboardBalloon.rx,
+        state.clipboardBalloon.ry,
+        state.clipboardBalloon.color,
+        true
+      );
+      state.balloons.push(clone);
+      state.selectedBalloonId = clone.id;
+      sound.playSFX("right");
+
+      if (state.currentStage === 3) {
+        state.stageFlags[3].pasted = true;
+        setMascotFeedback(
+          "Quả bóng thứ hai đã xuất hiện! Bước 3 & 4: Em hãy kéo ô vuông màu vàng ở góc dưới khung chọn để đổi kích thước, rồi kéo quả bóng sang bên phải nhé!",
+          "excited",
+          "good"
+        );
+      } else if (state.currentStage === 4) {
+        evaluateStage4Progress();
+        setMascotFeedback(
+          "Đã dán thêm một quả bóng bay mới! Hãy dùng công cụ 'Tô màu' để tô 3 quả bóng thành 3 màu khác nhau nhé.",
+          "excited",
+          "good"
+        );
+      }
+      renderPaintCanvas();
+      renderStageChecklist();
+    }
+
+    // Lưu trong lượt chơi & Xuất ảnh PNG ở Màn 4
+    function handleSaveArtwork() {
+      if (state.currentStage !== 4) return;
+      evaluateStage4Progress();
+      const f = state.stageFlags[4];
+
+      if (!f.threeBalloons) {
+        sound.playSFX("wrong");
+        setMascotFeedback(
+          "Bức tranh mới có " + state.balloons.length + " quả bóng thôi! Em hãy dùng Copy/Paste hoặc vẽ thêm để có đủ ít nhất 3 quả bóng nhé.",
+          "think",
+          "warn"
+        );
+        return;
+      }
+      if (!f.threeColors) {
+        sound.playSFX("wrong");
+        setMascotFeedback(
+          "Các quả bóng đang bị trùng màu! Em hãy chọn công cụ 'Tô màu' và Bảng màu để tô 3 quả bóng bằng 3 màu khác nhau nhé.",
+          "think",
+          "warn"
+        );
+        return;
+      }
+      if (!f.decorated) {
+        sound.playSFX("wrong");
+        setMascotFeedback(
+          "Thêm chút trang trí nữa là hoàn hảo! Em hãy chọn nút 'Trang trí' (biểu tượng ngôi sao) rồi nháy lên nền tranh nhé.",
+          "think",
+          "warn"
+        );
+        return;
+      }
+
+      f.saved = true;
+      // Vẽ bản sạch (ẩn khung chọn nét đứt) để lưu ảnh đẹp
+      renderPaintCanvas(false);
+      state.savedDataUrl = paintCanvas.toDataURL("image/png");
+      renderPaintCanvas(true);
+
+      document.getElementById("ui-canvas-status").textContent = "— Đã lưu trong lượt chơi ✓";
+      renderStageChecklist();
+      setMascotFeedback(
+        "Chúc mừng Họa sĩ Kĩ thuật số! Bức tranh Chùm bóng bay sắc màu đã được lưu. Em có thể bấm 'Xuất PNG' để tải ảnh hoặc bấm 'Xem Bảng Thành Tích' nhé!",
+        "proud",
+        "good"
+      );
+      markStageCompleted(4);
+    }
+
+    function downloadCanvasPNG() {
+      renderPaintCanvas(false);
+      const dataUrl = paintCanvas.toDataURL("image/png");
+      renderPaintCanvas(true);
+      state.savedDataUrl = dataUrl;
+
+      const link = document.createElement("a");
+      link.download = "chum-bong-bay-tin-hoc-5.png";
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      sound.playSFX("right");
+    }
+
+    /* ==========================================================================
+       ĐIỀU HƯỚNG MÀN HÌNH & QUẢN LÝ SỰ KIỆN
+       ========================================================================== */
+    function loadStage(stageNum) {
+      state.currentStage = stageNum;
+      state.hintLevel = 0;
+      const hintBox = document.getElementById("ui-hint-box");
+      const btnHint = document.getElementById("btn-hint");
+
+      const stgConfig = GAME_CONFIG.stages[stageNum];
+      document.getElementById("ui-stage-num").textContent = `MÀN ${stageNum} / 4 • 25 ĐIỂM`;
+      document.getElementById("ui-stage-title").textContent = stgConfig.title;
+      setMascotFeedback(stgConfig.intro, "happy", "normal");
+
+      // Chế độ Luyện tập hiện sẵn gợi ý mức 1
+      if (state.mode === "practice") {
+        state.hintLevel = 1;
+        hintBox.textContent = "💡 " + stgConfig.hints[0];
+        hintBox.classList.add("visible");
+        btnHint.textContent = "💡 Gợi ý (Mức 2)";
+      } else {
+        hintBox.classList.remove("visible");
+        btnHint.textContent = "💡 Gợi ý (Mức 1)";
+      }
+
+      const isStage1 = stageNum === 1;
+      document.getElementById("paint-ribbon").classList.toggle("hidden", isStage1);
+      document.getElementById("stage1-container").classList.toggle("hidden", !isStage1);
+      document.getElementById("canvas-wrapper").classList.toggle("hidden", isStage1);
+
+      if (isStage1) {
+        initStage1();
+      } else {
+        initCanvasStage(stageNum);
+      }
+
+      updateHeaderUI();
+    }
+
+    function showScreen(screenName) {
+      state.screen = screenName;
+      document.getElementById("screen-welcome").classList.toggle("hidden", screenName !== "welcome");
+      document.getElementById("screen-play").classList.toggle("hidden", screenName !== "play");
+      document.getElementById("screen-summary").classList.toggle("hidden", screenName !== "summary");
+      document.getElementById("bottom-bar").classList.toggle("hidden", screenName !== "play");
+
+      if (screenName === "summary") {
+        sound.playSFX("victory");
+        triggerConfetti();
+        document.getElementById("summary-score").textContent = state.score;
+        const imgEl = document.getElementById("summary-artwork-img");
+        if (state.savedDataUrl) {
+          imgEl.src = state.savedDataUrl;
+        } else {
+          renderPaintCanvas(false);
+          imgEl.src = paintCanvas.toDataURL("image/png");
+        }
+        document.getElementById("summary-takeaways").innerHTML = GAME_CONFIG.takeaways
+          .map(t => `<div class="takeaway-card">${t}</div>`)
+          .join("");
+      }
+
+      updateHeaderUI();
+    }
+
+    // Khởi tạo bảng màu Swatches trên thanh Ribbon
+    function buildPaletteUI() {
+      const container = document.getElementById("swatches-container");
+      container.innerHTML = GAME_CONFIG.palette
+        .map(
+          c => `
+          <button type="button"
+            class="swatch-btn"
+            style="background:${c.hex}"
+            data-hex="${c.hex}"
+            title="Màu ${c.name}"
+            aria-label="Chọn màu ${c.name}">
+          </button>
+        `
+        )
+        .join("");
+      setActiveColor(GAME_CONFIG.palette[0].hex);
+    }
+
+    // Thiết lập toàn bộ Event Listeners
+    function setupEvents() {
+      // Chọn chế độ chơi Luyện tập / Thử thách
+      const modePractice = document.getElementById("mode-practice");
+      const modeChallenge = document.getElementById("mode-challenge");
+      const selectMode = m => {
+        state.mode = m;
+        sound.playSFX("click");
+        modePractice.classList.toggle("selected", m === "practice");
+        modePractice.setAttribute("aria-checked", m === "practice");
+        modeChallenge.classList.toggle("selected", m === "challenge");
+        modeChallenge.setAttribute("aria-checked", m === "challenge");
+        updateHeaderUI();
+      };
+      modePractice.addEventListener("click", () => selectMode("practice"));
+      modeChallenge.addEventListener("click", () => selectMode("challenge"));
+
+      // Nút Bắt đầu vào Xưởng vẽ (kích hoạt nhạc nền Web Audio API sau tương tác)
+      document.getElementById("btn-start-game").addEventListener("click", () => {
+        sound.playSFX("click");
+        sound.startBGM();
+        showScreen("play");
+        loadStage(state.currentStage);
+      });
+
+      // Mở / Đóng Modal Hướng dẫn
+      const guideModal = document.getElementById("modal-guide");
+      document.getElementById("btn-open-guide").addEventListener("click", () => {
+        sound.playSFX("click");
+        guideModal.classList.add("open");
+      });
+      document.getElementById("btn-close-guide").addEventListener("click", () => {
+        sound.playSFX("click");
+        guideModal.classList.remove("open");
+      });
+
+      // Hai công tắc âm thanh độc lập: Nhạc nền & Hiệu ứng
+      const btnBgm = document.getElementById("btn-bgm");
+      const btnSfx = document.getElementById("btn-sfx");
+      const syncAudioButtons = () => {
+        btnBgm.className = `btn audio-toggle ${sound.bgmEnabled ? "on" : "off"}`;
+        btnBgm.setAttribute("aria-pressed", String(sound.bgmEnabled));
+        btnBgm.textContent = `🎵 Nhạc nền: ${sound.bgmEnabled ? "BẬT" : "TẮT"}`;
+
+        btnSfx.className = `btn audio-toggle ${sound.sfxEnabled ? "on" : "off"}`;
+        btnSfx.setAttribute("aria-pressed", String(sound.sfxEnabled));
+        btnSfx.textContent = `🔔 Hiệu ứng: ${sound.sfxEnabled ? "BẬT" : "TẮT"}`;
+      };
+
+      btnBgm.addEventListener("click", () => {
+        sound.bgmEnabled = !sound.bgmEnabled;
+        if (sound.bgmEnabled && state.screen !== "welcome") sound.startBGM();
+        else sound.stopBGM();
+        syncAudioButtons();
+      });
+
+      btnSfx.addEventListener("click", () => {
+        sound.sfxEnabled = !sound.sfxEnabled;
+        if (sound.sfxEnabled) sound.playSFX("click");
+        syncAudioButtons();
+      });
+
+      document.getElementById("btn-mute-all").addEventListener("click", () => {
+        const anyOn = sound.bgmEnabled || sound.sfxEnabled;
+        sound.bgmEnabled = !anyOn;
+        sound.sfxEnabled = !anyOn;
+        if (!sound.bgmEnabled) sound.stopBGM();
+        else if (state.screen !== "welcome") sound.startBGM();
+        syncAudioButtons();
+      });
+
+      // Tạm dừng nhạc nền khi ẩn tab trình duyệt
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) sound.stopBGM();
+        else if (sound.bgmEnabled && state.screen !== "welcome") sound.startBGM();
+      });
+
+      // Thanh điều hướng 4 màn chơi
+      document.getElementById("stage-nav").addEventListener("click", evt => {
+        const pill = evt.target.closest(".stage-pill");
+        if (!pill || pill.disabled) return;
+        const stg = Number(pill.dataset.stage);
+        sound.playSFX("click");
+        showScreen("play");
+        loadStage(stg);
+      });
+
+      // Các nút thanh dưới cùng: Trang chủ, Gợi ý 2 cấp, Làm lại màn, Tiếp tục
+      document.getElementById("btn-home").addEventListener("click", () => {
+        sound.playSFX("click");
+        sound.stopBGM();
+        showScreen("welcome");
+      });
+
+      document.getElementById("btn-hint").addEventListener("click", () => {
+        sound.playSFX("click");
+        const hints = GAME_CONFIG.stages[state.currentStage].hints;
+        const hintBox = document.getElementById("ui-hint-box");
+        const btnHint = document.getElementById("btn-hint");
+
+        if (state.hintLevel === 0) {
+          state.hintLevel = 1;
+          hintBox.textContent = "💡 " + hints[0];
+          hintBox.classList.add("visible");
+          btnHint.textContent = "💡 Gợi ý (Mức 2)";
+        } else {
+          state.hintLevel = 2;
+          hintBox.textContent = "🌟 " + hints[1];
+          hintBox.classList.add("visible");
+          btnHint.textContent = "💡 Đã mở hết gợi ý";
+        }
+        updatePracticeVisualGuides();
+      });
+
+      document.getElementById("btn-reset-stage").addEventListener("click", () => {
+        sound.playSFX("click");
+        loadStage(state.currentStage);
+      });
+
+      document.getElementById("btn-next-stage").addEventListener("click", () => {
+        if (!state.completedStages[state.currentStage]) return;
+        sound.playSFX("click");
+        if (state.currentStage < 4) {
+          loadStage(state.currentStage + 1);
+        } else {
+          showScreen("summary");
+        }
+      });
+
+      // Sự kiện Màn 1 (Event Delegation cho khay thẻ và ô thả đích)
+      const stage1Container = document.getElementById("stage1-container");
+      stage1Container.addEventListener("click", evt => {
+        const card = evt.target.closest(".label-card");
+        if (card) {
+          sound.playSFX("click");
+          state.stage1.selectedCardId = card.dataset.cardId;
+          renderStage1Board();
+          return;
+        }
+        const zone = evt.target.closest(".drop-zone");
+        if (zone) {
+          const zoneId = zone.dataset.zoneId;
+          const allMatched = Object.keys(state.stage1.matchedZones).length === 5;
+          if (allMatched) {
+            handleStage1QuizClick(zoneId);
+          } else if (state.stage1.selectedCardId) {
+            handleStage1MatchAttempt(state.stage1.selectedCardId, zoneId);
+          } else {
+            sound.playSFX("click");
+            setMascotFeedback(
+              "Em hãy nháy chọn một thẻ tên màu tím ở khay phía trên trước, rồi nháy vào ô tương ứng nhé!",
+              "happy",
+              "normal"
+            );
+          }
+        }
+      });
+
+      stage1Container.addEventListener("dragstart", evt => {
+        const card = evt.target.closest(".label-card");
+        if (!card) return;
+        evt.dataTransfer.setData("text/plain", card.dataset.cardId);
+      });
+
+      stage1Container.addEventListener("dragover", evt => {
+        const zone = evt.target.closest(".drop-zone");
+        if (zone) {
+          evt.preventDefault();
+          zone.classList.add("drag-over");
+        }
+      });
+
+      stage1Container.addEventListener("dragleave", evt => {
+        const zone = evt.target.closest(".drop-zone");
+        if (zone) zone.classList.remove("drag-over");
+      });
+
+      stage1Container.addEventListener("drop", evt => {
+        const zone = evt.target.closest(".drop-zone");
+        if (!zone) return;
+        evt.preventDefault();
+        zone.classList.remove("drag-over");
+        const cardId = evt.dataTransfer.getData("text/plain");
+        if (cardId) handleStage1MatchAttempt(cardId, zone.dataset.zoneId);
+      });
+
+      // Sự kiện Thanh công cụ Paint Ribbon (Màn 2, 3, 4)
+      document.getElementById("paint-ribbon").addEventListener("click", evt => {
+        const toolBtn = evt.target.closest(".tool-btn[data-tool]");
+        if (toolBtn) {
+          sound.playSFX("click");
+          setActiveTool(toolBtn.dataset.tool);
+          return;
+        }
+        const swatch = evt.target.closest(".swatch-btn");
+        if (swatch) {
+          sound.playSFX("click");
+          setActiveColor(swatch.dataset.hex);
+          return;
+        }
+      });
+
+      document.getElementById("btn-tool-copy").addEventListener("click", handleCopyAction);
+      document.getElementById("btn-tool-paste").addEventListener("click", handlePasteAction);
+      document.getElementById("btn-tool-delete").addEventListener("click", () => {
+        if (!state.selectedBalloonId) return;
+        if (state.currentStage === 3 && state.balloons.length <= 1) {
+          sound.playSFX("wrong");
+          setMascotFeedback("Đây là quả bóng mẫu duy nhất, em đừng xóa nó nhé!", "think", "warn");
+          return;
+        }
+        state.balloons = state.balloons.filter(b => b.id !== state.selectedBalloonId);
+        state.selectedBalloonId = null;
+        sound.playSFX("click");
+        renderPaintCanvas();
+        if (state.currentStage === 4) evaluateStage4Progress();
+      });
+
+      document.getElementById("btn-save-artwork").addEventListener("click", handleSaveArtwork);
+      document.getElementById("btn-export-png").addEventListener("click", downloadCanvasPNG);
+      document.getElementById("btn-summary-download").addEventListener("click", downloadCanvasPNG);
+
+      // Hỗ trợ phím tắt bàn phím Ctrl+C / Ctrl+V cho Màn 3 & 4
+      window.addEventListener("keydown", evt => {
+        if (state.screen !== "play" || state.currentStage < 3) return;
+        if ((evt.ctrlKey || evt.metaKey) && evt.key.toLowerCase() === "c") {
+          evt.preventDefault();
+          handleCopyAction();
+        } else if ((evt.ctrlKey || evt.metaKey) && evt.key.toLowerCase() === "v") {
+          evt.preventDefault();
+          handlePasteAction();
+        }
+      });
+
+      // Nút Xem lại các màn & Chơi lại từ đầu ở màn Tổng kết
+      document.getElementById("btn-review-stages").addEventListener("click", () => {
+        sound.playSFX("click");
+        showScreen("play");
+        loadStage(1);
+      });
+
+      document.getElementById("btn-replay-all").addEventListener("click", () => {
+        sound.playSFX("click");
+        state.currentStage = 1;
+        state.unlockedStage = 1;
+        state.completedStages = { 1: false, 2: false, 3: false, 4: false };
+        state.score = 0;
+        state.savedDataUrl = null;
+        updateStudioBackdrop();
+        showScreen("play");
+        loadStage(1);
+      });
+    }
+
+    // Khởi động ứng dụng khi trang tải xong
+    window.addEventListener("DOMContentLoaded", () => {
+      buildPaletteUI();
+      updateStudioBackdrop();
+      setupEvents();
+      updateHeaderUI();
+    });
+  </script>
+</body>
+</html>

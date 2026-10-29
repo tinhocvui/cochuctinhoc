@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CÂY THƯ MỤC DIỆU KÌ - Tin Học 3 Bài 8</title>
+    <style>
+        /* ==========================================================================
+           V5 DESIGN SYSTEM & PALETTE VARIABLES
+           ========================================================================== */
+        :root {
+            --bg-cream: #FFF8E9;
+            --mint-green: #53B77A;
+            --mint-dark: #3a8a58;
+            --sun-yellow: #FFC65C;
+            --peach-pink: #EF7469;
+            --lavender-purple: #7766B7;
+            --lavender-light: #EAE6F8;
+            --card-bg: #FFFFFF;
+            --text-main: #2D3748;
+            --text-sub: #4A5568;
+            --shadow-soft: 0 8px 20px rgba(83, 183, 122, 0.15);
+            --shadow-hover: 0 12px 28px rgba(0, 0, 0, 0.12);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-cream);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            overflow-x: hidden;
+        }
+
+        /* Container Layout */
+        #app-container {
+            width: 100%;
+            max-width: 1100px;
+            min-height: 720px;
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 16px 40px rgba(119, 102, 183, 0.18);
+            border: 4px solid var(--lavender-light);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Top Header */
+        header {
+            background: linear-gradient(135deg, var(--lavender-purple), #6352a3);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .brand-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-title h1 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-title span {
+            font-size: 0.82rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-icon {
+            background: #FFFFFF;
+            color: var(--text-main);
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-icon:hover {
+            transform: scale(1.08);
+            background: var(--bg-cream);
+        }
+
+        .btn-icon.active {
+            background: var(--sun-yellow);
+        }
+
+        /* Bíp Robot & Dialogue Section */
+        .character-bar {
+            background: var(--bg-cream);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 2px dashed #E2E8F0;
+        }
+
+        .bip-svg-wrapper {
+            width: 70px;
+            height: 70px;
+            flex-shrink: 0;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .speech-bubble {
+            background: white;
+            border: 2px solid var(--mint-green);
+            border-radius: 18px;
+            padding: 10px 16px;
+            position: relative;
+            flex-grow: 1;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.98rem;
+            box-shadow: 0 4px 10px rgba(83, 183, 122, 0.1);
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-width: 6px 10px 6px 0;
+            border-style: solid;
+            border-color: transparent var(--mint-green) transparent transparent;
+        }
+
+        /* Main Game Content Screens */
+        main {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            gap: 18px;
+            height: 100%;
+            animation: fadeIn 0.35s ease-in-out;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Welcome Screen */
+        .welcome-box {
+            text-align: center;
+            margin: auto;
+            max-width: 680px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .welcome-title {
+            font-size: 2.2rem;
+            color: var(--lavender-purple);
+            font-weight: 900;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 12px;
+            margin: 10px 0;
+        }
+
+        .mode-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 2px solid var(--lavender-purple);
+            background: white;
+            color: var(--lavender-purple);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-btn.selected {
+            background: var(--lavender-purple);
+            color: white;
+        }
+
+        /* Buttons Standard */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--mint-green), var(--mint-dark));
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(83, 183, 122, 0.35);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(83, 183, 122, 0.45);
+        }
+
+        .btn-secondary {
+            background: var(--sun-yellow);
+            color: #5B4000;
+            border: none;
+            padding: 10px 22px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+
+        /* Interactive Elements & SVG Graphic Cards */
+        .card-pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            padding: 14px;
+            background: var(--bg-cream);
+            border-radius: var(--radius-md);
+            min-height: 80px;
+            border: 2px dashed #CBD5E0;
+        }
+
+        .item-card {
+            background: white;
+            border: 2px solid #E2E8F0;
+            border-radius: var(--radius-sm);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.04);
+        }
+
+        .item-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--mint-green);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .item-card.selected {
+            border-color: var(--peach-pink);
+            background: #FFF5F5;
+            box-shadow: 0 0 0 3px rgba(239, 116, 105, 0.3);
+        }
+
+        .item-card.placed {
+            opacity: 0.5;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        /* Tree Display Stage 1 */
+        .tree-container {
+            display: flex;
+            justify-content: space-around;
+            gap: 16px;
+            flex: 1;
+            margin-top: 10px;
+        }
+
+        .tree-branch {
+            flex: 1;
+            background: #F7FAFC;
+            border: 3px solid var(--mint-green);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-height: 220px;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .tree-branch.highlight {
+            background: #F0FFF4;
+            border-color: var(--sun-yellow);
+            box-shadow: 0 0 12px rgba(255, 198, 92, 0.5);
+        }
+
+        .branch-header {
+            font-weight: 800;
+            color: var(--mint-dark);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .branch-slots {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        /* Stage 2 Category Columns */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            flex: 1;
+        }
+
+        .category-box {
+            background: #F8FAFC;
+            border: 3px solid var(--lavender-purple);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 240px;
+        }
+
+        .category-box-header {
+            text-align: center;
+            font-weight: 800;
+            color: var(--lavender-purple);
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--lavender-light);
+        }
+
+        /* Stage 3 File Explorer Simulation */
+        .explorer-window {
+            border: 2px solid #CBD5E0;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: white;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .explorer-header {
+            background: #EDF2F7;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .explorer-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+        }
+
+        .tree-node {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .tree-node:hover {
+            background: #EDF2F7;
+        }
+
+        .tree-node.indent-1 { margin-left: 24px; }
+        .tree-node.indent-2 { margin-left: 48px; }
+
+        .toggle-btn {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            background: #CBD5E0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #4A5568;
+            cursor: pointer;
+        }
+
+        /* Stage 4 Path Tracing */
+        .path-display {
+            background: #2D3748;
+            color: #68D391;
+            font-family: monospace;
+            padding: 12px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .path-node-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .path-node-btn {
+            background: white;
+            border: 2px solid var(--lavender-purple);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .path-node-btn:hover {
+            background: var(--lavender-light);
+            transform: scale(1.02);
+        }
+
+        .path-node-btn.active-step {
+            background: var(--sun-yellow);
+            border-color: #D69E2E;
+        }
+
+        /* Action Footer */
+        footer {
+            background: var(--bg-cream);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 2px solid var(--lavender-light);
+        }
+
+        .footer-left, .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Modal / Hint Box */
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(45, 55, 72, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border: 3px solid var(--lavender-purple);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            color: var(--lavender-purple);
+            font-weight: 800;
+        }
+
+        /* Summary & Certificate Screen */
+        .summary-card {
+            background: #FFFFFF;
+            border: 3px solid var(--mint-green);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .badge-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto;
+        }
+
+        /* Simulated Tag Labels */
+        .sim-tag {
+            font-size: 0.75rem;
+            background: var(--sun-yellow);
+            color: #744210;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        /* Responsive Utilities */
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.05rem; }
+            .tree-container { flex-direction: column; }
+            .character-bar { padding: 8px 12px; }
+            .speech-bubble { font-size: 0.88rem; }
+            .btn-primary { padding: 10px 20px; font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <!-- Header Controls -->
+    <header>
+        <div class="brand-title">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <path d="M16 2L4 10V26L16 30L28 26V10L16 2Z" fill="#FFC65C"/>
+                <path d="M16 6L8 11V23L16 26L24 23V11L16 6Z" fill="#53B77A"/>
+            </svg>
+            <div>
+                <h1>CÂY THƯ MỤC DIỆU KÌ</h1>
+                <span>Tin học 3 - Bài 8</span>
+            </div>
+        </div>
+
+        <div class="header-controls">
+            <div class="stat-badge" id="mode-display">Mode: Luyện tập</div>
+            <div class="stat-badge">⭐ <span id="score-display">0</span> / 100</div>
+            <div class="stat-badge">📍 <span id="stage-display">Màn 1/4</span></div>
+            
+            <button class="btn-icon active" id="btn-toggle-bgm" title="Bật/Tắt Nhạc nền">🎵</button>
+            <button class="btn-icon active" id="btn-toggle-sfx" title="Bật/Tắt Hiệu ứng">🔊</button>
+        </div>
+    </header>
+
+    <!-- Character Bíp & Dialogue -->
+    <div class="character-bar">
+        <div class="bip-svg-wrapper" id="bip-character">
+            <!-- Dynamic SVG Bíp Robot render inserted here -->
+        </div>
+        <div class="speech-bubble" id="bip-speech">
+            Chào mừng bạn đến với Cây Thư Mục Diệu Kỳ! Hãy nhấn "Bắt đầu" để bắt đầu khám phá nhé!
+        </div>
+    </div>
+
+    <!-- Main Dynamic Content Screens -->
+    <main>
+        <!-- Welcome / Start Screen -->
+        <div class="screen active" id="screen-welcome">
+            <div class="welcome-box">
+                <div style="width: 120px; height: 120px;">
+                    <svg viewBox="0 0 100 100" width="100%" height="100%">
+                        <circle cx="50" cy="50" r="45" fill="#EAE6F8"/>
+                        <path d="M50 20 C30 20 20 40 20 60 C20 75 35 85 50 85 C65 85 80 75 80 60 C80 40 70 20 50 20 Z" fill="#53B77A"/>
+                        <circle cx="35" cy="45" r="5" fill="#FFC65C"/>
+                        <circle cx="65" cy="45" r="5" fill="#FFC65C"/>
+                        <rect x="42" y="60" width="16" height="8" rx="4" fill="#FFF8E9"/>
+                    </svg>
+                </div>
+                <h2 class="welcome-title">CÂY THƯ MỤC DIỆU KÌ</h2>
+                <p style="color: var(--text-sub); font-size: 1.05rem;">
+                    Cùng Bíp tìm hiểu cách tổ chức thông tin trong máy tính qua sơ đồ hình cây, ổ đĩa, thư mục và các tệp tin sinh động!
+                </p>
+
+                <div>
+                    <p style="font-weight: 700; margin-bottom: 6px;">Chọn chế độ chơi:</p>
+                    <div class="mode-selector">
+                        <button class="mode-btn selected" id="mode-practice" onclick="setGameMode('practice')">🌱 Luyện tập (Có gợi ý)</button>
+                        <button class="mode-btn" id="mode-challenge" onclick="setGameMode('challenge')">⭐ Thử thách</button>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="startGame()">▶ BẮT ĐẦU KHÁM PHÁ</button>
+            </div>
+        </div>
+
+        <!-- Stage 1: Cây Sở Thích -->
+        <div class="screen" id="screen-stage1">
+            <h3 style="color: var(--lavender-purple);">Màn 1: Cây Sở Thích</h3>
+            <p>Chọn một thẻ sở thích bên dưới, sau đó chọn nhánh cây tương ứng trên sơ đồ!</p>
+            
+            <div class="card-pool" id="stage1-pool">
+                <!-- Unassigned item cards rendered here -->
+            </div>
+
+            <div class="tree-container">
+                <div class="tree-branch" onclick="assignStage1Branch('sports')">
+                    <div class="branch-header">⚽ Thể thao</div>
+                    <div class="branch-slots" id="branch-sports"></div>
+                </div>
+                <div class="tree-branch" onclick="assignStage1Branch('entertainment')">
+                    <div class="branch-header">🎵 Giải trí</div>
+                    <div class="branch-slots" id="branch-entertainment"></div>
+                </div>
+                <div class="tree-branch" onclick="assignStage1Branch('study')">
+                    <div class="branch-header">📚 Học tập</div>
+                    <div class="branch-slots" id="branch-study"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 2: Tệp Hay Thư Mục? -->
+        <div class="screen" id="screen-stage2">
+            <h3 style="color: var(--lavender-purple);">Màn 2: Tệp Hay Thư Mục?</h3>
+            <p>Hãy phân loại biểu tượng vào 3 nhóm thích hợp: Ổ ĐĨA, THƯ MỤC hoặc TỆP TIN!</p>
+
+            <div class="card-pool" id="stage2-pool">
+                <!-- Stage 2 cards rendered here -->
+            </div>
+
+            <div class="category-grid">
+                <div class="category-box" onclick="assignStage2Category('drive')">
+                    <div class="category-box-header">💾 Ổ ĐĨA</div>
+                    <p style="font-size: 0.8rem; text-align: center; color: var(--text-sub);">Lưu trữ lớn nhất (C:, D:)</p>
+                    <div class="branch-slots" id="cat-drive"></div>
+                </div>
+                <div class="category-box" onclick="assignStage2Category('folder')">
+                    <div class="category-box-header">📁 THƯ MỤC</div>
+                    <p style="font-size: 0.8rem; text-align: center; color: var(--text-sub);">Chứa thư mục con & tệp</p>
+                    <div class="branch-slots" id="cat-folder"></div>
+                </div>
+                <div class="category-box" onclick="assignStage2Category('file')">
+                    <div class="category-box-header">📄 TỆP TIN</div>
+                    <p style="font-size: 0.8rem; text-align: center; color: var(--text-sub);">Chứa dữ liệu thực tế</p>
+                    <div class="branch-slots" id="cat-file"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 3: Xây Cây Thư Mục -->
+        <div class="screen" id="screen-stage3">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="color: var(--lavender-purple);">Màn 3: Xây Cây Thư Mục</h3>
+                <span class="sim-tag">Giao diện mô phỏng phục vụ học tập</span>
+            </div>
+            <p>Sắp xếp các thư mục và tệp tin theo đúng cấu trúc cây thư mục dưới ổ đĩa D: !</p>
+
+            <div class="explorer-window">
+                <div class="explorer-header">
+                    <span>🗂 File Explorer Simulator - [D:\ Dữ liệu]</span>
+                    <span>Thư mục cây</span>
+                </div>
+                <div class="explorer-body" id="stage3-explorer-tree">
+                    <!-- Dynamic Tree View Rendered Here -->
+                </div>
+            </div>
+
+            <div style="margin-top: 10px;">
+                <p style="font-weight: 700; margin-bottom: 6px;">Các mục cần gắn vào cây:</p>
+                <div class="card-pool" id="stage3-inventory">
+                    <!-- Unplaced folder/files pool -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage 4: Đường Đi Đến Tệp -->
+        <div class="screen" id="screen-stage4">
+            <h3 style="color: var(--lavender-purple);">Màn 4: Đường Đi Đến Tệp</h3>
+            <p id="stage4-instruction">Thử thách: Tìm đường dẫn để mở tệp tin đích!</p>
+
+            <div class="path-display">
+                <span>📁 Path: </span>
+                <span id="current-path-text">Select drive...</span>
+            </div>
+
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                <p style="font-weight: 700;">Nhấp chọn các nút theo thứ tự từ Ổ đĩa ➔ Thư mục cha ➔ Thư mục con ➔ Tệp:</p>
+                <div class="path-node-grid" id="path-nodes-container">
+                    <!-- Clickable path nodes rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage Summary & Certificate Screen -->
+        <div class="screen" id="screen-summary">
+            <div class="summary-card">
+                <div class="badge-icon">
+                    <svg viewBox="0 0 100 100" width="100%" height="100%">
+                        <circle cx="50" cy="50" r="42" fill="#FFC65C"/>
+                        <polygon points="50,15 61,38 85,38 66,54 73,78 50,62 27,78 34,54 15,38 39,38" fill="#EF7469"/>
+                    </svg>
+                </div>
+                <h2 style="color: var(--lavender-purple); font-size: 1.8rem;">HOÀN THÀNH XUẤT SẮC!</h2>
+                <p style="font-size: 1.1rem; font-weight: 700;" id="final-score-text">Bạn đạt 100 / 100 điểm!</p>
+                
+                <div id="summary-reviews" style="text-align: left; background: var(--bg-cream); padding: 14px; border-radius: var(--radius-md); font-size: 0.95rem; display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Per stage pedagogical notes -->
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 10px;">
+                    <button class="btn-primary" onclick="downloadCertificate()">📜 TẢI GIẤY CHỨNG NHẬN</button>
+                    <button class="btn-secondary" onclick="resetEntireGame()">🔄 CHƠI LẠI TỪ ĐẦU</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for Hints & Dialogs -->
+    <div class="modal-overlay" id="hint-modal">
+        <div class="modal-card">
+            <div class="modal-title">💡 GỢI Ý DÀNH CHO BẠN</div>
+            <p id="hint-text" style="color: var(--text-sub); font-size: 1.05rem; line-height: 1.5;"></p>
+            <button class="btn-primary" style="margin: 0 auto;" onclick="closeHintModal()">Đã hiểu rồi!</button>
+        </div>
+    </div>
+
+    <!-- Footer Toolbar -->
+    <footer>
+        <div class="footer-left">
+            <button class="btn-secondary" onclick="goHome()">🏠 Trang chủ</button>
+            <button class="btn-secondary" onclick="resetCurrentStage()">🔄 Làm lại màn</button>
+            <button class="btn-secondary" onclick="showHint()">💡 Gợi ý</button>
+        </div>
+        <div class="footer-right">
+            <button class="btn-primary" id="btn-next-stage" onclick="nextStage()" disabled>Tiếp tục ▶</button>
+        </div>
+    </footer>
+</div>
+
+<script>
+/* ==========================================================================
+   GAME CONFIGURATION OBJECT (TEACHER EDITABLE)
+   ========================================================================== */
+const GAME_CONFIG = {
+    title: "CÂY THƯ MỤC DIỆU KÌ",
+    subject: "Tin học 3 - Bài 8",
+    totalPoints: 100,
+    pointsPerStage: 25,
+    
+    // Stage 1 Config
+    stage1: {
+        title: "Cây Sở Thích",
+        items: [
+            { id: "s1", name: "Bóng đá", target: "sports", icon: "⚽" },
+            { id: "s2", name: "Cầu lông", target: "sports", icon: "🏸" },
+            { id: "e1", name: "Xem phim", target: "entertainment", icon: "🎬" },
+            { id: "e2", name: "Nghe nhạc", target: "entertainment", icon: "🎧" },
+            { id: "st1", name: "Toán học", target: "study", icon: "📐" },
+            { id: "st2", name: "Tin học", target: "study", icon: "💻" }
+        ],
+        hints: [
+            "Bóng đá và Cầu lông là các môn thể thao vận động.",
+            "Toán học và Tin học là các môn học chính ở trường!"
+        ]
+    },
+
+    // Stage 2 Config
+    stage2: {
+        title: "Tệp Hay Thư Mục?",
+        items: [
+            { id: "i1", name: "Ổ đĩa (C:)", category: "drive", type: "drive_c" },
+            { id: "i2", name: "Ổ đĩa (D:)", category: "drive", type: "drive_d" },
+            { id: "i3", name: "Thư mục 'Bài hát'", category: "folder", type: "folder" },
+            { id: "i4", name: "Thư mục 'Ảnh đẹp'", category: "folder", type: "folder" },
+            { id: "i5", name: "BaiTap.docx", category: "file", type: "docx" },
+            { id: "i6", name: "VuiVui.mp3", category: "file", type: "mp3" },
+            { id: "i7", name: "TranhVe.png", category: "file", type: "png" }
+        ],
+        hints: [
+            "Ổ đĩa có kí hiệu tên kèm dấu hai chấm như (C:) hoặc (D:).",
+            "Thư mục thường có màu vàng, Tệp tin có phần mở rộng như .docx, .mp3, .png."
+        ]
+    },
+
+    // Stage 3 Config
+    stage3: {
+        title: "Xây Cây Thư Mục",
+        structure: [
+            { id: "f_truyen_tranh", name: "Truyện tranh", type: "folder", targetParent: "root_d" },
+            { id: "f_truyen_co_tich", name: "Truyện cổ tích", type: "folder", targetParent: "root_d" },
+            { id: "f_hinh_anh", name: "Hình ảnh", type: "folder", targetParent: "root_d" },
+            { id: "file_doraemon", name: "Doraemon.docx", type: "docx", targetParent: "f_truyen_tranh" },
+            { id: "file_tichsanh", name: "TichSanh.docx", type: "docx", targetParent: "f_truyen_co_tich" },
+            { id: "file_bieucam", name: "BieuCam.png", type: "png", targetParent: "f_hinh_anh" }
+        ],
+        hints: [
+            "Ổ đĩa D: là gốc lớn nhất. Các thư mục Truyện tranh, Truyện cổ tích, Hình ảnh nằm trực thuộc ổ D:.",
+            "Tệp Doraemon.docx xếp vào thư mục Truyện tranh, tệp BieuCam.png xếp vào Hình ảnh."
+        ]
+    },
+
+    // Stage 4 Config
+    stage4: {
+        title: "Đường Đi Đến Tệp",
+        challenges: [
+            {
+                id: "c1",
+                targetName: "Bài8.pdf",
+                targetPath: "D:\\Sách_3\\TinHoc\\Bài8.pdf",
+                sequence: ["drive_d", "f_sach3", "f_tinhoc", "file_bai8"],
+                nodes: [
+                    { id: "drive_d", name: "Ổ đĩa (D:)", type: "drive" },
+                    { id: "f_sach3", name: "Sách_3", type: "folder" },
+                    { id: "f_tinhoc", name: "TinHoc", type: "folder" },
+                    { id: "file_bai8", name: "Bài8.pdf", type: "pdf" },
+                    { id: "drive_c", name: "Ổ đĩa (C:)", type: "drive" },
+                    { id: "f_nhac", name: "Âm Nhạc", type: "folder" }
+                ]
+            },
+            {
+                id: "c2",
+                targetName: "Biển.png",
+                targetPath: "C:\\AnhDap\\PhongCanh\\Biển.png",
+                sequence: ["drive_c2", "f_anhdap", "f_phongcanh", "file_bien"],
+                nodes: [
+                    { id: "drive_c2", name: "Ổ đĩa (C:)", type: "drive" },
+                    { id: "f_anhdap", name: "AnhDap", type: "folder" },
+                    { id: "f_phongcanh", name: "PhongCanh", type: "folder" },
+                    { id: "file_bien", name: "Biển.png", type: "png" },
+                    { id: "f_trochoi", name: "TroChoi", type: "folder" }
+                ]
+            },
+            {
+                id: "c3",
+                targetName: "EmYeuTruong.mp3",
+                targetPath: "D:\\AmNhac\\ThieuNhi\\EmYeuTruong.mp3",
+                sequence: ["drive_d3", "f_amnhac3", "f_thieunhi", "file_emyeutruong"],
+                nodes: [
+                    { id: "drive_d3", name: "Ổ đĩa (D:)", type: "drive" },
+                    { id: "f_amnhac3", name: "AmNhac", type: "folder" },
+                    { id: "f_thieunhi", name: "ThieuNhi", type: "folder" },
+                    { id: "file_emyeutruong", name: "EmYeuTruong.mp3", type: "mp3" },
+                    { id: "f_tailieu", name: "TaiLieu", type: "folder" }
+                ]
+            }
+        ],
+        hints: [
+            "Hãy nhìn kĩ tên đường dẫn hiển thị phía trên.",
+            "Chọn thứ tự đúng: Ổ đĩa ➔ Thư mục cha ➔ Thư mục con ➔ Tệp tin cuối cùng!"
+        ]
+    }
+};
+
+/* ==========================================================================
+   WEB AUDIO API SOUND ENGINE (PURE SYNTHESIZER)
+   ========================================================================== */
+class SoundEngine {
+    constructor() {
+        this.ctx = null;
+        this.bgmEnabled = true;
+        this.sfxEnabled = true;
+        this.bgmTimer = null;
+        this.step = 0;
+    }
+
+    init() {
+        if (!this.ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+    }
+
+    startBGM() {
+        this.init();
+        if (!this.ctx || this.bgmTimer) return;
+
+        // Cheerful major pentatonic pitch sequence (C4, D4, E4, G4, A4, C5)
+        const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 440.00, 392.00];
+
+        this.bgmTimer = setInterval(() => {
+            if (!this.bgmEnabled || !this.ctx) return;
+            try {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                
+                const freq = notes[this.step % notes.length];
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+
+                gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.38);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.4);
+
+                this.step++;
+            } catch(e) {}
+        }, 450);
+    }
+
+    stopBGM() {
+        if (this.bgmTimer) {
+            clearInterval(this.bgmTimer);
+            this.bgmTimer = null;
+        }
+    }
+
+    playSFX(type) {
+        this.init();
+        if (!this.sfxEnabled || !this.ctx) return;
+        try {
+            const now = this.ctx.currentTime;
+
+            if (type === 'click') {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(500, now);
+                osc.frequency.exponentialRampToValueAtTime(200, now + 0.06);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.06);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.06);
+            } else if (type === 'correct') {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.08); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.16); // G5
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'wrong') {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.linearRampToValueAtTime(130, now + 0.2);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.22);
+            } else if (type === 'win') {
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                    gain.gain.setValueAtTime(0.15, now + idx * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.35);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + idx * 0.1);
+                    osc.stop(now + idx * 0.1 + 0.35);
+                });
+            }
+        } catch(e) {}
+    }
+}
+
+const audio = new SoundEngine();
+
+/* ==========================================================================
+   GAME STATE & CORE VARIABLES
+   ========================================================================== */
+let gameState = {
+    mode: 'practice', // 'practice' or 'challenge'
+    score: 0,
+    currentStage: 1,
+    stageCompleted: [false, false, false, false],
+    selectedCard: null,
+    
+    // Stage 1 State
+    stage1Placed: {},
+
+    // Stage 2 State
+    stage2Placed: {},
+
+    // Stage 3 State
+    stage3Tree: {}, // parentId -> array of child items
+
+    // Stage 4 State
+    stage4Idx: 0,
+    stage4Sequence: []
+};
+
+/* ==========================================================================
+   SVG ICON RENDERERS
+   ========================================================================== */
+function getBipSvg(expression = 'happy') {
+    let eyeContent = `<circle cx="35" cy="35" r="4" fill="#2D3748"/><circle cx="65" cy="35" r="4" fill="#2D3748"/>`;
+    let mouthContent = `<path d="M40 52 Q50 62 60 52" stroke="#2D3748" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+
+    if (expression === 'thinking') {
+        eyeContent = `<ellipse cx="35" cy="35" rx="4" ry="2" fill="#2D3748"/><circle cx="65" cy="35" r="4" fill="#2D3748"/>`;
+        mouthContent = `<line x1="42" y1="55" x2="58" y2="52" stroke="#2D3748" stroke-width="3" stroke-linecap="round"/>`;
+    } else if (expression === 'excited') {
+        eyeContent = `<path d="M30 36 L35 30 L40 36" stroke="#2D3748" stroke-width="3" fill="none"/><path d="M60 36 L65 30 L70 36" stroke="#2D3748" stroke-width="3" fill="none"/>`;
+        mouthContent = `<path d="M38 50 Q50 66 62 50 Z" fill="#EF7469"/>`;
+    }
+
+    return `
+    <svg viewBox="0 0 100 100" width="100%" height="100%">
+        <!-- Antenna -->
+        <line x1="50" y1="18" x2="50" y2="8" stroke="#7766B7" stroke-width="4"/>
+        <circle cx="50" cy="6" r="5" fill="#FFC65C"/>
+        <!-- Head -->
+        <rect x="15" y="18" width="70" height="54" rx="16" fill="#53B77A" stroke="#3a8a58" stroke-width="3"/>
+        <rect x="22" y="24" width="56" height="42" rx="10" fill="#FFF8E9"/>
+        <!-- Eyes & Mouth -->
+        ${eyeContent}
+        ${mouthContent}
+        <!-- Cheeks -->
+        <circle cx="28" cy="45" r="4" fill="#EF7469" opacity="0.6"/>
+        <circle cx="72" cy="45" r="4" fill="#EF7469" opacity="0.6"/>
+        <!-- Body Base -->
+        <path d="M30 72 L70 72 L75 90 L25 90 Z" fill="#7766B7"/>
+    </svg>`;
+}
+
+function getIconSvg(type) {
+    if (type.startsWith('drive')) {
+        return `<svg width="24" height="24" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3" fill="#A0AEC0"/><circle cx="6" cy="12" r="2" fill="#48BB78"/><line x1="12" y1="12" x2="18" y2="12" stroke="#2D3748" stroke-width="2"/></svg>`;
+    } else if (type === 'folder') {
+        return `<svg width="24" height="24" viewBox="0 0 24 24"><path d="M2 6 C2 4.9 2.9 4 4 4 L9 4 L11 6 L20 6 C21.1 6 22 6.9 22 8 L22 18 C22 19.1 21.1 20 20 20 L4 20 C2.9 20 2 19.1 2 18 Z" fill="#FFC65C"/></svg>`;
+    } else if (type === 'docx') {
+        return `<svg width="24" height="24" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" fill="#4299E1"/><text x="7" y="16" fill="white" font-size="10" font-weight="bold">W</text></svg>`;
+    } else if (type === 'png') {
+        return `<svg width="24" height="24" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" fill="#48BB78"/><circle cx="10" cy="8" r="2" fill="#FFC65C"/><path d="M6 18 L10 12 L14 16 L18 10 L18 18 Z" fill="#F7FAFC"/></svg>`;
+    } else if (type === 'mp3') {
+        return `<svg width="24" height="24" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" fill="#9F7AEA"/><circle cx="10" cy="15" r="2" fill="white"/><path d="M12 15 L12 7 L17 9 L17 11 L12 10" stroke="white" stroke-width="1.5" fill="none"/></svg>`;
+    } else if (type === 'pdf') {
+        return `<svg width="24" height="24" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" fill="#F56565"/><text x="6" y="15" fill="white" font-size="8" font-weight="bold">PDF</text></svg>`;
+    }
+    return `📄`;
+}
+
+/* ==========================================================================
+   UI UPDATERS & NAVIGATION
+   ========================================================================== */
+function setBip(expression, speechText) {
+    document.getElementById('bip-character').innerHTML = getBipSvg(expression);
+    document.getElementById('bip-speech').innerText = speechText;
+}
+
+function updateHeaderStats() {
+    document.getElementById('score-display').innerText = gameState.score;
+    document.getElementById('stage-display').innerText = `Màn ${gameState.currentStage}/4`;
+    document.getElementById('btn-next-stage').disabled = !gameState.stageCompleted[gameState.currentStage - 1];
+}
+
+function setGameMode(mode) {
+    gameState.mode = mode;
+    document.getElementById('mode-practice').classList.toggle('selected', mode === 'practice');
+    document.getElementById('mode-challenge').classList.toggle('selected', mode === 'challenge');
+    document.getElementById('mode-display').innerText = `Mode: ${mode === 'practice' ? 'Luyện tập' : 'Thử thách'}`;
+}
+
+function switchScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+}
+
+function startGame() {
+    audio.playSFX('click');
+    audio.startBGM();
+    loadStage(1);
+}
+
+function goHome() {
+    audio.playSFX('click');
+    switchScreen('screen-welcome');
+    setBip('happy', 'Chào mừng bạn quay lại màn hình chính!');
+}
+
+function loadStage(stageNum) {
+    gameState.currentStage = stageNum;
+    gameState.selectedCard = null;
+    updateHeaderStats();
+
+    switchScreen(`screen-stage${stageNum}`);
+
+    if (stageNum === 1) initStage1();
+    else if (stageNum === 2) initStage2();
+    else if (stageNum === 3) initStage3();
+    else if (stageNum === 4) initStage4();
+}
+
+function nextStage() {
+    audio.playSFX('click');
+    if (gameState.currentStage < 4) {
+        loadStage(gameState.currentStage + 1);
+    } else {
+        showSummary();
+    }
+}
+
+function resetCurrentStage() {
+    audio.playSFX('click');
+    loadStage(gameState.currentStage);
+}
+
+/* ==========================================================================
+   STAGE 1 LOGIC: CÂY SỞ THÍCH
+   ========================================================================== */
+function initStage1() {
+    setBip('happy', 'Màn 1: Hãy chọn thẻ sở thích rồi chọn nhánh cây phù hợp!');
+    gameState.stage1Placed = {};
+    renderStage1();
+}
+
+function renderStage1() {
+    const pool = document.getElementById('stage1-pool');
+    pool.innerHTML = '';
+
+    GAME_CONFIG.stage1.items.forEach(item => {
+        if (!gameState.stage1Placed[item.id]) {
+            const card = document.createElement('div');
+            card.className = `item-card ${gameState.selectedCard === item.id ? 'selected' : ''}`;
+            card.innerHTML = `<span>${item.icon}</span> <span>${item.name}</span>`;
+            card.onclick = () => {
+                audio.playSFX('click');
+                gameState.selectedCard = item.id;
+                renderStage1();
+            };
+            pool.appendChild(card);
+        }
+    });
+
+    ['sports', 'entertainment', 'study'].forEach(branchKey => {
+        const branchContainer = document.getElementById(`branch-${branchKey}`);
+        branchContainer.innerHTML = '';
+        Object.entries(gameState.stage1Placed).forEach(([itemId, targetBranch]) => {
+            if (targetBranch === branchKey) {
+                const itemObj = GAME_CONFIG.stage1.items.find(i => i.id === itemId);
+                const slotted = document.createElement('div');
+                slotted.className = 'item-card';
+                slotted.style.background = '#F0FFF4';
+                slotted.style.borderColor = '#48BB78';
+                slotted.innerHTML = `<span>🍃</span> <span>${itemObj.name}</span>`;
+                branchContainer.appendChild(slotted);
+            }
+        });
+    });
+
+    checkStage1Completion();
+}
+
+function assignStage1Branch(branchKey) {
+    if (!gameState.selectedCard) {
+        setBip('thinking', 'Bạn hãy nhấp chọn một thẻ sở thích ở trên trước nhé!');
+        return;
+    }
+
+    const itemObj = GAME_CONFIG.stage1.items.find(i => i.id === gameState.selectedCard);
+    if (itemObj.target === branchKey) {
+        audio.playSFX('correct');
+        gameState.stage1Placed[itemObj.id] = branchKey;
+        gameState.selectedCard = null;
+        setBip('excited', `Chính xác! "${itemObj.name}" thuộc nhánh sở thích này!`);
+        renderStage1();
+    } else {
+        audio.playSFX('wrong');
+        setBip('thinking', `Chưa chính xác rồi. "${itemObj.name}" không thuộc nhánh này đâu!`);
+    }
+}
+
+function checkStage1Completion() {
+    const placedCount = Object.keys(gameState.stage1Placed).length;
+    if (placedCount === GAME_CONFIG.stage1.items.length && !gameState.stageCompleted[0]) {
+        gameState.stageCompleted[0] = true;
+        gameState.score += GAME_CONFIG.pointsPerStage;
+        audio.playSFX('win');
+        setBip('excited', 'Tuyệt vời! Bạn đã hoàn thành Màn 1 và cộng 25 điểm!');
+        updateHeaderStats();
+    }
+}
+
+/* ==========================================================================
+   STAGE 2 LOGIC: TỆP HAY THƯ MỤC?
+   ========================================================================== */
+function initStage2() {
+    setBip('happy', 'Màn 2: Nhấp chọn đối tượng và thả vào đúng nhóm: Ổ đĩa, Thư mục hay Tệp tin!');
+    gameState.stage2Placed = {};
+    renderStage2();
+}
+
+function renderStage2() {
+    const pool = document.getElementById('stage2-pool');
+    pool.innerHTML = '';
+
+    GAME_CONFIG.stage2.items.forEach(item => {
+        if (!gameState.stage2Placed[item.id]) {
+            const card = document.createElement('div');
+            card.className = `item-card ${gameState.selectedCard === item.id ? 'selected' : ''}`;
+            card.innerHTML = `${getIconSvg(item.type)} <span>${item.name}</span>`;
+            card.onclick = () => {
+                audio.playSFX('click');
+                gameState.selectedCard = item.id;
+                renderStage2();
+            };
+            pool.appendChild(card);
+        }
+    });
+
+    ['drive', 'folder', 'file'].forEach(catKey => {
+        const catContainer = document.getElementById(`cat-${catKey}`);
+        catContainer.innerHTML = '';
+        Object.entries(gameState.stage2Placed).forEach(([itemId, targetCat]) => {
+            if (targetCat === catKey) {
+                const itemObj = GAME_CONFIG.stage2.items.find(i => i.id === itemId);
+                const slotted = document.createElement('div');
+                slotted.className = 'item-card';
+                slotted.style.width = '100%';
+                slotted.innerHTML = `${getIconSvg(itemObj.type)} <span>${itemObj.name}</span>`;
+                catContainer.appendChild(slotted);
+            }
+        });
+    });
+
+    checkStage2Completion();
+}
+
+function assignStage2Category(catKey) {
+    if (!gameState.selectedCard) {
+        setBip('thinking', 'Bạn hãy chọn một biểu tượng ở khung trên trước nhé!');
+        return;
+    }
+
+    const itemObj = GAME_CONFIG.stage2.items.find(i => i.id === gameState.selectedCard);
+    if (itemObj.category === catKey) {
+        audio.playSFX('correct');
+        gameState.stage2Placed[itemObj.id] = catKey;
+        gameState.selectedCard = null;
+
+        let explainText = "Đúng rồi!";
+        if (catKey === 'drive') explainText = `Chính xác! ${itemObj.name} là Ổ đĩa - nơi lưu trữ lớn nhất!`;
+        else if (catKey === 'folder') explainText = `Đúng rồi! ${itemObj.name} là Thư mục, có thể chứa thư mục con và tệp!`;
+        else explainText = `Đúng rồi! ${itemObj.name} là Tệp tin chứa dữ liệu thực tế!`;
+
+        setBip('excited', explainText);
+        renderStage2();
+    } else {
+        audio.playSFX('wrong');
+        setBip('thinking', `Chưa đúng rồi. Hãy quan sát kĩ biểu tượng của ${itemObj.name} nhé!`);
+    }
+}
+
+function checkStage2Completion() {
+    const placedCount = Object.keys(gameState.stage2Placed).length;
+    if (placedCount === GAME_CONFIG.stage2.items.length && !gameState.stageCompleted[1]) {
+        gameState.stageCompleted[1] = true;
+        gameState.score += GAME_CONFIG.pointsPerStage;
+        audio.playSFX('win');
+        setBip('excited', 'Xuất sắc! Bạn đã phân loại đúng tất cả Ổ đĩa, Thư mục và Tệp tin!');
+        updateHeaderStats();
+    }
+}
+
+/* ==========================================================================
+   STAGE 3 LOGIC: XÂY CÂY THƯ MỤC
+   ========================================================================== */
+function initStage3() {
+    setBip('happy', 'Màn 3: Nhấp vào một mục bên dưới, sau đó chọn thư mục cha để gắn vào cây!');
+    gameState.stage3Tree = { 'root_d': [] };
+    GAME_CONFIG.stage3.structure.forEach(s => {
+        if (s.type === 'folder') gameState.stage3Tree[s.id] = [];
+    });
+    renderStage3();
+}
+
+function renderStage3() {
+    const inventory = document.getElementById('stage3-inventory');
+    inventory.innerHTML = '';
+
+    const placedIds = new Set();
+    Object.values(gameState.stage3Tree).forEach(arr => arr.forEach(id => placedIds.add(id)));
+
+    GAME_CONFIG.stage3.structure.forEach(item => {
+        if (!placedIds.has(item.id)) {
+            const card = document.createElement('div');
+            card.className = `item-card ${gameState.selectedCard === item.id ? 'selected' : ''}`;
+            card.innerHTML = `${getIconSvg(item.type)} <span>${item.name}</span>`;
+            card.onclick = () => {
+                audio.playSFX('click');
+                gameState.selectedCard = item.id;
+                renderStage3();
+            };
+            inventory.appendChild(card);
+        }
+    });
+
+    const explorerTree = document.getElementById('stage3-explorer-tree');
+    explorerTree.innerHTML = `
+        <div class="tree-node" onclick="attachStage3Item('root_d')">
+            <span>💾</span> <span style="font-weight: 800; color: #2B6CB0;">Ổ đĩa (D:) - Dữ liệu</span>
+            <span style="font-size: 0.75rem; color: #718096; margin-left: auto;">(Bấm vào để gắn mục con)</span>
+        </div>
+    `;
+
+    // Render Subfolders & Files under root_d
+    (gameState.stage3Tree['root_d'] || []).forEach(childId => {
+        const folderObj = GAME_CONFIG.stage3.structure.find(s => s.id === childId);
+        const folderNode = document.createElement('div');
+        folderNode.className = 'tree-node indent-1';
+        folderNode.innerHTML = `
+            <span class="toggle-btn">-</span>
+            ${getIconSvg(folderObj.type)}
+            <span>${folderObj.name}</span>
+        `;
+        folderNode.onclick = (e) => {
+            e.stopPropagation();
+            attachStage3Item(folderObj.id);
+        };
+        explorerTree.appendChild(folderNode);
+
+        // Render Files inside this Subfolder
+        (gameState.stage3Tree[folderObj.id] || []).forEach(fileId => {
+            const fileObj = GAME_CONFIG.stage3.structure.find(s => s.id === fileId);
+            const fileNode = document.createElement('div');
+            fileNode.className = 'tree-node indent-2';
+            fileNode.innerHTML = `${getIconSvg(fileObj.type)} <span>${fileObj.name}</span>`;
+            explorerTree.appendChild(fileNode);
+        });
+    });
+
+    checkStage3Completion();
+}
+
+function attachStage3Item(parentId) {
+    if (!gameState.selectedCard) {
+        setBip('thinking', 'Bạn hãy chọn một mục từ danh sách ở dưới trước nhé!');
+        return;
+    }
+
+    const itemObj = GAME_CONFIG.stage3.structure.find(s => s.id === gameState.selectedCard);
+    if (itemObj.targetParent === parentId) {
+        audio.playSFX('correct');
+        gameState.stage3Tree[parentId].push(itemObj.id);
+        gameState.selectedCard = null;
+        setBip('excited', `Đúng rồi! "${itemObj.name}" đã được đặt đúng vị trí phân cấp!`);
+        renderStage3();
+    } else {
+        audio.playSFX('wrong');
+        setBip('thinking', `Chưa chính xác. "${itemObj.name}" không thuộc cấp này đâu!`);
+    }
+}
+
+function checkStage3Completion() {
+    let totalPlaced = 0;
+    Object.values(gameState.stage3Tree).forEach(arr => totalPlaced += arr.length);
+
+    if (totalPlaced === GAME_CONFIG.stage3.structure.length && !gameState.stageCompleted[2]) {
+        gameState.stageCompleted[2] = true;
+        gameState.score += GAME_CONFIG.pointsPerStage;
+        audio.playSFX('win');
+        setBip('excited', 'Xuất sắc! Bạn đã dựng thành công Cây Thư Mục chuẩn xác!');
+        updateHeaderStats();
+    }
+}
+
+/* ==========================================================================
+   STAGE 4 LOGIC: ĐƯỜNG ĐI ĐẾN TỆP
+   ========================================================================== */
+function initStage4() {
+    gameState.stage4Idx = 0;
+    gameState.stage4Sequence = [];
+    loadStage4Challenge();
+}
+
+function loadStage4Challenge() {
+    const ch = GAME_CONFIG.stage4.challenges[gameState.stage4Idx];
+    setBip('happy', `Thử thách ${gameState.stage4Idx + 1}/3: Hãy mở tệp "${ch.targetName}"!`);
+    document.getElementById('stage4-instruction').innerText = `Mục tiêu: Tìm tệp có đường dẫn ${ch.targetPath}`;
+    gameState.stage4Sequence = [];
+    renderStage4();
+}
+
+function renderStage4() {
+    const ch = GAME_CONFIG.stage4.challenges[gameState.stage4Idx];
+    const pathText = document.getElementById('current-path-text');
+
+    if (gameState.stage4Sequence.length === 0) {
+        pathText.innerText = "Chưa chọn...";
+    } else {
+        const names = gameState.stage4Sequence.map(id => {
+            const node = ch.nodes.find(n => n.id === id);
+            return node ? node.name : id;
+        });
+        pathText.innerText = names.join(" \\ ");
+    }
+
+    const container = document.getElementById('path-nodes-container');
+    container.innerHTML = '';
+
+    ch.nodes.forEach(node => {
+        const btn = document.createElement('button');
+        btn.className = 'path-node-btn';
+        btn.innerHTML = `${getIconSvg(node.type)} <span>${node.name}</span>`;
+        btn.onclick = () => handlePathNodeClick(node.id);
+        container.appendChild(btn);
+    });
+}
+
+function handlePathNodeClick(nodeId) {
+    const ch = GAME_CONFIG.stage4.challenges[gameState.stage4Idx];
+    const expectedStep = ch.sequence[gameState.stage4Sequence.length];
+
+    if (nodeId === expectedStep) {
+        audio.playSFX('correct');
+        gameState.stage4Sequence.push(nodeId);
+        setBip('excited', 'Đúng rồi! Tiếp tục bước tiếp theo nào!');
+        renderStage4();
+
+        if (gameState.stage4Sequence.length === ch.sequence.length) {
+            audio.playSFX('win');
+            if (gameState.stage4Idx < GAME_CONFIG.stage4.challenges.length - 1) {
+                gameState.stage4Idx++;
+                setTimeout(loadStage4Challenge, 1200);
+            } else {
+                if (!gameState.stageCompleted[3]) {
+                    gameState.stageCompleted[3] = true;
+                    gameState.score += GAME_CONFIG.pointsPerStage;
+                    updateHeaderStats();
+                    setBip('excited', 'Chúc mừng! Bạn đã hoàn thành xuất sắc tất cả đường dẫn!');
+                }
+            }
+        }
+    } else {
+        audio.playSFX('wrong');
+        setBip('thinking', 'Sai đường rồi! Bạn hãy kiểm tra lại tên đường dẫn nhé!');
+    }
+}
+
+/* ==========================================================================
+   SUMMARY & CERTIFICATE GENERATOR
+   ========================================================================== */
+function showSummary() {
+    switchScreen('screen-summary');
+    document.getElementById('final-score-text').innerText = `Bạn đạt ${gameState.score} / 100 điểm!`;
+
+    const reviews = document.getElementById('summary-reviews');
+    reviews.innerHTML = `
+        <p><b>Nhận xét kết quả:</b></p>
+        <p>✅ Màn 1 (Cây Sở Thích): Biểu diễn phân cấp tốt.</p>
+        <p>✅ Màn 2 (Tệp hay Thư mục): Phân biệt chính xác Ổ đĩa, Thư mục và Tệp tin.</p>
+        <p>✅ Màn 3 (Xây Cây Thư Mục): Nắm vững cấu trúc thư mục cha - con.</p>
+        <p>✅ Màn 4 (Đường đi đến tệp): Xác định đúng đường dẫn truy cập tệp tin.</p>
+    `;
+    setBip('excited', '🎉 Chúc mừng bạn đã hoàn thành khóa học Cây Thư Mục Diệu Kỳ!');
+}
+
+function downloadCertificate() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 800;
+    canvas.height = 550;
+    const ctx = canvas.getContext('2d');
+
+    // Background Gradient
+    const grad = ctx.createLinearGradient(0, 0, 800, 550);
+    grad.addColorStop(0, '#FFF8E9');
+    grad.addColorStop(1, '#EAE6F8');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 800, 550);
+
+    // Border
+    ctx.strokeStyle = '#7766B7';
+    ctx.lineWidth = 10;
+    ctx.strokeRect(20, 20, 760, 510);
+
+    ctx.strokeStyle = '#53B77A';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(30, 30, 740, 490);
+
+    // Title
+    ctx.fillStyle = '#7766B7';
+    ctx.font = 'bold 32px Segoe UI, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('GIẤY CHỨNG NHẬN HOÀN THÀNH', 400, 100);
+
+    ctx.fillStyle = '#2D3748';
+    ctx.font = 'bold 22px Segoe UI, sans-serif';
+    ctx.fillText('CÂY THƯ MỤC DIỆU KÌ - TIN HỌC 3', 400, 150);
+
+    ctx.font = '18px Segoe UI, sans-serif';
+    ctx.fillText(`Điểm số đạt được: ${gameState.score} / 100 điểm`, 400, 220);
+
+    let badgeTitle = "Hiệp sĩ Thư mục Xuất sắc 🏆";
+    if (gameState.score < 100) badgeTitle = "Kiến trúc sư Dữ liệu Tài năng 🌟";
+    ctx.fillStyle = '#EF7469';
+    ctx.font = 'bold 24px Segoe UI, sans-serif';
+    ctx.fillText(`Danh hiệu: ${badgeTitle}`, 400, 280);
+
+    ctx.fillStyle = '#4A5568';
+    ctx.font = 'italic 16px Segoe UI, sans-serif';
+    ctx.fillText('Đã hoàn thành các bài tập tổ chức thông tin trong máy tính', 400, 340);
+    ctx.fillText(`Ngày cấp: ${new Date().toLocaleDateString('vi-VN')}`, 400, 380);
+
+    // Download trigger
+    const link = document.createElement('a');
+    link.download = 'GiayChungNhan_CayThuMuc.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+}
+
+function resetEntireGame() {
+    gameState.score = 0;
+    gameState.stageCompleted = [false, false, false, false];
+    updateHeaderStats();
+    goHome();
+}
+
+/* ==========================================================================
+   HINT MODAL SYSTEM
+   ========================================================================== */
+function showHint() {
+    audio.playSFX('click');
+    const stageKey = `stage${gameState.currentStage}`;
+    const hints = GAME_CONFIG[stageKey].hints;
+    const hintText = hints ? hints.join("\n\n") : "Hãy đọc kĩ hướng dẫn của Bíp ở phía trên nhé!";
+
+    document.getElementById('hint-text').innerText = hintText;
+    document.getElementById('hint-modal').classList.add('active');
+}
+
+function closeHintModal() {
+    audio.playSFX('click');
+    document.getElementById('hint-modal').classList.remove('active');
+}
+
+/* ==========================================================================
+   AUDIO TOGGLE CONTROL EVENT LISTENERS
+   ========================================================================== */
+document.getElementById('btn-toggle-bgm').onclick = function() {
+    audio.bgmEnabled = !audio.bgmEnabled;
+    this.classList.toggle('active', audio.bgmEnabled);
+    if (!audio.bgmEnabled) audio.stopBGM();
+    else audio.startBGM();
+};
+
+document.getElementById('btn-toggle-sfx').onclick = function() {
+    audio.sfxEnabled = !audio.sfxEnabled;
+    this.classList.toggle('active', audio.sfxEnabled);
+};
+
+// Initialize initial default state
+window.onload = function() {
+    setBip('happy', 'Chào mừng bạn đến với Cây Thư Mục Diệu Kỳ! Hãy nhấn "Bắt đầu" để bắt đầu khám phá nhé!');
+};
+</script>
+</body>
+</html>

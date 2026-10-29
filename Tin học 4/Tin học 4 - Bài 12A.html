@@ -1,0 +1,3165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RẠP PHIM TẾT BA MIỀN - Tin học 4 Bài 12A</title>
+  <style>
+    /* ==========================================================================
+       TIÊU CHUẨN MỸ THUẬT V5 - BẢNG MÀU PASTEL & PHÒNG THÍ NGHIỆM SÁNG TẠO
+       ========================================================================== */
+    :root {
+      --bg-cream: #FFF9ED;
+      --bg-card: #FFFFFF;
+      --primary-orange: #FF9850;
+      --primary-orange-dark: #E07A30;
+      --secondary-mint: #40B8B3;
+      --secondary-mint-dark: #2B928E;
+      --accent-purple: #8069C6;
+      --accent-purple-dark: #634CA8;
+      --warm-yellow: #FFD773;
+      --soft-pink: #FFE5D9;
+      --soft-mint: #E2F6F5;
+      --soft-purple: #EFEBF9;
+      --text-dark: #2D2640;
+      --text-muted: #665E7A;
+      --success-green: #2ECC71;
+      --error-red: #E74C3C;
+      --border-radius-lg: 22px;
+      --border-radius-md: 16px;
+      --border-radius-sm: 12px;
+      --shadow-soft: 0 8px 24px rgba(128, 105, 198, 0.14);
+      --shadow-btn: 0 4px 0 rgba(45, 38, 64, 0.18);
+      --font-main: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: radial-gradient(circle at top right, #FFE5D9 0%, var(--bg-cream) 45%, #E2F6F5 100%);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 12px;
+      line-height: 1.5;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    /* Tôn trọng prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* Khung chứa chính chuẩn 16:9 linh hoạt */
+    .app-container {
+      width: 100%;
+      max-width: 1240px;
+      background: var(--bg-card);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-soft);
+      border: 3px solid #F0E6D8;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ==========================================================================
+       THANH ĐIỀU KHIỂN TRÊN CÙNG (HEADER BAR)
+       ========================================================================== */
+    .top-bar {
+      background: linear-gradient(90deg, var(--accent-purple) 0%, #6A5ACD 55%, var(--secondary-mint) 100%);
+      color: #FFFFFF;
+      padding: 10px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-class {
+      background: var(--warm-yellow);
+      color: var(--text-dark);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    .top-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Nút bấm tiêu chuẩn V5 >= 44x44px */
+    button, .btn {
+      font-family: var(--font-main);
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 16px;
+      border-radius: var(--border-radius-sm);
+      border: 2px solid transparent;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: var(--shadow-btn);
+      text-decoration: none;
+    }
+
+    button:focus-visible, .focusable:focus-visible {
+      outline: 3px solid var(--warm-yellow);
+      outline-offset: 2px;
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 rgba(45, 38, 64, 0.18);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      background: var(--primary-orange);
+      color: #FFFFFF;
+      border-color: #FFFFFF;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-orange-dark);
+    }
+
+    .btn-mint {
+      background: var(--secondary-mint);
+      color: #FFFFFF;
+      border-color: #FFFFFF;
+    }
+    .btn-mint:hover:not(:disabled) {
+      background: var(--secondary-mint-dark);
+    }
+
+    .btn-purple {
+      background: var(--accent-purple);
+      color: #FFFFFF;
+      border-color: #FFFFFF;
+    }
+    .btn-purple:hover:not(:disabled) {
+      background: var(--accent-purple-dark);
+    }
+
+    .btn-yellow {
+      background: var(--warm-yellow);
+      color: var(--text-dark);
+      border-color: #E2B94B;
+    }
+    .btn-yellow:hover:not(:disabled) {
+      background: #F9C846;
+    }
+
+    .btn-outline {
+      background: #FFFFFF;
+      color: var(--text-dark);
+      border-color: #D5C8E8;
+    }
+    .btn-outline:hover:not(:disabled) {
+      background: var(--soft-purple);
+    }
+
+    /* Công tắc âm thanh độc lập */
+    .audio-toggles {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 4px 8px;
+      border-radius: 14px;
+    }
+
+    .toggle-btn {
+      min-height: 40px;
+      padding: 6px 12px;
+      font-size: 0.88rem;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--text-dark);
+      box-shadow: none;
+    }
+
+    .toggle-btn.active {
+      background: var(--warm-yellow);
+      color: #2D2640;
+      border: 2px solid #FFFFFF;
+    }
+
+    .toggle-btn.off {
+      background: #E0DCE8;
+      color: #665E7A;
+    }
+
+    /* ==========================================================================
+       THANH TIẾN ĐỘ MÀN CHƠI & ĐIỂM SỐ (GAME HUD)
+       ========================================================================== */
+    .hud-bar {
+      background: var(--soft-purple);
+      padding: 10px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 2px solid #E2D9F3;
+    }
+
+    .stage-steps {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .step-pill {
+      min-height: 44px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      background: #FFFFFF;
+      color: var(--text-muted);
+      border: 2px solid #D5C8E8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: none;
+    }
+
+    .step-pill.current {
+      background: var(--accent-purple);
+      color: #FFFFFF;
+      border-color: var(--accent-purple-dark);
+      box-shadow: 0 3px 8px rgba(128, 105, 198, 0.35);
+    }
+
+    .step-pill.completed {
+      background: var(--soft-mint);
+      color: #166966;
+      border-color: var(--secondary-mint);
+    }
+
+    .score-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .score-pill {
+      background: linear-gradient(135deg, #FFD773 0%, #FFB347 100%);
+      color: var(--text-dark);
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 1.08rem;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 3px 10px rgba(255, 152, 80, 0.25);
+    }
+
+    .mode-badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: #FFFFFF;
+      border: 2px solid var(--secondary-mint);
+      color: var(--secondary-mint-dark);
+    }
+
+    /* ==========================================================================
+       Bố cục khu vực nội dung chính + Nhân vật đồng hành Mây
+       ========================================================================== */
+    .main-workspace {
+      padding: 18px;
+      min-height: 540px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--bg-cream);
+      position: relative;
+    }
+
+    /* Khung nhân vật Mây và bong bóng chữ */
+    .companion-strip {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 14px;
+      align-items: center;
+      background: #FFFFFF;
+      padding: 12px 16px;
+      border-radius: var(--border-radius-md);
+      border: 2px solid #F3DEC4;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .may-avatar-box {
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, var(--soft-pink) 0%, #FFF9ED 80%);
+      border-radius: 50%;
+      border: 3px solid var(--primary-orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .speech-bubble {
+      position: relative;
+      background: #FFFDF9;
+      border: 2px solid var(--primary-orange);
+      border-radius: 16px;
+      padding: 12px 16px;
+      color: var(--text-dark);
+      font-size: 1.02rem;
+    }
+
+    .speech-bubble.success {
+      border-color: var(--success-green);
+      background: #F2FBF6;
+    }
+
+    .speech-bubble.error {
+      border-color: var(--error-red);
+      background: #FDF3F2;
+    }
+
+    .speech-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      font-weight: 800;
+      color: var(--accent-purple-dark);
+      font-size: 0.92rem;
+    }
+
+    .hint-box {
+      margin-top: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: #FFF6D6;
+      border-left: 4px solid #F39C12;
+      font-size: 0.94rem;
+      color: #5C4400;
+    }
+
+    /* Ghi chú mô phỏng bắt buộc */
+    .sim-disclaimer {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.85);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px dashed #B8AEC8;
+      display: inline-block;
+    }
+
+    /* ==========================================================================
+       MÀN CHÀO MỪNG (WELCOME SCREEN)
+       ========================================================================== */
+    .welcome-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 22px;
+      align-items: center;
+      padding: 10px;
+    }
+
+    .hero-illustration {
+      background: linear-gradient(180deg, #2D2640 0%, #483870 100%);
+      border-radius: var(--border-radius-lg);
+      padding: 14px;
+      border: 4px solid var(--warm-yellow);
+      box-shadow: 0 10px 24px rgba(45, 38, 64, 0.2);
+      text-align: center;
+      color: #FFFFFF;
+    }
+
+    .welcome-card {
+      background: #FFFFFF;
+      padding: 22px;
+      border-radius: var(--border-radius-lg);
+      border: 2px solid #EBDCCB;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .game-main-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--accent-purple-dark);
+      line-height: 1.2;
+      text-shadow: 0 2px 0 #EFEBF9;
+    }
+
+    .mode-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 6px 0;
+    }
+
+    .mode-option {
+      padding: 12px;
+      border-radius: 14px;
+      border: 2px solid #D5C8E8;
+      background: #FAF8FF;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+    }
+
+    .mode-option.selected {
+      border-color: var(--primary-orange);
+      background: var(--soft-pink);
+      box-shadow: 0 4px 10px rgba(255, 152, 80, 0.2);
+    }
+
+    /* ==========================================================================
+       MÀN 1 & MÀN 2: TRÌNH PHÁT VIDEO MÔ PHỎNG
+       ========================================================================== */
+    .stage-layout {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .video-player-shell {
+      background: #231E30;
+      border-radius: var(--border-radius-md);
+      padding: 14px;
+      border: 4px solid #3F3654;
+      color: #FFFFFF;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+
+    .player-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      color: #D2CBE0;
+    }
+
+    .video-viewport {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #14111D;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      border: 2px solid #4F4568;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-subtitle-bar {
+      position: absolute;
+      bottom: 10px;
+      left: 5%;
+      right: 5%;
+      background: rgba(20, 17, 29, 0.86);
+      color: #FFF9ED;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.96rem;
+      font-weight: 600;
+      text-align: center;
+      border: 1px solid rgba(255, 215, 115, 0.5);
+      pointer-events: none;
+    }
+
+    .timeline-container {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .timeline-slider {
+      width: 100%;
+      height: 12px;
+      accent-color: var(--primary-orange);
+      cursor: pointer;
+    }
+
+    .timeline-markers {
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .marker-btn {
+      min-height: 36px;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      background: #352E47;
+      color: #EAE4F5;
+      border: 1px solid #594E75;
+      border-radius: 8px;
+      box-shadow: none;
+    }
+
+    .marker-btn.active {
+      background: var(--primary-orange);
+      color: #FFFFFF;
+      border-color: #FFFFFF;
+    }
+
+    .player-controls-row {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: #2F2840;
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    .task-panel {
+      background: #FFFFFF;
+      border-radius: var(--border-radius-md);
+      padding: 16px;
+      border: 2px solid #E5D9F2;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .check-item {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #F9F7FC;
+      border: 2px solid #E2D9F3;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .check-item.active-step {
+      border-color: var(--primary-orange);
+      background: #FFF6EE;
+      font-weight: 700;
+    }
+
+    .check-item.done-step {
+      border-color: var(--success-green);
+      background: #EFFBF4;
+      color: #1A683B;
+    }
+
+    /* Hộp chọn tệp mô phỏng ở Màn 1 */
+    .file-picker-modal {
+      background: #FFFFFF;
+      border: 3px solid var(--accent-purple);
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 8px;
+    }
+
+    .file-option-btn {
+      width: 100%;
+      justify-content: flex-start;
+      margin-top: 6px;
+      background: #F8F6FC;
+      color: var(--text-dark);
+      border: 2px solid #DCD2EE;
+      text-align: left;
+    }
+
+    .file-option-btn:hover {
+      background: var(--soft-purple);
+      border-color: var(--accent-purple);
+    }
+
+    /* Khay thẻ quan sát ở Màn 2 */
+    .captured-tray {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .captured-card {
+      background: #FAF8FF;
+      border: 2px dashed #C7B8E6;
+      border-radius: 12px;
+      padding: 8px;
+      text-align: center;
+      min-height: 115px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.84rem;
+    }
+
+    .captured-card.filled {
+      border-style: solid;
+      border-color: var(--secondary-mint);
+      background: var(--soft-mint);
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       MÀN 3: GHI NHỚ VĂN HÓA (KÉO THẢ / NHẤN CHỌN - ĐẶT)
+       ========================================================================== */
+    .drag-board {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 18px;
+    }
+
+    .source-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .culture-card {
+      background: #FFFFFF;
+      border: 3px solid #D8CBEF;
+      border-radius: 14px;
+      padding: 10px;
+      cursor: grab;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      touch-action: none;
+    }
+
+    .culture-card:hover {
+      border-color: var(--primary-orange);
+      transform: translateY(-2px);
+    }
+
+    .culture-card.selected-card {
+      border-color: var(--primary-orange);
+      background: #FFF3E8;
+      box-shadow: 0 0 0 4px rgba(255, 152, 80, 0.35);
+    }
+
+    .culture-card.placed {
+      opacity: 0.45;
+      pointer-events: none;
+      border-style: dashed;
+    }
+
+    .drop-zones-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .drop-zone {
+      background: #FFFFFF;
+      border: 3px dashed var(--accent-purple);
+      border-radius: 16px;
+      padding: 12px;
+      min-height: 155px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+      cursor: pointer;
+    }
+
+    .drop-zone.highlight-target {
+      background: #FFF8EB;
+      border-color: var(--primary-orange);
+    }
+
+    .drop-zone.filled-zone {
+      border-style: solid;
+      border-color: var(--success-green);
+      background: #F1FBF5;
+    }
+
+    .zone-title {
+      font-weight: 800;
+      font-size: 0.96rem;
+      color: var(--accent-purple-dark);
+      margin-bottom: 6px;
+    }
+
+    /* ==========================================================================
+       MÀN 4: NGƯỜI KỂ CHUYỆN (TẠO THẺ ĐA PHƯƠNG TIỆN)
+       ========================================================================== */
+    .storyteller-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 18px;
+    }
+
+    .fact-Pool {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .fact-item {
+      background: #FFFFFF;
+      border: 2px solid #D8CBEF;
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+    }
+
+    .fact-item:hover {
+      border-color: var(--secondary-mint);
+      background: #F5FCFB;
+    }
+
+    .fact-item.picked {
+      border-color: var(--primary-orange);
+      background: #FFF4EB;
+      font-weight: 700;
+    }
+
+    .order-badge {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--primary-orange);
+      color: #FFFFFF;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .story-card-preview {
+      background: linear-gradient(180deg, #FFFDF9 0%, #FFF4E6 100%);
+      border: 4px solid var(--primary-orange);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 8px 20px rgba(255, 152, 80, 0.18);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ==========================================================================
+       THANH ĐIỀU HƯỚNG DƯỚI CÙNG (BOTTOM FOOTER BAR)
+       ========================================================================== */
+    .bottom-bar {
+      background: #FFFFFF;
+      padding: 12px 18px;
+      border-top: 2px solid #EFE6D8;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    /* ==========================================================================
+       MODAL HƯỚNG DẪN & XEM LẠI VIDEO TÓM TẮT
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(29, 23, 46, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .modal-content {
+      background: #FFFFFF;
+      max-width: 760px;
+      width: 100%;
+      border-radius: var(--border-radius-lg);
+      border: 4px solid var(--accent-purple);
+      padding: 22px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+    }
+
+    /* Hiệu ứng pháo giấy nhẹ < 2 giây */
+    .confetti-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 50;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      animation: confettiFall 1.6s ease-out forwards;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(420px) rotate(320deg); opacity: 0; }
+    }
+
+    /* Responsive cho màn hình nhỏ & 1366x768 */
+    @media (max-width: 960px) {
+      .welcome-grid,
+      .stage-layout,
+      .drag-board,
+      .storyteller-grid {
+        grid-template-columns: 1fr;
+      }
+      .companion-strip {
+        grid-template-columns: 84px 1fr;
+      }
+      .may-avatar-box {
+        width: 76px;
+        height: 76px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container" id="appRoot">
+    <!-- Lớp pháo giấy chúc mừng khi qua màn -->
+    <div id="confettiContainer" class="confetti-layer" aria-hidden="true"></div>
+
+    <!-- THANH CÔNG CỤ TRÊN CÙNG -->
+    <header class="top-bar">
+      <div class="brand-title">
+        <span class="badge-class">TIN HỌC 4 - BÀI 12A</span>
+        <span>🎬 RẠP PHIM TẾT BA MIỀN</span>
+      </div>
+
+      <div class="top-controls">
+        <!-- ĐÚNG 2 CÔNG TẮC ÂM THANH ĐỘC LẬP: NHẠC NỀN & HIỆU ỨNG -->
+        <div class="audio-toggles" role="group" aria-label="Điều khiển âm thanh">
+          <button type="button" id="btnToggleBgm" class="toggle-btn active" aria-pressed="true" title="Bật hoặc tắt nhạc nền">
+            🎵 Nhạc nền: BẬT
+          </button>
+          <button type="button" id="btnToggleSfx" class="toggle-btn active" aria-pressed="true" title="Bật hoặc tắt hiệu ứng âm thanh">
+            🔔 Hiệu ứng: BẬT
+          </button>
+          <button type="button" id="btnMuteAll" class="toggle-btn" title="Tắt nhanh toàn bộ âm thanh">
+            🔇 Tắt nhanh
+          </button>
+        </div>
+
+        <button type="button" id="btnOpenGuide" class="btn-yellow">
+          📖 Hướng dẫn
+        </button>
+      </div>
+    </header>
+
+    <!-- THANH TIẾN ĐỘ & ĐIỂM SỐ (Ẩn ở màn chào mừng, hiện khi vào màn chơi) -->
+    <nav id="hudBar" class="hud-bar" style="display: none;" aria-label="Tiến độ màn chơi">
+      <div class="stage-steps" id="stageStepsNav"></div>
+      <div class="score-box">
+        <span id="currentModeBadge" class="mode-badge">Chế độ: Luyện tập</span>
+        <div class="score-pill" aria-live="polite">
+          ⭐ Điểm: <span id="scoreDisplay">0</span> / 100
+        </div>
+      </div>
+    </nav>
+
+    <!-- KHU VỰC NỘI DUNG CHÍNH -->
+    <main class="main-workspace" id="mainWorkspace">
+      <!-- Nội dung động của từng màn sẽ được render tại đây -->
+    </main>
+
+    <!-- THANH ĐIỀU KHIỂN DƯỚI CÙNG (Hiện khi ở trong 4 màn chơi) -->
+    <footer id="bottomBar" class="bottom-bar" style="display: none;">
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button type="button" id="btnHome" class="btn-outline">🏠 Trang chủ</button>
+        <button type="button" id="btnResetStage" class="btn-outline">🔄 Làm lại màn</button>
+        <button type="button" id="btnHint" class="btn-yellow">💡 Gợi ý (0/2)</button>
+      </div>
+      <div>
+        <button type="button" id="btnNextStage" class="btn-primary" disabled>
+          Tiếp tục ➡
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- MODAL HƯỚNG DẪN / XEM LẠI TÓM TẮT VIDEO -->
+  <div id="modalContainer" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true">
+    <div class="modal-content" id="modalBody"></div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       CẤU HÌNH TRÒ CHƠI (GAME_CONFIG) - GIÁO VIÊN DỄ DÀNG CHỈNH SỬA NỘI DUNG
+       ========================================================================== */
+    const GAME_CONFIG = {
+      meta: {
+        grade: "Tin học 4 – Kết nối tri thức với cuộc sống",
+        lesson: "Bài 12A: Thực hành đa phương tiện (Trang 52–54)",
+        gameTitle: "RẠP PHIM TẾT BA MIỀN",
+        disclaimer: "Giao diện mô phỏng phục vụ học tập - Hoạt cảnh minh họa (không trích từ video SGK)",
+        pointsPerStage: 25,
+        maxScore: 100,
+        defaultBgmVolume: 0.12 // Âm lượng nhạc nền mặc định 12% êm dịu
+      },
+
+      // Danh sách 5 phân đoạn hoạt cảnh SVG trong Rạp Phim Tết Ba Miền & Sự tích Quả dưa hấu
+      videoScenes: [
+        {
+          id: "scene_bac",
+          timeRange: "00:00 - 00:30",
+          shortLabel: "00:00 Tết Miền Bắc",
+          title: "Phân đoạn 1: Phong tục Tết Miền Bắc",
+          regionTag: "Miền Bắc",
+          subtitle: "Tết miền Bắc rực rỡ sắc hoa đào đỏ thắm, gói bánh chưng xanh vuông vức và bày mâm ngũ quả truyền thống.",
+          keyDetail: "Hoa đào đỏ thắm & Bánh chưng xanh vuông"
+        },
+        {
+          id: "scene_trung",
+          timeRange: "00:30 - 01:00",
+          shortLabel: "00:30 Tết Miền Trung",
+          title: "Phân đoạn 2: Phong tục Tết Miền Trung",
+          regionTag: "Miền Trung",
+          subtitle: "Tết miền Trung ấm cúng với đòn bánh tét dài, đĩa dưa món, củ kiệu giòn ngon và sắc hoa cúc, hoa mai.",
+          keyDetail: "Bánh tét đòn dài & Dưa món, củ kiệu"
+        },
+        {
+          id: "scene_nam",
+          timeRange: "01:00 - 01:30",
+          shortLabel: "01:00 Tết Miền Nam",
+          title: "Phân đoạn 3: Phong tục Tết Miền Nam",
+          regionTag: "Miền Nam",
+          subtitle: "Tết miền Nam nắng ấm với hoa mai vàng rực rỡ, mâm ngũ quả 'Cầu - Dừa - Đủ - Xoài' và nồi thịt kho tàu.",
+          keyDetail: "Hoa mai vàng & Mâm ngũ quả Cầu - Dừa - Đủ - Xoài"
+        },
+        {
+          id: "scene_duahau_1",
+          timeRange: "01:30 - 01:45",
+          shortLabel: "01:30 Gieo hạt dưa",
+          title: "Phân đoạn 4: Sự tích Quả dưa hấu (Gieo trồng trên đảo)",
+          regionTag: "Sự tích Dưa hấu",
+          subtitle: "Mai An Tiêm cùng gia đình ra đảo hoang, tìm thấy hạt giống lạ chim thả xuống và chăm chỉ gieo trồng mỗi ngày.",
+          keyDetail: "Mai An Tiêm chăm chỉ gieo hạt giống lạ trên đảo"
+        },
+        {
+          id: "scene_duahau_2",
+          timeRange: "01:45 - 02:00",
+          shortLabel: "01:45 Thu hoạch dưa",
+          title: "Phân đoạn 5: Sự tích Quả dưa hấu (Thu hoạch & Trao đổi)",
+          regionTag: "Sự tích Dưa hấu",
+          subtitle: "Dưa hấu chín vỏ xanh ruột đỏ ngọt mát; Mai An Tiêm khắc tên thả trôi biển và đổi lương thực với thuyền buôn.",
+          keyDetail: "Quả dưa hấu vỏ xanh ruột đỏ & Thuyền buôn trao đổi"
+        }
+      ],
+
+      // Cấu hình chi tiết 4 màn chơi
+      stages: [
+        // ---------------- MÀN 1 ----------------
+        {
+          id: 1,
+          name: "Màn 1: Trợ lí phát video",
+          description: "Em hãy giúp Mây điều khiển phần mềm phát video mô phỏng theo đúng 4 bước để kiểm tra thiết bị chiếu phim nhé!",
+          hints: [
+            "Gợi ý 1: Hãy đọc kỹ yêu cầu đang sáng màu cam ở khung bên phải và nháy đúng nút tương ứng trên trình phát video.",
+            "Gợi ý 2: Thứ tự 4 bước: (1) Mở video .mp4 ➔ (2) Nhấn Play ➔ (3) Nhấn Bật tiếng ➔ (4) Nhấn mốc 00:30 Tết Miền Trung rồi nhấn Pause."
+          ],
+          filesToPick: [
+            { id: "file_mp4", name: "🎬 Tet_Ba_Mien_Va_Dua_Hau.mp4 (Tệp video đa phương tiện)", isCorrect: true, feedback: "Chính xác! Tệp .mp4 là tệp video đa phương tiện chứa hình ảnh chuyển động và âm thanh." },
+            { id: "file_docx", name: "📄 Danh_Sach_Khach_Moi.docx (Tệp văn bản Word)", isCorrect: false, feedback: "Chưa đúng rồi! Đây là tệp văn bản (.docx), không phải tệp phim cho trình phát video." },
+            { id: "file_png", name: "🖼️ Anh_Bia_Rap_Phim.png (Tệp hình ảnh tĩnh)", isCorrect: false, feedback: "Chưa đúng rồi! Đây là tệp ảnh tĩnh (.png). Em hãy chọn tệp video có đuôi .mp4 nhé!" }
+          ],
+          steps: [
+            "Bước 1: Nháy nút [📂 Mở video] và chọn đúng tệp phim 'Tet_Ba_Mien_Va_Dua_Hau.mp4'.",
+            "Bước 2: Nháy nút [▶ Play] để bắt đầu phát đoạn phim.",
+            "Bước 3: Trình phát đang tắt tiếng (🔇). Hãy nháy nút [🔊 Bật tiếng] để mở tín hiệu âm thanh & phụ đề.",
+            "Bước 4: Nháy chọn mốc [00:30 Tết Miền Trung] trên thanh tiến trình rồi nháy nút [⏸ Pause] để tạm dừng đúng cảnh."
+          ]
+        },
+
+        // ---------------- MÀN 2 ----------------
+        {
+          id: 2,
+          name: "Màn 2: Hành trình Tết ba miền",
+          description: "Quan sát 5 phân đoạn hoạt cảnh, dùng thanh tua và nút [⏸ Pause] dừng đúng cảnh được yêu cầu rồi bấm [📸 Chụp thẻ quan sát].",
+          hints: [
+            "Gợi ý 1: Em có thể nhấn các nút mốc thời gian bên dưới thanh tiến trình để chuyển nhanh đến phân đoạn cần tìm, sau đó nhớ nhấn [⏸ Pause].",
+            "Gợi ý 2: Nhiệm vụ 1 là Phân đoạn 1 (Miền Bắc); Nhiệm vụ 2 là Phân đoạn 3 (Miền Nam); Nhiệm vụ 3 là Phân đoạn 5 (Thu hoạch dưa hấu)."
+          ],
+          captureTasks: [
+            {
+              taskId: "cap_1",
+              prompt: "Thử thách 1/3: Hãy điều khiển video đến đúng phân đoạn có 'Hoa đào đỏ thắm và Bánh chưng xanh của Tết Miền Bắc', nhấn [⏸ Pause] rồi bấm [📸 Chụp thẻ quan sát].",
+              targetSceneId: "scene_bac",
+              cardTitle: "Thẻ 1: Tết Miền Bắc",
+              cardSummary: "Hoa đào đỏ, bánh chưng xanh vuông vức",
+              successMsg: "Tuyệt vời! Em đã dừng và chụp đúng khoảnh khắc Tết Miền Bắc với hoa đào đỏ và bánh chưng xanh."
+            },
+            {
+              taskId: "cap_2",
+              prompt: "Thử thách 2/3: Hãy điều khiển và [⏸ Pause] đúng phân đoạn có 'Hoa mai vàng và mâm ngũ quả Cầu - Dừa - Đủ - Xoài của Tết Miền Nam', rồi bấm [📸 Chụp thẻ quan sát].",
+              targetSceneId: "scene_nam",
+              cardTitle: "Thẻ 2: Tết Miền Nam",
+              cardSummary: "Hoa mai vàng, ngũ quả Cầu-Dừa-Đủ-Xoài",
+              successMsg: "Chính xác! Em đã ghi nhận được nét đẹp Tết Miền Nam với hoa mai vàng và mâm ngũ quả."
+            },
+            {
+              taskId: "cap_3",
+              prompt: "Thử thách 3/3: Hãy điều khiển và [⏸ Pause] đúng phân đoạn 'Mai An Tiêm thu hoạch quả dưa hấu vỏ xanh ruột đỏ và trao đổi với thuyền buôn', rồi bấm [📸 Chụp thẻ quan sát].",
+              targetSceneId: "scene_duahau_2",
+              cardTitle: "Thẻ 3: Sự tích Dưa hấu",
+              cardSummary: "Dưa hấu vỏ xanh ruột đỏ, trao đổi thuyền buôn",
+              successMsg: "Xuất sắc! Em đã hoàn thành cả 3 thẻ quan sát từ đoạn phim đa phương tiện."
+            }
+          ]
+        },
+
+        // ---------------- MÀN 3 ----------------
+        {
+          id: 3,
+          name: "Màn 3: Ghi nhớ văn hóa",
+          description: "Kéo thả (hoặc nhấn chọn thẻ rồi nhấn ô nhóm đích) để sắp xếp 4 thẻ minh họa vào đúng nhóm văn hóa đã quan sát trong phim!",
+          hints: [
+            "Gợi ý 1: Em có thể bấm nút [🎬 Xem lại tóm tắt video] ở góc phải bất cứ lúc nào để đối chiếu thông tin từng vùng miền.",
+            "Gợi ý 2: Hoa đào & bánh chưng vuông ➔ Miền Bắc; Bánh tét & dưa món ➔ Miền Trung; Hoa mai vàng & Cầu-Dừa-Đủ-Xoài ➔ Miền Nam; Dưa hấu đỏ ➔ Sự tích Quả dưa hấu."
+          ],
+          cards: [
+            {
+              id: "card_bac",
+              title: "Cành hoa đào hồng thắm & Bánh chưng vuông",
+              svgType: "scene_bac",
+              targetZone: "zone_bac",
+              explainCorrect: "Đúng rồi! Hoa đào đỏ và bánh chưng xanh vuông vức là nét đặc trưng của Tết Miền Bắc."
+            },
+            {
+              id: "card_trung",
+              title: "Đòn bánh tét dài & Đĩa dưa món, củ kiệu",
+              svgType: "scene_trung",
+              targetZone: "zone_trung",
+              explainCorrect: "Chính xác! Bánh tét đòn dài ăn kèm dưa món, củ kiệu rất quen thuộc trong Tết Miền Trung."
+            },
+            {
+              id: "card_nam",
+              title: "Cành mai vàng & Ngũ quả Cầu - Dừa - Đủ - Xoài",
+              svgType: "scene_nam",
+              targetZone: "zone_nam",
+              explainCorrect: "Tuyệt vời! Hoa mai vàng rực rỡ và mâm ngũ quả Cầu - Dừa - Đủ - Xoài là đặc trưng Tết Miền Nam."
+            },
+            {
+              id: "card_duahau",
+              title: "Quả dưa hấu bổ đôi vỏ xanh ruột đỏ của Mai An Tiêm",
+              svgType: "scene_duahau_2",
+              targetZone: "zone_duahau",
+              explainCorrect: "Chuẩn xác! Quả dưa hấu vỏ xanh ruột đỏ thể hiện ý chí tự lập, chăm chỉ của gia đình Mai An Tiêm."
+            }
+          ],
+          zones: [
+            { id: "zone_bac", label: "Nhóm 1: Phong tục Tết Miền Bắc" },
+            { id: "zone_trung", label: "Nhóm 2: Phong tục Tết Miền Trung" },
+            { id: "zone_nam", label: "Nhóm 3: Phong tục Tết Miền Nam" },
+            { id: "zone_duahau", label: "Nhóm 4: Sự tích Quả dưa hấu (Tự lập, chăm chỉ)" }
+          ]
+        },
+
+        // ---------------- MÀN 4 ----------------
+        {
+          id: 4,
+          name: "Màn 4: Người kể chuyện",
+          description: "Em hãy chọn 1 chủ đề, sau đó chọn đúng 3 thẻ sự kiện/đặc điểm theo thứ tự hợp lý để ghép thành Thẻ Giới Thiệu Đa Phương Tiện nhé!",
+          hints: [
+            "Gợi ý 1: Hãy đọc kỹ từng thẻ! Chỉ chọn các thẻ đúng với nội dung video đã xem (tránh chọn các thẻ có thông tin sai lệch).",
+            "Gợi ý 2: Sau khi chọn đủ 3 thẻ đúng theo thứ tự 1 ➔ 2 ➔ 3, hãy bấm [✨ Xem giới thiệu] rồi bấm [💾 Lưu thẻ] để hoàn thành màn chơi."
+          ],
+          topics: {
+            tet_ba_mien: {
+              id: "tet_ba_mien",
+              title: "Chủ đề A: Phong tục Tết Ba Miền Việt Nam",
+              svgPreview: "scene_bac",
+              introHeader: "GIỚI THIỆU: SẮC XUÂN TẾT BA MIỀN",
+              facts: [
+                {
+                  id: "t_1",
+                  order: 1,
+                  isValid: true,
+                  text: "Miền Bắc đón Tết với hoa đào đỏ thắm và bánh chưng xanh vuông vức.",
+                  wrongReason: ""
+                },
+                {
+                  id: "t_2",
+                  order: 2,
+                  isValid: true,
+                  text: "Miền Trung ấm áp bên đòn bánh tét dài cùng đĩa dưa món, củ kiệu.",
+                  wrongReason: ""
+                },
+                {
+                  id: "t_3",
+                  order: 3,
+                  isValid: true,
+                  text: "Miền Nam rực rỡ sắc hoa mai vàng và mâm ngũ quả Cầu - Dừa - Đủ - Xoài.",
+                  wrongReason: ""
+                },
+                {
+                  id: "t_wrong_1",
+                  order: 99,
+                  isValid: false,
+                  text: "Vào ngày Tết cổ truyền, cả ba miền đều bắt buộc phải nặn người tuyết ngoài sân.",
+                  wrongReason: "Thẻ này chưa đúng với thực tế và nội dung video! Việt Nam có khí hậu nhiệt đới nên không có phong tục nặn người tuyết ngày Tết."
+                },
+                {
+                  id: "t_wrong_2",
+                  order: 99,
+                  isValid: false,
+                  text: "Mai An Tiêm trồng cây táo vàng trên đảo hoang (Thuộc chủ đề khác & sai chi tiết).",
+                  wrongReason: "Thẻ này vừa khác chủ đề Tết Ba Miền, vừa sai chi tiết (Mai An Tiêm trồng dưa hấu chứ không phải táo vàng)."
+                }
+              ]
+            },
+            su_tich_dua_hau: {
+              id: "su_tich_dua_hau",
+              title: "Chủ đề B: Sự tích Quả dưa hấu (Mai An Tiêm)",
+              svgPreview: "scene_duahau_2",
+              introHeader: "KỂ CHUYỆN: SỰ TÍCH QUẢ DƯA HẤU",
+              facts: [
+                {
+                  id: "d_1",
+                  order: 1,
+                  isValid: true,
+                  text: "1. Mai An Tiêm cùng gia đình ra đảo hoang, tìm thấy hạt giống lạ chim thả xuống và chăm chỉ gieo trồng.",
+                  wrongReason: ""
+                },
+                {
+                  id: "d_2",
+                  order: 2,
+                  isValid: true,
+                  text: "2. Hạt giống nảy mầm cho ra quả dưa hấu vỏ xanh, ruột đỏ, vị ngọt mát giúp gia đình vượt qua khó khăn.",
+                  wrongReason: ""
+                },
+                {
+                  id: "d_3",
+                  order: 3,
+                  isValid: true,
+                  text: "3. Mai An Tiêm khắc tên lên quả dưa thả trôi biển để trao đổi lương thực với thuyền buôn và được nhà vua đón về.",
+                  wrongReason: ""
+                },
+                {
+                  id: "d_wrong_1",
+                  order: 99,
+                  isValid: false,
+                  text: "Mai An Tiêm nhặt được hạt táo bằng vàng và ngồi chờ phép thuật biến ra lâu đài.",
+                  wrongReason: "Thông tin này sai! Trong video, Mai An Tiêm tự tay lao động chăm chỉ trồng dưa hấu chứ không chờ phép thuật."
+                },
+                {
+                  id: "d_wrong_2",
+                  order: 99,
+                  isValid: false,
+                  text: "Quả dưa hấu có vỏ màu tím than và vị cay nồng không ai ăn được.",
+                  wrongReason: "Thông tin này không đúng! Quả dưa hấu trong câu chuyện có vỏ xanh, ruột đỏ và vị ngọt mát."
+                }
+              ]
+            }
+          }
+        }
+      ]
+    };
+
+    /* ==========================================================================
+       HỆ THỐNG ÂM THANH WEB AUDIO API THUẦN (KHÔNG TTS, KHÔNG GIỌNG ĐỌC)
+       ========================================================================== */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.bgmEnabled = true;
+        this.sfxEnabled = true;
+        this.isPlayingBgm = false;
+        this.bgmTimer = null;
+        this.noteIndex = 0;
+        // Giai điệu ngũ cung mùa xuân vui tươi nguyên gốc (tần số Hz)
+        this.melody = [
+          { f: 523.25, d: 0.28 }, // C5
+          { f: 587.33, d: 0.28 }, // D5
+          { f: 659.25, d: 0.35 }, // E5
+          { f: 783.99, d: 0.40 }, // G5
+          { f: 659.25, d: 0.28 }, // E5
+          { f: 880.00, d: 0.45 }, // A5
+          { f: 783.99, d: 0.50 }, // G5
+          { f: 0,      d: 0.25 }, // Nghỉ
+          { f: 659.25, d: 0.28 }, // E5
+          { f: 783.99, d: 0.28 }, // G5
+          { f: 659.25, d: 0.28 }, // E5
+          { f: 587.33, d: 0.35 }, // D5
+          { f: 523.25, d: 0.55 }, // C5
+          { f: 0,      d: 0.35 }  // Nghỉ
+        ];
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+          this.ctx.resume().catch(() => {});
+        }
+      }
+
+      startBgm() {
+        this.initContext();
+        this.stopBgm();
+        if (!this.ctx || !this.bgmEnabled || document.hidden) return;
+        this.isPlayingBgm = true;
+        this.scheduleNextBgmNote();
+      }
+
+      scheduleNextBgmNote() {
+        if (!this.isPlayingBgm || !this.bgmEnabled || !this.ctx || document.hidden) return;
+        const current = this.melody[this.noteIndex % this.melody.length];
+        this.noteIndex++;
+
+        if (current.f > 0) {
+          try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(current.f, now);
+
+            const vol = GAME_CONFIG.meta.defaultBgmVolume;
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(vol, now + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + current.d);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + current.d + 0.02);
+          } catch (e) {}
+        }
+
+        this.bgmTimer = setTimeout(() => {
+          this.scheduleNextBgmNote();
+        }, Math.round(current.d * 1000));
+      }
+
+      stopBgm() {
+        this.isPlayingBgm = false;
+        if (this.bgmTimer) {
+          clearTimeout(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      }
+
+      playSfx(type) {
+        if (!this.sfxEnabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const playTone = (freq, startOffset, duration, wave = "sine", maxGain = 0.2) => {
+          try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = wave;
+            osc.frequency.setValueAtTime(freq, now + startOffset);
+            gain.gain.setValueAtTime(0.001, now + startOffset);
+            gain.gain.linearRampToValueAtTime(maxGain, now + startOffset + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + startOffset + duration);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + startOffset);
+            osc.stop(now + startOffset + duration + 0.02);
+          } catch (e) {}
+        };
+
+        if (type === "click") {
+          playTone(660, 0, 0.07, "sine", 0.14);
+        } else if (type === "correct") {
+          playTone(587.33, 0, 0.12, "triangle", 0.22);
+          playTone(880.00, 0.11, 0.22, "triangle", 0.24);
+        } else if (type === "wrong") {
+          playTone(310, 0, 0.15, "sine", 0.18);
+          playTone(250, 0.14, 0.22, "sine", 0.18);
+        } else if (type === "stageClear") {
+          playTone(523.25, 0, 0.12, "triangle", 0.24);
+          playTone(659.25, 0.12, 0.12, "triangle", 0.24);
+          playTone(783.99, 0.24, 0.14, "triangle", 0.24);
+          playTone(1046.5, 0.38, 0.35, "triangle", 0.26);
+        } else if (type === "victory") {
+          playTone(523.25, 0, 0.12, "triangle", 0.25);
+          playTone(659.25, 0.12, 0.12, "triangle", 0.25);
+          playTone(783.99, 0.24, 0.12, "triangle", 0.25);
+          playTone(1046.5, 0.36, 0.20, "triangle", 0.28);
+          playTone(1318.5, 0.56, 0.42, "triangle", 0.28);
+        }
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    // Tạm dừng nhạc nền khi ẩn tab trình duyệt để tránh dồn lịch phát
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        sound.stopBgm();
+      } else if (appState.hasStarted && sound.bgmEnabled) {
+        sound.startBgm();
+      }
+    });
+
+    /* ==========================================================================
+       KHO ĐỒ HỌA SVG TỰ DỰNG (NHÂN VẬT MÂY & 5 HOẠT CẢNH ĐA PHƯƠNG TIỆN)
+       ========================================================================== */
+    function getMayAvatarSVG(mood = "normal") {
+      // mood: "normal" | "happy" | "thinking" | "victory"
+      let eyes = `
+        <circle cx="38" cy="54" r="4.5" fill="#2D2640"/>
+        <circle cx="62" cy="54" r="4.5" fill="#2D2640"/>
+        <circle cx="39.5" cy="52.5" r="1.5" fill="#FFFFFF"/>
+        <circle cx="63.5" cy="52.5" r="1.5" fill="#FFFFFF"/>
+      `;
+      let mouth = `<path d="M 43 66 Q 50 72 57 66" stroke="#2D2640" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+      let extra = "";
+
+      if (mood === "happy" || mood === "victory") {
+        eyes = `
+          <path d="M 33 54 Q 38 48 43 54" stroke="#2D2640" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+          <path d="M 57 54 Q 62 48 67 54" stroke="#2D2640" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        `;
+        mouth = `<path d="M 41 64 Q 50 75 59 64 Z" fill="#E74C3C" stroke="#2D2640" stroke-width="2.5"/>`;
+        if (mood === "victory") {
+          extra = `<polygon points="82,20 85,27 92,27 86,31 88,38 82,34 76,38 78,31 72,27 79,27" fill="#FFD773" stroke="#E07A30" stroke-width="1"/>`;
+        }
+      } else if (mood === "thinking") {
+        eyes = `
+          <circle cx="38" cy="53" r="4.2" fill="#2D2640"/>
+          <circle cx="62" cy="53" r="4.2" fill="#2D2640"/>
+          <path d="M 32 45 L 43 47" stroke="#2D2640" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M 57 47 L 68 44" stroke="#2D2640" stroke-width="2.5" stroke-linecap="round"/>
+        `;
+        mouth = `<path d="M 44 68 Q 50 64 56 68" stroke="#2D2640" stroke-width="2.8" fill="none" stroke-linecap="round"/>`;
+      }
+
+      return `
+        <svg viewBox="0 0 100 100" width="90" height="90" role="img" aria-label="Nhân vật Mây nhà phát minh nhỏ">
+          <!-- Tóc bồng bềnh hình mây -->
+          <circle cx="26" cy="44" r="14" fill="#634CA8"/>
+          <circle cx="74" cy="44" r="14" fill="#634CA8"/>
+          <circle cx="50" cy="28" r="22" fill="#634CA8"/>
+          <!-- Khuôn mặt -->
+          <circle cx="50" cy="56" r="24" fill="#FFE3D3" stroke="#2D2640" stroke-width="2.5"/>
+          <!-- Má hồng -->
+          <ellipse cx="32" cy="61" rx="4.5" ry="2.5" fill="#FF9850" opacity="0.55"/>
+          <ellipse cx="68" cy="61" rx="4.5" ry="2.5" fill="#FF9850" opacity="0.55"/>
+          <!-- Mái tóc trước -->
+          <path d="M 27 46 Q 40 34 52 42 Q 64 34 73 46" fill="#8069C6" stroke="#2D2640" stroke-width="2"/>
+          <!-- Kính bảo hộ nhà phát minh trên trán -->
+          <rect x="25" y="25" width="50" height="14" rx="7" fill="#FF9850" stroke="#2D2640" stroke-width="2"/>
+          <circle cx="38" cy="32" r="7" fill="#E2F6F5" stroke="#2D2640" stroke-width="2.2"/>
+          <circle cx="62" cy="32" r="7" fill="#E2F6F5" stroke="#2D2640" stroke-width="2.2"/>
+          <line x1="45" y1="32" x2="55" y2="32" stroke="#2D2640" stroke-width="2.5"/>
+          ${eyes}
+          ${mouth}
+          <!-- Cổ áo phòng thí nghiệm -->
+          <path d="M 32 78 L 50 92 L 68 78 L 76 98 L 24 98 Z" fill="#40B8B3" stroke="#2D2640" stroke-width="2"/>
+          ${extra}
+        </svg>
+      `;
+    }
+
+    // Hàm dựng SVG cho 5 hoạt cảnh video + màn hình chờ
+    function getSceneIllustrationSVG(sceneId, isPlaying = false) {
+      const animPulse = isPlaying ? `<animateTransform attributeName="transform" type="scale" values="1;1.03;1" dur="2s" repeatCount="indefinite"/>` : "";
+
+      if (sceneId === "idle_no_file") {
+        return `
+          <svg viewBox="0 0 640 360" width="100%" height="100%">
+            <rect width="640" height="360" fill="#1D1829"/>
+            <rect x="30" y="25" width="580" height="310" rx="16" fill="#2A223B" stroke="#534673" stroke-width="3" stroke-dasharray="10 8"/>
+            <circle cx="320" cy="150" r="46" fill="#FF9850" opacity="0.2"/>
+            <polygon points="308,130 308,170 342,150" fill="#FFD773"/>
+            <text x="320" y="230" text-anchor="middle" fill="#FFF9ED" font-size="20" font-weight="bold">CHƯA MỞ TỆP VIDEO ĐA PHƯƠNG TIỆN</text>
+            <text x="320" y="262" text-anchor="middle" fill="#B8AEC8" font-size="15">Hãy nháy nút [📂 Mở video] bên dưới để nạp tệp phim .mp4</text>
+          </svg>
+        `;
+      }
+
+      if (sceneId === "scene_bac") {
+        // Hoạt cảnh 1: Tết Miền Bắc - Hoa đào đỏ & Bánh chưng xanh vuông
+        return `
+          <svg viewBox="0 0 640 360" width="100%" height="100%">
+            <defs>
+              <linearGradient id="bgBac" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#FFE3E8"/>
+                <stop offset="100%" stop-color="#FFF9ED"/>
+              </linearGradient>
+            </defs>
+            <rect width="640" height="360" fill="url(#bgBac)"/>
+            <!-- Câu đối đỏ -->
+            <rect x="45" y="30" width="52" height="220" rx="6" fill="#D63031" stroke="#FFD773" stroke-width="3"/>
+            <circle cx="71" cy="75" r="10" fill="#FFD773"/>
+            <circle cx="71" cy="135" r="10" fill="#FFD773"/>
+            <circle cx="71" cy="195" r="10" fill="#FFD773"/>
+            <!-- Bàn gỗ ngày Tết -->
+            <rect x="110" y="245" width="460" height="75" rx="12" fill="#C97A40" stroke="#7A4419" stroke-width="3"/>
+            <!-- Cành hoa đào đỏ thắm trong bình gốm -->
+            <g>
+              ${animPulse}
+              <path d="M 210 245 L 195 175 L 245 175 L 230 245 Z" fill="#40B8B3" stroke="#2D2640" stroke-width="3"/>
+              <path d="M 220 175 Q 190 120 150 95" stroke="#5C3A21" stroke-width="6" fill="none" stroke-linecap="round"/>
+              <path d="M 220 155 Q 250 110 295 85" stroke="#5C3A21" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <!-- Bông hoa đào -->
+              <circle cx="155" cy="95" r="16" fill="#FF5E7E" stroke="#C81E45" stroke-width="2"/>
+              <circle cx="155" cy="95" r="5" fill="#FFD773"/>
+              <circle cx="195" cy="120" r="14" fill="#FF758F" stroke="#C81E45" stroke-width="2"/>
+              <circle cx="195" cy="120" r="4" fill="#FFD773"/>
+              <circle cx="255" cy="110" r="16" fill="#FF5E7E" stroke="#C81E45" stroke-width="2"/>
+              <circle cx="255" cy="110" r="5" fill="#FFD773"/>
+              <circle cx="295" cy="85" r="15" fill="#FF758F" stroke="#C81E45" stroke-width="2"/>
+              <circle cx="295" cy="85" r="5" fill="#FFD773"/>
+            </g>
+            <!-- Bánh chưng xanh vuông vức buộc lạt -->
+            <g transform="translate(350, 145)">
+              <rect x="0" y="0" width="105" height="100" rx="10" fill="#2ECC71" stroke="#1B7943" stroke-width="4"/>
+              <line x1="0" y1="33" x2="105" y2="33" stroke="#FFF3C4" stroke-width="4"/>
+              <line x1="0" y1="66" x2="105" y2="66" stroke="#FFF3C4" stroke-width="4"/>
+              <line x1="35" y1="0" x2="35" y2="100" stroke="#FFF3C4" stroke-width="4"/>
+              <line x1="70" y1="0" x2="70" y2="100" stroke="#FFF3C4" stroke-width="4"/>
+              <rect x="36" y="34" width="33" height="31" fill="#D63031"/>
+            </g>
+            <!-- Nhãn vùng miền -->
+            <rect x="430" y="24" width="185" height="40" rx="20" fill="#D63031"/>
+            <text x="522" y="50" text-anchor="middle" fill="#FFFFFF" font-size="17" font-weight="bold">🌸 TẾT MIỀN BẮC</text>
+          </svg>
+        `;
+      }
+
+      if (sceneId === "scene_trung") {
+        // Hoạt cảnh 2: Tết Miền Trung - Bánh tét đòn dài & Dưa món, củ kiệu
+        return `
+          <svg viewBox="0 0 640 360" width="100%" height="100%">
+            <rect width="640" height="360" fill="#F6F0FF"/>
+            <rect x="80" y="240" width="480" height="80" rx="14" fill="#B5653B" stroke="#6E381B" stroke-width="3"/>
+            <!-- Chậu hoa cúc vàng đại đóa -->
+            <g>
+              ${animPulse}
+              <polygon points="150,240 135,180 195,180 180,240" fill="#D35400" stroke="#2D2640" stroke-width="3"/>
+              <circle cx="145" cy="145" r="20" fill="#FFD773" stroke="#E67E22" stroke-width="3"/>
+              <circle cx="185" cy="145" r="20" fill="#FFD773" stroke="#E67E22" stroke-width="3"/>
+              <circle cx="165" cy="120" r="22" fill="#F1C40F" stroke="#E67E22" stroke-width="3"/>
+            </g>
+            <!-- Đòn bánh tét dài buộc dây lạt -->
+            <g transform="translate(245, 178)">
+              <rect x="0" y="0" width="155" height="56" rx="28" fill="#27AE60" stroke="#145A32" stroke-width="4"/>
+              <line x1="35" y1="0" x2="35" y2="56" stroke="#FFF3C4" stroke-width="4"/>
+              <line x1="77" y1="0" x2="77" y2="56" stroke="#FFF3C4" stroke-width="4"/>
+              <line x1="120" y1="0" x2="120" y2="56" stroke="#FFF3C4" stroke-width="4"/>
+              <!-- Khoanh bánh tét cắt ra có nhân đậu vàng thịt mỡ -->
+              <circle cx="185" cy="32" r="26" fill="#27AE60" stroke="#145A32" stroke-width="3"/>
+              <circle cx="185" cy="32" r="19" fill="#ECF0F1"/>
+              <circle cx="185" cy="32" r="10" fill="#F1C40F"/>
+            </g>
+            <!-- Đĩa dưa món, củ kiệu -->
+            <g transform="translate(460, 195)">
+              <ellipse cx="45" cy="35" rx="52" ry="18" fill="#FFFFFF" stroke="#8069C6" stroke-width="3"/>
+              <rect x="20" y="20" width="16" height="10" rx="3" fill="#E67E22"/>
+              <rect x="42" y="18" width="18" height="10" rx="3" fill="#E74C3C"/>
+              <ellipse cx="66" cy="26" rx="10" ry="5" fill="#F8F9F9" stroke="#BDC3C7" stroke-width="1.5"/>
+            </g>
+            <rect x="415" y="24" width="200" height="40" rx="20" fill="#8069C6"/>
+            <text x="515" y="50" text-anchor="middle" fill="#FFFFFF" font-size="17" font-weight="bold">🏮 TẾT MIỀN TRUNG</text>
+          </svg>
+        `;
+      }
+
+      if (sceneId === "scene_nam") {
+        // Hoạt cảnh 3: Tết Miền Nam - Hoa mai vàng & Mâm ngũ quả Cầu - Dừa - Đủ - Xoài
+        return `
+          <svg viewBox="0 0 640 360" width="100%" height="100%">
+            <rect width="640" height="360" fill="#FFF9E2"/>
+            <rect x="80" y="245" width="480" height="75" rx="14" fill="#C97A40" stroke="#7A4419" stroke-width="3"/>
+            <!-- Cành hoa mai vàng rực rỡ -->
+            <g>
+              ${animPulse}
+              <path d="M 190 245 L 175 180 L 225 180 L 210 245 Z" fill="#C0392B" stroke="#2D2640" stroke-width="3"/>
+              <path d="M 200 180 Q 170 120 135 90" stroke="#5C3A21" stroke-width="6" fill="none" stroke-linecap="round"/>
+              <path d="M 200 155 Q 245 110 285 88" stroke="#5C3A21" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <circle cx="140" cy="92" r="16" fill="#FFD700" stroke="#D4AC0D" stroke-width="2"/>
+              <circle cx="180" cy="118" r="15" fill="#FFEA00" stroke="#D4AC0D" stroke-width="2"/>
+              <circle cx="235" cy="112" r="17" fill="#FFD700" stroke="#D4AC0D" stroke-width="2"/>
+              <circle cx="280" cy="88" r="15" fill="#FFEA00" stroke="#D4AC0D" stroke-width="2"/>
+            </g>
+            <!-- Mâm ngũ quả Cầu - Dừa - Đủ - Xoài -->
+            <g transform="translate(345, 145)">
+              <ellipse cx="95" cy="92" rx="95" ry="20" fill="#E74C3C" stroke="#922B21" stroke-width="3"/>
+              <!-- Dừa -->
+              <circle cx="65" cy="65" r="26" fill="#27AE60" stroke="#1E8449" stroke-width="3"/>
+              <!-- Đu đủ -->
+              <ellipse cx="125" cy="62" rx="22" ry="30" fill="#F39C12" stroke="#B9770E" stroke-width="3"/>
+              <!-- Mãng cầu -->
+              <circle cx="42" cy="74" r="18" fill="#82E0AA" stroke="#27AE60" stroke-width="2.5"/>
+              <!-- Xoài vàng -->
+              <ellipse cx="95" cy="76" rx="22" ry="14" fill="#F1C40F" stroke="#D4AC0D" stroke-width="2.5"/>
+            </g>
+            <rect x="425" y="24" width="190" height="40" rx="20" fill="#E67E22"/>
+            <text x="520" y="50" text-anchor="middle" fill="#FFFFFF" font-size="17" font-weight="bold">🌼 TẾT MIỀN NAM</text>
+          </svg>
+        `;
+      }
+
+      if (sceneId === "scene_duahau_1") {
+        // Hoạt cảnh 4: Mai An Tiêm gieo trồng hạt giống trên đảo hoang
+        return `
+          <svg viewBox="0 0 640 360" width="100%" height="100%">
+            <!-- Bầu trời và biển -->
+            <rect width="640" height="220" fill="#D6F5F4"/>
+            <rect y="200" width="640" height="160" fill="#40B8B3"/>
+            <!-- Bãi cát đảo hoang -->
+            <ellipse cx="340" cy="295" rx="260" ry="75" fill="#FFE7A0" stroke="#E2B94B" stroke-width="3"/>
+            <!-- Cánh chim thả hạt giống -->
+            <g>
+              ${animPulse}
+              <path d="M 140 75 Q 160 55 180 75 Q 200 55 220 75" stroke="#2D2640" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <circle cx="180" cy="98" r="4" fill="#2D2640"/>
+              <circle cx="180" cy="122" r="4" fill="#2D2640"/>
+            </g>
+            <!-- Luống dây dưa xanh đang mọc -->
+            <rect x="230" y="250" width="240" height="36" rx="16" fill="#A96533"/>
+            <path d="M 260 250 Q 275 215 295 250" stroke="#2ECC71" stroke-width="6" fill="none"/>
+            <path d="M 330 250 Q 345 210 365 250" stroke="#2ECC71" stroke-width="6" fill="none"/>
+            <path d="M 400 250 Q 415 215 435 250" stroke="#2ECC71" stroke-width="6" fill="none"/>
+            <!-- Nhân vật Mai An Tiêm chăm chỉ tưới cây -->
+            <circle cx="180" cy="185" r="20" fill="#F5CBA7" stroke="#2D2640" stroke-width="2.5"/>
+            <rect x="162" y="205" width="36" height="50" rx="8" fill="#8D6E63" stroke="#2D2640" stroke-width="2.5"/>
+            <rect x="375" y="22" width="240" height="40" rx="20" fill="#2B928E"/>
+            <text x="495" y="48" text-anchor="middle" fill="#FFFFFF" font-size="16" font-weight="bold">🌱 GIEO TRỒNG DƯA HẤU</text>
+          </svg>
+        `;
+      }
+
+      // Mặc định: Hoạt cảnh 5 (scene_duahau_2) - Thu hoạch dưa hấu vỏ xanh ruột đỏ & thuyền buôn
+      return `
+        <svg viewBox="0 0 640 360" width="100%" height="100%">
+          <rect width="640" height="210" fill="#FFF4D9"/>
+          <rect y="195" width="640" height="165" fill="#329D9C"/>
+          <!-- Thuyền buôn ngoài khơi -->
+          <g transform="translate(430, 110)">
+            <polygon points="0,75 130,75 105,105 25,105" fill="#8E44AD" stroke="#2D2640" stroke-width="2.5"/>
+            <polygon points="65,10 65,70 115,65" fill="#FFD773" stroke="#2D2640" stroke-width="2"/>
+          </g>
+          <!-- Bờ đảo và những quả dưa hấu chín -->
+          <ellipse cx="260" cy="295" rx="230" ry="75" fill="#FFE7A0" stroke="#E2B94B" stroke-width="3"/>
+          <!-- Quả dưa hấu nguyên vỏ xanh sọc đậm -->
+          <g transform="translate(120, 210)">
+            ${animPulse}
+            <ellipse cx="55" cy="45" rx="48" ry="36" fill="#2ECC71" stroke="#145A32" stroke-width="3.5"/>
+            <path d="M 25 20 Q 40 45 25 70" stroke="#145A32" stroke-width="5" fill="none"/>
+            <path d="M 55 10 Q 70 45 55 80" stroke="#145A32" stroke-width="5" fill="none"/>
+            <path d="M 85 20 Q 70 45 85 70" stroke="#145A32" stroke-width="5" fill="none"/>
+          </g>
+          <!-- Miếng dưa hấu bổ đôi vỏ xanh ruột đỏ hạt đen -->
+          <g transform="translate(245, 215)">
+            <path d="M 0 30 A 55 55 0 0 0 110 30 Z" fill="#27AE60" stroke="#145A32" stroke-width="3.5"/>
+            <path d="M 8 30 A 47 47 0 0 0 102 30 Z" fill="#E74C3C"/>
+            <circle cx="38" cy="46" r="3" fill="#2D2640"/>
+            <circle cx="55" cy="54" r="3" fill="#2D2640"/>
+            <circle cx="72" cy="46" r="3" fill="#2D2640"/>
+          </g>
+          <rect x="370" y="22" width="245" height="40" rx="20" fill="#2ECC71"/>
+          <text x="492" y="48" text-anchor="middle" fill="#FFFFFF" font-size="16" font-weight="bold">🍉 DƯA HẤU CHÍN ĐỎ NGỌT</text>
+        </svg>
+      `;
+    }
+
+    /* ==========================================================================
+       QUẢN LÝ TRẠNG THÁI TRÒ CHƠI (STATE MANAGEMENT)
+       ========================================================================== */
+    const appState = {
+      screen: "welcome", // "welcome" | "stage" | "summary"
+      mode: "practice",  // "practice" (Luyện tập) | "challenge" (Thử thách)
+      hasStarted: false,
+      currentStage: 1,   // 1..4
+      score: 0,
+      stageCompleted: { 1: false, 2: false, 3: false, 4: false },
+      hintLevelPerStage: { 1: 0, 2: 0, 3: 0, 4: 0 },
+      mayMood: "normal",
+      mayMessage: "Chào mừng em đến với Rạp Phim Tết Ba Miền! Hãy cùng Mây khám phá bài Thực hành đa phương tiện nhé!",
+      feedbackStatus: "normal", // "normal" | "success" | "error"
+      savedStoryCards: [],      // Lưu thẻ giới thiệu trong bộ nhớ phiên
+
+      // Trạng thái riêng của Màn 1
+      s1: {
+        stepIndex: 0, // 0..3
+        showFilePicker: false,
+        fileLoaded: false,
+        isPlaying: false,
+        isUnmuted: false,
+        sceneIndex: 0
+      },
+
+      // Trạng thái riêng của Màn 2
+      s2: {
+        sceneIndex: 0,
+        isPlaying: true,
+        playTimer: null,
+        taskIndex: 0, // 0..2
+        capturedIds: []
+      },
+
+      // Trạng thái riêng của Màn 3
+      s3: {
+        selectedCardId: null,
+        placements: {} // zoneId -> cardId
+      },
+
+      // Trạng thái riêng của Màn 4
+      s4: {
+        topicKey: "tet_ba_mien",
+        pickedFactIds: [],
+        previewGenerated: false,
+        cardSaved: false
+      }
+    };
+
+    // Khôi phục thẻ đã lưu trong sessionStorage nếu có
+    try {
+      const savedInSession = sessionStorage.getItem("RAP_PHIM_TET_SAVED_CARDS");
+      if (savedInSession) {
+        appState.savedStoryCards = JSON.parse(savedInSession);
+      }
+    } catch (e) {}
+
+    function stopStageTimers() {
+      if (appState.s2.playTimer) {
+        clearInterval(appState.s2.playTimer);
+        appState.s2.playTimer = null;
+      }
+    }
+
+    function resetStageData(stageNum) {
+      stopStageTimers();
+      appState.hintLevelPerStage[stageNum] = appState.mode === "practice" ? 1 : 0;
+      appState.mayMood = "normal";
+      appState.feedbackStatus = "normal";
+
+      if (stageNum === 1) {
+        appState.s1 = {
+          stepIndex: 0,
+          showFilePicker: false,
+          fileLoaded: false,
+          isPlaying: false,
+          isUnmuted: false,
+          sceneIndex: 0
+        };
+        appState.mayMessage = GAME_CONFIG.stages[0].description;
+      } else if (stageNum === 2) {
+        appState.s2 = {
+          sceneIndex: 0,
+          isPlaying: true,
+          playTimer: null,
+          taskIndex: 0,
+          capturedIds: []
+        };
+        appState.mayMessage = GAME_CONFIG.stages[1].description;
+        startStage2PlaybackTimer();
+      } else if (stageNum === 3) {
+        appState.s3 = {
+          selectedCardId: null,
+          placements: {}
+        };
+        appState.mayMessage = GAME_CONFIG.stages[2].description;
+      } else if (stageNum === 4) {
+        appState.s4 = {
+          topicKey: "tet_ba_mien",
+          pickedFactIds: [],
+          previewGenerated: false,
+          cardSaved: false
+        };
+        appState.mayMessage = GAME_CONFIG.stages[3].description;
+      }
+    }
+
+    function startStage2PlaybackTimer() {
+      stopStageTimers();
+      appState.s2.playTimer = setInterval(() => {
+        if (appState.screen === "stage" && appState.currentStage === 2 && appState.s2.isPlaying) {
+          appState.s2.sceneIndex = (appState.s2.sceneIndex + 1) % GAME_CONFIG.videoScenes.length;
+          updateStage2ViewportOnly();
+        }
+      }, 2800);
+    }
+
+    // Hoàn thành màn chơi và cộng 25 điểm đúng 1 lần duy nhất
+    function markStageComplete(stageNum, customCongrats) {
+      if (!appState.stageCompleted[stageNum]) {
+        appState.stageCompleted[stageNum] = true;
+        appState.score = Math.min(
+          GAME_CONFIG.meta.maxScore,
+          appState.score + GAME_CONFIG.meta.pointsPerStage
+        );
+      }
+      appState.mayMood = "victory";
+      appState.feedbackStatus = "success";
+      appState.mayMessage = customCongrats;
+      sound.playSfx("stageClear");
+      triggerConfetti();
+      renderApp();
+    }
+
+    function triggerConfetti() {
+      const container = document.getElementById("confettiContainer");
+      if (!container) return;
+      container.innerHTML = "";
+      const colors = ["#FF9850", "#40B8B3", "#8069C6", "#FFD773", "#2ECC71"];
+      for (let i = 0; i < 24; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti-piece";
+        piece.style.left = `${Math.random() * 96}%`;
+        piece.style.top = `${Math.random() * 20}%`;
+        piece.style.backgroundColor = colors[i % colors.length];
+        piece.style.animationDelay = `${Math.random() * 0.25}s`;
+        container.appendChild(piece);
+      }
+      setTimeout(() => {
+        if (container) container.innerHTML = "";
+      }, 1800);
+    }
+
+    /* ==========================================================================
+       RENDER GIAO DIỆN CHÍNH (VIEW RENDERER)
+       ========================================================================== */
+    function renderApp() {
+      const hudBar = document.getElementById("hudBar");
+      const bottomBar = document.getElementById("bottomBar");
+      const workspace = document.getElementById("mainWorkspace");
+
+      if (appState.screen === "welcome") {
+        hudBar.style.display = "none";
+        bottomBar.style.display = "none";
+        renderWelcomeScreen(workspace);
+        return;
+      }
+
+      if (appState.screen === "summary") {
+        hudBar.style.display = "flex";
+        bottomBar.style.display = "none";
+        renderHudBar();
+        renderSummaryScreen(workspace);
+        return;
+      }
+
+      // Đang ở trong 4 màn chơi
+      hudBar.style.display = "flex";
+      bottomBar.style.display = "flex";
+      renderHudBar();
+      renderBottomBar();
+
+      if (appState.currentStage === 1) {
+        renderStage1(workspace);
+      } else if (appState.currentStage === 2) {
+        renderStage2(workspace);
+      } else if (appState.currentStage === 3) {
+        renderStage3(workspace);
+      } else if (appState.currentStage === 4) {
+        renderStage4(workspace);
+      }
+    }
+
+    function renderHudBar() {
+      const nav = document.getElementById("stageStepsNav");
+      const scoreEl = document.getElementById("scoreDisplay");
+      const modeBadge = document.getElementById("currentModeBadge");
+
+      scoreEl.textContent = appState.score;
+      modeBadge.textContent = appState.mode === "practice" ? "Chế độ: Luyện tập" : "Chế độ: Thử thách";
+
+      nav.innerHTML = GAME_CONFIG.stages.map((st) => {
+        const isCurrent = appState.screen === "stage" && appState.currentStage === st.id;
+        const isDone = appState.stageCompleted[st.id];
+        // Cho phép bấm xem lại màn đã hoàn thành hoặc màn hiện tại
+        const canAccess = isDone || st.id === 1 || appState.stageCompleted[st.id - 1] || isCurrent;
+        const cls = `step-pill ${isCurrent ? "current" : ""} ${isDone ? "completed" : ""}`;
+        return `
+          <button type="button" class="${cls}" data-action="jump-stage" data-stage="${st.id}" ${canAccess ? "" : "disabled"}>
+            ${isDone ? "✅" : "🎬"} Màn ${st.id}/4
+          </button>
+        `;
+      }).join("");
+    }
+
+    function renderBottomBar() {
+      const st = appState.currentStage;
+      const hintLevel = appState.hintLevelPerStage[st] || 0;
+      const btnHint = document.getElementById("btnHint");
+      const btnNext = document.getElementById("btnNextStage");
+
+      btnHint.textContent = `💡 Gợi ý (${hintLevel}/2)`;
+      const isDone = appState.stageCompleted[st];
+      btnNext.disabled = !isDone;
+      btnNext.textContent = st < 4 ? "Màn tiếp theo ➡" : "🏆 Xem Tổng Kết";
+    }
+
+    function renderCompanionBanner() {
+      const st = appState.currentStage;
+      const stageCfg = GAME_CONFIG.stages[st - 1];
+      const hintLevel = appState.hintLevelPerStage[st] || 0;
+
+      let hintHtml = "";
+      if (hintLevel >= 1 && stageCfg.hints[0]) {
+        hintHtml += `<div class="hint-box"><strong>💡 ${stageCfg.hints[0]}</strong></div>`;
+      }
+      if (hintLevel >= 2 && stageCfg.hints[1]) {
+        hintHtml += `<div class="hint-box"><strong>🌟 ${stageCfg.hints[1]}</strong></div>`;
+      }
+
+      const statusClass = appState.feedbackStatus === "success"
+        ? "success"
+        : appState.feedbackStatus === "error"
+          ? "error"
+          : "";
+
+      return `
+        <section class="companion-strip" aria-live="polite">
+          <div class="may-avatar-box">
+            ${getMayAvatarSVG(appState.mayMood)}
+          </div>
+          <div class="speech-bubble ${statusClass}">
+            <div class="speech-header">
+              <span>👩‍🔬 Nhà phát minh nhí Mây – ${stageCfg.name}</span>
+              <span class="sim-disclaimer">${GAME_CONFIG.meta.disclaimer}</span>
+            </div>
+            <div>${appState.mayMessage}</div>
+            ${hintHtml}
+          </div>
+        </section>
+      `;
+    }
+
+    /* ==========================================================================
+       MÀN CHÀO MỪNG (WELCOME SCREEN)
+       ========================================================================== */
+    function renderWelcomeScreen(container) {
+      container.innerHTML = `
+        <div class="welcome-grid">
+          <div class="hero-illustration">
+            <div style="margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+              <span class="badge-class">SGK Trang 52–54</span>
+              <span style="font-size: 0.85rem; color: #FFD773;">★ Không giọng đọc - Thực hành trực quan</span>
+            </div>
+            <div style="border-radius: 14px; overflow: hidden; border: 3px solid #FFD773;">
+              ${getSceneIllustrationSVG("scene_bac", true)}
+            </div>
+            <div style="margin-top: 12px; display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.12); padding: 10px 14px; border-radius: 14px; text-align: left;">
+              <div style="width: 68px; height: 68px; flex-shrink: 0; background: #FFF9ED; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                ${getMayAvatarSVG("happy")}
+              </div>
+              <div>
+                <strong style="color: #FFD773;">Mây chào các bạn học sinh lớp 4!</strong>
+                <p style="font-size: 0.92rem; color: #FFF9ED;">
+                  Hôm nay chúng mình sẽ điều khiển phần mềm phát video để tìm hiểu <strong>Tết Ba Miền</strong> và <strong>Sự tích Quả dưa hấu</strong> nhé!
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="welcome-card">
+            <div>
+              <div style="color: var(--primary-orange-dark); font-weight: 800; font-size: 0.95rem;">
+                ${GAME_CONFIG.meta.grade} • ${GAME_CONFIG.meta.lesson}
+              </div>
+              <h1 class="game-main-title">${GAME_CONFIG.meta.gameTitle}</h1>
+            </div>
+
+            <p style="color: var(--text-muted); font-size: 0.98rem;">
+              Hoàn thành <strong>4 nhiệm vụ tương tác thực chất</strong> (25 điểm/màn) để làm chủ trình phát video, quan sát văn hóa ba miền và thiết kế Thẻ Kể Chuyện Đa Phương Tiện!
+            </p>
+
+            <div>
+              <div style="font-weight: 800; margin-bottom: 6px; font-size: 0.95rem;">Chọn chế độ tham gia:</div>
+              <div class="mode-selector">
+                <button type="button" class="mode-option ${appState.mode === "practice" ? "selected" : ""}" data-action="select-mode" data-mode="practice">
+                  <div style="font-weight: 800; color: var(--accent-purple-dark);">🌱 Chế độ Luyện tập</div>
+                  <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Hiển thị sẵn gợi ý bước 1 giúp em làm quen dễ dàng.</div>
+                </button>
+                <button type="button" class="mode-option ${appState.mode === "challenge" ? "selected" : ""}" data-action="select-mode" data-mode="challenge">
+                  <div style="font-weight: 800; color: var(--primary-orange-dark);">🚀 Chế độ Thử thách</div>
+                  <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Ẩn gợi ý ban đầu, tự mình chinh phục hoặc mở gợi ý khi cần.</div>
+                </button>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px;">
+              <button type="button" class="btn-primary" data-action="start-game" style="flex: 1; font-size: 1.12rem; min-height: 52px;">
+                ▶ Bắt đầu khám phá
+              </button>
+              <button type="button" class="btn-outline" data-action="open-guide" style="min-height: 52px;">
+                📖 Hướng dẫn cách chơi
+              </button>
+            </div>
+
+            <div class="sim-disclaimer" style="text-align: center;">
+              ${GAME_CONFIG.meta.disclaimer}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       MÀN 1: TRỢ LÍ PHÁT VIDEO
+       ========================================================================== */
+    function renderStage1(container) {
+      const s1 = appState.s1;
+      const currentScene = s1.fileLoaded
+        ? GAME_CONFIG.videoScenes[s1.sceneIndex]
+        : { id: "idle_no_file", timeRange: "00:00 / 00:00", subtitle: "Chưa mở tệp video." };
+
+      const subtitleText = !s1.fileLoaded
+        ? "Hãy nháy [📂 Mở video] để chọn tệp phim .mp4"
+        : s1.isUnmuted
+          ? `🔊 Phụ đề: ${currentScene.subtitle}`
+          : "🔇 Video đang tắt tiếng. Hãy nháy nút [🔊 Bật tiếng] để xem phụ đề & tín hiệu âm thanh!";
+
+      const filePickerHtml = s1.showFilePicker ? `
+        <div class="file-picker-modal" role="region" aria-label="Chọn tệp để mở">
+          <div style="font-weight: 800; color: var(--accent-purple-dark); margin-bottom: 4px;">
+            📂 Hộp thoại Mở tệp mô phỏng – Hãy chọn đúng tệp video:
+          </div>
+          ${GAME_CONFIG.stages[0].filesToPick.map(f => `
+            <button type="button" class="file-option-btn" data-action="s1-pick-file" data-file="${f.id}">
+              ${f.name}
+            </button>
+          `).join("")}
+        </div>
+      ` : "";
+
+      container.innerHTML = `
+        ${renderCompanionBanner()}
+
+        <div class="stage-layout">
+          <!-- Khung Trình phát video giả lập -->
+          <div class="video-player-shell">
+            <div class="player-top-bar">
+              <span>🎞️ Phần mềm phát đa phương tiện (Mô phỏng học tập)</span>
+              <span>Trạng thái: <strong>${!s1.fileLoaded ? "Chưa nạp tệp" : (s1.isPlaying ? "Đang phát (Play)" : "Tạm dừng (Pause)")}</strong></span>
+            </div>
+
+            <div class="video-viewport">
+              ${getSceneIllustrationSVG(currentScene.id, s1.isPlaying)}
+              <div class="video-subtitle-bar">${subtitleText}</div>
+            </div>
+
+            <!-- Thanh tiến trình & các mốc -->
+            <div class="timeline-container">
+              <div style="display: flex; justify-content: space-between; font-size: 0.84rem; color: #FFD773;">
+                <span>Mốc thời gian: ${currentScene.timeRange}</span>
+                <span>Tệp: ${s1.fileLoaded ? "Tet_Ba_Mien_Va_Dua_Hau.mp4" : "Chưa có"}</span>
+              </div>
+              <div class="timeline-markers">
+                ${GAME_CONFIG.videoScenes.map((sc, idx) => `
+                  <button type="button" class="marker-btn ${s1.fileLoaded && s1.sceneIndex === idx ? "active" : ""}"
+                    data-action="s1-seek" data-index="${idx}">
+                    ⏭ ${sc.shortLabel}
+                  </button>
+                `).join("")}
+              </div>
+            </div>
+
+            <!-- Hàng nút điều khiển trình phát -->
+            <div class="player-controls-row">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="btn-yellow" data-action="s1-open-dialog">
+                  📂 Mở video
+                </button>
+                <button type="button" class="btn-mint" data-action="s1-play">
+                  ▶ Play (Phát)
+                </button>
+                <button type="button" class="btn-primary" data-action="s1-pause">
+                  ⏸ Pause (Tạm dừng)
+                </button>
+              </div>
+              <button type="button" class="btn-purple" data-action="s1-toggle-audio">
+                ${s1.isUnmuted ? "🔊 Đã bật tiếng" : "🔇 Bật tiếng"}
+              </button>
+            </div>
+          </div>
+
+          <!-- Bảng 4 nhiệm vụ thao tác tuần tự -->
+          <div class="task-panel">
+            <h2 style="font-size: 1.18rem; color: var(--accent-purple-dark);">
+              📋 Nhiệm vụ Trợ lí phát video (4 bước)
+            </h2>
+            <p style="font-size: 0.92rem; color: var(--text-muted);">
+              Em hãy thực hiện lần lượt từng thao tác trên bảng điều khiển video bên trái:
+            </p>
+            <div class="checklist">
+              ${GAME_CONFIG.stages[0].steps.map((stText, idx) => {
+                const isDone = s1.stepIndex > idx || appState.stageCompleted[1];
+                const isCurrent = s1.stepIndex === idx && !appState.stageCompleted[1];
+                return `
+                  <div class="check-item ${isDone ? "done-step" : ""} ${isCurrent ? "active-step" : ""}">
+                    <span>${isDone ? "✅" : (isCurrent ? "👉" : "⬜")}</span>
+                    <span>${stText}</span>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+            ${filePickerHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       MÀN 2: HÀNH TRÌNH TẾT BA MIỀN
+       ========================================================================== */
+    function renderStage2(container) {
+      const s2 = appState.s2;
+      const currentScene = GAME_CONFIG.videoScenes[s2.sceneIndex];
+      const tasks = GAME_CONFIG.stages[1].captureTasks;
+      const activeTask = tasks[Math.min(s2.taskIndex, tasks.length - 1)];
+
+      container.innerHTML = `
+        ${renderCompanionBanner()}
+
+        <div class="stage-layout">
+          <!-- Màn ảnh rộng phát 5 phân đoạn hoạt cảnh -->
+          <div class="video-player-shell">
+            <div class="player-top-bar">
+              <span>🎬 Hoạt cảnh minh họa (không trích từ video SGK)</span>
+              <span id="s2StatusLabel">Trạng thái: <strong>${s2.isPlaying ? "▶ Đang phát tự động" : "⏸ Đã tạm dừng (Pause)"}</strong></span>
+            </div>
+
+            <div class="video-viewport" id="s2Viewport">
+              ${getSceneIllustrationSVG(currentScene.id, s2.isPlaying)}
+              <div class="video-subtitle-bar">
+                <strong>${currentScene.title}:</strong> ${currentScene.subtitle}
+              </div>
+            </div>
+
+            <div class="timeline-container">
+              <div class="timeline-markers" id="s2Markers">
+                ${GAME_CONFIG.videoScenes.map((sc, idx) => `
+                  <button type="button" class="marker-btn ${s2.sceneIndex === idx ? "active" : ""}"
+                    data-action="s2-seek" data-index="${idx}">
+                    ${sc.shortLabel}
+                  </button>
+                `).join("")}
+              </div>
+            </div>
+
+            <div class="player-controls-row">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="btn-mint" data-action="s2-play">
+                  ▶ Play (Tiếp tục phát)
+                </button>
+                <button type="button" class="btn-yellow" data-action="s2-pause">
+                  ⏸ Pause (Tạm dừng cảnh này)
+                </button>
+              </div>
+              <button type="button" class="btn-primary" data-action="s2-capture">
+                📸 Chụp thẻ quan sát
+              </button>
+            </div>
+          </div>
+
+          <!-- Bảng yêu cầu quan sát & Khay 3 thẻ đã chụp -->
+          <div class="task-panel">
+            <h2 style="font-size: 1.15rem; color: var(--accent-purple-dark);">
+              🔍 Thử thách quan sát & bắt khoảnh khắc
+            </h2>
+
+            <div style="background: #FFF4E8; border: 2px solid var(--primary-orange); border-radius: 14px; padding: 12px;">
+              <div style="font-weight: 800; color: var(--primary-orange-dark); margin-bottom: 4px;">
+                ${appState.stageCompleted[2] ? "🎉 Đã hoàn thành cả 3 thẻ quan sát!" : activeTask.prompt}
+              </div>
+              <div style="font-size: 0.88rem; color: var(--text-muted);">
+                Lưu ý: Hãy nhấn <strong>[⏸ Pause]</strong> để dừng hình trước khi nhấn <strong>[📸 Chụp thẻ quan sát]</strong> nhé!
+              </div>
+            </div>
+
+            <div style="font-weight: 800; font-size: 0.95rem; margin-top: 4px;">
+              🗂️ Bộ sưu tập Thẻ Quan Sát của em (${s2.capturedIds.length}/3):
+            </div>
+
+            <div class="captured-tray">
+              ${tasks.map((t, i) => {
+                const isCaptured = s2.capturedIds.includes(t.taskId) || appState.stageCompleted[2];
+                return `
+                  <div class="captured-card ${isCaptured ? "filled" : ""}">
+                    ${isCaptured ? `
+                      <div style="width: 100%; height: 60px; border-radius: 8px; overflow: hidden; margin-bottom: 6px;">
+                        ${getSceneIllustrationSVG(t.targetSceneId, false)}
+                      </div>
+                      <div style="color: #166966;">✅ ${t.cardTitle}</div>
+                      <div style="font-weight: 500; font-size: 0.78rem; color: var(--text-dark);">${t.cardSummary}</div>
+                    ` : `
+                      <div style="font-size: 1.4rem;">📷</div>
+                      <div>Thẻ ${i + 1}</div>
+                      <div style="font-size: 0.76rem; color: var(--text-muted);">Chưa chụp</div>
+                    `}
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Cập nhật riêng khung hình ở Màn 2 khi tự động chuyển cảnh để mượt mà
+    function updateStage2ViewportOnly() {
+      const vp = document.getElementById("s2Viewport");
+      const markers = document.getElementById("s2Markers");
+      if (!vp || !markers) return;
+      const currentScene = GAME_CONFIG.videoScenes[appState.s2.sceneIndex];
+      vp.innerHTML = `
+        ${getSceneIllustrationSVG(currentScene.id, appState.s2.isPlaying)}
+        <div class="video-subtitle-bar">
+          <strong>${currentScene.title}:</strong> ${currentScene.subtitle}
+        </div>
+      `;
+      markers.innerHTML = GAME_CONFIG.videoScenes.map((sc, idx) => `
+        <button type="button" class="marker-btn ${appState.s2.sceneIndex === idx ? "active" : ""}"
+          data-action="s2-seek" data-index="${idx}">
+          ${sc.shortLabel}
+        </button>
+      `).join("");
+    }
+
+    /* ==========================================================================
+       MÀN 3: GHI NHỚ VĂN HÓA (KÉO THẢ & NHẤN CHỌN)
+       ========================================================================== */
+    function renderStage3(container) {
+      const s3 = appState.s3;
+      const stageCfg = GAME_CONFIG.stages[2];
+      const placedCardIds = Object.values(s3.placements);
+
+      container.innerHTML = `
+        ${renderCompanionBanner()}
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div style="font-weight: 700; color: var(--text-dark);">
+            👆 Cách thao tác: Kéo thẻ bên trái thả vào ô nhóm bên phải (Hoặc nhấn chọn 1 thẻ rồi nhấn vào ô nhóm đích).
+          </div>
+          <button type="button" class="btn-purple" data-action="open-review-video">
+            🎬 Xem lại tóm tắt video (5 phân đoạn)
+          </button>
+        </div>
+
+        <div class="drag-board">
+          <!-- Cột 4 thẻ nguồn -->
+          <div class="task-panel">
+            <h2 style="font-size: 1.1rem; color: var(--accent-purple-dark);">
+              🃏 Thẻ hình ảnh & chú thích quan sát được
+            </h2>
+            <div class="source-cards-grid">
+              ${stageCfg.cards.map(card => {
+                const isPlaced = placedCardIds.includes(card.id);
+                const isSelected = s3.selectedCardId === card.id;
+                return `
+                  <div class="culture-card focusable ${isPlaced ? "placed" : ""} ${isSelected ? "selected-card" : ""}"
+                    tabindex="${isPlaced ? "-1" : "0"}"
+                    role="button"
+                    aria-label="${card.title}"
+                    data-action="s3-select-card"
+                    data-card="${card.id}"
+                    draggable="${!isPlaced}">
+                    <div style="width: 100%; height: 86px; border-radius: 10px; overflow: hidden; pointer-events: none;">
+                      ${getSceneIllustrationSVG(card.svgType, false)}
+                    </div>
+                    <div style="font-weight: 700; font-size: 0.9rem; pointer-events: none;">
+                      ${card.title}
+                    </div>
+                    <span style="font-size: 0.78rem; color: var(--primary-orange-dark); pointer-events: none;">
+                      ${isPlaced ? "✅ Đã xếp đúng" : (isSelected ? "👉 Đang chọn (Hãy nhấn ô đích)" : "Nhấn chọn hoặc kéo thả")}
+                    </span>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+
+          <!-- Cột 4 vùng nhóm đích -->
+          <div class="task-panel">
+            <h2 style="font-size: 1.1rem; color: var(--accent-purple-dark);">
+              🏛️ Bảng phân loại văn hóa Tết & Sự tích
+            </h2>
+            <div class="drop-zones-grid">
+              ${stageCfg.zones.map(zone => {
+                const placedId = s3.placements[zone.id];
+                const placedCard = stageCfg.cards.find(c => c.id === placedId);
+                return `
+                  <div class="drop-zone focusable ${placedCard ? "filled-zone" : ""} ${s3.selectedCardId && !placedCard ? "highlight-target" : ""}"
+                    tabindex="0"
+                    role="button"
+                    aria-label="${zone.label}"
+                    data-action="s3-drop-zone"
+                    data-zone="${zone.id}">
+                    <div class="zone-title">${zone.label}</div>
+                    ${placedCard ? `
+                      <div style="background: #FFFFFF; padding: 8px; border-radius: 10px; border: 2px solid var(--success-green); text-align: center;">
+                        <div style="width: 100%; height: 64px; border-radius: 6px; overflow: hidden; margin-bottom: 4px;">
+                          ${getSceneIllustrationSVG(placedCard.svgType, false)}
+                        </div>
+                        <div style="font-size: 0.85rem; font-weight: 700; color: #1A683B;">
+                          ✅ ${placedCard.title}
+                        </div>
+                      </div>
+                    ` : `
+                      <div style="text-align: center; color: var(--text-muted); font-size: 0.88rem; padding: 24px 8px;">
+                        📥 Thả thẻ hoặc nhấn vào đây để đặt thẻ
+                      </div>
+                    `}
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        </div>
+      `;
+
+      setupStage3DragEvents();
+    }
+
+    function setupStage3DragEvents() {
+      const cards = document.querySelectorAll(".culture-card[draggable='true']");
+      const zones = document.querySelectorAll(".drop-zone");
+
+      cards.forEach(cardEl => {
+        cardEl.addEventListener("dragstart", (e) => {
+          const cardId = cardEl.getAttribute("data-card");
+          appState.s3.selectedCardId = cardId;
+          if (e.dataTransfer) {
+            e.dataTransfer.setData("text/plain", cardId);
+          }
+        });
+      });
+
+      zones.forEach(zoneEl => {
+        zoneEl.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          zoneEl.classList.add("highlight-target");
+        });
+        zoneEl.addEventListener("dragleave", () => {
+          zoneEl.classList.remove("highlight-target");
+        });
+        zoneEl.addEventListener("drop", (e) => {
+          e.preventDefault();
+          zoneEl.classList.remove("highlight-target");
+          const zoneId = zoneEl.getAttribute("data-zone");
+          const cardId = (e.dataTransfer && e.dataTransfer.getData("text/plain")) || appState.s3.selectedCardId;
+          if (cardId && zoneId) {
+            handleStage3Placement(cardId, zoneId);
+          }
+        });
+      });
+    }
+
+    function handleStage3Placement(cardId, zoneId) {
+      const stageCfg = GAME_CONFIG.stages[2];
+      const card = stageCfg.cards.find(c => c.id === cardId);
+      const zone = stageCfg.zones.find(z => z.id === zoneId);
+      if (!card || !zone) return;
+
+      if (appState.s3.placements[zoneId]) {
+        sound.playSfx("wrong");
+        appState.mayMood = "thinking";
+        appState.feedbackStatus = "error";
+        appState.mayMessage = `Ô "${zone.label}" đã có thẻ đúng rồi! Em hãy chọn ô nhóm khác nhé.`;
+        renderApp();
+        return;
+      }
+
+      if (card.targetZone === zoneId) {
+        appState.s3.placements[zoneId] = cardId;
+        appState.s3.selectedCardId = null;
+
+        const totalPlaced = Object.keys(appState.s3.placements).length;
+        if (totalPlaced === stageCfg.cards.length) {
+          markStageComplete(
+            3,
+            "Hoan hô! Em đã phân loại chính xác cả 4 thẻ văn hóa Tết Ba Miền và Sự tích Quả dưa hấu (+25 điểm)!"
+          );
+        } else {
+          sound.playSfx("correct");
+          appState.mayMood = "happy";
+          appState.feedbackStatus = "success";
+          appState.mayMessage = `${card.explainCorrect} (Đã xếp đúng ${totalPlaced}/4 thẻ).`;
+          renderApp();
+        }
+      } else {
+        sound.playSfx("wrong");
+        appState.mayMood = "thinking";
+        appState.feedbackStatus = "error";
+        appState.mayMessage = `Chưa khớp rồi! Thẻ "${card.title}" không thuộc về "${zone.label}". Em hãy nhớ lại hình ảnh trong video hoặc bấm [🎬 Xem lại tóm tắt video] nhé!`;
+        renderApp();
+      }
+    }
+
+    /* ==========================================================================
+       MÀN 4: NGƯỜI KỂ CHUYỆN (TẠO THẺ GIỚI THIỆU ĐA PHƯƠNG TIỆN)
+       ========================================================================== */
+    function renderStage4(container) {
+      const s4 = appState.s4;
+      const topics = GAME_CONFIG.stages[3].topics;
+      const currentTopic = topics[s4.topicKey];
+
+      const pickedFactsObjects = s4.pickedFactIds.map(id => currentTopic.facts.find(f => f.id === id)).filter(Boolean);
+
+      container.innerHTML = `
+        ${renderCompanionBanner()}
+
+        <div class="storyteller-grid">
+          <!-- Cột trái: Bước 1 chọn chủ đề + Bước 2 chọn 3 sự kiện -->
+          <div class="task-panel">
+            <h2 style="font-size: 1.12rem; color: var(--accent-purple-dark);">
+              ✍️ Bước 1: Chọn chủ đề em muốn kể lại
+            </h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              ${Object.values(topics).map(tp => `
+                <button type="button" class="mode-option ${s4.topicKey === tp.id ? "selected" : ""}"
+                  data-action="s4-select-topic" data-topic="${tp.id}">
+                  <div style="font-weight: 800; color: var(--accent-purple-dark);">${tp.title}</div>
+                </button>
+              `).join("")}
+            </div>
+
+            <h2 style="font-size: 1.12rem; color: var(--accent-purple-dark); margin-top: 6px;">
+              🧩 Bước 2: Chọn đúng 3 thẻ sự kiện/đặc điểm (${s4.pickedFactIds.length}/3)
+            </h2>
+            <p style="font-size: 0.88rem; color: var(--text-muted);">
+              Nháy vào các thẻ đúng với nội dung đã xem trong video để đưa vào bài kể của em:
+            </p>
+
+            <div class="fact-Pool">
+              ${currentTopic.facts.map(fact => {
+                const pickedIdx = s4.pickedFactIds.indexOf(fact.id);
+                const isPicked = pickedIdx !== -1;
+                return `
+                  <button type="button" class="fact-item ${isPicked ? "picked" : ""}"
+                    data-action="s4-toggle-fact" data-fact="${fact.id}">
+                    <span class="order-badge">${isPicked ? (pickedIdx + 1) : "+"}</span>
+                    <span style="flex: 1; font-size: 0.94rem;">${fact.text}</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px;">
+              <button type="button" class="btn-primary" data-action="s4-generate-preview">
+                ✨ Bước 3: Xem giới thiệu trên thẻ
+              </button>
+              <button type="button" class="btn-outline" data-action="open-review-video">
+                🎬 Xem lại tóm tắt video
+              </button>
+            </div>
+          </div>
+
+          <!-- Cột phải: Thẻ Giới Thiệu Đa Phương Tiện -->
+          <div class="task-panel">
+            <h2 style="font-size: 1.12rem; color: var(--accent-purple-dark);">
+              🪪 Thẻ Giới Thiệu Đa Phương Tiện của em
+            </h2>
+
+            ${s4.previewGenerated ? `
+              <div class="story-card-preview">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span class="badge-class">${currentTopic.introHeader}</span>
+                  <span style="font-size: 0.8rem; color: var(--text-muted);">Tác giả: Đạo diễn nhí Lớp 4</span>
+                </div>
+                <div style="width: 100%; height: 150px; border-radius: 12px; overflow: hidden; border: 2px solid var(--primary-orange);">
+                  ${getSceneIllustrationSVG(currentTopic.svgPreview, true)}
+                </div>
+                <div style="background: #FFFFFF; padding: 12px; border-radius: 12px; border: 1px solid #F0D9C0;">
+                  <div style="font-weight: 800; color: var(--accent-purple-dark); margin-bottom: 6px;">
+                    Nội dung giới thiệu bằng chữ:
+                  </div>
+                  <ol style="padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: 0.95rem;">
+                    ${pickedFactsObjects.map(f => `<li>${f.text}</li>`).join("")}
+                  </ol>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                  <button type="button" class="btn-mint" data-action="s4-save-card" style="flex: 1;">
+                    💾 Lưu thẻ (Lưu trong lượt chơi)
+                  </button>
+                  <button type="button" class="btn-outline" data-action="s4-download-card">
+                    📥 Tải tệp .txt về máy
+                  </button>
+                </div>
+              </div>
+            ` : `
+              <div style="border: 3px dashed #D5C8E8; border-radius: 16px; padding: 36px 18px; text-align: center; color: var(--text-muted);">
+                <div style="font-size: 2.2rem; margin-bottom: 8px;">📜</div>
+                <div style="font-weight: 700;">Chưa tạo bản xem trước Thẻ Giới Thiệu</div>
+                <p style="font-size: 0.9rem; margin-top: 6px;">
+                  Hãy chọn đủ <strong>3 sự kiện đúng</strong> ở cột bên trái rồi nhấn nút <strong>[✨ Bước 3: Xem giới thiệu trên thẻ]</strong> nhé!
+                </p>
+              </div>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       MÀN TỔNG KẾT & TRAO HUY HIỆU (SUMMARY SCREEN)
+       ========================================================================== */
+    function renderSummaryScreen(container) {
+      sound.playSfx("victory");
+      container.innerHTML = `
+        <div class="welcome-grid">
+          <div class="hero-illustration" style="background: linear-gradient(180deg, #3A2C60 0%, #246A73 100%);">
+            <div style="margin-bottom: 10px;">
+              <span class="badge-class" style="font-size: 1rem; padding: 6px 16px;">🏆 BẢNG THÀNH TÍCH & HUY HIỆU</span>
+            </div>
+            <div style="width: 110px; height: 110px; margin: 10px auto; background: #FFF9ED; border-radius: 50%; border: 4px solid #FFD773; display: flex; align-items: center; justify-content: center;">
+              ${getMayAvatarSVG("victory")}
+            </div>
+            <h2 style="font-size: 1.7rem; color: #FFD773; margin-top: 8px;">
+              HUY HIỆU: ĐẠO DIỄN NHÍ ĐA PHƯƠNG TIỆN
+            </h2>
+            <div style="font-size: 2.2rem; font-weight: 900; color: #FFFFFF; margin: 8px 0;">
+              Tổng điểm: ${appState.score} / 100 ⭐
+            </div>
+            <p style="color: #E2F6F5; font-size: 0.96rem;">
+              Chúc mừng em đã hoàn thành xuất sắc cả 4 màn chơi của Bài 12A: Thực hành đa phương tiện!
+            </p>
+          </div>
+
+          <div class="welcome-card">
+            <h2 style="color: var(--accent-purple-dark); font-size: 1.35rem;">
+              📚 3 Nhận xét kiến thức em đã làm chủ:
+            </h2>
+            <div class="checklist">
+              <div class="check-item done-step">
+                <span>1️⃣</span>
+                <span><strong>Kỹ năng điều khiển phần mềm đa phương tiện:</strong> Em biết cách mở tệp video (.mp4), sử dụng nút Play, Pause, bật/tắt âm thanh và thanh tiến trình để xem đúng đoạn phim mong muốn.</span>
+              </div>
+              <div class="check-item done-step">
+                <span>2️⃣</span>
+                <span><strong>Khám phá văn hóa từ đa phương tiện:</strong> Em nhận biết được nét đẹp phong tục Tết Ba Miền (Bắc - Trung - Nam) và ý nghĩa câu chuyện Sự tích Quả dưa hấu của Mai An Tiêm.</span>
+              </div>
+              <div class="check-item done-step">
+                <span>3️⃣</span>
+                <span><strong>Quan sát, ghi nhớ và kể lại:</strong> Em biết tạm dừng video để ghi nhận thông tin quan trọng và sắp xếp các sự kiện thành thẻ giới thiệu mạch lạc.</span>
+              </div>
+            </div>
+
+            ${appState.savedStoryCards.length > 0 ? `
+              <div style="background: #FFF8EB; border: 2px solid var(--primary-orange); border-radius: 12px; padding: 10px 14px;">
+                <div style="font-weight: 800; color: var(--primary-orange-dark);">
+                  🗂️ Thẻ giới thiệu đã lưu trong lượt chơi (${appState.savedStoryCards.length} thẻ):
+                </div>
+                <div style="font-size: 0.9rem; margin-top: 4px;">
+                  <strong>${appState.savedStoryCards[appState.savedStoryCards.length - 1].title}</strong>
+                </div>
+              </div>
+            ` : ""}
+
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px;">
+              <button type="button" class="btn-primary" data-action="play-again" style="flex: 1; font-size: 1.08rem;">
+                🔄 Chơi lại từ đầu
+              </button>
+              <button type="button" class="btn-outline" data-action="jump-stage" data-stage="1">
+                🔍 Xem lại các màn
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       MODAL HƯỚNG DẪN & XEM LẠI VIDEO TÓM TẮT
+       ========================================================================== */
+    function openGuideModal() {
+      const modal = document.getElementById("modalContainer");
+      const body = document.getElementById("modalBody");
+      body.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h2 style="color: var(--accent-purple-dark);">📖 Hướng dẫn trò chơi Rạp Phim Tết Ba Miền</h2>
+          <button type="button" class="btn-outline" data-action="close-modal">✖ Đóng</button>
+        </div>
+        <div class="checklist">
+          <div class="check-item">
+            <span>🎯</span>
+            <div><strong>Mục tiêu học tập (SGK Tin học 4 trang 52–54):</strong> Sử dụng phần mềm đa phương tiện để tìm hiểu phong tục Tết ba miền và Sự tích quả dưa hấu; rèn kỹ năng quan sát, ghi nhớ và kể lại điều học được.</div>
+          </div>
+          <div class="check-item">
+            <span>🎮</span>
+            <div><strong>4 Màn tương tác (25 điểm/màn - Tổng 100 điểm):</strong><br/>
+              • <strong>Màn 1 (Trợ lí phát video):</strong> Thực hành mở tệp video .mp4, bấm Play, Bật tiếng, chọn mốc thời gian và Pause.<br/>
+              • <strong>Màn 2 (Hành trình Tết ba miền):</strong> Quan sát 5 phân đoạn hoạt cảnh, nhấn Pause đúng cảnh yêu cầu và chụp 3 thẻ quan sát.<br/>
+              • <strong>Màn 3 (Ghi nhớ văn hóa):</strong> Kéo thả hoặc nhấn chọn để ghép 4 thẻ hình ảnh vào đúng nhóm vùng miền/sự tích.<br/>
+              • <strong>Màn 4 (Người kể chuyện):</strong> Chọn 3 sự kiện đúng để ghép thành Thẻ Giới Thiệu Đa Phương Tiện và lưu thẻ.
+            </div>
+          </div>
+          <div class="check-item">
+            <span>🎵</span>
+            <div><strong>Âm thanh thân thiện:</strong> Có 2 công tắc <em>Nhạc nền</em> và <em>Hiệu ứng</em> độc lập trên thanh công cụ. Trò chơi hướng dẫn hoàn toàn bằng chữ, biểu tượng và minh họa trực quan (không dùng giọng đọc).</div>
+          </div>
+        </div>
+      `;
+      modal.style.display = "flex";
+    }
+
+    function openReviewVideoModal() {
+      const modal = document.getElementById("modalContainer");
+      const body = document.getElementById("modalBody");
+      body.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h2 style="color: var(--accent-purple-dark);">🎬 Tóm tắt 5 phân đoạn hoạt cảnh đã xem</h2>
+          <button type="button" class="btn-outline" data-action="close-modal">✖ Đóng</button>
+        </div>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">
+          ${GAME_CONFIG.meta.disclaimer}
+        </p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          ${GAME_CONFIG.videoScenes.map(sc => `
+            <div style="border: 2px solid #D8CBEF; border-radius: 12px; padding: 10px; background: #FAF8FF;">
+              <div style="width: 100%; height: 110px; border-radius: 8px; overflow: hidden; margin-bottom: 6px;">
+                ${getSceneIllustrationSVG(sc.id, false)}
+              </div>
+              <div style="font-weight: 800; color: var(--accent-purple-dark); font-size: 0.92rem;">${sc.title}</div>
+              <div style="font-size: 0.86rem; color: var(--text-dark); margin-top: 4px;">${sc.subtitle}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+      modal.style.display = "flex";
+    }
+
+    /* ==========================================================================
+       XỬ LÝ SỰ KIỆN TẬP TRUNG (EVENT DELEGATION)
+       ========================================================================== */
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-action]");
+      if (!btn) return;
+      if (btn.disabled) return;
+
+      const action = btn.getAttribute("data-action");
+
+      // --- Điều hướng chung & Màn chào mừng ---
+      if (action === "select-mode") {
+        sound.playSfx("click");
+        appState.mode = btn.getAttribute("data-mode") || "practice";
+        renderApp();
+        return;
+      }
+
+      if (action === "start-game") {
+        appState.hasStarted = true;
+        sound.playSfx("click");
+        sound.startBgm();
+        appState.screen = "stage";
+        appState.currentStage = 1;
+        resetStageData(1);
+        renderApp();
+        return;
+      }
+
+      if (action === "open-guide") {
+        sound.playSfx("click");
+        openGuideModal();
+        return;
+      }
+
+      if (action === "open-review-video") {
+        sound.playSfx("click");
+        openReviewVideoModal();
+        return;
+      }
+
+      if (action === "close-modal") {
+        sound.playSfx("click");
+        document.getElementById("modalContainer").style.display = "none";
+        return;
+      }
+
+      if (action === "jump-stage") {
+        sound.playSfx("click");
+        const targetStage = parseInt(btn.getAttribute("data-stage"), 10);
+        if (targetStage >= 1 && targetStage <= 4) {
+          appState.screen = "stage";
+          appState.currentStage = targetStage;
+          resetStageData(targetStage);
+          renderApp();
+        }
+        return;
+      }
+
+      if (action === "play-again") {
+        sound.playSfx("click");
+        stopStageTimers();
+        appState.score = 0;
+        appState.stageCompleted = { 1: false, 2: false, 3: false, 4: false };
+        appState.hintLevelPerStage = { 1: 0, 2: 0, 3: 0, 4: 0 };
+        appState.currentStage = 1;
+        appState.screen = "stage";
+        resetStageData(1);
+        sound.startBgm();
+        renderApp();
+        return;
+      }
+
+      // --- Xử lý sự kiện MÀN 1: TRỢ LÍ PHÁT VIDEO ---
+      if (action === "s1-open-dialog") {
+        sound.playSfx("click");
+        appState.s1.showFilePicker = true;
+        appState.mayMood = "normal";
+        appState.feedbackStatus = "normal";
+        appState.mayMessage = "Hộp thoại chọn tệp đã mở! Em hãy chọn đúng tệp video .mp4 nhé.";
+        renderApp();
+        return;
+      }
+
+      if (action === "s1-pick-file") {
+        const fileId = btn.getAttribute("data-file");
+        const fileObj = GAME_CONFIG.stages[0].filesToPick.find(f => f.id === fileId);
+        if (!fileObj) return;
+
+        if (fileObj.isCorrect) {
+          sound.playSfx("correct");
+          appState.s1.fileLoaded = true;
+          appState.s1.showFilePicker = false;
+          appState.s1.stepIndex = Math.max(appState.s1.stepIndex, 1);
+          appState.mayMood = "happy";
+          appState.feedbackStatus = "success";
+          appState.mayMessage = `${fileObj.feedback} Bây giờ em hãy thực hiện Bước 2: Nháy nút [▶ Play] nhé!`;
+        } else {
+          sound.playSfx("wrong");
+          appState.mayMood = "thinking";
+          appState.feedbackStatus = "error";
+          appState.mayMessage = fileObj.feedback;
+        }
+        renderApp();
+        return;
+      }
+
+      if (action === "s1-play") {
+        if (!appState.s1.fileLoaded) {
+          sound.playSfx("wrong");
+          appState.mayMood = "thinking";
+          appState.feedbackStatus = "error";
+          appState.mayMessage = "Chưa có tệp phim nào được nạp! Em hãy nháy nút [📂 Mở video] ở Bước 1 trước nhé.";
+          renderApp();
+          return;
+        }
+        sound.playSfx("correct");
+        appState.s1.isPlaying = true;
+        if (appState.s1.stepIndex === 1) {
+          appState.s1.stepIndex = 2;
+        }
+        appState.mayMood = "happy";
+        appState.feedbackStatus = "success";
+        appState.mayMessage = "Đoạn phim đang phát rồi! Tiếp theo ở Bước 3, em hãy nháy nút [🔇 Bật tiếng] để mở phụ đề và tín hiệu âm thanh nhé.";
+        renderApp();
+        return;
+      }
+
+      if (action === "s1-toggle-audio") {
+        if (!appState.s1.fileLoaded || !appState.s1.isPlaying) {
+          sound.playSfx("wrong");
+          appState.mayMood = "thinking";
+          appState.feedbackStatus = "error";
+          appState.mayMessage = "Em hãy hoàn thành Bước 1 (Mở video) và Bước 2 (Nhấn Play) trước khi bật tiếng nhé!";
+          renderApp();
+          return;
+        }
+        sound.playSfx("correct");
+        appState.s1.isUnmuted = true;
+        if (appState.s1.stepIndex === 2) {
+          appState.s1.stepIndex = 3;
+        }
+        appState.mayMood = "happy";
+        appState.feedbackStatus = "success";
+        appState.mayMessage = "Tuyệt lắm! Phụ đề đã hiển thị rõ ràng. Bây giờ đến Bước 4: Hãy nháy chọn mốc [⏭ 00:30 Tết Miền Trung] rồi nháy [⏸ Pause] nhé!";
+        renderApp();
+        return;
+      }
+
+      if (action === "s1-seek") {
+        if (!appState.s1.fileLoaded) {
+          sound.playSfx("wrong");
+          appState.mayMood = "thinking";
+          appState.feedbackStatus = "error";
+          appState.mayMessage = "Em cần mở tệp video (.mp4) trước khi tua thanh tiến trình nhé!";
+          renderApp();
+          return;
+        }
+        const idx = parseInt(btn.getAttribute("data-index"), 10);
+        appState.s1.sceneIndex = idx;
+        sound.playSfx("click");
+        if (idx === 1) {
+          appState.mayMood = "happy";
+          appState.feedbackStatus = "normal";
+          appState.mayMessage = "Em đã chuyển đến đúng mốc 00:30 Tết Miền Trung! Hãy nháy nút [⏸ Pause] để tạm dừng cảnh này nhé.";
+        } else {
+          appState.mayMood = "normal";
+          appState.feedbackStatus = "normal";
+          appState.mayMessage = `Đang ở ${GAME_CONFIG.videoScenes[idx].shortLabel}. Ở Bước 4, em nhớ chọn mốc [00:30 Tết Miền Trung] rồi nhấn [⏸ Pause] nhé!`;
+        }
+        renderApp();
+        return;
+      }
+
+      if (action === "s1-pause") {
+        if (!appState.s1.fileLoaded) {
+          sound.playSfx("wrong");
+          appState.mayMood = "thinking";
+          appState.feedbackStatus = "error";
+          appState.mayMessage = "Hãy mở tệp video trước nhé!";
+          renderApp();
+          return;
+        }
+        appState.s1.isPlaying = false;
+        if (appState.s1.stepIndex >= 3 && appState.s1.sceneIndex === 1) {
+          appState.s1.stepIndex = 4;
+          markStageComplete(
+            1,
+            "Chúc mừng em! Em đã thành thạo cả 4 thao tác điều khiển trình phát video (Mở tệp, Play, Bật tiếng, Tua & Pause) và nhận được +25 điểm!"
+          );
+        } else {
+          sound.playSfx("wrong");
+          appState.mayMood = "thinking";
+          appState.feedbackStatus = "error";
+          if (appState.s1.stepIndex < 3) {
+            appState.mayMessage = "Em đã nhấn Pause, nhưng hãy hoàn thành đủ Bước 1, Bước 2 và Bước 3 trước nhé!";
+          } else {
+            appState.mayMessage = "Em đã nhấn Pause nhưng chưa ở đúng mốc [00:30 Tết Miền Trung]. Hãy nháy chọn mốc [⏭ 00:30 Tết Miền Trung] rồi nhấn [⏸ Pause] nhé!";
+          }
+          renderApp();
+        }
+        return;
+      }
+
+      // --- Xử lý sự kiện MÀN 2: HÀNH TRÌNH TẾT BA MIỀN ---
+      if (action === "s2-play") {
+        sound.playSfx("click");
+        appState.s2.isPlaying = true;
+        appState.mayMood = "normal";
+        appState.feedbackStatus = "normal";
+        appState.mayMessage = "Video đang phát tiếp! Khi thấy đúng phân đoạn cần tìm, em hãy nhấn [⏸ Pause] nhé.";
+        renderApp();
+        return;
+      }
+
+      if (action === "s2-pause") {
+        sound.playSfx("click");
+        appState.s2.isPlaying = false;
+        const sc = GAME_CONFIG.videoScenes[appState.s2.sceneIndex];
+        appState.mayMood = "normal";
+        appState.feedbackStatus = "normal";
+        appState.mayMessage = `Đã tạm dừng tại "${sc.title}". Nếu đây đúng là cảnh nhiệm vụ yêu cầu, em hãy bấm [📸 Chụp thẻ quan sát]!`;
+        renderApp();
+        return;
+      }
+
+      if (action === "s2-seek") {
+        sound.playSfx("click");
+        const idx = parseInt(btn.getAttribute("data-index"), 10);
+        appState.s2.sceneIndex = idx;
+        appState.s2.isPlaying = false; // Tự động dừng khi học sinh chọn mốc cụ thể để dễ quan sát
+        const sc = GAME_CONFIG.videoScenes[idx];
+        appState.mayMood = "normal";
+        appState.feedbackStatus = "normal";
+        appState.mayMessage = `Đã chuyển tới và tạm dừng tại "${sc.title}". Hãy kiểm tra xem có đúng yêu cầu rồi bấm [📸 Chụp thẻ quan sát] nhé!`;
+        renderApp();
+        return;
+      }
+
+      if (action === "s2-capture") {
+        const s2 = appState.s2;
+        const tasks = GAME_CONFIG.stages[1].captureTasks;
+        if (s2.taskIndex >= tasks.length) return;
+
+        if (s2.isPlaying) {
+          sound.playSfx("wrong");
+          appState.mayMood = "thinking";
+          appState.feedbackStatus = "error";
+          appState.mayMessage = "Video vẫn đang chạy! Em hãy nháy nút [⏸ Pause] để tạm dừng đúng cảnh trước khi chụp thẻ quan sát nhé.";
+          renderApp();
+          return;
+        }
+
+        const currentScene = GAME_CONFIG.videoScenes[s2.sceneIndex];
+        const currentTask = tasks[s2.taskIndex];
+
+        if (currentScene.id === currentTask.targetSceneId) {
+          if (!s2.capturedIds.includes(currentTask.taskId)) {
+            s2.capturedIds.push(currentTask.taskId);
+          }
+          s2.taskIndex++;
+
+          if (s2.taskIndex >= tasks.length) {
+            markStageComplete(
+              2,
+              "Tuyệt vời! Em đã quan sát video, dừng đúng khoảnh khắc và thu thập đủ 3 Thẻ Quan Sát văn hóa (+25 điểm)!"
+            );
+          } else {
+            sound.playSfx("correct");
+            appState.mayMood = "happy";
+            appState.feedbackStatus = "success";
+            appState.mayMessage = `${currentTask.successMsg} Hãy tiếp tục với thử thách tiếp theo nhé!`;
+            renderApp();
+          }
+        } else {
+          sound.playSfx("wrong");
+          appState.mayMood = "thinking";
+          appState.feedbackStatus = "error";
+          appState.mayMessage = `Chưa đúng phân đoạn rồi! Cảnh hiện tại đang là "${currentScene.title}" (${currentScene.keyDetail}). Em hãy tìm đúng phân đoạn theo yêu cầu nhé!`;
+          renderApp();
+        }
+        return;
+      }
+
+      // --- Xử lý sự kiện MÀN 3: GHI NHỚ VĂN HÓA ---
+      if (action === "s3-select-card") {
+        const cardId = btn.getAttribute("data-card");
+        if (Object.values(appState.s3.placements).includes(cardId)) return;
+        sound.playSfx("click");
+        appState.s3.selectedCardId = appState.s3.selectedCardId === cardId ? null : cardId;
+        appState.mayMood = "normal";
+        appState.feedbackStatus = "normal";
+        appState.mayMessage = appState.s3.selectedCardId
+          ? "Đã chọn thẻ! Bây giờ em hãy nhấn vào ô nhóm văn hóa tương ứng ở cột bên phải nhé."
+          : "Em hãy nhấn chọn một thẻ hoặc kéo thả thẻ vào ô nhóm bên phải.";
+        renderApp();
+        return;
+      }
+
+      if (action === "s3-drop-zone") {
+        const zoneId = btn.getAttribute("data-zone");
+        if (!appState.s3.selectedCardId) {
+          sound.playSfx("click");
+          appState.mayMood = "thinking";
+          appState.feedbackStatus = "normal";
+          appState.mayMessage = "Em hãy nhấn chọn một thẻ hình ảnh ở cột bên trái trước, sau đó mới nhấn vào ô nhóm đích này nhé!";
+          renderApp();
+          return;
+        }
+        handleStage3Placement(appState.s3.selectedCardId, zoneId);
+        return;
+      }
+
+      // --- Xử lý sự kiện MÀN 4: NGƯỜI KỂ CHUYỆN ---
+      if (action === "s4-select-topic") {
+        const topicId = btn.getAttribute("data-topic");
+        if (topicId && GAME_CONFIG.stages[3].topics[topicId]) {
+          sound.playSfx("click");
+          appState.s4.topicKey = topicId;
+          appState.s4.pickedFactIds = [];
+          appState.s4.previewGenerated = false;
+          appState.mayMood = "normal";
+          appState.feedbackStatus = "normal";
+          appState.mayMessage = `Em đã chọn "${GAME_CONFIG.stages[3].topics[topicId].title}". Hãy chọn đúng 3 sự kiện/đặc điểm thuộc chủ đề này nhé!`;
+          renderApp();
+        }
+        return;
+      }
+
+      if (action === "s4-toggle-fact") {
+        const factId = btn.getAttribute("data-fact");
+        const currentTopic = GAME_CONFIG.stages[3].topics[appState.s4.topicKey];
+        const factObj = currentTopic.facts.find(f => f.id === factId);
+        if (!factObj) return;
+
+        // Nếu đã chọn thì bỏ chọn
+        const existingIdx = appState.s4.pickedFactIds.indexOf(factId);
+        if (existingIdx !== -1) {
+          sound.playSfx("click");
+          appState.s4.pickedFactIds.splice(existingIdx, 1);
+          appState.s4.previewGenerated = false;
+          appState.mayMood = "normal";
+          appState.feedbackStatus = "normal";
+          appState.mayMessage = `Đã bỏ chọn thẻ. Hiện tại em đã chọn ${appState.s4.pickedFactIds.length}/3 thẻ.`;
+          renderApp();
+          return;
+        }
+
+        // Kiểm tra tính đúng đắn của dữ kiện ngay khi chọn
+        if (!factObj.isValid) {
+          sound.playSfx("wrong");
+          appState.mayMood = "thinking";
+          appState.feedbackStatus = "error";
+          appState.mayMessage = factObj.wrongReason;
+          renderApp();
+          return;
+        }
+
+        if (appState.s4.pickedFactIds.length >= 3) {
+          sound.playSfx("click");
+          appState.mayMood = "normal";
+          appState.feedbackStatus = "normal";
+          appState.mayMessage = "Em đã chọn đủ 3 thẻ sự kiện rồi! Hãy nhấn nút [✨ Bước 3: Xem giới thiệu trên thẻ] bên dưới nhé.";
+          renderApp();
+          return;
+        }
+
+        sound.playSfx("correct");
+        appState.s4.pickedFactIds.push(factId);
+        // Tự động sắp xếp theo thứ tự mạch lạc để hỗ trợ học sinh tiểu học hoặc giữ thứ tự hợp lý
+        appState.s4.pickedFactIds.sort((a, b) => {
+          const fa = currentTopic.facts.find(x => x.id === a);
+          const fb = currentTopic.facts.find(x => x.id === b);
+          return (fa ? fa.order : 99) - (fb ? fb.order : 99);
+        });
+
+        appState.mayMood = "happy";
+        appState.feedbackStatus = "success";
+        appState.mayMessage = appState.s4.pickedFactIds.length === 3
+          ? "Chính xác! Em đã chọn đủ 3 sự kiện hợp lý. Bây giờ hãy nhấn nút [✨ Bước 3: Xem giới thiệu trên thẻ] nhé!"
+          : `Đúng rồi! Em đã chọn được ${appState.s4.pickedFactIds.length}/3 sự kiện chính xác.`;
+        renderApp();
+        return;
+      }
+
+      if (action === "s4-generate-preview") {
+        if (appState.s4.pickedFactIds.length < 3) {
+          sound.playSfx("wrong");
+          appState.mayMood = "thinking";
+          appState.feedbackStatus = "error";
+          appState.mayMessage = `Em mới chọn ${appState.s4.pickedFactIds.length}/3 thẻ sự kiện. Hãy chọn đủ 3 thẻ đúng ở Bước 2 trước khi xem giới thiệu nhé!`;
+          renderApp();
+          return;
+        }
+        sound.playSfx("correct");
+        appState.s4.previewGenerated = true;
+        appState.mayMood = "happy";
+        appState.feedbackStatus = "success";
+        appState.mayMessage = "Thẻ Giới Thiệu Đa Phương Tiện đã hiện lên ở khung bên phải! Em hãy đọc lại nội dung và nhấn [💾 Lưu thẻ] để hoàn thành màn chơi nhé.";
+        renderApp();
+        return;
+      }
+
+      if (action === "s4-save-card") {
+        if (!appState.s4.previewGenerated) return;
+        const currentTopic = GAME_CONFIG.stages[3].topics[appState.s4.topicKey];
+        const lines = appState.s4.pickedFactIds.map(id => {
+          const f = currentTopic.facts.find(x => x.id === id);
+          return f ? f.text : "";
+        });
+
+        const cardRecord = {
+          title: currentTopic.title,
+          lines,
+          savedAt: new Date().toLocaleTimeString("vi-VN")
+        };
+        appState.savedStoryCards.push(cardRecord);
+        try {
+          sessionStorage.setItem("RAP_PHIM_TET_SAVED_CARDS", JSON.stringify(appState.savedStoryCards));
+        } catch (err) {}
+
+        appState.s4.cardSaved = true;
+        markStageComplete(
+          4,
+          "Xuất sắc! Thẻ Giới Thiệu của em đã được lưu vào bộ nhớ lượt chơi (+25 điểm). Hãy bấm [🏆 Xem Tổng Kết] để nhận huy hiệu nhé!"
+        );
+        return;
+      }
+
+      if (action === "s4-download-card") {
+        sound.playSfx("click");
+        const currentTopic = GAME_CONFIG.stages[3].topics[appState.s4.topicKey];
+        const lines = appState.s4.pickedFactIds.map((id, i) => {
+          const f = currentTopic.facts.find(x => x.id === id);
+          return `${i + 1}. ${f ? f.text : ""}`;
+        });
+        const content = [
+          "================================================",
+          "THẺ GIỚI THIỆU ĐA PHƯƠNG TIỆN - TIN HỌC 4 BÀI 12A",
+          `Chủ đề: ${currentTopic.title}`,
+          "================================================",
+          ...lines,
+          "",
+          "(Sản phẩm tạo từ trò chơi học tập Rạp Phim Tết Ba Miền)"
+        ].join("\n");
+
+        const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "The_Ke_Chuyen_Da_Phuong_Tien_Bai12A.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        return;
+      }
+    });
+
+    // Hỗ trợ bàn phím (Enter / Space) cho các thẻ và ô thả ở Màn 3
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        const focusEl = document.activeElement;
+        if (focusEl && focusEl.hasAttribute("data-action") && focusEl.tagName !== "BUTTON") {
+          e.preventDefault();
+          focusEl.click();
+        }
+      }
+    });
+
+    /* ==========================================================================
+       CÁC NÚT ĐIỀU KHIỂN CỐ ĐỊNH TRÊN THANH TOP BAR & BOTTOM BAR
+       ========================================================================== */
+    function updateAudioButtonsUI() {
+      const btnBgm = document.getElementById("btnToggleBgm");
+      const btnSfx = document.getElementById("btnToggleSfx");
+
+      btnBgm.textContent = sound.bgmEnabled ? "🎵 Nhạc nền: BẬT" : "🎵 Nhạc nền: TẮT";
+      btnBgm.className = `toggle-btn ${sound.bgmEnabled ? "active" : "off"}`;
+      btnBgm.setAttribute("aria-pressed", String(sound.bgmEnabled));
+
+      btnSfx.textContent = sound.sfxEnabled ? "🔔 Hiệu ứng: BẬT" : "🔔 Hiệu ứng: TẮT";
+      btnSfx.className = `toggle-btn ${sound.sfxEnabled ? "active" : "off"}`;
+      btnSfx.setAttribute("aria-pressed", String(sound.sfxEnabled));
+    }
+
+    document.getElementById("btnToggleBgm").addEventListener("click", () => {
+      sound.bgmEnabled = !sound.bgmEnabled;
+      if (sound.bgmEnabled && appState.hasStarted) {
+        sound.startBgm();
+      } else {
+        sound.stopBgm();
+      }
+      sound.playSfx("click");
+      updateAudioButtonsUI();
+    });
+
+    document.getElementById("btnToggleSfx").addEventListener("click", () => {
+      sound.sfxEnabled = !sound.sfxEnabled;
+      if (sound.sfxEnabled) sound.playSfx("click");
+      updateAudioButtonsUI();
+    });
+
+    document.getElementById("btnMuteAll").addEventListener("click", () => {
+      const bothOff = !sound.bgmEnabled && !sound.sfxEnabled;
+      if (bothOff) {
+        sound.bgmEnabled = true;
+        sound.sfxEnabled = true;
+        if (appState.hasStarted) sound.startBgm();
+        sound.playSfx("click");
+      } else {
+        sound.bgmEnabled = false;
+        sound.sfxEnabled = false;
+        sound.stopBgm();
+      }
+      updateAudioButtonsUI();
+    });
+
+    document.getElementById("btnOpenGuide").addEventListener("click", () => {
+      sound.playSfx("click");
+      openGuideModal();
+    });
+
+    document.getElementById("btnHome").addEventListener("click", () => {
+      sound.playSfx("click");
+      stopStageTimers();
+      sound.stopBgm();
+      appState.screen = "welcome";
+      renderApp();
+    });
+
+    document.getElementById("btnResetStage").addEventListener("click", () => {
+      sound.playSfx("click");
+      resetStageData(appState.currentStage);
+      renderApp();
+    });
+
+    document.getElementById("btnHint").addEventListener("click", () => {
+      sound.playSfx("click");
+      const st = appState.currentStage;
+      const currentHint = appState.hintLevelPerStage[st] || 0;
+      appState.hintLevelPerStage[st] = Math.min(2, currentHint + 1);
+      renderApp();
+    });
+
+    document.getElementById("btnNextStage").addEventListener("click", () => {
+      sound.playSfx("click");
+      if (!appState.stageCompleted[appState.currentStage]) return;
+      if (appState.currentStage < 4) {
+        appState.currentStage++;
+        resetStageData(appState.currentStage);
+        renderApp();
+      } else {
+        stopStageTimers();
+        appState.screen = "summary";
+        renderApp();
+      }
+    });
+
+    // Khởi chạy màn hình chào mừng khi tải trang
+    window.addEventListener("DOMContentLoaded", () => {
+      updateAudioButtonsUI();
+      renderApp();
+    });
+  </script>
+</body>
+</html>

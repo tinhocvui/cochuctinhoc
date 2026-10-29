@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Siêu Thị Ngăn Nắp - Tin Học 3 Bài 7</title>
+  <style>
+    /* ===================================================================
+       1. V5 DESIGN SYSTEM & PASTEL PALETTE (PURE OFFLINE CSS)
+       =================================================================== */
+    :root {
+      --bg-cream: #FFF8E9;
+      --mint-main: #53B77A;
+      --mint-dark: #3FA066;
+      --mint-soft: #E8F7EE;
+      --coral-yellow: #FFC65C;
+      --yellow-soft: #FFF5D6;
+      --coral-pink: #EF7469;
+      --pink-dark: #DE5F54;
+      --pink-soft: #FFEFEA;
+      --lavender-main: #7766B7;
+      --lavender-dark: #6151A2;
+      --lavender-soft: #F0EDF9;
+      --text-dark: #2D3748;
+      --text-muted: #718096;
+      --shadow-soft: 0 10px 25px -5px rgba(119, 102, 183, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+      --shadow-hover: 0 15px 30px -5px rgba(119, 102, 183, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-x: hidden;
+    }
+
+    /* Modern Soft Cards */
+    .card-v5 {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: var(--shadow-soft);
+      border: 2px solid rgba(119, 102, 183, 0.1);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card-v5:hover {
+      box-shadow: var(--shadow-hover);
+    }
+
+    /* 3D Curved Buttons */
+    .btn-v5 {
+      border: none;
+      outline: none;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 0.75rem 1.25rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 0px rgba(0, 0, 0, 0.15);
+      text-decoration: none;
+    }
+
+    .btn-v5:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-v5:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .btn-primary { background-color: var(--lavender-main); color: #ffffff; }
+    .btn-primary:hover:not(:disabled) { background-color: var(--lavender-dark); }
+
+    .btn-success { background-color: var(--mint-main); color: #ffffff; }
+    .btn-success:hover:not(:disabled) { background-color: var(--mint-dark); }
+
+    .btn-accent { background-color: var(--coral-yellow); color: #4A3B00; }
+    .btn-accent:hover:not(:disabled) { background-color: #F0B443; }
+
+    .btn-coral { background-color: var(--coral-pink); color: #ffffff; }
+    .btn-coral:hover:not(:disabled) { background-color: var(--pink-dark); }
+
+    .btn-secondary { background-color: #EDF2F7; color: #4A5568; }
+    .btn-secondary:hover:not(:disabled) { background-color: #E2E8F0; }
+
+    /* Layout Containers */
+    header {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 20;
+    }
+
+    main {
+      width: 100%;
+      max-width: 1000px;
+      margin: auto;
+      padding: 0 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    footer {
+      text-align: center;
+      padding: 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #A0AEC0;
+    }
+
+    /* Specific Grid Layouts */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .grid-6 { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; }
+
+    /* Animations */
+    @keyframes bounce-subtle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .animate-bounce { animation: bounce-subtle 2.5s infinite ease-in-out; }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.97); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(0.97); }
+    }
+    .animate-pulse { animation: pulse-ring 2s infinite ease-in-out; }
+
+    /* Interactive Drop Target Slots */
+    .drop-zone {
+      border: 3px dashed var(--lavender-main);
+      border-radius: 20px;
+      padding: 0.75rem;
+      min-height: 160px;
+      background-color: var(--mint-soft);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .drop-zone.drag-over {
+      background-color: var(--yellow-soft);
+      border-color: var(--coral-yellow);
+      transform: scale(1.02);
+    }
+
+    /* Draggable Item Card */
+    .item-card {
+      background: #ffffff;
+      border: 2px solid var(--lavender-soft);
+      border-radius: 16px;
+      padding: 0.6rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .item-card:hover {
+      border-color: var(--lavender-main);
+      transform: translateY(-2px);
+    }
+
+    .item-card.selected {
+      border-color: var(--coral-pink);
+      background-color: var(--pink-soft);
+      box-shadow: 0 0 0 4px rgba(239, 116, 105, 0.2);
+    }
+
+    .item-card.placed {
+      opacity: 0.4;
+      pointer-events: none;
+      filter: grayscale(0.6);
+    }
+
+    /* Canvas for Victory Particle Effects */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+      .btn-v5 { font-size: 0.85rem; padding: 0.6rem 1rem; }
+      header { padding: 0.5rem; }
+      .grid-6 { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CANVAS CONFETTI FOR VICTORY -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- HEADER BAR WITH AUDIO CONTROLS -->
+  <header>
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <div style="width: 42px; height: 42px; background: var(--lavender-main); color: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 900; box-shadow: 0 4px 10px rgba(119,102,183,0.3);">
+        🛒
+      </div>
+      <div>
+        <h1 style="font-size: 1.15rem; font-weight: 900; color: #1A202C; leading-trim: both;">SIÊU THỊ NGĂN NẮP</h1>
+        <p style="font-size: 0.75rem; font-weight: 700; color: var(--lavender-main);">Tin Học 3 • Bài 7: Sắp xếp để dễ tìm</p>
+      </div>
+    </div>
+
+    <!-- Sound & Control Buttons -->
+    <div style="display: flex; gap: 0.5rem; background: rgba(255,255,255,0.9); padding: 0.35rem 0.6rem; border-radius: 16px; border: 1px solid rgba(119,102,183,0.15);">
+      <button id="btn-bgm" onclick="toggleBGM()" class="btn-v5 btn-secondary" style="padding: 0.4rem 0.75rem; font-size: 0.75rem;">
+        <span id="bgm-icon">🎵</span> <span id="bgm-text">Nhạc nền: BẬT</span>
+      </button>
+      <button id="btn-sfx" onclick="toggleSFX()" class="btn-v5 btn-secondary" style="padding: 0.4rem 0.75rem; font-size: 0.75rem;">
+        <span id="sfx-icon">🔔</span> <span id="sfx-text">Hiệu ứng: BẬT</span>
+      </button>
+      <button onclick="goHome()" class="btn-v5 btn-primary" style="padding: 0.4rem 0.75rem; font-size: 0.75rem;">
+        🏠 Trang chủ
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN GAME AREA -->
+  <main>
+
+    <!-- ===================================================================
+         SCREEN 0: WELCOME / HOME SCREEN
+         =================================================================== -->
+    <section id="screen-welcome" class="card-v5" style="padding: 2rem; text-align: center; border: 4 border-color: var(--coral-yellow); position: relative; overflow: hidden; margin: 1rem 0;">
+      <div style="max-w: 420px; margin: 0 auto 1.5rem auto;">
+        <!-- Banner SVG Hero Scene -->
+        <svg viewBox="0 0 400 200" style="width: 100%; height: auto; max-height: 180px; filter: drop-shadow(0 8px 15px rgba(0,0,0,0.08));">
+          <rect x="10" y="10" width="380" height="180" rx="24" fill="#E8F7EE"/>
+          <!-- Supermarket Shelves SVG Background -->
+          <rect x="30" y="40" width="340" height="15" fill="#FFC65C" rx="4"/>
+          <rect x="30" y="95" width="340" height="15" fill="#FFC65C" rx="4"/>
+          <rect x="30" y="150" width="340" height="15" fill="#FFC65C" rx="4"/>
+          <!-- Shelved items SVG -->
+          <rect x="50" y="20" width="20" height="20" fill="#EF7469" rx="4"/>
+          <rect x="75" y="15" width="25" height="25" fill="#7766B7" rx="4"/>
+          <circle cx="130" cy="28" r="12" fill="#53B77A"/>
+          <rect x="250" y="70" width="30" height="25" fill="#EF7469" rx="4"/>
+          <rect x="290" y="65" width="20" height="30" fill="#7766B7" rx="4"/>
+          
+          <!-- Robot Beep Mascot SVG -->
+          <g transform="translate(160, 65)" class="animate-bounce">
+            <!-- Antenna -->
+            <line x1="40" y1="20" x2="40" y2="5" stroke="#7766B7" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="40" cy="5" r="6" fill="#EF7469"/>
+            <!-- Head -->
+            <rect x="10" y="20" width="60" height="45" rx="14" fill="#FFFFFF" stroke="#7766B7" stroke-width="4"/>
+            <!-- Face Screen -->
+            <rect x="18" y="28" width="44" height="28" rx="8" fill="#2D3748"/>
+            <!-- Eyes -->
+            <circle cx="30" cy="40" r="6" fill="#53B77A"/>
+            <circle cx="50" cy="40" r="6" fill="#53B77A"/>
+            <circle cx="32" cy="38" r="2" fill="#FFFFFF"/>
+            <circle cx="52" cy="38" r="2" fill="#FFFFFF"/>
+            <!-- Cheeks -->
+            <circle cx="23" cy="46" r="3" fill="#EF7469" opacity="0.7"/>
+            <circle cx="57" cy="46" r="3" fill="#EF7469" opacity="0.7"/>
+            <!-- Body -->
+            <rect x="18" y="68" width="44" height="38" rx="10" fill="#7766B7"/>
+            <rect x="26" y="74" width="28" height="20" rx="6" fill="#FFF5D6"/>
+          </g>
+        </svg>
+      </div>
+
+      <h2 style="font-size: 1.8rem; font-weight: 900; color: #1A202C; margin-bottom: 0.5rem;">
+        CHÀO MỪNG ĐẾN SIÊU THỊ NGĂN NẮP!
+      </h2>
+      <p style="color: var(--text-muted); font-weight: 700; max-width: 550px; margin: 0 auto 1.5rem auto; font-size: 0.95rem; line-height: 1.5;">
+        Cùng Robot Bíp học cách phân loại đồ dùng học tập, sách vở và động vật vào đúng vị trí để tìm kiếm thật nhanh chóng và dễ dàng nhé!
+      </p>
+
+      <!-- Game Mode Selection -->
+      <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.5rem;">
+        <label style="cursor: pointer; background: var(--lavender-soft); padding: 0.6rem 1rem; border-radius: 14px; border: 2px solid var(--lavender-main); font-weight: 800; font-size: 0.85rem; color: var(--lavender-dark); display: flex; align-items: center; gap: 0.4rem;">
+          <input type="radio" name="game-mode" value="practice" checked onchange="setMode('practice')">
+          💡 Chế độ Luyện Tập (Có gợi ý)
+        </label>
+        <label style="cursor: pointer; background: var(--yellow-soft); padding: 0.6rem 1rem; border-radius: 14px; border: 2px solid var(--coral-yellow); font-weight: 800; font-size: 0.85rem; color: #744210; display: flex; align-items: center; gap: 0.4rem;">
+          <input type="radio" name="game-mode" value="challenge" onchange="setMode('challenge')">
+          🏆 Chế độ Thử Thách
+        </label>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <button onclick="startGame()" class="btn-v5 btn-success" style="font-size: 1.1rem; padding: 0.9rem 2rem;">
+          🚀 BẮT ĐẦU CHƠI NGAY
+        </button>
+        <button onclick="showInstructions()" class="btn-v5 btn-accent" style="font-size: 1.1rem; padding: 0.9rem 1.5rem;">
+          📖 HƯỚNG DẪN
+        </button>
+      </div>
+    </section>
+
+    <!-- INSTRUCTION MODAL -->
+    <div id="modal-instructions" style="position: fixed; inset: 0; background: rgba(26,32,44,0.6); backdrop-filter: blur(4px); z-index: 50; display: none; align-items: center; justify-content: center; padding: 1rem;">
+      <div class="card-v5 animate-pulse" style="max-width: 500px; width: 100%; padding: 1.75rem; background: #ffffff;">
+        <h3 style="font-size: 1.25rem; font-weight: 900; color: #1A202C; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+          📖 Hướng Dẫn Thám Tử Ngăn Nắp
+        </h3>
+        <ul style="font-size: 0.9rem; font-weight: 700; color: #4A5568; text-align: left; margin-bottom: 1.5rem; line-height: 1.7; list-style-type: none;">
+          <li>✨ <strong>Màn 1:</strong> Kéo/bấm chọn đồ vật bừa bộn xếp vào 3 Hộp đựng thích hợp.</li>
+          <li>📚 <strong>Màn 2:</strong> Chọn tiêu chí phân loại sách (Môn học hoặc Thể loại) rồi xếp sách vào đúng ngăn tủ.</li>
+          <li>🐯 <strong>Màn 3:</strong> Phân loại động vật theo môi trường sống và thực hiện thử thách tìm nhanh.</li>
+          <li>🔑 <strong>Màn 4:</strong> So sánh việc tìm đồ vật trong đống bừa bộn và trong tủ được sắp xếp ngăn nắp.</li>
+        </ul>
+        <button onclick="hideInstructions()" class="btn-v5 btn-primary" style="width: 100%;">
+          ĐÃ HIỂU RỒI!
+        </button>
+      </div>
+    </div>
+
+    <!-- ===================================================================
+         PLAY CONTAINER (FOR STAGES 1 TO 4)
+         =================================================================== -->
+    <section id="screen-play" style="display: none; flex-direction: column; gap: 1rem;">
+      
+      <!-- STAGE PROGRESS HEADER -->
+      <div class="card-v5" style="padding: 0.85rem 1.25rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <span id="stage-badge" style="background: var(--lavender-soft); color: var(--lavender-dark); font-weight: 900; font-size: 0.75rem; padding: 0.3rem 0.75rem; border-radius: 12px; text-transform: uppercase;">
+            Màn <span id="current-stage-num">1</span> / 4
+          </span>
+          <h2 id="stage-title" style="font-size: 1rem; font-weight: 900; color: #1A202C;">
+            Góc học tập bừa bộn
+          </h2>
+        </div>
+
+        <!-- Progress Bar -->
+        <div style="width: 160px; background: #EDF2F7; height: 10px; border-radius: 10px; overflow: hidden;">
+          <div id="progress-bar-fill" style="width: 25%; background: var(--mint-main); height: 100%; transition: width 0.4s ease;"></div>
+        </div>
+
+        <!-- Score & Actions -->
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <div style="background: var(--yellow-soft); border: 1px solid var(--coral-yellow); color: #744210; font-weight: 900; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.9rem;">
+            ⭐ <span id="score-display">0</span> điểm
+          </div>
+          <button onclick="showHint()" class="btn-v5 btn-accent" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;">
+            💡 Gợi ý
+          </button>
+          <button onclick="resetCurrentStage()" class="btn-v5 btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;">
+            🔄 Làm lại
+          </button>
+        </div>
+      </div>
+
+      <!-- ROBOT BEEP AVATAR & SPEECH BUBBLE -->
+      <div class="card-v5" style="padding: 0.85rem 1.25rem; background: linear-gradient(to right, var(--lavender-soft), var(--pink-soft)); display: flex; align-items: center; gap: 1rem;">
+        <!-- Robot Avatar SVG -->
+        <div style="width: 55px; height: 55px; flex-shrink: 0;">
+          <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+            <circle cx="50" cy="50" r="45" fill="#E8F7EE" stroke="#7766B7" stroke-width="3"/>
+            <line x1="50" y1="20" x2="50" y2="10" stroke="#7766B7" stroke-width="3"/>
+            <circle cx="50" cy="10" r="4" fill="#EF7469"/>
+            <rect x="25" y="20" width="50" height="40" rx="10" fill="#FFFFFF" stroke="#7766B7" stroke-width="3"/>
+            <rect x="32" y="27" width="36" height="24" rx="6" fill="#2D3748"/>
+            <g id="robot-eyes">
+              <circle cx="42" cy="38" r="5" fill="#53B77A"/>
+              <circle cx="58" cy="38" r="5" fill="#53B77A"/>
+            </g>
+            <path id="robot-mouth" d="M 42,44 Q 50,48 58,44" stroke="#53B77A" stroke-width="2" fill="none"/>
+          </svg>
+        </div>
+        <!-- Speech text bubble -->
+        <div style="flex: 1; background: #ffffff; padding: 0.75rem 1rem; border-radius: 16px; border: 1px solid rgba(119,102,183,0.15); font-size: 0.88rem; font-weight: 800; color: #1A202C;">
+          <p id="beep-speech">
+            Xin chào! Hãy giúp Bíp dọn dẹp các đồ vật bừa bộn vào đúng các hộp đựng nhé!
+          </p>
+        </div>
+      </div>
+
+      <!-- DYNAMIC STAGE CONTENT CONTAINER -->
+      <div id="stage-content" class="card-v5" style="padding: 1.25rem; min-height: 380px; display: flex; flex-direction: column; justify-content: space-between;">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- FOOTER CONTROLS -->
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.75rem; color: #A0AEC0; font-weight: 700;">Giao diện mô phỏng học tập Tin học 3</span>
+        <button id="btn-next-stage" onclick="nextStage()" disabled class="btn-v5 btn-success" style="padding: 0.65rem 1.5rem;">
+          TIẾP TỤC ➔
+        </button>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         SCREEN 5: SUMMARY / VICTORY SCREEN
+         =================================================================== -->
+    <section id="screen-summary" class="card-v5" style="display: none; padding: 2rem; text-align: center; border: 4px solid var(--mint-main); position: relative; overflow: hidden; margin: 1rem 0;">
+      <div style="max-width: 140px; margin: 0 auto 1rem auto;" class="animate-bounce">
+        <!-- Badge Trophy SVG -->
+        <svg viewBox="0 0 200 200" style="width: 100%; height: auto; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.12));">
+          <circle cx="100" cy="100" r="80" fill="#FFF5D6" stroke="#FFC65C" stroke-width="8"/>
+          <path d="M 60,150 L 40,190 L 70,175 L 85,190 Z" fill="#EF7469"/>
+          <path d="M 140,150 L 160,190 L 130,175 L 115,190 Z" fill="#DE5F54"/>
+          <path d="M 100,40 L 112,70 L 144,70 L 118,90 L 128,122 L 100,102 L 72,122 L 82,90 L 56,70 L 88,70 Z" fill="#FFC65C" stroke="#E5A020" stroke-width="3"/>
+        </svg>
+      </div>
+
+      <h2 style="font-size: 2rem; font-weight: 900; color: #1A202C; margin-bottom: 0.25rem;">
+        XUẤT SẮC CÙNG BÍP!
+      </h2>
+      <p style="color: var(--text-muted); font-weight: 800; margin-bottom: 1rem;">
+        Em đã hoàn thành xuất sắc trò chơi Siêu Thị Ngăn NẮP
+      </p>
+
+      <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: var(--yellow-soft); color: #744210; font-weight: 900; font-size: 1.5rem; padding: 0.75rem 1.75rem; border-radius: 20px; margin-bottom: 1.5rem; border: 2px solid var(--coral-yellow);">
+        🏆 TỔNG ĐIỂM: <span id="final-score" style="color: var(--mint-main); font-size: 2rem;">100</span> / 100
+      </div>
+
+      <!-- Pedagogical Assessment Box -->
+      <div style="max-width: 600px; margin: 0 auto 1.5rem auto; background: #F7FAFC; padding: 1.25rem; border-radius: 16px; border: 1px solid #E2E8F0; text-align: left; font-size: 0.9rem; line-height: 1.6;">
+        <h4 style="font-weight: 900; color: #1A202C; margin-bottom: 0.5rem; font-size: 1rem;">
+          🎖️ KHANH THƯỞNG & NHẬN XÉT SƯ PHẠM:
+        </h4>
+        <p style="color: #4A5568; font-weight: 700; margin-bottom: 0.4rem;">
+          • Em đã biết cách phân loại đồ vật, sách vở và động vật theo các tiêu chí rõ ràng.
+        </p>
+        <p style="color: #4A5568; font-weight: 700;">
+          • Em đã nhận thấy rõ sự khác biệt: Sắp xếp ngăn nắp giúp tìm kiếm đồ vật cực kỳ nhanh chóng và tiết kiệm thời gian!
+        </p>
+      </div>
+
+      <button onclick="goHome()" class="btn-v5 btn-primary" style="font-size: 1.1rem; padding: 0.85rem 2rem;">
+        🔄 CHƠI LẠI TỪ ĐẦU
+      </button>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    © Trò chơi Giáo dục Tin học 3 • Tiêu chuẩn Mỹ thuật V5 • Hoạt động Ngoại tuyến 100%
+  </footer>
+
+  <!-- ===================================================================
+       JAVASCRIPT GAME LOGIC ENGINE & AUDIO SYNTHESIZER
+       =================================================================== -->
+  <script>
+    /* -------------------------------------------------------------------
+       1. GAME CONFIGURATION (DỮ LIỆU CHUẨN BÁM SÁT SGK BÀI 7)
+       ------------------------------------------------------------------- */
+    const GAME_CONFIG = {
+      title: "SIÊU THỊ NGĂN NẮP",
+      grade: "Tin học 3 - Bài 7: Sắp xếp để dễ tìm",
+      maxScorePerStage: 25,
+      stages: [
+        // STAGE 1: GÓC HỌC TẬP BỪA BỘN
+        {
+          id: 1,
+          title: "GÓC HỌC TẬP BỪA BỘN",
+          instruction: "Em hãy kéo hoặc bấm chọn các đồ vật xếp vào đúng 3 Hộp đựng nhé!",
+          hint1: "Bút chì, thước kẻ cho vào Hộp Bút; Sách vở cho vào Hộp Sách Vở; Gấu bông, ô tô cho vào Hộp Đồ Chơi.",
+          hint2: "Bấm chọn 1 món đồ ở phía trên rồi bấm vào Hộp đích để cất nhé!",
+          boxes: [
+            { id: 'box_pen', name: '✏️ Hộp Bút & Thước', allowedTypes: ['stationery'] },
+            { id: 'box_book', name: '📚 Hộp Sách Vở', allowedTypes: ['book'] },
+            { id: 'box_toy', name: '🧸 Hộp Đồ Chơi', allowedTypes: ['toy'] }
+          ],
+          items: [
+            { id: 'i1', name: 'Bút chì', type: 'stationery', icon: '✏️' },
+            { id: 'i2', name: 'Thước kẻ', type: 'stationery', icon: '📏' },
+            { id: 'i3', name: 'Sách Tin học 3', type: 'book', icon: '📘' },
+            { id: 'i4', name: 'Vở bài tập', type: 'book', icon: '📗' },
+            { id: 'i5', name: 'Gấu bông', type: 'toy', icon: '🧸' },
+            { id: 'i6', name: 'Ô tô đồ chơi', type: 'toy', icon: '🚗' }
+          ]
+        },
+
+        // STAGE 2: TỦ SÁCH THÔNG MINH
+        {
+          id: 2,
+          title: "TỦ SÁCH THÔNG MINH",
+          instruction: "Chọn 1 tiêu chí phân loại tủ sách, sau đó xếp 6 cuốn sách vào đúng ngăn tủ!",
+          hint1: "Tiêu chí 'Theo Môn Học' chia ngăn: Toán, Tiếng Việt, Tin học. Tiêu chí 'Theo Thể Loại' chia: SGK, Truyện, Vở vẽ.",
+          hint2: "Chọn tiêu chí trước, sau đó lần lượt xếp từng cuốn sách vào đúng ngăn tủ nhé.",
+          criterias: [
+            {
+              id: 'subject',
+              name: '📌 Theo Môn Học (Toán, Tiếng Việt, Tin học)',
+              shelves: [
+                { id: 'sh_math', name: '📐 Ngăn Toán', matchTypes: ['math'] },
+                { id: 'sh_viet', name: '📖 Ngăn Tiếng Việt', matchTypes: ['vietnamese'] },
+                { id: 'sh_cs', name: '💻 Ngăn Tin Học', matchTypes: ['cs'] }
+              ],
+              books: [
+                { id: 'b1', name: 'Sách Toán 3', type: 'math', icon: '📕' },
+                { id: 'b2', name: 'Vở bài tập Toán', type: 'math', icon: '📙' },
+                { id: 'b3', name: 'Sách Tiếng Việt 3', type: 'vietnamese', icon: '📘' },
+                { id: 'b4', name: 'Vở Luyện viết', type: 'vietnamese', icon: '📗' },
+                { id: 'b5', name: 'Sách Tin học 3', type: 'cs', icon: '💻' },
+                { id: 'b6', name: 'Vở thực hành Tin', type: 'cs', icon: '🖥️' }
+              ]
+            },
+            {
+              id: 'category',
+              name: '📌 Theo Thể Loại (Sách giáo khoa, Truyện tranh, Vở vẽ)',
+              shelves: [
+                { id: 'sh_sgk', name: '📚 Ngăn Sách Giáo Khoa', matchTypes: ['sgk'] },
+                { id: 'sh_comic', name: '🎨 Ngăn Truyện Tranh', matchTypes: ['comic'] },
+                { id: 'sh_draw', name: '✏️ Ngăn Vở Vẽ & Tập Tô', matchTypes: ['draw'] }
+              ],
+              books: [
+                { id: 'b1', name: 'SGK Toán 3', type: 'sgk', icon: '📕' },
+                { id: 'b2', name: 'SGK Tin học 3', type: 'sgk', icon: '📘' },
+                { id: 'b3', name: 'Truyện Dế Mèn', type: 'comic', icon: '📗' },
+                { id: 'b4', name: 'Truyện Cổ Tích', type: 'comic', icon: '📙' },
+                { id: 'b5', name: 'Vở vẽ Mỹ thuật', type: 'draw', icon: '🎨' },
+                { id: 'b6', name: 'Tập tô màu', type: 'draw', icon: '✏️' }
+              ]
+            }
+          ]
+        },
+
+        // STAGE 3: CON VẬT Ở ĐÂU?
+        {
+          id: 3,
+          title: "CON VẬT Ở ĐÂU?",
+          instruction: "Bước 1: Phân loại động vật vào môi trường sống 'Trên cạn' hoặc 'Dưới nước'.",
+          hint1: "Hổ, Mèo, Chim sẻ sống trên cạn; Cá voi, Cua, Tôm sống dưới nước.",
+          hint2: "Phân loại xong Bíp sẽ đố em tìm lại một con vật cực nhanh đấy!",
+          habitats: [
+            { id: 'land', name: '🏞️ Trên Cạn', matchTypes: ['land'] },
+            { id: 'water', name: '🌊 Dưới Nước', matchTypes: ['water'] }
+          ],
+          animals: [
+            { id: 'a1', name: 'Con Hổ', type: 'land', icon: '🐯' },
+            { id: 'a2', name: 'Con Mèo', type: 'land', icon: '🐱' },
+            { id: 'a3', name: 'Chim Sẻ', type: 'land', icon: '🐦' },
+            { id: 'a4', name: 'Cá Voi', type: 'water', icon: '🐋' },
+            { id: 'a5', name: 'Con Cua', type: 'water', icon: '🦀' },
+            { id: 'a6', name: 'Con Tôm', type: 'water', icon: '🦐' }
+          ],
+          searchTarget: { id: 'a5', name: 'Con Cua 🦀', habitatName: 'Dưới Nước' }
+        },
+
+        // STAGE 4: TÌM VẬT BÍ MẬT (SO SÁNH HIỆU QUẢ SẮP XẾP)
+        {
+          id: 4,
+          title: "TÌM VẬT BÍ MẬT",
+          instruction: "Thực hành tìm 'Chiếc Chìa Khóa 🔑' trong đống bừa bộn và trong tủ ngăn nắp để nhận thấy sự khác biệt!",
+          hint1: "Ở đống bừa bộn em phải bấm nhấp nhiều đồ vật mới thấy chìa khóa. Ở tủ ngăn nắp em tìm thấy ngay!",
+          hint2: "Trải nghiệm xong hãy trả lời câu hỏi trắc nghiệm kết luận nhé.",
+          messyItems: [
+            { id: 'm1', name: 'Áo phông', icon: '👕' },
+            { id: 'm2', name: 'Quả táo', icon: '🍎' },
+            { id: 'm3', name: 'Sách báo', icon: '📰' },
+            { id: 'm4', name: 'Chiếc giày', icon: '👟' },
+            { id: 'm5', name: 'Đồng hồ', icon: '⏰' },
+            { id: 'm6', name: 'Mũ lưỡi trai', icon: '🧢' },
+            { id: 'target_key', name: 'Chiếc Chìa Khóa', icon: '🔑', isTarget: true }
+          ],
+          question: {
+            text: "Việc sắp xếp đồ vật / dữ liệu ngăn nắp mang lại lợi ích lớn nhất gì?",
+            options: [
+              { text: "A. Giúp tìm kiếm nhanh chóng, dễ dàng và tiết kiệm thời gian", correct: true },
+              { text: "B. Làm cho đồ vật tự động biến mất khi không dùng", correct: false },
+              { text: "C. Không cần phải dọn dẹp nhà cửa nữa", correct: false }
+            ]
+          }
+        }
+      ]
+    };
+
+    /* -------------------------------------------------------------------
+       2. STATE MANAGEMENT
+       ------------------------------------------------------------------- */
+    let gameState = {
+      currentStageIndex: 0,
+      scores: [0, 0, 0, 0],
+      mode: 'practice',
+      stageCompleted: [false, false, false, false],
+      bgmMuted: false,
+      sfxMuted: false,
+
+      // Temporary variables per stage
+      stage1Placed: {}, // itemId -> boxId
+      stage1SelectedItem: null,
+
+      stage2SelectedCriteriaIndex: 0,
+      stage2Placed: {},
+      stage2SelectedItem: null,
+
+      stage3Placed: {},
+      stage3SelectedItem: null,
+      stage3Step: 1, // 1: sort, 2: search challenge
+
+      stage4Step: 1, // 1: messy search, 2: neat search, 3: quiz
+      stage4MessyClicks: 0
+    };
+
+    /* -------------------------------------------------------------------
+       3. WEB AUDIO SYNTHESIZER (OFFLINE 100% - NO EXTERNAL FILES/TTS)
+       ------------------------------------------------------------------- */
+    let audioCtx = null;
+    let bgmInterval = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function startBGM() {
+      if (gameState.bgmMuted || bgmInterval) return;
+      initAudio();
+
+      // Cheerful simple synthesizer melody loop C-E-G-A-G-E
+      const melody = [261.63, 329.63, 392.00, 440.00, 392.00, 329.63];
+      let step = 0;
+
+      bgmInterval = setInterval(() => {
+        if (gameState.bgmMuted || !audioCtx) return;
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const filter = audioCtx.createBiquadFilter();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(melody[step], audioCtx.currentTime);
+
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(800, audioCtx.currentTime);
+
+          gain.gain.setValueAtTime(0.025, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.38);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.4);
+
+          step = (step + 1) % melody.length;
+        } catch (e) {}
+      }, 450);
+    }
+
+    function stopBGM() {
+      if (bgmInterval) {
+        clearInterval(bgmInterval);
+        bgmInterval = null;
+      }
+    }
+
+    function playSFX(type) {
+      if (gameState.sfxMuted) return;
+      initAudio();
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'click') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(450, now);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+          osc.start(now);
+          osc.stop(now + 0.06);
+        } else if (type === 'correct') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now); // C5
+          osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'wrong') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.setValueAtTime(175, now + 0.12);
+          gain.gain.setValueAtTime(0.1, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.start(now);
+          osc.stop(now + 0.25);
+        } else if (type === 'win') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(440, now);
+          osc.frequency.setValueAtTime(554.37, now + 0.1);
+          osc.frequency.setValueAtTime(659.25, now + 0.2);
+          osc.frequency.setValueAtTime(880, now + 0.3);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+          osc.start(now);
+          osc.stop(now + 0.55);
+        }
+      } catch (e) {}
+    }
+
+    function toggleBGM() {
+      gameState.bgmMuted = !gameState.bgmMuted;
+      document.getElementById('bgm-icon').innerText = gameState.bgmMuted ? '🔇' : '🎵';
+      document.getElementById('bgm-text').innerText = gameState.bgmMuted ? 'Nhạc nền: TẮT' : 'Nhạc nền: BẬT';
+      if (gameState.bgmMuted) stopBGM(); else startBGM();
+    }
+
+    function toggleSFX() {
+      gameState.sfxMuted = !gameState.sfxMuted;
+      document.getElementById('sfx-icon').innerText = gameState.sfxMuted ? '🔇' : '🔔';
+      document.getElementById('sfx-text').innerText = gameState.sfxMuted ? 'Hiệu ứng: TẮT' : 'Hiệu ứng: BẬT';
+    }
+
+    /* -------------------------------------------------------------------
+       4. UI ENGINE & NAVIGATION
+       ------------------------------------------------------------------- */
+    function setMode(mode) {
+      gameState.mode = mode;
+      playSFX('click');
+    }
+
+    function goHome() {
+      playSFX('click');
+      document.getElementById('screen-welcome').style.display = 'block';
+      document.getElementById('screen-play').style.display = 'none';
+      document.getElementById('screen-summary').style.display = 'none';
+      stopBGM();
+    }
+
+    function showInstructions() {
+      playSFX('click');
+      document.getElementById('modal-instructions').style.display = 'flex';
+    }
+
+    function hideInstructions() {
+      playSFX('click');
+      document.getElementById('modal-instructions').style.display = 'none';
+    }
+
+    function startGame() {
+      initAudio();
+      startBGM();
+      playSFX('click');
+
+      gameState.currentStageIndex = 0;
+      gameState.scores = [0, 0, 0, 0];
+      gameState.stageCompleted = [false, false, false, false];
+
+      document.getElementById('screen-welcome').style.display = 'none';
+      document.getElementById('screen-summary').style.display = 'none';
+      document.getElementById('screen-play').style.display = 'flex';
+
+      loadStage(0);
+    }
+
+    function updateHeaderUI() {
+      const stage = GAME_CONFIG.stages[gameState.currentStageIndex];
+      document.getElementById('current-stage-num').innerText = stage.id;
+      document.getElementById('stage-title').innerText = stage.title;
+
+      const progress = ((gameState.currentStageIndex + 1) / 4) * 100;
+      document.getElementById('progress-bar-fill').style.width = progress + '%';
+
+      const totalScore = gameState.scores.reduce((a, b) => a + b, 0);
+      document.getElementById('score-display').innerText = totalScore;
+
+      const btnNext = document.getElementById('btn-next-stage');
+      btnNext.disabled = !gameState.stageCompleted[gameState.currentStageIndex];
+    }
+
+    function updateBeepExpression(mood, text) {
+      document.getElementById('beep-speech').innerText = text;
+      const eyesGroup = document.getElementById('robot-eyes');
+      const mouthPath = document.getElementById('robot-mouth');
+
+      if (mood === 'happy') {
+        eyesGroup.innerHTML = `<circle cx="42" cy="38" r="5" fill="#53B77A"/><circle cx="58" cy="38" r="5" fill="#53B77A"/>`;
+        mouthPath.setAttribute('d', 'M 42,44 Q 50,50 58,44');
+        mouthPath.setAttribute('stroke', '#53B77A');
+      } else if (mood === 'excited') {
+        eyesGroup.innerHTML = `<path d="M 38,38 L 44,34 L 38,42 Z" fill="#FFC65C"/><path d="M 62,38 L 56,34 L 62,42 Z" fill="#FFC65C"/>`;
+        mouthPath.setAttribute('d', 'M 40,44 Q 50,52 60,44 Z');
+        mouthPath.setAttribute('stroke', '#FFC65C');
+      } else if (mood === 'thinking') {
+        eyesGroup.innerHTML = `<circle cx="42" cy="36" r="4" fill="#7766B7"/><circle cx="58" cy="36" r="4" fill="#7766B7"/>`;
+        mouthPath.setAttribute('d', 'M 42,46 L 58,46');
+        mouthPath.setAttribute('stroke', '#7766B7');
+      }
+    }
+
+    function showHint() {
+      playSFX('click');
+      const stage = GAME_CONFIG.stages[gameState.currentStageIndex];
+      const hintMsg = gameState.mode === 'practice' ? stage.hint1 : stage.hint2;
+      updateBeepExpression('thinking', "💡 GỢI Ý CỦA BÍP: " + hintMsg);
+    }
+
+    function resetCurrentStage() {
+      playSFX('click');
+      loadStage(gameState.currentStageIndex);
+    }
+
+    function nextStage() {
+      playSFX('click');
+      if (gameState.currentStageIndex < 3) {
+        gameState.currentStageIndex++;
+        loadStage(gameState.currentStageIndex);
+      } else {
+        showSummary();
+      }
+    }
+
+    /* -------------------------------------------------------------------
+       5. STAGE LOADERS
+       ------------------------------------------------------------------- */
+    function loadStage(index) {
+      gameState.currentStageIndex = index;
+      updateHeaderUI();
+
+      const stage = GAME_CONFIG.stages[index];
+      const container = document.getElementById('stage-content');
+      container.innerHTML = '';
+
+      if (index === 0) renderStage1(container, stage);
+      else if (index === 1) renderStage2(container, stage);
+      else if (index === 2) renderStage3(container, stage);
+      else if (index === 3) renderStage4(container, stage);
+    }
+
+    /* ===================================================================
+       STAGE 1: GÓC HỌC TẬP BỪA BỘN
+       =================================================================== */
+    function renderStage1(container, stage) {
+      gameState.stage1Placed = {};
+      gameState.stage1SelectedItem = null;
+      updateBeepExpression('happy', stage.instruction);
+
+      let html = `
+        <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
+          <!-- Items Pool -->
+          <div style="background: #F7FAFC; padding: 0.85rem; border-radius: 16px; border: 1px solid #E2E8F0;">
+            <h4 style="font-size: 0.8rem; font-weight: 900; color: var(--lavender-dark); margin-bottom: 0.5rem; text-transform: uppercase;">
+              📦 CÁC ĐỒ VẬT BỪA BỘN (Bấm chọn đồ vật ➔ Bấm chọn Hộp cất):
+            </h4>
+            <div class="grid-6" id="s1-items-pool">`;
+
+      stage.items.forEach(item => {
+        html += `
+          <div id="s1-item-${item.id}" onclick="selectStage1Item('${item.id}')" class="item-card">
+            <span style="font-size: 1.8rem;">${item.icon}</span>
+            <span style="font-size: 0.75rem; font-weight: 800; color: #2D3748; margin-top: 0.25rem;">${item.name}</span>
+          </div>
+        `;
+      });
+
+      html += `</div></div>
+
+          <!-- Target Boxes -->
+          <div class="grid-3" style="margin-top: 0.5rem;">`;
+
+      stage.boxes.forEach(box => {
+        html += `
+          <div id="s1-box-${box.id}" onclick="placeStage1Item('${box.id}')" class="drop-zone" ondragover="event.preventDefault()" ondrop="handleStage1Drop(event, '${box.id}')">
+            <h4 style="font-size: 0.85rem; font-weight: 900; color: var(--lavender-dark); text-align: center;">
+              ${box.name}
+            </h4>
+            <div id="s1-box-content-${box.id}" style="width: 100%; display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin-top: 0.4rem;"></div>
+          </div>
+        `;
+      });
+
+      html += `</div></div>`;
+      container.innerHTML = html;
+    }
+
+    function selectStage1Item(itemId) {
+      if (gameState.stage1Placed[itemId]) return;
+      playSFX('click');
+      gameState.stage1SelectedItem = itemId;
+
+      const stage = GAME_CONFIG.stages[0];
+      stage.items.forEach(i => {
+        const el = document.getElementById(`s1-item-${i.id}`);
+        if (el && !gameState.stage1Placed[i.id]) {
+          el.className = (i.id === itemId) ? "item-card selected" : "item-card";
+        }
+      });
+
+      updateBeepExpression('thinking', "Bây giờ em hãy bấm vào Hộp cất thích hợp ở phía dưới nhé!");
+    }
+
+    function placeStage1Item(boxId) {
+      if (!gameState.stage1SelectedItem) {
+        updateBeepExpression('thinking', "Em chọn một món đồ ở trên trước nhé!");
+        return;
+      }
+
+      const itemId = gameState.stage1SelectedItem;
+      const stage = GAME_CONFIG.stages[0];
+      const item = stage.items.find(i => i.id === itemId);
+      const box = stage.boxes.find(b => b.id === boxId);
+
+      if (box.allowedTypes.includes(item.type)) {
+        playSFX('correct');
+        gameState.stage1Placed[itemId] = boxId;
+        gameState.stage1SelectedItem = null;
+
+        // UI update
+        const itemEl = document.getElementById(`s1-item-${itemId}`);
+        itemEl.className = "item-card placed";
+
+        const boxContent = document.getElementById(`s1-box-content-${boxId}`);
+        boxContent.innerHTML += `
+          <span style="background: #ffffff; padding: 0.3rem 0.6rem; border-radius: 10px; font-size: 0.75rem; font-weight: 800; border: 1px solid var(--mint-main); display: inline-flex; align-items: center; gap: 0.3rem;">
+            ${item.icon} ${item.name}
+          </span>
+        `;
+
+        updateBeepExpression('happy', `Đúng rồi! "${item.name}" cất vào "${box.name}" rất gọn gàng!`);
+
+        // Check Stage Complete
+        if (Object.keys(gameState.stage1Placed).length === stage.items.length) {
+          playSFX('win');
+          gameState.scores[0] = GAME_CONFIG.maxScorePerStage;
+          gameState.stageCompleted[0] = true;
+          updateHeaderUI();
+          updateBeepExpression('excited', "🎉 Tuyệt vời! Em đã dọn dẹp sạch sẻ tất cả đồ vật bừa bộn và đạt 25 điểm!");
+        }
+      } else {
+        playSFX('wrong');
+        updateBeepExpression('thinking', `Chưa phù hợp rồi! "${item.name}" không thuộc nhóm "${box.name}". Thử lại nhé!`);
+      }
+    }
+
+    function handleStage1Drop(e, boxId) {
+      e.preventDefault();
+      if (gameState.stage1SelectedItem) {
+        placeStage1Item(boxId);
+      }
+    }
+
+    /* ===================================================================
+       STAGE 2: TỦ SÁCH THÔNG MINH
+       =================================================================== */
+    function renderStage2(container, stage) {
+      gameState.stage2Placed = {};
+      gameState.stage2SelectedItem = null;
+      gameState.stage2SelectedCriteriaIndex = 0;
+
+      updateBeepExpression('happy', stage.instruction);
+
+      let html = `
+        <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
+          <!-- Criteria Selection -->
+          <div style="background: var(--lavender-soft); padding: 0.85rem; border-radius: 16px; border: 1px solid var(--lavender-main);">
+            <h4 style="font-size: 0.8rem; font-weight: 900; color: var(--lavender-dark); margin-bottom: 0.5rem; text-transform: uppercase;">
+              1. CHỌN TIÊU CHÍ PHÂN LOẠI TỦ SÁCH:
+            </h4>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">`;
+
+      stage.criterias.forEach((crit, idx) => {
+        const isChecked = idx === 0 ? 'checked' : '';
+        html += `
+          <label style="cursor: pointer; background: #ffffff; padding: 0.5rem 0.85rem; border-radius: 12px; border: 2px solid var(--lavender-main); font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; gap: 0.4rem;">
+            <input type="radio" name="criteria-opt" value="${idx}" ${isChecked} onchange="changeStage2Criteria(${idx})">
+            ${crit.name}
+          </label>
+        `;
+      });
+
+      html += `</div></div>
+
+          <!-- Books & Shelves Section -->
+          <div id="s2-workspace">
+            <!-- Rendered by renderStage2Workspace -->
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = html;
+      renderStage2Workspace();
+    }
+
+    function changeStage2Criteria(critIdx) {
+      playSFX('click');
+      gameState.stage2SelectedCriteriaIndex = critIdx;
+      gameState.stage2Placed = {};
+      gameState.stage2SelectedItem = null;
+      renderStage2Workspace();
+    }
+
+    function renderStage2Workspace() {
+      const stage = GAME_CONFIG.stages[1];
+      const crit = stage.criterias[gameState.stage2SelectedCriteriaIndex];
+
+      let html = `
+        <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
+          <!-- Books Pool -->
+          <div style="background: #F7FAFC; padding: 0.75rem; border-radius: 16px; border: 1px solid #E2E8F0;">
+            <h4 style="font-size: 0.8rem; font-weight: 900; color: var(--lavender-dark); margin-bottom: 0.4rem; text-transform: uppercase;">
+              📖 CÁC CUỐN SÁCH CẦN XẾP (Bấm chọn sách ➔ Bấm chọn Ngăn tủ):
+            </h4>
+            <div class="grid-6">`;
+
+      crit.books.forEach(book => {
+        html += `
+          <div id="s2-book-${book.id}" onclick="selectStage2Book('${book.id}')" class="item-card">
+            <span style="font-size: 1.8rem;">${book.icon}</span>
+            <span style="font-size: 0.75rem; font-weight: 800; color: #2D3748; margin-top: 0.2rem;">${book.name}</span>
+          </div>
+        `;
+      });
+
+      html += `</div></div>
+
+          <!-- Shelves -->
+          <div class="grid-3">`;
+
+      crit.shelves.forEach(sh => {
+        html += `
+          <div id="s2-sh-${sh.id}" onclick="placeStage2Book('${sh.id}')" class="drop-zone" style="min-height: 150px; background: #FFF5D6; border-color: var(--coral-yellow);">
+            <h4 style="font-size: 0.85rem; font-weight: 900; color: #744210; text-align: center;">
+              ${sh.name}
+            </h4>
+            <div id="s2-sh-content-${sh.id}" style="width: 100%; display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.4rem;"></div>
+          </div>
+        `;
+      });
+
+      html += `</div></div>`;
+      document.getElementById('s2-workspace').innerHTML = html;
+    }
+
+    function selectStage2Book(bookId) {
+      if (gameState.stage2Placed[bookId]) return;
+      playSFX('click');
+      gameState.stage2SelectedItem = bookId;
+
+      const stage = GAME_CONFIG.stages[1];
+      const crit = stage.criterias[gameState.stage2SelectedCriteriaIndex];
+
+      crit.books.forEach(b => {
+        const el = document.getElementById(`s2-book-${b.id}`);
+        if (el && !gameState.stage2Placed[b.id]) {
+          el.className = (b.id === bookId) ? "item-card selected" : "item-card";
+        }
+      });
+
+      updateBeepExpression('thinking', "Bây giờ em hãy chọn Ngăn tủ tương ứng để xếp sách nhé!");
+    }
+
+    function placeStage2Book(shelfId) {
+      if (!gameState.stage2SelectedItem) {
+        updateBeepExpression('thinking', "Em bấm chọn 1 cuốn sách ở trên trước nhé!");
+        return;
+      }
+
+      const bookId = gameState.stage2SelectedItem;
+      const stage = GAME_CONFIG.stages[1];
+      const crit = stage.criterias[gameState.stage2SelectedCriteriaIndex];
+      const book = crit.books.find(b => b.id === bookId);
+      const shelf = crit.shelves.find(s => s.id === shelfId);
+
+      if (shelf.matchTypes.includes(book.type)) {
+        playSFX('correct');
+        gameState.stage2Placed[bookId] = shelfId;
+        gameState.stage2SelectedItem = null;
+
+        // UI Updates
+        const bookEl = document.getElementById(`s2-book-${bookId}`);
+        bookEl.className = "item-card placed";
+
+        const shContent = document.getElementById(`s2-sh-content-${shelfId}`);
+        shContent.innerHTML += `
+          <div style="background: #ffffff; padding: 0.3rem 0.5rem; border-radius: 8px; font-size: 0.75rem; font-weight: 800; border: 1px solid var(--coral-yellow); display: flex; align-items: center; gap: 0.3rem;">
+            ${book.icon} ${book.name}
+          </div>
+        `;
+
+        updateBeepExpression('happy', `Chính xác! Cuốn "${book.name}" đã được xếp vào "${shelf.name}".`);
+
+        // Check completion
+        if (Object.keys(gameState.stage2Placed).length === crit.books.length) {
+          playSFX('win');
+          gameState.scores[1] = GAME_CONFIG.maxScorePerStage;
+          gameState.stageCompleted[1] = true;
+          updateHeaderUI();
+          updateBeepExpression('excited', "🎉 Xuất sắc! Tủ sách đã được sắp xếp vô cùng ngăn nắp và khoa học!");
+        }
+      } else {
+        playSFX('wrong');
+        updateBeepExpression('thinking', `Cuốn "${book.name}" không thuộc "${shelf.name}" rồi. Em xem lại tiêu chí nhé!`);
+      }
+    }
+
+    /* ===================================================================
+       STAGE 3: CON VẬT Ở ĐÂU?
+       =================================================================== */
+    function renderStage3(container, stage) {
+      gameState.stage3Placed = {};
+      gameState.stage3SelectedItem = null;
+      gameState.stage3Step = 1;
+
+      updateBeepExpression('happy', stage.instruction);
+
+      let html = `
+        <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
+          <!-- Step 1: Sorting Animals -->
+          <div id="s3-step1-container" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="background: #F7FAFC; padding: 0.75rem; border-radius: 16px; border: 1px solid #E2E8F0;">
+              <h4 style="font-size: 0.8rem; font-weight: 900; color: var(--lavender-dark); margin-bottom: 0.4rem; text-transform: uppercase;">
+                🐾 CÁC CON VẬT (Phân loại vào Môi trường sống):
+              </h4>
+              <div class="grid-6">`;
+
+      stage.animals.forEach(anim => {
+        html += `
+          <div id="s3-anim-${anim.id}" onclick="selectStage3Animal('${anim.id}')" class="item-card">
+            <span style="font-size: 1.8rem;">${anim.icon}</span>
+            <span style="font-size: 0.75rem; font-weight: 800; color: #2D3748; margin-top: 0.2rem;">${anim.name}</span>
+          </div>
+        `;
+      });
+
+      html += `</div></div>
+
+            <!-- Habitats -->
+            <div class="grid-2">`;
+
+      stage.habitats.forEach(hab => {
+        html += `
+          <div id="s3-hab-${hab.id}" onclick="placeStage3Animal('${hab.id}')" class="drop-zone" style="min-height: 160px;">
+            <h4 style="font-size: 0.9rem; font-weight: 900; color: var(--lavender-dark);">
+              ${hab.name}
+            </h4>
+            <div id="s3-hab-content-${hab.id}" style="width: 100%; display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; margin-top: 0.4rem;"></div>
+          </div>
+        `;
+      });
+
+      html += `</div></div>
+
+          <!-- Step 2: Search Challenge Container -->
+          <div id="s3-step2-container" style="display: none; background: var(--yellow-soft); padding: 1.25rem; border-radius: 16px; border: 2px solid var(--coral-yellow); text-align: center;">
+            <h4 style="font-size: 1rem; font-weight: 900; color: #744210; margin-bottom: 0.5rem;">
+              ⚡ THỬ THÁCH TÌM KIẾM NHANH CHÓNG!
+            </h4>
+            <p style="font-size: 0.9rem; font-weight: 800; color: #4A5568; margin-bottom: 1rem;">
+              Nhờ đã phân loại ngăn nắp, em hãy tìm nhanh <strong style="color: var(--pink-dark);">${stage.searchTarget.name}</strong> trong các ngăn tủ dưới đây:
+            </p>
+            <div id="s3-search-grid" class="grid-2"></div>
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = html;
+    }
+
+    function selectStage3Animal(animId) {
+      if (gameState.stage3Placed[animId]) return;
+      playSFX('click');
+      gameState.stage3SelectedItem = animId;
+
+      const stage = GAME_CONFIG.stages[2];
+      stage.animals.forEach(a => {
+        const el = document.getElementById(`s3-anim-${a.id}`);
+        if (el && !gameState.stage3Placed[a.id]) {
+          el.className = (a.id === animId) ? "item-card selected" : "item-card";
+        }
+      });
+
+      updateBeepExpression('thinking', "Bây giờ chọn vùng 'Trên cạn' hoặc 'Dưới nước' nhé!");
+    }
+
+    function placeStage3Animal(habId) {
+      if (!gameState.stage3SelectedItem) {
+        updateBeepExpression('thinking', "Em chọn 1 con vật ở trên trước nhé!");
+        return;
+      }
+
+      const animId = gameState.stage3SelectedItem;
+      const stage = GAME_CONFIG.stages[2];
+      const anim = stage.animals.find(a => a.id === animId);
+      const hab = stage.habitats.find(h => h.id === habId);
+
+      if (hab.matchTypes.includes(anim.type)) {
+        playSFX('correct');
+        gameState.stage3Placed[animId] = habId;
+        gameState.stage3SelectedItem = null;
+
+        // UI Updates
+        const animEl = document.getElementById(`s3-anim-${animId}`);
+        animEl.className = "item-card placed";
+
+        const habContent = document.getElementById(`s3-hab-content-${habId}`);
+        habContent.innerHTML += `
+          <span style="background: #ffffff; padding: 0.35rem 0.65rem; border-radius: 12px; font-size: 0.8rem; font-weight: 800; border: 1px solid var(--mint-main); display: inline-flex; align-items: center; gap: 0.3rem;">
+            ${anim.icon} ${anim.name}
+          </span>
+        `;
+
+        updateBeepExpression('happy', `Đúng rồi! ${anim.name} sống ở ${hab.name}.`);
+
+        // Check sorting step complete
+        if (Object.keys(gameState.stage3Placed).length === stage.animals.length) {
+          playSFX('win');
+          setTimeout(startStage3Step2, 800);
+        }
+      } else {
+        playSFX('wrong');
+        updateBeepExpression('thinking', `Chưa chính xác rồi! ${anim.name} không sống ở ${hab.name} đâu em.`);
+      }
+    }
+
+    function startStage3Step2() {
+      gameState.stage3Step = 2;
+      const stage = GAME_CONFIG.stages[2];
+
+      document.getElementById('s3-step1-container').style.display = 'none';
+      document.getElementById('s3-step2-container').style.display = 'block';
+
+      updateBeepExpression('excited', `Đố em tìm thấy ${stage.searchTarget.name} thật nhanh nào!`);
+
+      const grid = document.getElementById('s3-search-grid');
+      let gridHtml = '';
+
+      stage.habitats.forEach(hab => {
+        gridHtml += `
+          <div style="background: #ffffff; padding: 0.85rem; border-radius: 14px; border: 2px solid var(--lavender-main);">
+            <h5 style="font-size: 0.85rem; font-weight: 900; color: var(--lavender-dark); margin-bottom: 0.5rem;">${hab.name}</h5>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;">`;
+
+        stage.animals.filter(a => a.type === hab.id).forEach(a => {
+          gridHtml += `
+            <button onclick="clickStage3SearchTarget('${a.id}')" class="btn-v5 btn-secondary" style="font-size: 0.85rem; padding: 0.5rem 0.75rem;">
+              ${a.icon} ${a.name}
+            </button>
+          `;
+        });
+
+        gridHtml += `</div></div>`;
+      });
+
+      grid.innerHTML = gridHtml;
+    }
+
+    function clickStage3SearchTarget(animId) {
+      const stage = GAME_CONFIG.stages[2];
+      if (animId === stage.searchTarget.id) {
+        playSFX('win');
+        gameState.scores[2] = GAME_CONFIG.maxScorePerStage;
+        gameState.stageCompleted[2] = true;
+        updateHeaderUI();
+        updateBeepExpression('excited', "🎉 Hoàn hảo! Nhờ sắp xếp ngăn nắp mà em đã tìm thấy ngay trong 1 cú nháy chuột!");
+      } else {
+        playSFX('wrong');
+        updateBeepExpression('thinking', "Đó chưa phải con vật cần tìm, em nhìn kỹ lại tên con vật nhé!");
+      }
+    }
+
+    /* ===================================================================
+       STAGE 4: TÌM VẬT BÍ MẬT (SO SÁNH HIỆU QUẢ)
+       =================================================================== */
+    function renderStage4(container, stage) {
+      gameState.stage4Step = 1;
+      gameState.stage4MessyClicks = 0;
+
+      updateBeepExpression('happy', stage.instruction);
+
+      let html = `
+        <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
+          
+          <!-- STEP 1: MESSY SEARCH -->
+          <div id="s4-step1" style="background: var(--pink-soft); padding: 1rem; border-radius: 16px; border: 2px solid var(--coral-pink); text-align: center;">
+            <h4 style="font-size: 0.95rem; font-weight: 900; color: var(--pink-dark); margin-bottom: 0.4rem;">
+              🌀 BƯỚC 1: Tìm "Chiếc Chìa Khóa 🔑" trong đống đồ xáo trộn bừa bộn
+            </h4>
+            <p style="font-size: 0.8rem; font-weight: 700; color: #4A5568; margin-bottom: 0.8rem;">
+              Bấm gạt các món đồ xáo trộn sang bên để tìm thấy chiếc chìa khóa ở phía dưới!
+            </p>
+            
+            <div id="s4-messy-box" style="position: relative; height: 160px; background: #ffffff; border-radius: 14px; border: 2px dashed var(--coral-pink); overflow: hidden; display: flex; items-center; justify-center;">
+              <!-- Randomly shuffled messy items -->
+            </div>
+            <p id="s4-click-count" style="font-size: 0.8rem; font-weight: 800; color: var(--pink-dark); margin-top: 0.5rem;">
+              Số lần nháy chuột: 0
+            </p>
+          </div>
+
+          <!-- STEP 2: NEAT SEARCH -->
+          <div id="s4-step2" style="display: none; background: var(--mint-soft); padding: 1rem; border-radius: 16px; border: 2px solid var(--mint-main); text-align: center;">
+            <h4 style="font-size: 0.95rem; font-weight: 900; color: var(--mint-dark); margin-bottom: 0.4rem;">
+              ✨ BƯỚC 2: Tìm lại "Chiếc Chìa Khóa 🔑" trong tủ đã dán nhãn phân loại
+            </h4>
+            <p style="font-size: 0.8rem; font-weight: 700; color: #4A5568; margin-bottom: 0.8rem;">
+              Bấm chọn đúng ngăn tủ dán nhãn để tìm chìa khóa lập tức!
+            </p>
+
+            <div class="grid-3">
+              <button onclick="searchNeatDrawer(false)" class="btn-v5 btn-secondary" style="padding: 1rem;">
+                👕 Ngăn Quần Áo
+              </button>
+              <button onclick="searchNeatDrawer(true)" class="btn-v5 btn-accent" style="padding: 1rem;">
+                🔑 Ngăn Chìa Khóa & Đồ Kim Loại
+              </button>
+              <button onclick="searchNeatDrawer(false)" class="btn-v5 btn-secondary" style="padding: 1rem;">
+                🧸 Ngăn Đồ Chơi
+              </button>
+            </div>
+          </div>
+
+          <!-- STEP 3: CONCLUSION QUIZ -->
+          <div id="s4-step3" style="display: none; background: var(--lavender-soft); padding: 1rem; border-radius: 16px; border: 2px solid var(--lavender-main);">
+            <h4 style="font-size: 0.95rem; font-weight: 900; color: var(--lavender-dark); margin-bottom: 0.5rem;">
+              ❓ BƯỚC 3: CÂU HỎI TỔNG KẾT
+            </h4>
+            <p style="font-size: 0.9rem; font-weight: 800; color: #1A202C; margin-bottom: 0.8rem;">
+              ${stage.question.text}
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+              ${stage.question.options.map((opt, oIdx) => `
+                <button onclick="answerStage4Quiz(${oIdx})" class="card-v5" style="padding: 0.75rem 1rem; text-align: left; font-size: 0.85rem; font-weight: 800; color: #2D3748; cursor: pointer;">
+                  ${opt.text}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+        </div>
+      `;
+
+      container.innerHTML = html;
+      renderStage4MessyBox();
+    }
+
+    function renderStage4MessyBox() {
+      const box = document.getElementById('s4-messy-box');
+      const stage = GAME_CONFIG.stages[3];
+
+      let inner = '';
+      stage.messyItems.forEach((item, idx) => {
+        const left = 15 + (idx * 11) % 70;
+        const top = 10 + (idx * 15) % 60;
+        const zIndex = stage.messyItems.length - idx;
+
+        inner += `
+          <div id="s4-mitem-${item.id}" onclick="clickMessyItem('${item.id}')" style="position: absolute; left: ${left}%; top: ${top}%; z-index: ${zIndex}; background: #ffffff; padding: 0.5rem 0.8rem; border-radius: 12px; border: 2px solid #E2E8F0; box-shadow: 0 4px 8px rgba(0,0,0,0.1); cursor: pointer; display: flex; align-items: center; gap: 0.3rem; font-size: 0.8rem; font-weight: 800;">
+            ${item.icon} ${item.name}
+          </div>
+        `;
+      });
+
+      box.innerHTML = inner;
+    }
+
+    function clickMessyItem(itemId) {
+      playSFX('click');
+      gameState.stage4MessyClicks++;
+      document.getElementById('s4-click-count').innerText = `Số lần nháy chuột: ${gameState.stage4MessyClicks}`;
+
+      const el = document.getElementById(`s4-mitem-${itemId}`);
+      if (itemId === 'target_key') {
+        playSFX('correct');
+        el.style.border = '2px solid var(--mint-main)';
+        el.style.background = 'var(--mint-soft)';
+
+        updateBeepExpression('happy', `Tìm thấy rồi! Em mất ${gameState.stage4MessyClicks} lần bấm mới tìm thấy chìa khóa trong đống bừa bộn.`);
+
+        setTimeout(() => {
+          document.getElementById('s4-step1').style.display = 'none';
+          document.getElementById('s4-step2').style.display = 'block';
+          updateBeepExpression('excited', "Bây giờ thử tìm chìa khóa trong tủ đã phân loại ngăn nắp nhé!");
+        }, 1200);
+      } else {
+        el.style.opacity = '0.2';
+        el.style.pointerEvents = 'none';
+      }
+    }
+
+    function searchNeatDrawer(isCorrect) {
+      if (isCorrect) {
+        playSFX('win');
+        updateBeepExpression('excited', "Chính xác! Nhờ nhãn tủ ngăn nắp em tìm thấy ngay chỉ trong 1 lần nháy chuột!");
+
+        setTimeout(() => {
+          document.getElementById('s4-step2').style.display = 'none';
+          document.getElementById('s4-step3').style.display = 'block';
+          updateBeepExpression('happy', "Hãy trả lời câu hỏi cuối cùng để hoàn tất nhiệm vụ nhé!");
+        }, 1200);
+      } else {
+        playSFX('wrong');
+        updateBeepExpression('thinking', "Chìa khóa không nằm trong ngăn này, xem kỹ nhãn dán nhé!");
+      }
+    }
+
+    function answerStage4Quiz(optIdx) {
+      const stage = GAME_CONFIG.stages[3];
+      const opt = stage.question.options[optIdx];
+
+      if (opt.correct) {
+        playSFX('win');
+        gameState.scores[3] = GAME_CONFIG.maxScorePerStage;
+        gameState.stageCompleted[3] = true;
+        updateHeaderUI();
+        updateBeepExpression('excited', "🎉 Tuyệt vời! Sắp xếp ngăn nắp giúp chúng ta tìm kiếm đồ vật cực kỳ nhanh chóng và tiết kiệm thời gian!");
+      } else {
+        playSFX('wrong');
+        updateBeepExpression('thinking', "Chưa chính xác rồi! Em hãy chọn câu trả lời đúng nhất về lợi ích của sắp xếp nhé.");
+      }
+    }
+
+    /* -------------------------------------------------------------------
+       6. SUMMARY SCREEN & CONFETTI CANVAS EFFECT
+       ------------------------------------------------------------------- */
+    function showSummary() {
+      stopBGM();
+      playSFX('win');
+
+      document.getElementById('screen-play').style.display = 'none';
+      document.getElementById('screen-summary').style.display = 'block';
+
+      const totalScore = gameState.scores.reduce((a, b) => a + b, 0);
+      document.getElementById('final-score').innerText = totalScore;
+
+      triggerConfetti();
+    }
+
+    // Pure HTML5 Canvas Confetti animation (Offline compliant)
+    function triggerConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#53B77A', '#FFC65C', '#EF7469', '#7766B7', '#38BDF8'];
+
+      for (let i = 0; i < 80; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height - canvas.height,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vy: Math.random() * 3 + 2,
+          vx: Math.random() * 2 - 1
+        });
+      }
+
+      let frame = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.y += p.vy;
+          p.x += p.vx;
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        frame++;
+        if (frame < 180) {
+          requestAnimationFrame(animate);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      animate();
+    }
+
+    window.onload = function() {
+      console.log("Siêu Thị Ngăn Nắp - Game Tin Học 3 Bài 7 Loaded Successfully.");
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siêu Máy Tính Đa Năng - Tin học 5</title>
+    <style>
+        /* ================= BẢNG MÀU V5 & BIẾN CSS ================= */
+        :root {
+            --c-bg: #F8F7FF;      /* Kem/Trắng tím nhạt */
+            --c-primary: #58429B; /* Tím oải hương đậm */
+            --c-secondary: #4ABDAA; /* Xanh bạc hà */
+            --c-accent: #F6B6C8;  /* Hồng đào */
+            --c-highlight: #F2BE4A; /* Vàng */
+            --c-text: #333333;
+            --c-white: #FFFFFF;
+            --c-gray: #E2E8F0;
+            --c-gray-dark: #64748B;
+            --shadow-soft: 0 4px 6px -1px rgba(88, 66, 155, 0.1), 0 2px 4px -1px rgba(88, 66, 155, 0.06);
+            --shadow-float: 0 10px 15px -3px rgba(88, 66, 155, 0.2);
+            --radius-md: 0.75rem;
+            --radius-lg: 1.5rem;
+            --radius-full: 9999px;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* ================= THIẾT LẬP CƠ BẢN ================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-main);
+            background-color: var(--c-bg);
+            color: var(--c-text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Ngăn cuộn trang */
+            user-select: none; /* Tránh bôi đen văn bản khi click nhanh */
+        }
+
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            max-width: 1920px;
+            position: relative;
+            background: linear-gradient(135deg, #F8F7FF 0%, #E6E1F9 100%);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ================= GIAO DIỆN CHUNG ================= */
+        .screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: none;
+            flex-direction: column;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+            z-index: 10;
+        }
+        .screen.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Nút bấm */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-full);
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-soft);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background-color: var(--c-white);
+            color: var(--c-primary);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-float);
+        }
+        .btn:active { transform: translateY(1px); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        
+        .btn-primary { background-color: var(--c-primary); color: var(--c-white); }
+        .btn-secondary { background-color: var(--c-secondary); color: var(--c-white); }
+        .btn-accent { background-color: var(--c-accent); color: var(--c-primary); }
+
+        /* Tiêu đề */
+        h1, h2, h3 { color: var(--c-primary); }
+        .title-main { font-size: 3rem; text-shadow: 2px 2px 0px var(--c-white); text-align: center; margin-bottom: 1rem; }
+        
+        /* Mascot & Chatbox */
+        #mascot-area {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            align-items: flex-end;
+            z-index: 50;
+            pointer-events: none;
+        }
+        .mascot-svg { width: 120px; height: 120px; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2)); transition: transform 0.3s; }
+        .mascot-svg.jump { animation: jump 0.5s ease; }
+        @keyframes jump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        
+        .chat-bubble {
+            background: var(--c-white);
+            border: 3px solid var(--c-primary);
+            border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 0;
+            padding: 1rem;
+            margin-left: 10px;
+            margin-bottom: 30px;
+            max-width: 300px;
+            box-shadow: var(--shadow-soft);
+            font-weight: bold;
+            color: var(--c-primary);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        .chat-bubble.show { opacity: 1; transform: translateY(0); }
+
+        /* Thanh Topbar (Điểm, Cấp độ, Cài đặt) */
+        #topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--c-accent);
+            z-index: 20;
+        }
+        .stats-badge {
+            background: var(--c-highlight);
+            color: var(--c-primary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-full);
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: inset 0 -2px 0 rgba(0,0,0,0.1);
+        }
+        .controls { display: flex; gap: 0.5rem; }
+        .icon-btn {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: var(--c-white);
+            color: var(--c-primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-soft);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .icon-btn.off { background: var(--c-gray); color: var(--c-gray-dark); text-decoration: line-through; }
+
+        /* ================= VÙNG CHƠI CHÍNH ================= */
+        .game-content {
+            flex: 1;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-y: auto;
+        }
+        .level-header { text-align: center; margin-bottom: 1rem; }
+        .level-desc { font-size: 1.2rem; color: var(--c-text); background: var(--c-white); padding: 0.5rem 1rem; border-radius: var(--radius-md); display: inline-block; box-shadow: var(--shadow-soft);}
+        
+        .workspace {
+            flex: 1;
+            background: rgba(255,255,255,0.5);
+            border: 2px dashed var(--c-primary);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+        }
+
+        /* Cấu trúc cho Drag & Drop (Click to Move) */
+        .source-area, .target-area {
+            display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;
+        }
+        
+        .item-card {
+            background: var(--c-white);
+            border: 2px solid var(--c-secondary);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.2s;
+            text-align: center;
+            min-width: 120px;
+        }
+        .item-card:hover { transform: scale(1.05); }
+        .item-card.selected { background: var(--c-highlight); border-color: var(--c-primary); transform: scale(1.1); box-shadow: var(--shadow-float); }
+        .item-card.correct { background: var(--c-secondary); color: white; border-color: var(--c-secondary); cursor: default; }
+        .item-card.wrong { animation: shake 0.4s; background: #ffcccc; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .drop-zone {
+            background: rgba(255,255,255,0.7);
+            border: 3px dashed var(--c-accent);
+            border-radius: var(--radius-lg);
+            min-height: 100px;
+            flex: 1;
+            min-width: 200px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.3s;
+        }
+        .drop-zone h3 { margin-bottom: 0.5rem; color: var(--c-primary); text-align: center;}
+        .drop-zone.highlight { background: rgba(74, 189, 170, 0.2); border-color: var(--c-secondary); }
+
+        /* Màn 3: Desktop Mô phỏng */
+        .desktop-sim {
+            flex: 1; background: #87CEEB; border-radius: var(--radius-lg); position: relative; overflow: hidden;
+            display: flex; flex-wrap: wrap; align-content: flex-start; padding: 1rem; gap: 1.5rem;
+        }
+        .desktop-icon {
+            width: 80px; text-align: center; cursor: pointer; color: white; text-shadow: 1px 1px 2px black; font-weight: bold;
+        }
+        .desktop-icon svg { width: 50px; height: 50px; margin-bottom: 5px; fill: white; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5)); transition: transform 0.2s;}
+        .desktop-icon:hover svg { transform: scale(1.1); }
+        .desktop-icon.done { opacity: 0.5; pointer-events: none; }
+        
+        .mock-window {
+            position: absolute; top: 10%; left: 10%; width: 80%; height: 80%;
+            background: var(--c-white); border-radius: var(--radius-md); box-shadow: var(--shadow-float);
+            display: none; flex-direction: column; overflow: hidden; z-index: 100;
+        }
+        .mock-window.active { display: flex; }
+        .window-bar { background: var(--c-primary); color: white; padding: 0.5rem; display: flex; justify-content: space-between; font-weight: bold;}
+        .window-close { cursor: pointer; background: red; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; }
+        .window-content { flex: 1; padding: 1rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; background: #f0f0f0;}
+        .mock-app-btn { padding: 1rem 2rem; font-size: 1.2rem; background: var(--c-secondary); color: white; border: none; border-radius: var(--radius-md); cursor: pointer; }
+
+        /* Màn 4: Trình tự */
+        .sequence-area { display: flex; flex-direction: column; gap: 1rem; align-items: center; margin-top: 2rem;}
+        .seq-slot {
+            width: 80%; height: 60px; border: 2px dashed var(--c-primary); border-radius: var(--radius-md);
+            display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.5);
+            font-weight: bold; color: var(--c-gray-dark);
+        }
+        .seq-slot.filled { border-style: solid; background: var(--c-white); color: var(--c-primary); }
+
+        /* Bottom Controls */
+        .action-bar {
+            display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; padding: 1rem; pointer-events: auto; z-index: 20;
+        }
+
+        /* Màn hình Kết thúc */
+        #screen-end { text-align: center; justify-content: center; align-items: center; background: var(--c-bg); }
+        .medal-svg { width: 150px; height: 150px; margin-bottom: 1rem; animation: float 2s infinite ease-in-out;}
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        
+        /* Hiệu ứng Pháo hoa DOM */
+        .confetti {
+            position: absolute; width: 10px; height: 10px; background-color: #f00; z-index: 999;
+            animation: fall 3s linear forwards;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .title-main { font-size: 2rem; }
+            .drop-zone { min-width: 100%; }
+            #mascot-area { left: 5px; bottom: 80px; transform: scale(0.8); transform-origin: bottom left;}
+            .action-bar { flex-wrap: wrap; }
+            .desktop-sim { align-content: flex-start; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    
+    <!-- Topbar (Chỉ hiện khi chơi) -->
+    <div id="topbar" style="display: none;">
+        <div class="stats-badge" id="level-display">Nhiệm vụ: 1/4</div>
+        <div class="stats-badge" id="score-display">Điểm: 0</div>
+        <div class="controls">
+            <button class="icon-btn" id="btn-music" title="Bật/Tắt Nhạc nền">🎵</button>
+            <button class="icon-btn" id="btn-sfx" title="Bật/Tắt Hiệu ứng">🔊</button>
+            <button class="icon-btn" id="btn-home" title="Trang chủ">🏠</button>
+        </div>
+    </div>
+
+    <!-- Màn hình Chào mừng -->
+    <div id="screen-welcome" class="screen active" style="align-items: center; justify-content: center;">
+        <h2 style="font-size: 1.5rem; color: var(--c-secondary);">Tin học 5 - Bài 1</h2>
+        <h1 class="title-main">SIÊU MÁY TÍNH ĐA NĂNG</h1>
+        
+        <!-- Hình minh họa SVG Trang chủ -->
+        <svg width="300" height="200" viewBox="0 0 300 200" style="margin: 1rem 0;">
+            <rect x="20" y="20" width="260" height="150" rx="10" fill="#E2E8F0" stroke="#58429B" stroke-width="4"/>
+            <rect x="30" y="30" width="240" height="110" rx="5" fill="#FFFFFF"/>
+            <path d="M120 170 L180 170 L190 190 L110 190 Z" fill="#58429B"/>
+            <rect x="90" y="190" width="120" height="10" rx="5" fill="#64748B"/>
+            <!-- Các icon trên màn hình -->
+            <circle cx="70" cy="70" r="20" fill="#F2BE4A"/>
+            <rect x="130" y="50" width="40" height="40" rx="8" fill="#4ABDAA"/>
+            <polygon points="210,50 240,90 180,90" fill="#F6B6C8"/>
+        </svg>
+
+        <p style="font-size: 1.2rem; text-align: center; max-width: 600px; margin-bottom: 2rem; color: var(--c-primary); font-weight: 500;">
+            Cùng trợ lý Pixel khám phá xem máy tính có thể giúp chúng ta làm những việc gì nhé! <br> Hãy hoàn thành 4 nhiệm vụ để nhận huy hiệu Siêu Máy Tính.
+        </p>
+        <div style="display: flex; gap: 1rem;">
+            <button class="btn btn-primary" onclick="startGame()" style="font-size: 1.5rem; padding: 1rem 3rem;">▶ Bắt Đầu</button>
+        </div>
+    </div>
+
+    <!-- Màn hình Chơi chính -->
+    <div id="screen-game" class="screen">
+        <div class="game-content">
+            <div class="level-header">
+                <h2 id="level-title" style="font-size: 1.8rem; margin-bottom: 0.5rem;">Tiêu đề</h2>
+                <div id="level-desc" class="level-desc">Mô tả</div>
+            </div>
+            
+            <div class="workspace" id="game-workspace">
+                <!-- Nội dung động render ở đây -->
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn" onclick="requestHint()" id="btn-hint">💡 Gợi ý</button>
+            <button class="btn" onclick="retryLevel()" id="btn-retry">🔄 Làm lại màn</button>
+            <button class="btn btn-secondary" onclick="nextLevel()" id="btn-next" style="display:none;">Tiếp tục ➔</button>
+        </div>
+    </div>
+
+    <!-- Màn hình Kết thúc -->
+    <div id="screen-end" class="screen">
+        <h1 class="title-main" style="color: var(--c-secondary);">CHÚC MỪNG!</h1>
+        <svg class="medal-svg" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="45" fill="#F2BE4A" stroke="#E5A720" stroke-width="4"/>
+            <circle cx="50" cy="50" r="35" fill="#FFFBEA"/>
+            <path d="M40 30 L60 30 L50 45 Z" fill="#F6B6C8"/>
+            <text x="50" y="65" font-family="sans-serif" font-size="20" font-weight="bold" fill="#58429B" text-anchor="middle">100</text>
+            <text x="50" y="80" font-family="sans-serif" font-size="10" font-weight="bold" fill="#58429B" text-anchor="middle">ĐIỂM</text>
+        </svg>
+        <h2 id="final-score-text" style="margin-bottom: 1rem;">Bạn đạt: 100 điểm</h2>
+        <p style="font-size: 1.2rem; max-width: 500px; margin-bottom: 2rem; line-height: 1.5;">
+            Tuyệt vời! Em đã nắm rõ máy tính có thể giúp chúng ta Học tập, Giải trí, Trao đổi thông tin và Tạo ra các sản phẩm số.
+        </p>
+        <button class="btn btn-primary" onclick="resetGame()">🔄 Chơi lại từ đầu</button>
+    </div>
+
+    <!-- Mascot Area (Overlay) -->
+    <div id="mascot-area">
+        <svg class="mascot-svg" id="pixel-mascot" viewBox="0 0 100 100">
+            <!-- Thân robot -->
+            <rect x="20" y="30" width="60" height="50" rx="15" fill="#FFFFFF" stroke="#58429B" stroke-width="4"/>
+            <!-- Màn hình (mặt) -->
+            <rect x="30" y="40" width="40" height="25" rx="5" fill="#4ABDAA"/>
+            <!-- Mắt bình thường (sẽ đổi bằng JS) -->
+            <g id="mascot-eyes">
+                <circle cx="40" cy="52" r="4" fill="#FFFFFF"/>
+                <circle cx="60" cy="52" r="4" fill="#FFFFFF"/>
+            </g>
+            <!-- Ăng ten -->
+            <line x1="50" y1="30" x2="50" y2="15" stroke="#58429B" stroke-width="4"/>
+            <circle cx="50" cy="15" r="5" fill="#F2BE4A"/>
+            <!-- Bánh xe -->
+            <circle cx="35" cy="85" r="10" fill="#64748B"/>
+            <circle cx="65" cy="85" r="10" fill="#64748B"/>
+        </svg>
+        <div class="chat-bubble" id="chat-box">Chào bạn! Nhấn Bắt đầu nhé!</div>
+    </div>
+
+</div>
+
+<script>
+/**
+ * ==========================================
+ * GAME_CONFIG - CẤU HÌNH NỘI DUNG (GIÁO VIÊN CÓ THỂ SỬA)
+ * ==========================================
+ */
+const GAME_CONFIG = {
+    totalLevels: 4,
+    pointsPerLevel: 25,
+    levels: [
+        {
+            id: 1,
+            type: "classify", // Dạng phân loại
+            title: "Màn 1: Cỗ Máy Phân Loại",
+            desc: "Nhấn chọn hoạt động ở trên, sau đó nhấn vào nhóm phù hợp ở dưới.",
+            items: [
+                { id: "i1", text: "Giải toán trên hoclieu.vn", target: "c1" },
+                { id: "i2", text: "Xem phim hoạt hình", target: "c2" },
+                { id: "i3", text: "Gửi thư điện tử (email)", target: "c3" },
+                { id: "i4", text: "Vẽ tranh trên máy tính", target: "c4" }
+            ],
+            categories: [
+                { id: "c1", name: "📚 Học tập" },
+                { id: "c2", name: "🎮 Giải trí" },
+                { id: "c3", name: "💬 Trao đổi thông tin" },
+                { id: "c4", name: "🎨 Tạo sản phẩm số" }
+            ],
+            hints: ["Mỗi hoạt động tương ứng với 1 nhóm.", "Giải toán -> Học; Xem phim -> Giải trí; Email -> Trao đổi; Vẽ -> Tạo sản phẩm."]
+        },
+        {
+            id: 2,
+            type: "classify", // Dùng lại logic phân loại cho việc ghép đôi
+            title: "Màn 2: Chọn Đúng Công Cụ",
+            desc: "Bạn cần phần mềm nào? Chọn tình huống rồi chọn phần mềm tương ứng.",
+            items: [
+                { id: "i1", text: "Tìm thông tin về loài cá heo", target: "c1" },
+                { id: "i2", text: "Gõ đoạn văn bản báo cáo", target: "c2" },
+                { id: "i3", text: "Tạo bài trình chiếu thuyết trình", target: "c3" }
+            ],
+            categories: [
+                { id: "c1", name: "🌐 Trình duyệt Web" },
+                { id: "c2", name: "📝 Phần mềm soạn thảo" },
+                { id: "c3", name: "📊 Phần mềm trình chiếu" }
+            ],
+            hints: ["Tìm kiếm thì dùng Web.", "Gõ chữ dùng phần mềm soạn thảo.", "Thuyết trình dùng phần mềm trình chiếu."]
+        },
+        {
+            id: 3,
+            type: "simulate", // Mô phỏng cửa sổ
+            title: "Màn 3: Trải Nghiệm Thực Tế",
+            desc: "Nhấn vào các biểu tượng phần mềm và hoàn thành 1 thao tác bên trong.",
+            apps: [
+                { id: "app-web", name: "Trình duyệt", icon: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z", taskDesc: "Nhấn nút 'Tìm kiếm' để tìm bài học.", btnText: "🔍 Tìm kiếm" },
+                { id: "app-word", name: "Soạn thảo", icon: "M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z", taskDesc: "Nhấn nút 'Lưu tệp' sau khi soạn xong.", btnText: "💾 Lưu tệp" },
+                { id: "app-paint", name: "Đồ họa", icon: "M7 14c-1.66 0-3 1.34-3 3 0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2 2.21 0 4-1.79 4-4 0-1.66-1.34-3-3-3zm13.71-9.37l-1.34-1.34a.9959.9959 0 0 0-1.41 0L9 12.25 11.75 15l8.96-8.96c.39-.39.39-1.02 0-1.41z", taskDesc: "Nhấn nút 'Tô màu' để hoàn thiện tranh.", btnText: "🪣 Tô màu" }
+            ],
+            hints: ["Mở lần lượt từng phần mềm.", "Đọc kỹ yêu cầu bên trong cửa sổ và nhấn nút màu xanh lá."]
+        },
+        {
+            id: 4,
+            type: "sequence", // Sắp xếp trình tự
+            title: "Màn 4: Kế Hoạch Sáng Tạo",
+            desc: "Nhấn chọn bước theo đúng thứ tự để tạo một sản phẩm số (VD: Video).",
+            items: [
+                { id: "s1", text: "1. Chuẩn bị (Tìm ý tưởng, tư liệu)" },
+                { id: "s2", text: "2. Tạo sản phẩm (Dùng phần mềm)" },
+                { id: "s3", text: "3. Hoàn thiện & Chia sẻ (Lưu tệp, gửi cho bạn)" }
+            ],
+            hints: ["Phải chuẩn bị ý tưởng trước.", "Sau đó dùng phần mềm làm.", "Cuối cùng mới chia sẻ cho người khác."]
+        }
+    ]
+};
+
+/**
+ * ==========================================
+ * QUẢN LÝ TRẠNG THÁI (STATE)
+ * ==========================================
+ */
+let currentState = {
+    level: 0,
+    score: 0,
+    bgmEnabled: false,
+    sfxEnabled: true,
+    audioInited: false,
+    hintLevel: 0,
+    selectedItem: null, // Dùng cho màn click-to-move
+    completedItems: 0,  // Đếm số mục đã hoàn thành trong màn
+    levelCompleted: false
+};
+
+/**
+ * ==========================================
+ * HỆ THỐNG ÂM THANH (WEB AUDIO API)
+ * Tuyệt đối không dùng file ngoài.
+ * ==========================================
+ */
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let bgmOscillator = null;
+let bgmGain = null;
+let bgmInterval = null;
+
+function initAudio() {
+    if(currentState.audioInited) return;
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    currentState.audioInited = true;
+    updateAudioButtons();
+}
+
+function playBGM() {
+    if (!currentState.bgmEnabled || !currentState.audioInited) return;
+    stopBGM(); // Đảm bảo không đè
+    
+    bgmGain = audioCtx.createGain();
+    bgmGain.gain.value = 0.05; // Âm lượng thấp 5%
+    bgmGain.connect(audioCtx.destination);
+
+    // Giai điệu arpeggio đơn giản
+    const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
+    let noteIdx = 0;
+
+    bgmInterval = setInterval(() => {
+        if (!currentState.bgmEnabled) { stopBGM(); return; }
+        const osc = audioCtx.createOscillator();
+        osc.type = 'triangle';
+        osc.frequency.value = notes[noteIdx];
+        
+        const env = audioCtx.createGain();
+        env.gain.setValueAtTime(0, audioCtx.currentTime);
+        env.gain.linearRampToValueAtTime(1, audioCtx.currentTime + 0.1);
+        env.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+
+        osc.connect(env);
+        env.connect(bgmGain);
+        
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.5);
+
+        noteIdx = (noteIdx + 1) % notes.length;
+    }, 600); // Tốc độ
+}
+
+function stopBGM() {
+    if (bgmInterval) clearInterval(bgmInterval);
+    if (bgmGain) bgmGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
+    bgmInterval = null;
+}
+
+function playSFX(type) {
+    if (!currentState.sfxEnabled || !currentState.audioInited) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+    
+    if (type === 'correct') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now); osc.stop(now + 0.3);
+    } else if (type === 'wrong') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.linearRampToValueAtTime(150, now + 0.2);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        osc.start(now); osc.stop(now + 0.2);
+    } else if (type === 'win') {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.setValueAtTime(600, now + 0.1);
+        osc.frequency.setValueAtTime(800, now + 0.2);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.4);
+        osc.start(now); osc.stop(now + 0.4);
+    } else if (type === 'click') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, now);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        osc.start(now); osc.stop(now + 0.1);
+    }
+}
+
+// Xử lý nút bật tắt âm thanh
+document.getElementById('btn-music').addEventListener('click', () => {
+    initAudio();
+    currentState.bgmEnabled = !currentState.bgmEnabled;
+    updateAudioButtons();
+    if(currentState.bgmEnabled) playBGM(); else stopBGM();
+});
+document.getElementById('btn-sfx').addEventListener('click', () => {
+    initAudio();
+    currentState.sfxEnabled = !currentState.sfxEnabled;
+    updateAudioButtons();
+    playSFX('click');
+});
+
+function updateAudioButtons() {
+    const btnM = document.getElementById('btn-music');
+    const btnS = document.getElementById('btn-sfx');
+    if(currentState.bgmEnabled) { btnM.classList.remove('off'); btnM.title = "Tắt Nhạc nền"; }
+    else { btnM.classList.add('off'); btnM.title = "Bật Nhạc nền"; }
+    if(currentState.sfxEnabled) { btnS.classList.remove('off'); btnS.title = "Tắt Hiệu ứng"; }
+    else { btnS.classList.add('off'); btnS.title = "Bật Hiệu ứng"; }
+}
+
+/**
+ * ==========================================
+ * MASCOT CONTOLLER
+ * ==========================================
+ */
+function mascotSay(text, emotion = 'normal') {
+    const bubble = document.getElementById('chat-box');
+    const eyes = document.getElementById('mascot-eyes');
+    const svg = document.getElementById('pixel-mascot');
+    
+    bubble.textContent = text;
+    bubble.classList.remove('show');
+    // Force reflow to restart animation
+    void bubble.offsetWidth;
+    bubble.classList.add('show');
+
+    // Đổi biểu cảm mắt
+    if (emotion === 'happy') {
+        eyes.innerHTML = `<path d="M35 52 Q40 45 45 52 M55 52 Q60 45 65 52" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+        svg.classList.add('jump');
+        setTimeout(() => svg.classList.remove('jump'), 500);
+    } else if (emotion === 'sad') {
+        eyes.innerHTML = `<line x1="35" y1="52" x2="45" y2="52" stroke="#FFFFFF" stroke-width="3"/><line x1="55" y1="52" x2="65" y2="52" stroke="#FFFFFF" stroke-width="3"/>`;
+    } else {
+        eyes.innerHTML = `<circle cx="40" cy="52" r="4" fill="#FFFFFF"/><circle cx="60" cy="52" r="4" fill="#FFFFFF"/>`;
+    }
+}
+
+/**
+ * ==========================================
+ * GAME LOGIC TỪNG MÀN
+ * ==========================================
+ */
+
+function startGame() {
+    initAudio();
+    // Bật nhạc mặc định khi bắt đầu nếu chưa từng tắt
+    if(!currentState.audioInited) {
+        currentState.bgmEnabled = true;
+        currentState.sfxEnabled = true;
+        updateAudioButtons();
+    }
+    playBGM();
+    
+    document.getElementById('screen-welcome').classList.remove('active');
+    document.getElementById('topbar').style.display = 'flex';
+    document.getElementById('screen-game').classList.add('active');
+    
+    currentState.level = 0;
+    currentState.score = 0;
+    updateScoreUI();
+    loadLevel();
+}
+
+function updateScoreUI() {
+    document.getElementById('level-display').textContent = `Nhiệm vụ: ${currentState.level + 1}/${GAME_CONFIG.totalLevels}`;
+    document.getElementById('score-display').textContent = `Điểm: ${currentState.score}`;
+}
+
+function loadLevel() {
+    const cfg = GAME_CONFIG.levels[currentState.level];
+    document.getElementById('level-title').textContent = cfg.title;
+    document.getElementById('level-desc').textContent = cfg.desc;
+    document.getElementById('btn-next').style.display = 'none';
+    
+    currentState.hintLevel = 0;
+    currentState.selectedItem = null;
+    currentState.completedItems = 0;
+    currentState.levelCompleted = false;
+
+    const ws = document.getElementById('game-workspace');
+    ws.innerHTML = ''; // Clear cũ
+
+    mascotSay("Bắt đầu nhiệm vụ nào! Cố lên nhé!", "normal");
+
+    if (cfg.type === 'classify') renderClassifyLevel(cfg, ws);
+    else if (cfg.type === 'simulate') renderSimulateLevel(cfg, ws);
+    else if (cfg.type === 'sequence') renderSequenceLevel(cfg, ws);
+}
+
+// --- RENDERING DẠNG PHÂN LOẠI (Click to Move) ---
+function renderClassifyLevel(cfg, container) {
+    const sourceArea = document.createElement('div');
+    sourceArea.className = 'source-area';
+    
+    const targetArea = document.createElement('div');
+    targetArea.className = 'target-area';
+
+    // Tạo các thẻ items (xáo trộn)
+    let items = [...cfg.items].sort(() => Math.random() - 0.5);
+    items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.textContent = item.text;
+        div.dataset.id = item.id;
+        div.dataset.target = item.target;
+        div.onclick = () => selectClassifyItem(div);
+        sourceArea.appendChild(div);
+    });
+
+    // Tạo các vùng đích
+    cfg.categories.forEach(cat => {
+        const zone = document.createElement('div');
+        zone.className = 'drop-zone';
+        zone.dataset.id = cat.id;
+        zone.innerHTML = `<h3>${cat.name}</h3>`;
+        zone.onclick = () => dropClassifyItem(zone);
+        targetArea.appendChild(zone);
+    });
+
+    container.appendChild(sourceArea);
+    container.appendChild(targetArea);
+}
+
+function selectClassifyItem(element) {
+    if (currentState.levelCompleted || element.classList.contains('correct')) return;
+    playSFX('click');
+    
+    // Bỏ chọn cũ
+    document.querySelectorAll('.item-card').forEach(el => el.classList.remove('selected'));
+    
+    if (currentState.selectedItem === element) {
+        currentState.selectedItem = null; // Toggle off
+    } else {
+        element.classList.add('selected');
+        currentState.selectedItem = element;
+        document.querySelectorAll('.drop-zone').forEach(z => z.classList.add('highlight'));
+    }
+}
+
+function dropClassifyItem(zone) {
+    if (!currentState.selectedItem || currentState.levelCompleted) return;
+    
+    const item = currentState.selectedItem;
+    const targetId = item.dataset.target;
+    const zoneId = zone.dataset.id;
+
+    document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('highlight'));
+
+    if (targetId === zoneId) {
+        // ĐÚNG
+        playSFX('correct');
+        item.classList.remove('selected');
+        item.classList.add('correct');
+        zone.appendChild(item); // Di chuyển DOM
+        currentState.selectedItem = null;
+        currentState.completedItems++;
+        mascotSay("Chính xác! Làm tốt lắm.", "happy");
+        checkLevelComplete(GAME_CONFIG.levels[currentState.level].items.length);
+    } else {
+        // SAI
+        playSFX('wrong');
+        item.classList.add('wrong');
+        setTimeout(() => item.classList.remove('wrong'), 400);
+        mascotSay("Chưa đúng rồi. Hãy nghĩ xem hoạt động này thuộc nhóm nào nhé.", "sad");
+    }
+}
+
+// --- RENDERING DẠNG MÔ PHỎNG CỬA SỔ ---
+function renderSimulateLevel(cfg, container) {
+    const desktop = document.createElement('div');
+    desktop.className = 'desktop-sim';
+    
+    cfg.apps.forEach(app => {
+        // Icon trên Desktop
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'desktop-icon';
+        iconDiv.id = `icon-${app.id}`;
+        iconDiv.innerHTML = `<svg viewBox="0 0 24 24"><path d="${app.icon}"/></svg><br>${app.name}`;
+        
+        // Cửa sổ Mock
+        const winDiv = document.createElement('div');
+        winDiv.className = 'mock-window';
+        winDiv.id = `win-${app.id}`;
+        winDiv.innerHTML = `
+            <div class="window-bar">
+                <span>${app.name}</span>
+                <button class="window-close" onclick="closeMockWindow('${app.id}')">X</button>
+            </div>
+            <div class="window-content">
+                <p style="font-size:1.2rem; text-align:center;">${app.taskDesc}</p>
+                <button class="mock-app-btn" onclick="completeMockTask('${app.id}')">${app.btnText}</button>
+            </div>
+        `;
+        
+        iconDiv.onclick = () => {
+            playSFX('click');
+            document.querySelectorAll('.mock-window').forEach(w => w.classList.remove('active'));
+            winDiv.classList.add('active');
+        };
+
+        desktop.appendChild(iconDiv);
+        container.appendChild(winDiv); // Append to workspace, outside desktop flow for absolute pos
+    });
+    
+    container.appendChild(desktop);
+}
+
+function closeMockWindow(appId) {
+    playSFX('click');
+    document.getElementById(`win-${appId}`).classList.remove('active');
+}
+
+function completeMockTask(appId) {
+    playSFX('correct');
+    document.getElementById(`win-${appId}`).classList.remove('active');
+    const icon = document.getElementById(`icon-${appId}`);
+    if(!icon.classList.contains('done')) {
+        icon.classList.add('done');
+        currentState.completedItems++;
+        mascotSay("Thao tác thành công!", "happy");
+        checkLevelComplete(GAME_CONFIG.levels[currentState.level].apps.length);
+    }
+}
+
+// --- RENDERING DẠNG TRÌNH TỰ (SẮP XẾP) ---
+// Dùng cơ chế Click để đưa vào Slot
+function renderSequenceLevel(cfg, container) {
+    const sourceArea = document.createElement('div');
+    sourceArea.className = 'source-area';
+    
+    const seqArea = document.createElement('div');
+    seqArea.className = 'sequence-area';
+
+    let items = [...cfg.items].sort(() => Math.random() - 0.5);
+    
+    // Tạo Slots
+    cfg.items.forEach((_, index) => {
+        const slot = document.createElement('div');
+        slot.className = 'seq-slot';
+        slot.dataset.expected = cfg.items[index].id;
+        slot.textContent = `Bước ${index + 1}`;
+        seqArea.appendChild(slot);
+    });
+
+    items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.textContent = item.text;
+        div.dataset.id = item.id;
+        div.onclick = () => {
+            if (currentState.levelCompleted || div.classList.contains('correct')) return;
+            playSFX('click');
+            
+            // Tìm slot trống đầu tiên
+            const emptySlots = Array.from(seqArea.children).filter(s => !s.classList.contains('filled'));
+            if(emptySlots.length > 0) {
+                const targetSlot = emptySlots[0];
+                if(targetSlot.dataset.expected === div.dataset.id) {
+                    // ĐÚNG BƯỚC
+                    playSFX('correct');
+                    div.classList.add('correct');
+                    targetSlot.textContent = '';
+                    targetSlot.appendChild(div);
+                    targetSlot.classList.add('filled');
+                    currentState.completedItems++;
+                    mascotSay("Đúng bước rồi!", "happy");
+                    checkLevelComplete(cfg.items.length);
+                } else {
+                    // SAI BƯỚC
+                    playSFX('wrong');
+                    div.classList.add('wrong');
+                    setTimeout(() => div.classList.remove('wrong'), 400);
+                    mascotSay("Sai thứ tự rồi. Hãy đọc kỹ xem bước nào làm trước nhé.", "sad");
+                }
+            }
+        };
+        sourceArea.appendChild(div);
+    });
+
+    container.appendChild(sourceArea);
+    container.appendChild(seqArea);
+}
+
+
+/**
+ * ==========================================
+ * LOGIC KIỂM TRA & ĐIỀU HƯỚNG
+ * ==========================================
+ */
+function checkLevelComplete(targetCount) {
+    if (currentState.completedItems >= targetCount) {
+        currentState.levelCompleted = true;
+        currentState.score += GAME_CONFIG.pointsPerLevel;
+        updateScoreUI();
+        playSFX('win');
+        mascotSay("Xuất sắc! Bạn đã hoàn thành nhiệm vụ này.", "happy");
+        document.getElementById('btn-next').style.display = 'inline-flex';
+    }
+}
+
+function requestHint() {
+    playSFX('click');
+    const hints = GAME_CONFIG.levels[currentState.level].hints;
+    if (hints && hints.length > 0) {
+        const hintText = hints[Math.min(currentState.hintLevel, hints.length - 1)];
+        mascotSay("Gợi ý: " + hintText, "normal");
+        currentState.hintLevel++;
+    } else {
+        mascotSay("Màn này không khó, bạn tự làm được mà!", "normal");
+    }
+}
+
+function retryLevel() {
+    playSFX('click');
+    if(currentState.levelCompleted) {
+        // Đã hoàn thành mà bấm làm lại thì không trừ điểm, chỉ render lại (tùy logic, ở đây cho render lại)
+        currentState.score -= GAME_CONFIG.pointsPerLevel; 
+    }
+    loadLevel();
+    updateScoreUI();
+}
+
+function nextLevel() {
+    playSFX('click');
+    if (currentState.level < GAME_CONFIG.totalLevels - 1) {
+        currentState.level++;
+        updateScoreUI();
+        loadLevel();
+    } else {
+        showEndScreen();
+    }
+}
+
+function showEndScreen() {
+    document.getElementById('screen-game').classList.remove('active');
+    document.getElementById('topbar').style.display = 'none';
+    document.getElementById('screen-end').classList.add('active');
+    document.getElementById('final-score-text').textContent = `Bạn đạt: ${currentState.score} điểm`;
+    
+    mascotSay("Chúc mừng bạn đã trở thành chuyên gia máy tính!", "happy");
+    playSFX('win');
+    createConfetti();
+}
+
+function resetGame() {
+    playSFX('click');
+    document.getElementById('screen-end').classList.remove('active');
+    document.getElementById('screen-welcome').classList.add('active');
+    document.getElementById('topbar').style.display = 'none';
+    document.querySelectorAll('.confetti').forEach(e => e.remove());
+    mascotSay("Chào bạn! Nhấn Bắt đầu nhé!", "normal");
+}
+
+document.getElementById('btn-home').addEventListener('click', () => {
+    if(confirm("Bạn có muốn quay lại Trang chủ? Lượt chơi hiện tại sẽ bị hủy.")) {
+        resetGame();
+    }
+});
+
+// Hiệu ứng pháo hoa bằng DOM
+function createConfetti() {
+    for (let i = 0; i < 50; i++) {
+        const conf = document.createElement('div');
+        conf.className = 'confetti';
+        conf.style.left = Math.random() * 100 + 'vw';
+        conf.style.backgroundColor = ['#F6B6C8', '#4ABDAA', '#F2BE4A', '#58429B'][Math.floor(Math.random() * 4)];
+        conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        document.body.appendChild(conf);
+    }
+}
+
+// Xử lý rời trang / ẩn tab để tắt nhạc
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        if(bgmInterval) { clearInterval(bgmInterval); bgmInterval = null; }
+    } else {
+        if(currentState.bgmEnabled && currentState.audioInited && document.getElementById('screen-game').classList.contains('active')) {
+            playBGM();
+        }
+    }
+});
+
+</script>
+</body>
+</html>

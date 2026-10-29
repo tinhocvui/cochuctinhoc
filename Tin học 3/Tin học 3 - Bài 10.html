@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LÁ CHẮN THÔNG TIN - Tin Học 3 Bài 10</title>
+    <style>
+        /* === BẢNG MÀU MỸ THUẬT V5 PASTEL & RESET === */
+        :root {
+            --bg-cream: #FFF8E9;
+            --bg-mint: #E8F5E9;
+            --bg-lavender: #F3E5F5;
+            --primary-green: #53B77A;
+            --primary-green-dark: #3d965e;
+            --coral-orange: #EF7469;
+            --coral-orange-dark: #d6584d;
+            --canary-yellow: #FFC65C;
+            --canary-yellow-dark: #e0a73c;
+            --lavender-purple: #7766B7;
+            --lavender-purple-dark: #5b4b9b;
+            --sky-blue: #4A90E2;
+            --sky-blue-dark: #357ABD;
+            --text-dark: #2D3748;
+            --text-muted: #718096;
+            --card-white: #FFFFFF;
+            --border-light: #E2E8F0;
+            --shadow-soft: 0 10px 25px rgba(0,0,0,0.06);
+            --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: linear-gradient(135deg, var(--bg-cream) 0%, var(--bg-mint) 50%, var(--bg-lavender) 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-x: hidden;
+            padding: 10px;
+        }
+
+        /* === APP CONTAINER === */
+        #app-container {
+            width: 100%;
+            max-width: 1024px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            border: 3px solid #FFFFFF;
+            min-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* === HEADER CONTROL BAR === */
+        .header-bar {
+            background: #FFFFFF;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-light);
+            flex-wrap: wrap;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .header-title-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .game-badge {
+            background: var(--lavender-purple);
+            color: white;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 0 var(--lavender-purple-dark);
+        }
+
+        .score-pill {
+            background: var(--canary-yellow);
+            color: #5A3E00;
+            font-weight: 800;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 1rem;
+            box-shadow: 0 4px 0 var(--canary-yellow-dark);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .controls-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* === 3D BUTTON STYLES === */
+        .btn-3d {
+            border: none;
+            border-radius: 16px;
+            padding: 10px 18px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            outline: none;
+            color: white;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .btn-3d:active {
+            transform: translateY(4px);
+        }
+
+        .btn-green {
+            background: var(--primary-green);
+            box-shadow: 0 5px 0 var(--primary-green-dark);
+        }
+        .btn-green:active { box-shadow: 0 1px 0 var(--primary-green-dark); }
+
+        .btn-orange {
+            background: var(--coral-orange);
+            box-shadow: 0 5px 0 var(--coral-orange-dark);
+        }
+        .btn-orange:active { box-shadow: 0 1px 0 var(--coral-orange-dark); }
+
+        .btn-purple {
+            background: var(--lavender-purple);
+            box-shadow: 0 5px 0 var(--lavender-purple-dark);
+        }
+        .btn-purple:active { box-shadow: 0 1px 0 var(--lavender-purple-dark); }
+
+        .btn-blue {
+            background: var(--sky-blue);
+            box-shadow: 0 5px 0 var(--sky-blue-dark);
+        }
+        .btn-blue:active { box-shadow: 0 1px 0 var(--sky-blue-dark); }
+
+        .btn-toggle {
+            background: #EDF2F7;
+            color: var(--text-dark);
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            border-radius: 12px;
+            border: 2px solid #CBD5E0;
+            box-shadow: 0 3px 0 #CBD5E0;
+        }
+        .btn-toggle.active {
+            background: #C6F6D5;
+            border-color: var(--primary-green);
+            box-shadow: 0 3px 0 var(--primary-green-dark);
+            color: #22543D;
+        }
+
+        .btn-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+            box-shadow: none !important;
+            transform: none !important;
+        }
+
+        /* === VIEWPORT SCREEN WRAPPER === */
+        .screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+        }
+
+        .hidden { display: none !important; }
+
+        /* === MASCOT BÍP & SPEECH BUBBLE AREA === */
+        .mascot-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--card-white);
+            border-radius: 20px;
+            padding: 12px 18px;
+            box-shadow: var(--shadow-soft);
+            border: 2px solid var(--border-light);
+            margin-bottom: 20px;
+            min-height: 110px;
+        }
+
+        .bip-svg-box {
+            width: 85px;
+            height: 85px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .speech-bubble {
+            background: var(--bg-cream);
+            border: 2px solid var(--canary-yellow-dark);
+            border-radius: 16px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            line-height: 1.4;
+            color: #4A3B00;
+            position: relative;
+            flex: 1;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 25px;
+            border-width: 6px 12px 6px 0;
+            border-style: solid;
+            border-color: transparent var(--canary-yellow-dark) transparent transparent;
+        }
+
+        /* === WELCOME SCREEN === */
+        #welcome-screen {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .welcome-hero-svg {
+            width: 220px;
+            height: 220px;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+            animation: floatHero 3s ease-in-out infinite;
+        }
+
+        @keyframes floatHero {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .main-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--lavender-purple-dark);
+            text-shadow: 2px 2px 0px #FFF, 4px 4px 0px rgba(0,0,0,0.1);
+        }
+
+        .sub-title {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            line-height: 1.5;
+        }
+
+        .mode-select-box {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0;
+        }
+
+        .mode-card {
+            background: white;
+            border: 3px solid var(--border-light);
+            border-radius: 16px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 700;
+        }
+
+        .mode-card.selected {
+            border-color: var(--primary-green);
+            background: var(--bg-mint);
+            color: var(--primary-green-dark);
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(83, 183, 122, 0.25);
+        }
+
+        /* === LEVEL LAYOUTS === */
+        .level-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .level-title-badge {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--lavender-purple-dark);
+        }
+
+        .nav-buttons-bar {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 2px solid var(--border-light);
+        }
+
+        /* === LEVEL 1: PHÂN LOẠI THẺ === */
+        .level1-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .level1-grid { grid-template-columns: 1fr; }
+        }
+
+        .cards-pool {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            border: 2px dashed var(--sky-blue);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-content: flex-start;
+            min-height: 180px;
+        }
+
+        .info-card {
+            background: var(--bg-cream);
+            border: 2px solid var(--canary-yellow-dark);
+            border-radius: 14px;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--canary-yellow-dark);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-card:hover { transform: translateY(-2px); }
+        .info-card.selected {
+            border-color: var(--sky-blue);
+            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.3);
+            background: #EBF8FF;
+        }
+
+        .drop-bucket {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            border: 3px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 180px;
+            transition: border-color 0.2s;
+        }
+
+        .drop-bucket.secret-bucket { border-color: var(--coral-orange); background: #FFF5F5; }
+        .drop-bucket.public-bucket { border-color: var(--primary-green); background: #F0FFF4; }
+
+        .bucket-title {
+            font-weight: 800;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* === LEVEL 2: CHAT SIMULATOR === */
+        .chat-frame {
+            background: white;
+            border-radius: 20px;
+            border: 3px solid var(--border-light);
+            max-width: 650px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+        }
+
+        .chat-topbar {
+            background: #EDF2F7;
+            padding: 10px 15px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .chat-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #F7FAFC;
+        }
+
+        .chat-msg {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .chat-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--lavender-purple);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .chat-bubble-content {
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 16px;
+            border-top-left-radius: 4px;
+            padding: 12px 16px;
+            max-width: 80%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .chat-sender-name {
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: var(--lavender-purple-dark);
+            margin-bottom: 4px;
+        }
+
+        .chat-img-preview {
+            width: 100%;
+            height: 130px;
+            border-radius: 12px;
+            margin-top: 10px;
+            background: #E2E8F0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .chat-actions {
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            background: white;
+            border-top: 2px solid var(--border-light);
+        }
+
+        /* === LEVEL 3: MẬT KHẨU BÍ MẬT === */
+        .safe-box-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid var(--border-light);
+        }
+
+        .safe-dial-svg {
+            width: 140px;
+            height: 140px;
+            transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .quiz-options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .quiz-opt-btn {
+            background: white;
+            border: 2px solid var(--border-light);
+            border-radius: 14px;
+            padding: 12px 18px;
+            font-weight: 700;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            box-shadow: 0 4px 0 #CBD5E0;
+        }
+
+        .quiz-opt-btn:hover {
+            border-color: var(--lavender-purple);
+            background: var(--bg-lavender);
+        }
+
+        .assembly-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .slots-container {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .slot-box {
+            width: 90px;
+            height: 50px;
+            border: 3px dashed var(--lavender-purple);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.2rem;
+            background: var(--bg-lavender);
+            color: var(--lavender-purple-dark);
+        }
+
+        .pieces-pool {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .piece-item {
+            background: var(--canary-yellow);
+            box-shadow: 0 4px 0 var(--canary-yellow-dark);
+            color: #4A3B00;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        /* === LEVEL 4: ĐỐI PHÓ TÌNH HUỐNG === */
+        .castle-scene {
+            background: linear-gradient(to bottom, #EBF8FF 0%, #FFFFFF 100%);
+            border-radius: 20px;
+            border: 3px solid var(--border-light);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .threat-card {
+            background: #FFF5F5;
+            border: 2px solid var(--coral-orange);
+            border-radius: 16px;
+            padding: 15px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 6px 15px rgba(239, 116, 105, 0.15);
+        }
+
+        .threat-title {
+            color: var(--coral-orange-dark);
+            font-weight: 900;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        /* === VICTORY SUMMARY SCREEN === */
+        #summary-screen {
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .badge-hero-svg {
+            width: 180px;
+            height: 180px;
+            animation: pulseBadge 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseBadge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid var(--border-light);
+            max-width: 650px;
+            width: 100%;
+            box-shadow: var(--shadow-soft);
+            text-align: left;
+        }
+
+        .summary-card h3 {
+            color: var(--lavender-purple-dark);
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .lessons-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .lessons-list li {
+            background: var(--bg-cream);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            border-left: 4px solid var(--canary-yellow-dark);
+        }
+
+        /* === MODAL POPUP HƯỚNG DẪN === */
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border: 3px solid var(--lavender-purple);
+            text-align: center;
+        }
+
+        /* === ANIMATIONS & UTILS === */
+        .shake-anim {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <!-- HEADER BAR -->
+    <header class="header-bar">
+        <div class="header-title-box">
+            <span class="game-badge">TIN HỌC 3</span>
+            <span style="font-weight: 800; color: var(--text-dark); font-size: 1.1rem;">LÁ CHẮN THÔNG TIN</span>
+        </div>
+        <div class="score-pill">
+            <span>🏆 Điểm:</span>
+            <span id="score-display">0/100</span>
+        </div>
+        <div class="controls-group">
+            <button id="btn-bgm" class="btn-3d btn-toggle active">🎵 Nhạc nền</button>
+            <button id="btn-sfx" class="btn-3d btn-toggle active">🔊 Hiệu ứng</button>
+            <button id="btn-home" class="btn-3d btn-purple" style="padding: 6px 12px; font-size: 0.85rem;">🏠 Trang chủ</button>
+        </div>
+    </header>
+
+    <!-- WELCOME SCREEN -->
+    <div id="welcome-screen" class="screen">
+        <div class="main-title">LÁ CHẮN THÔNG TIN</div>
+        <div class="sub-title">Bài 10: Bảo vệ thông tin khi dùng máy tính (Tin học 3 - Kết nối tri thức)</div>
+
+        <!-- BÍP MASCOT HERO SVG -->
+        <div class="welcome-hero-svg">
+            <svg viewBox="0 0 200 200" width="100%" height="100%">
+                <!-- Shield background -->
+                <path d="M 100 10 L 170 40 V 110 C 170 155 100 190 100 190 C 100 190 30 155 30 110 V 40 Z" fill="#7766B7" opacity="0.15"/>
+                <path d="M 100 20 L 160 48 V 105 C 160 145 100 175 100 175 C 100 175 40 145 40 105 V 48 Z" fill="#53B77A" opacity="0.8"/>
+                <!-- Robot Body -->
+                <rect x="70" y="80" width="60" height="50" rx="12" fill="#E2E8F0" stroke="#2D3748" stroke-width="3"/>
+                <rect x="80" y="90" width="40" height="30" rx="8" fill="#4A90E2"/>
+                <!-- Heartbeat line -->
+                <path d="M 85 105 L 95 105 L 100 95 L 105 115 L 110 105 L 115 105" stroke="#FFFFFF" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <!-- Robot Head -->
+                <rect x="65" y="35" width="70" height="40" rx="15" fill="#E2E8F0" stroke="#2D3748" stroke-width="3"/>
+                <!-- Eyes -->
+                <circle cx="85" cy="55" r="7" fill="#2D3748"/>
+                <circle cx="115" cy="55" r="7" fill="#2D3748"/>
+                <circle cx="87" cy="53" r="2.5" fill="#FFFFFF"/>
+                <circle cx="117" cy="53" r="2.5" fill="#FFFFFF"/>
+                <!-- Antenna -->
+                <line x1="100" y1="35" x2="100" y2="20" stroke="#2D3748" stroke-width="3"/>
+                <circle cx="100" cy="18" r="6" fill="#FFC65C" stroke="#2D3748" stroke-width="2"/>
+                <!-- Smile -->
+                <path d="M 92 64 Q 100 70 108 64" fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <div style="font-weight: 700; color: var(--text-dark);">Chọn chế độ chơi:</div>
+        <div class="mode-select-box">
+            <div id="mode-practice" class="mode-card selected">
+                🌱 Luyện Tập<br><span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">Hiển thị gợi ý dễ hiểu</span>
+            </div>
+            <div id="mode-challenge" class="mode-card">
+                ⚡ Thử Thách<br><span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">Tự suy luận, mở gợi ý khi cần</span>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px;">
+            <button id="btn-guide" class="btn-3d btn-purple" style="font-size: 1.1rem; padding: 12px 24px;">📖 Hướng dẫn</button>
+            <button id="btn-start" class="btn-3d btn-green" style="font-size: 1.2rem; padding: 14px 32px;">🚀 Bắt đầu chơi</button>
+        </div>
+    </div>
+
+    <!-- GAMEPLAY SCREENS (CONTAINER FOR LEVELS 1-4) -->
+    <div id="gameplay-screen" class="screen hidden">
+        <!-- TOP LEVEL STATUS BAR -->
+        <div class="level-header">
+            <div id="level-title" class="level-title-badge">MÀN 1: THÔNG TIN CỦA EM</div>
+            <div style="display: flex; gap: 8px;">
+                <button id="btn-hint" class="btn-3d btn-orange" style="padding: 6px 12px; font-size: 0.85rem;">💡 Gợi ý</button>
+                <button id="btn-reset" class="btn-3d btn-blue" style="padding: 6px 12px; font-size: 0.85rem;">🔄 Làm lại</button>
+            </div>
+        </div>
+
+        <!-- ROBOT BÍP MASCOT SPEECH AREA -->
+        <div class="mascot-container">
+            <div class="bip-svg-box" id="bip-mascot-box">
+                <!-- Bíp dynamic SVG rendered by JS -->
+            </div>
+            <div class="speech-bubble" id="bip-speech-text">
+                Chào em! Hãy giúp Bíp hoàn thành nhiệm vụ để bảo vệ thông tin an toàn nhé!
+            </div>
+        </div>
+
+        <!-- DYNAMIC LEVEL CONTENT AREA -->
+        <div id="level-content" style="flex: 1; display: flex; flex-direction: column;">
+            <!-- Rendered by JS per level -->
+        </div>
+
+        <!-- BOTTOM NAVIGATION BAR -->
+        <div class="nav-buttons-bar">
+            <button id="btn-prev" class="btn-3d btn-purple btn-disabled">⬅️ Màn trước</button>
+            <button id="btn-next" class="btn-3d btn-green btn-disabled">Tiếp tục ➡️</button>
+        </div>
+    </div>
+
+    <!-- SUMMARY / VICTORY SCREEN -->
+    <div id="summary-screen" class="screen hidden">
+        <div class="main-title" style="color: var(--primary-green-dark);">XUẤT SẮC HOÀN THÀNH!</div>
+
+        <div class="badge-hero-svg">
+            <svg viewBox="0 0 200 200" width="100%" height="100%">
+                <!-- Starburst -->
+                <circle cx="100" cy="100" r="85" fill="#FFC65C" opacity="0.3"/>
+                <!-- Shield Badge -->
+                <path d="M 100 20 L 160 50 V 110 C 160 150 100 180 100 180 C 100 180 40 150 40 110 V 50 Z" fill="#7766B7" stroke="#FFFFFF" stroke-width="4"/>
+                <path d="M 100 30 L 150 56 V 105 C 150 140 100 165 100 165 C 100 165 50 140 50 105 V 56 Z" fill="#53B77A"/>
+                <!-- Star in center -->
+                <polygon points="100,55 112,80 138,82 118,100 124,126 100,112 76,126 82,100 62,82 88,80" fill="#FFC65C" stroke="#FFFFFF" stroke-width="2"/>
+            </svg>
+        </div>
+
+        <div style="font-size: 1.4rem; font-weight: 800; color: var(--lavender-purple-dark);" id="badge-title-text">
+            Danh hiệu: HIỆP SĨ LÁ CHẮN THÔNG TIN
+        </div>
+
+        <div class="summary-card">
+            <h3>📌 BÀI HỌC CỐT LÕI CẦN GHI NHỚ</h3>
+            <ul class="lessons-list">
+                <li>🔑 1. Thông tin cá nhân & gia đình (Họ tên, địa chỉ, mật khẩu, SĐT) cần giữ BÍ MẬT để tránh bị kẻ xấu lợi dụng.</li>
+                <li>🖼️ 2. Chỉ chia sẻ ảnh & thông tin khi có sự ĐỒNG Ý CỦA BỐ MẸ hoặc THẦY CÔ.</li>
+                <li>🛡️ 3. Đặt MẬT KHẨU MẠNH (chữ + số + ký tự) và LUÔN HỎI NGƯỜI LỚN tin cậy khi gặp tình huống lạ trên mạng.</li>
+            </ul>
+        </div>
+
+        <button id="btn-replay" class="btn-3d btn-green" style="font-size: 1.2rem; padding: 14px 36px;">🔄 Chơi lại từ đầu</button>
+    </div>
+
+    <!-- MODAL POPUP HƯỚNG DẪN -->
+    <div id="guide-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h2 style="color: var(--lavender-purple-dark); margin-bottom: 12px;">📖 HƯỚNG DẪN CÁCH CHƠI</h2>
+            <div style="text-align: left; font-size: 0.95rem; line-height: 1.5; color: var(--text-dark); margin-bottom: 20px;">
+                <p>• <b>Màn 1:</b> Nhấp chọn thẻ thông tin rồi chọn đúng hộp <i>Cần bảo vệ</i> hoặc <i>Có thể chia sẻ</i>.</p><br>
+                <p>• <b>Màn 2:</b> Phân tích tình huống tin nhắn để chọn <i>An toàn (Gửi ảnh)</i> hay <i>Rủi ro (Không gửi)</i>.</p><br>
+                <p>• <b>Màn 3:</b> Chọn mật khẩu mạnh và giữ bí mật mật khẩu để mở khóa két an toàn.</p><br>
+                <p>• <b>Màn 4:</b> Đóng vai Hiệp sĩ chọn cách xử lý đúng đắn trước các tình huống nguy hiểm trên mạng.</p>
+            </div>
+            <button id="btn-close-guide" class="btn-3d btn-purple" style="width: 100%;">Đã hiểu, quay lại</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ==========================================================================
+   GAME CONFIGURATION OBJECT (DỄ DÀNG TÙY CHỈNH CHO GIÁO VIÊN)
+   ========================================================================== */
+const GAME_CONFIG = {
+    title: "LÁ CHẮN THÔNG TIN",
+    grade: "Tin học 3 - Bài 10",
+    totalLevels: 4,
+    pointsPerLevel: 25,
+    levels: [
+        {
+            id: 1,
+            title: "MÀN 1: THÔNG TIN CỦA EM",
+            subtitle: "Phân loại thông tin bí mật và công khai",
+            instructions: "Em hãy chọn từng thẻ thông tin rồi nhấp xếp vào đúng hộp 'CẦN BẢO VỆ' hoặc 'CÓ THỂ CHIA SẺ' nhé!",
+            hint1: "Gợi ý 1: Họ tên đầy đủ, địa chỉ nhà, mật khẩu và SĐT là những thông tin riêng tư cần bảo vệ.",
+            hint2: "Gợi ý 2: Tranh vẽ và bài tập Tin học có thể chia sẻ rộng rãi cho bạn bè xem cùng học hỏi.",
+            cards: [
+                { id: 'c1', text: "Họ tên đầy đủ & Địa chỉ nhà", target: "secret", icon: "🏠" },
+                { id: 'c2', text: "Tranh vẽ con mèo em vẽ", target: "public", icon: "🎨" },
+                { id: 'c3', text: "Mật khẩu máy tính cá nhân", target: "secret", icon: "🔑" },
+                { id: 'c4', text: "Bài tập thực hành Tin học", target: "public", icon: "💻" },
+                { id: 'c5', text: "Số điện thoại của Bố/Mẹ", target: "secret", icon: "📞" },
+                { id: 'c6', text: "Mật khẩu tài khoản học trực tuyến", target: "secret", icon: "🔐" }
+            ]
+        },
+        {
+            id: 2,
+            title: "MÀN 2: GỬI ẢNH AN TOÀN",
+            subtitle: "Mô phỏng nhắn tin & gửi ảnh an toàn",
+            instructions: "Đọc kĩ nội dung tin nhắn và quyết định chọn 'An toàn - Gửi ảnh' hay 'Rủi ro - Không gửi'!",
+            hint1: "Gợi ý 1: Chỉ gửi ảnh cho người thân quen như thầy cô, ông bà, bố mẹ.",
+            hint2: "Gợi ý 2: Người lạ nhắn tin xin ảnh phòng ngủ hay ảnh riêng tư tuyệt đối KHÔNG gửi!",
+            scenarios: [
+                {
+                    sender: "Cô giáo chủ nhiệm",
+                    avatar: "👩‍🏫",
+                    message: "Em chụp giúp cô bài tập Tin học hôm nay để cô chấm điểm nhé!",
+                    correctAnswer: "safe",
+                    explanation: "Đúng rồi! Cô giáo xin ảnh bài tập học tập là an toàn. Em có thể gửi cho cô."
+                },
+                {
+                    sender: "Tài khoản lạ (CyberAnon)",
+                    avatar: "👤",
+                    message: "Chào em! Chú có nhiều game hay lắm, gửi cho chú ảnh chụp toàn cảnh phòng ngủ em nhé!",
+                    correctAnswer: "risk",
+                    explanation: "Chính xác! Tuyệt đối không gửi ảnh riêng tư nhà cửa cho người lạ trên mạng!"
+                },
+                {
+                    sender: "Bà Nội",
+                    avatar: "👵",
+                    message: "Cháu yêu ơi, gửi cho bà xem ảnh hôm qua gia đình mình đi công viên nhé!",
+                    correctAnswer: "safe",
+                    explanation: "Rất giỏi! Bà nội là người thân trong gia đình, gửi ảnh đi công viên là an toàn."
+                }
+            ]
+        },
+        {
+            id: 3,
+            title: "MÀN 3: MẬT KHẨU BÍ MẬT",
+            subtitle: "Thiết lập và bảo mật mật khẩu két sắt",
+            instructions: "Hoàn thành 3 thử thách để giải mã mở khóa két sắt bảo mật nhé!",
+            hint1: "Gợi ý 1: Mật khẩu mạnh nên có cả chữ hoa, chữ thường, số và ký tự đặc biệt.",
+            hint2: "Gợi ý 2: Giữ bí mật mật khẩu, không dán lên màn hình hay nói cho bạn bè.",
+            challenges: [
+                {
+                    type: "choice",
+                    question: "Thử thách 1: Mật khẩu nào dưới đây là MẬT KHẨU MẠNH an toàn nhất?",
+                    options: [
+                        { text: "123456", correct: false, reason: "Mật khẩu '123456' quá đơn giản, ai cũng đoán được!" },
+                        { text: "NgaySinh2015", correct: false, reason: "Ngày sinh cá nhân rất dễ bị lộ!" },
+                        { text: "BipShield@2026", correct: true, reason: "Xuất sắc! Có cả chữ hoa, chữ thường, ký tự @ và số!" }
+                    ]
+                },
+                {
+                    type: "choice",
+                    question: "Thử thách 2: Cách giữ bí mật mật khẩu nào đúng nhất?",
+                    options: [
+                        { text: "Viết mật khẩu lên giấy dán màn hình", correct: false, reason: "Dán lên màn hình thì ai đi qua cũng nhìn thấy mất!" },
+                        { text: "Chỉ chia sẻ cho Bố Mẹ, không nói cho bạn bè", correct: true, reason: "Đúng rồi! Bố mẹ giúp em quản lý, còn lại cần giữ bí mật." },
+                        { text: "Chia sẻ mật khẩu cho các bạn trong lớp", correct: false, reason: "Không nên! Rất dễ bị bạn vô tình lộ tài khoản." }
+                    ]
+                },
+                {
+                    type: "assemble",
+                    question: "Thử thách 3: Nhấp chọn các mảnh ghép theo thứ tự để tạo mật khẩu an toàn!",
+                    pieces: ["Bip", "@", "2026", "123"],
+                    correctSequence: ["Bip", "@", "2026"]
+                }
+            ]
+        },
+        {
+            id: 4,
+            title: "MÀN 4: ĐỐI PHÓ TÌNH HUỐNG",
+            subtitle: "Hiệp sĩ Bíp đánh gục nguy cơ trên mạng",
+            instructions: "Chọn cách xử lý đúng đắn nhất trước các tình huống rủi ro trên mạng!",
+            hint1: "Gợi ý 1: Khi gặp quảng cáo quà tặng hay đòi thông tin, em phải luôn cảnh giác!",
+            hint2: "Gợi ý 2: Tắt ngay cửa sổ trang web lạ và lập tức báo cho Bố Mẹ hoặc Thầy Cô.",
+            scenarios: [
+                {
+                    title: "Tình huống 1: Quảng cáo tặng kim cương game",
+                    description: "Màn hình xuất hiện cửa sổ: 'Chúc mừng! Nhập số điện thoại của Bố/Mẹ để nhận 1000 kim cương Game miễn phí!'",
+                    options: [
+                        { text: "Nhập SĐT bố mẹ để nhận quà", correct: false, reason: "Đây là lừa đảo! Có thể làm mất tiền điện thoại của bố mẹ." },
+                        { text: "Tắt ngay cửa sổ đó và báo cho Bố/Mẹ biết", correct: true, reason: "Chính xác! Đây là chiêu trò lừa đảo cá độ/nạp tiền, cần tắt ngay." }
+                    ]
+                },
+                {
+                    title: "Tình huống 2: Người lạ nhắn xin địa chỉ nhà",
+                    description: "Tài khoản lạ nhắn: 'Chú là bạn Bố em. Cho chú xin địa chỉ nhà và mật khẩu Wi-Fi nhà em nhé!'",
+                    options: [
+                        { text: "Từ chối trả lời, báo cho Bố Mẹ ngay", correct: true, reason: "Rất cảnh giác! Người lạ giả danh bạn bố mẹ là tình huống cực kỳ rủi ro." },
+                        { text: "Nhắn ngay địa chỉ nhà cho chú ấy", correct: false, reason: "Rất nguy hiểm! Tuyệt đối không cho người lạ địa chỉ nhà!" }
+                    ]
+                },
+                {
+                    title: "Tình huống 3: Bạn học mượn tài khoản",
+                    description: "Trong giờ học, bạn ngồi bên cạnh đòi em cho xem mật khẩu tài khoản học trực tuyến.",
+                    options: [
+                        { text: "Cho bạn xem luôn vì là bạn cùng lớp", correct: false, reason: "Dù là bạn học cũng nên giữ bí mật tài khoản cá nhân." },
+                        { text: "Khéo léo từ chối và giữ bí mật mật khẩu", correct: true, reason: "Tuyệt vời! Giải thích lịch sự và giữ bí mật tài khoản của mình." }
+                    ]
+                }
+            ]
+        }
+    ]
+};
+
+/* ==========================================================================
+   WEB AUDIO API SOUND SYNTHESIZER (KHÔNG DÙNG FILE ÂM THANH MẠNG)
+   ========================================================================== */
+class SoundSystem {
+    constructor() {
+        this.ctx = null;
+        this.bgmEnabled = true;
+        this.sfxEnabled = true;
+        this.bgmTimer = null;
+        this.bgmStep = 0;
+    }
+
+    init() {
+        if (!this.ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+    }
+
+    playTone(freq, type, duration, gainVal = 0.1) {
+        if (!this.sfxEnabled || !this.ctx) return;
+        try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+            gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start();
+            osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {}
+    }
+
+    playClick() { this.playTone(600, 'sine', 0.08, 0.12); }
+    
+    playCorrect() {
+        if (!this.sfxEnabled || !this.ctx) return;
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+            setTimeout(() => this.playTone(freq, 'triangle', 0.18, 0.15), idx * 70);
+        });
+    }
+
+    playWrong() {
+        if (!this.sfxEnabled || !this.ctx) return;
+        this.playTone(220, 'sawtooth', 0.2, 0.12);
+        setTimeout(() => this.playTone(180, 'sawtooth', 0.25, 0.12), 100);
+    }
+
+    playLevelComplete() {
+        if (!this.sfxEnabled || !this.ctx) return;
+        [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((freq, i) => {
+            setTimeout(() => this.playTone(freq, 'sine', 0.3, 0.18), i * 110);
+        });
+    }
+
+    playVictory() {
+        if (!this.sfxEnabled || !this.ctx) return;
+        [392, 523.25, 659.25, 783.99, 880, 1046.50].forEach((freq, i) => {
+            setTimeout(() => this.playTone(freq, 'triangle', 0.35, 0.22), i * 140);
+        });
+    }
+
+    startBGM() {
+        if (this.bgmTimer) return;
+        const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
+        const pattern = [0, 2, 3, 4, 2, 1, 3, 5, 4, 2, 0, 3];
+        this.bgmStep = 0;
+
+        this.bgmTimer = setInterval(() => {
+            if (this.bgmEnabled && this.ctx) {
+                const freq = notes[pattern[this.bgmStep % pattern.length]];
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.35);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.35);
+                } catch (e) {}
+            }
+            this.bgmStep++;
+        }, 380);
+    }
+
+    stopBGM() {
+        if (this.bgmTimer) {
+            clearInterval(this.bgmTimer);
+            this.bgmTimer = null;
+        }
+    }
+}
+
+const audioSys = new SoundSystem();
+
+/* ==========================================================================
+   GAME STATE & RENDER LOGIC
+   ========================================================================== */
+let gameState = {
+    currentLevelIndex: 0,
+    scores: [0, 0, 0, 0],
+    gameMode: 'practice', // 'practice' or 'challenge'
+    hintStep: 0,
+    // Level 1 state
+    l1PlacedCards: {}, // cardId -> bucket
+    l1SelectedCard: null,
+    // Level 2 state
+    l2ScenarioIndex: 0,
+    // Level 3 state
+    l3ChallengeIndex: 0,
+    l3AssembledPieces: [],
+    // Level 4 state
+    l4ScenarioIndex: 0
+};
+
+// SVG RENDERER FOR ROBOT BÍP
+function renderBipMascot(expression = 'happy') {
+    let eyeContent = '';
+    let mouthContent = '';
+
+    if (expression === 'happy' || expression === 'celebrates') {
+        eyeContent = `<path d="M 18 22 Q 22 17 26 22" fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round"/>
+                      <path d="M 34 22 Q 38 17 42 22" fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round"/>`;
+        mouthContent = `<path d="M 24 30 Q 30 36 36 30" fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round"/>`;
+    } else if (expression === 'thinking') {
+        eyeContent = `<circle cx="22" cy="20" r="3.5" fill="#2D3748"/>
+                      <circle cx="38" cy="18" r="4.5" fill="#2D3748"/>`;
+        mouthContent = `<path d="M 26 32 Q 30 29 34 32" fill="none" stroke="#2D3748" stroke-width="3" stroke-linecap="round"/>`;
+    } else if (expression === 'alert') {
+        eyeContent = `<circle cx="22" cy="20" r="5" fill="#EF7469"/>
+                      <circle cx="38" cy="20" r="5" fill="#EF7469"/>`;
+        mouthContent = `<circle cx="30" cy="32" r="3" fill="#2D3748"/>`;
+    } else if (expression === 'success') {
+        eyeContent = `<polygon points="22,16 24,20 28,20 25,22 26,26 22,23 18,26 19,22 16,20 20,20" fill="#FFC65C"/>
+                      <polygon points="38,16 40,20 44,20 41,22 42,26 38,23 34,26 35,22 32,20 36,20" fill="#FFC65C"/>`;
+        mouthContent = `<path d="M 22 28 Q 30 36 38 28 Z" fill="#2D3748"/>`;
+    }
+
+    return `
+    <svg viewBox="0 0 60 60" width="100%" height="100%">
+        <!-- Antenna -->
+        <line x1="30" y1="12" x2="30" y2="4" stroke="#2D3748" stroke-width="2"/>
+        <circle cx="30" cy="3" r="3" fill="#FFC65C"/>
+        <!-- Head -->
+        <rect x="10" y="10" width="40" height="30" rx="10" fill="#E2E8F0" stroke="#2D3748" stroke-width="2"/>
+        <!-- Eyes & Mouth -->
+        ${eyeContent}
+        ${mouthContent}
+        <!-- Body -->
+        <rect x="16" y="42" width="28" height="16" rx="6" fill="#53B77A" stroke="#2D3748" stroke-width="2"/>
+        <!-- Chest emblem -->
+        <circle cx="30" cy="50" r="4" fill="#FFFFFF"/>
+    </svg>`;
+}
+
+function updateMascot(expression, text) {
+    document.getElementById('bip-mascot-box').innerHTML = renderBipMascot(expression);
+    document.getElementById('bip-speech-text').innerText = text;
+}
+
+function updateScoreDisplay() {
+    const total = gameState.scores.reduce((a, b) => a + b, 0);
+    document.getElementById('score-display').innerText = `${total}/100`;
+}
+
+/* ==========================================================================
+   DOM ELEMENTS & EVENT HANDLERS
+   ========================================================================== */
+document.addEventListener('DOMContentLoaded', () => {
+    // Mode Selection
+    document.getElementById('mode-practice').addEventListener('click', () => {
+        audioSys.playClick();
+        gameState.gameMode = 'practice';
+        document.getElementById('mode-practice').classList.add('selected');
+        document.getElementById('mode-challenge').classList.remove('selected');
+    });
+
+    document.getElementById('mode-challenge').addEventListener('click', () => {
+        audioSys.playClick();
+        gameState.gameMode = 'challenge';
+        document.getElementById('mode-challenge').classList.add('selected');
+        document.getElementById('mode-practice').classList.remove('selected');
+    });
+
+    // Audio Toggles
+    document.getElementById('btn-bgm').addEventListener('click', (e) => {
+        audioSys.init();
+        audioSys.bgmEnabled = !audioSys.bgmEnabled;
+        e.target.classList.toggle('active', audioSys.bgmEnabled);
+        if (audioSys.bgmEnabled) audioSys.startBGM();
+        else audioSys.stopBGM();
+    });
+
+    document.getElementById('btn-sfx').addEventListener('click', (e) => {
+        audioSys.init();
+        audioSys.sfxEnabled = !audioSys.sfxEnabled;
+        e.target.classList.toggle('active', audioSys.sfxEnabled);
+    });
+
+    // Start & Guide
+    document.getElementById('btn-start').addEventListener('click', () => {
+        audioSys.init();
+        audioSys.playClick();
+        audioSys.startBGM();
+        showScreen('gameplay-screen');
+        loadLevel(0);
+    });
+
+    document.getElementById('btn-guide').addEventListener('click', () => {
+        audioSys.playClick();
+        document.getElementById('guide-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('btn-close-guide').addEventListener('click', () => {
+        audioSys.playClick();
+        document.getElementById('guide-modal').classList.add('hidden');
+    });
+
+    document.getElementById('btn-home').addEventListener('click', () => {
+        audioSys.playClick();
+        showScreen('welcome-screen');
+    });
+
+    // Level controls
+    document.getElementById('btn-hint').addEventListener('click', handleHintClick);
+    document.getElementById('btn-reset').addEventListener('click', () => {
+        audioSys.playClick();
+        loadLevel(gameState.currentLevelIndex);
+    });
+
+    document.getElementById('btn-next').addEventListener('click', () => {
+        audioSys.playClick();
+        if (gameState.currentLevelIndex < GAME_CONFIG.totalLevels - 1) {
+            loadLevel(gameState.currentLevelIndex + 1);
+        } else {
+            showSummaryScreen();
+        }
+    });
+
+    document.getElementById('btn-prev').addEventListener('click', () => {
+        audioSys.playClick();
+        if (gameState.currentLevelIndex > 0) {
+            loadLevel(gameState.currentLevelIndex - 1);
+        }
+    });
+
+    document.getElementById('btn-replay').addEventListener('click', () => {
+        audioSys.playClick();
+        gameState.scores = [0, 0, 0, 0];
+        updateScoreDisplay();
+        showScreen('welcome-screen');
+    });
+});
+
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+    document.getElementById(screenId).classList.remove('hidden');
+}
+
+function loadLevel(levelIdx) {
+    gameState.currentLevelIndex = levelIdx;
+    gameState.hintStep = 0;
+    const lvlConfig = GAME_CONFIG.levels[levelIdx];
+
+    document.getElementById('level-title').innerText = lvlConfig.title;
+    document.getElementById('btn-prev').classList.toggle('btn-disabled', levelIdx === 0);
+    
+    // Enable next button only if already passed
+    const isPassed = gameState.scores[levelIdx] >= GAME_CONFIG.pointsPerLevel;
+    document.getElementById('btn-next').classList.toggle('btn-disabled', !isPassed);
+
+    // Initial Mascot Greeting
+    if (gameState.gameMode === 'practice') {
+        updateMascot('thinking', lvlConfig.instructions + " " + lvlConfig.hint1);
+    } else {
+        updateMascot('happy', lvlConfig.instructions);
+    }
+
+    const container = document.getElementById('level-content');
+    container.innerHTML = '';
+
+    if (levelIdx === 0) renderLevel1(container, lvlConfig);
+    else if (levelIdx === 1) renderLevel2(container, lvlConfig);
+    else if (levelIdx === 2) renderLevel3(container, lvlConfig);
+    else if (levelIdx === 3) renderLevel4(container, lvlConfig);
+}
+
+function handleHintClick() {
+    audioSys.playClick();
+    const lvl = GAME_CONFIG.levels[gameState.currentLevelIndex];
+    if (gameState.hintStep === 0) {
+        updateMascot('thinking', lvl.hint1);
+        gameState.hintStep = 1;
+    } else {
+        updateMascot('thinking', lvl.hint2);
+        gameState.hintStep = 2;
+    }
+}
+
+function markLevelComplete(levelIdx) {
+    if (gameState.scores[levelIdx] === 0) {
+        gameState.scores[levelIdx] = GAME_CONFIG.pointsPerLevel;
+        updateScoreDisplay();
+        audioSys.playLevelComplete();
+    }
+    document.getElementById('btn-next').classList.remove('btn-disabled');
+}
+
+/* ==========================================================================
+   LEVEL 1 RENDER & LOGIC (PHÂN LOẠI THẺ THÔNG TIN)
+   ========================================================================== */
+function renderLevel1(container, config) {
+    gameState.l1PlacedCards = {};
+    gameState.l1SelectedCard = null;
+
+    container.innerHTML = `
+        <div class="level1-grid">
+            <div class="cards-pool" id="l1-pool">
+                <!-- Cards rendered dynamically -->
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="drop-bucket secret-bucket" id="bucket-secret">
+                    <div class="bucket-title" style="color: var(--coral-orange-dark);">
+                        🔒 CẦN BẢO VỆ (BÍ MẬT)
+                    </div>
+                    <div class="bucket-items" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                </div>
+                <div class="drop-bucket public-bucket" id="bucket-public">
+                    <div class="bucket-title" style="color: var(--primary-green-dark);">
+                        🌐 CÓ THỂ CHIA SẺ (CÔNG KHAI)
+                    </div>
+                    <div class="bucket-items" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    renderL1Cards(config);
+
+    // Click bucket logic
+    document.getElementById('bucket-secret').addEventListener('click', () => handleL1BucketClick('secret', config));
+    document.getElementById('bucket-public').addEventListener('click', () => handleL1BucketClick('public', config));
+}
+
+function renderL1Cards(config) {
+    const pool = document.getElementById('l1-pool');
+    const secretItems = document.querySelector('#bucket-secret .bucket-items');
+    const publicItems = document.querySelector('#bucket-public .bucket-items');
+
+    pool.innerHTML = '';
+    secretItems.innerHTML = '';
+    publicItems.innerHTML = '';
+
+    config.cards.forEach(card => {
+        const target = gameState.l1PlacedCards[card.id];
+        const cardEl = document.createElement('div');
+        cardEl.className = 'info-card' + (gameState.l1SelectedCard === card.id ? ' selected' : '');
+        cardEl.innerHTML = `<span>${card.icon}</span><span>${card.text}</span>`;
+        
+        cardEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            audioSys.playClick();
+            gameState.l1SelectedCard = card.id;
+            renderL1Cards(config);
+        });
+
+        if (!target) {
+            pool.appendChild(cardEl);
+        } else if (target === 'secret') {
+            secretItems.appendChild(cardEl);
+        } else if (target === 'public') {
+            publicItems.appendChild(cardEl);
+        }
+    });
+}
+
+function handleL1BucketClick(bucketType, config) {
+    if (!gameState.l1SelectedCard) return;
+
+    const card = config.cards.find(c => c.id === gameState.l1SelectedCard);
+    if (!card) return;
+
+    if (card.target === bucketType) {
+        audioSys.playCorrect();
+        gameState.l1PlacedCards[card.id] = bucketType;
+        gameState.l1SelectedCard = null;
+        updateMascot('success', `Chính xác! "${card.text}" thuộc nhóm ${bucketType === 'secret' ? 'Bảo vệ bí mật' : 'Chia sẻ công khai'}.`);
+        renderL1Cards(config);
+
+        // Check if all cards correctly placed
+        if (Object.keys(gameState.l1PlacedCards).length === config.cards.length) {
+            updateMascot('celebrates', 'Xuất sắc! Em đã phân loại đúng tất cả các thông tin!');
+            markLevelComplete(0);
+        }
+    } else {
+        audioSys.playWrong();
+        updateMascot('alert', `Chưa chính xác rồi! Hãy suy nghĩ lại xem "${card.text}" có cần giữ bí mật không nhé.`);
+        const poolEl = document.getElementById('l1-pool');
+        poolEl.classList.add('shake-anim');
+        setTimeout(() => poolEl.classList.remove('shake-anim'), 400);
+    }
+}
+
+/* ==========================================================================
+   LEVEL 2 RENDER & LOGIC (GỬI ẢNH AN TOÀN - CHAT MÔ PHỎNG)
+   ========================================================================== */
+function renderLevel2(container, config) {
+    gameState.l2ScenarioIndex = 0;
+    renderL2Scenario(container, config);
+}
+
+function renderL2Scenario(container, config) {
+    const sc = config.scenarios[gameState.l2ScenarioIndex];
+
+    container.innerHTML = `
+        <div class="chat-frame">
+            <div class="chat-topbar">
+                <span>📱 Tin nhắn an toàn (${gameState.l2ScenarioIndex + 1}/${config.scenarios.length})</span>
+                <span style="font-size: 0.75rem; color: #718096;">* Giao diện mô phỏng học tập</span>
+            </div>
+            <div class="chat-body">
+                <div class="chat-msg">
+                    <div class="chat-avatar">${sc.avatar}</div>
+                    <div class="chat-bubble-content">
+                        <div class="chat-sender-name">${sc.sender}</div>
+                        <div>${sc.message}</div>
+                        <div class="chat-img-preview">
+                            <svg viewBox="0 0 100 60" width="100%" height="100%">
+                                <rect width="100" height="60" fill="#E2E8F0"/>
+                                <path d="M 10 50 L 35 25 L 55 40 L 75 15 L 90 50 Z" fill="#CBD5E0"/>
+                                <circle cx="25" cy="18" r="6" fill="#FFC65C"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-actions">
+                <button class="btn-3d btn-green" id="btn-choice-safe" style="padding: 12px;">🛡️ AN TOÀN - GỬI ẢNH</button>
+                <button class="btn-3d btn-orange" id="btn-choice-risk" style="padding: 12px;">⚠️ RỦI RO - KHÔNG GỬI</button>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('btn-choice-safe').addEventListener('click', () => handleL2Choice('safe', config));
+    document.getElementById('btn-choice-risk').addEventListener('click', () => handleL2Choice('risk', config));
+}
+
+function handleL2Choice(choice, config) {
+    const sc = config.scenarios[gameState.l2ScenarioIndex];
+
+    if (choice === sc.correctAnswer) {
+        audioSys.playCorrect();
+        updateMascot('success', sc.explanation);
+
+        if (gameState.l2ScenarioIndex < config.scenarios.length - 1) {
+            gameState.l2ScenarioIndex++;
+            setTimeout(() => {
+                renderL2Scenario(document.getElementById('level-content'), config);
+            }, 1800);
+        } else {
+            updateMascot('celebrates', 'Xuất sắc! Em đã nhận diện an toàn gửi ảnh rất chuẩn!');
+            markLevelComplete(1);
+        }
+    } else {
+        audioSys.playWrong();
+        updateMascot('alert', 'Thao tác chưa an toàn! Hãy xem xét kĩ người nhận có phải người thân hay người lạ nhé.');
+    }
+}
+
+/* ==========================================================================
+   LEVEL 3 RENDER & LOGIC (MẬT KHẨU BÍ MẬT - KÉT SẮT)
+   ========================================================================== */
+function renderLevel3(container, config) {
+    gameState.l3ChallengeIndex = 0;
+    gameState.l3AssembledPieces = [];
+    renderL3Challenge(container, config);
+}
+
+function renderL3Challenge(container, config) {
+    const ch = config.challenges[gameState.l3ChallengeIndex];
+
+    let contentHTML = '';
+
+    if (ch.type === 'choice') {
+        contentHTML = `
+            <div style="font-weight: 800; font-size: 1.1rem; color: var(--lavender-purple-dark); margin-bottom: 12px;">
+                ${ch.question}
+            </div>
+            <div class="quiz-options-list">
+                ${ch.options.map((opt, idx) => `
+                    <button class="quiz-opt-btn" data-idx="${idx}">${opt.text}</button>
+                `).join('')}
+            </div>
+        `;
+    } else if (ch.type === 'assemble') {
+        contentHTML = `
+            <div style="font-weight: 800; font-size: 1.1rem; color: var(--lavender-purple-dark); margin-bottom: 12px;">
+                ${ch.question}
+            </div>
+            <div class="assembly-box">
+                <div class="slots-container">
+                    <div class="slot-box" id="slot-0">___</div>
+                    <div class="slot-box" id="slot-1">___</div>
+                    <div class="slot-box" id="slot-2">___</div>
+                </div>
+                <div class="pieces-pool">
+                    ${ch.pieces.map(p => `
+                        <div class="piece-item" data-val="${p}">${p}</div>
+                    `).join('')}
+                </div>
+                <button class="btn-3d btn-blue" id="btn-check-assemble" style="margin-top: 10px;">🔓 Thử mở khóa</button>
+            </div>
+        `;
+    }
+
+    container.innerHTML = `
+        <div class="safe-box-view">
+            <!-- Safe Dial SVG -->
+            <div class="safe-dial-svg" id="safe-dial">
+                <svg viewBox="0 0 100 100" width="100%" height="100%">
+                    <circle cx="50" cy="50" r="45" fill="#2D3748" stroke="#4A5568" stroke-width="4"/>
+                    <circle cx="50" cy="50" r="32" fill="#718096" stroke="#A0AEC0" stroke-width="2"/>
+                    <circle cx="50" cy="50" r="12" fill="#FFC65C"/>
+                    <line x1="50" y1="10" x2="50" y2="20" stroke="#FFFFFF" stroke-width="3"/>
+                    <line x1="90" y1="50" x2="80" y2="50" stroke="#FFFFFF" stroke-width="3"/>
+                    <line x1="50" y1="90" x2="50" y2="80" stroke="#FFFFFF" stroke-width="3"/>
+                    <line x1="10" y1="50" x2="20" y2="50" stroke="#FFFFFF" stroke-width="3"/>
+                </svg>
+            </div>
+            ${contentHTML}
+        </div>
+    `;
+
+    if (ch.type === 'choice') {
+        container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const optIdx = parseInt(e.target.getAttribute('data-idx'));
+                handleL3Choice(optIdx, config);
+            });
+        });
+    } else if (ch.type === 'assemble') {
+        gameState.l3AssembledPieces = [];
+        container.querySelectorAll('.piece-item').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                audioSys.playClick();
+                const val = e.target.getAttribute('data-val');
+                if (gameState.l3AssembledPieces.length < 3) {
+                    gameState.l3AssembledPieces.push(val);
+                    updateL3Slots();
+                }
+            });
+        });
+
+        document.getElementById('btn-check-assemble').addEventListener('click', () => {
+            handleL3AssembleCheck(config);
+        });
+    }
+}
+
+function updateL3Slots() {
+    for (let i = 0; i < 3; i++) {
+        const slotEl = document.getElementById(`slot-${i}`);
+        if (slotEl) {
+            slotEl.innerText = gameState.l3AssembledPieces[i] || '___';
+        }
+    }
+}
+
+function rotateSafeDial() {
+    const dial = document.getElementById('safe-dial');
+    if (dial) {
+        dial.style.transform = `rotate(${(gameState.l3ChallengeIndex + 1) * 360}deg)`;
+    }
+}
+
+function handleL3Choice(optIdx, config) {
+    const ch = config.challenges[gameState.l3ChallengeIndex];
+    const opt = ch.options[optIdx];
+
+    if (opt.correct) {
+        audioSys.playCorrect();
+        rotateSafeDial();
+        updateMascot('success', opt.reason);
+
+        if (gameState.l3ChallengeIndex < config.challenges.length - 1) {
+            gameState.l3ChallengeIndex++;
+            setTimeout(() => {
+                renderL3Challenge(document.getElementById('level-content'), config);
+            }, 1800);
+        }
+    } else {
+        audioSys.playWrong();
+        updateMascot('alert', opt.reason);
+    }
+}
+
+function handleL3AssembleCheck(config) {
+    const ch = config.challenges[gameState.l3ChallengeIndex];
+    const isCorrect = JSON.stringify(gameState.l3AssembledPieces) === JSON.stringify(ch.correctSequence);
+
+    if (isCorrect) {
+        audioSys.playCorrect();
+        rotateSafeDial();
+        updateMascot('celebrates', 'Tuyệt vời! Két sắt bảo mật đã mở rộng ra tỏa ánh sao vàng!');
+        markLevelComplete(2);
+    } else {
+        audioSys.playWrong();
+        updateMascot('alert', 'Chuỗi mật khẩu chưa đúng thứ tự chuẩn. Hãy nhấn "Làm lại" để xếp lại nhé!');
+        gameState.l3AssembledPieces = [];
+        updateL3Slots();
+    }
+}
+
+/* ==========================================================================
+   LEVEL 4 RENDER & LOGIC (ĐỐI PHÓ TÌNH HUỐNG - HIỆP SĨ LÁ CHẮN)
+   ========================================================================== */
+function renderLevel4(container, config) {
+    gameState.l4ScenarioIndex = 0;
+    renderL4Scenario(container, config);
+}
+
+function renderL4Scenario(container, config) {
+    const sc = config.scenarios[gameState.l4ScenarioIndex];
+
+    container.innerHTML = `
+        <div class="castle-scene">
+            <!-- Threat Popup Card -->
+            <div class="threat-card" id="threat-card-box">
+                <div class="threat-title">⚠️ ${sc.title}</div>
+                <div style="font-size: 0.95rem; color: var(--text-dark); line-height: 1.4;">
+                    ${sc.description}
+                </div>
+            </div>
+
+            <!-- Choice buttons -->
+            <div class="quiz-options-list" style="margin-top: 10px;">
+                ${sc.options.map((opt, idx) => `
+                    <button class="quiz-opt-btn" data-idx="${idx}">${opt.text}</button>
+                `).join('')}
+            </div>
+        </div>
+    `;
+
+    container.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const optIdx = parseInt(e.target.getAttribute('data-idx'));
+            handleL4Choice(optIdx, config);
+        });
+    });
+}
+
+function handleL4Choice(optIdx, config) {
+    const sc = config.scenarios[gameState.l4ScenarioIndex];
+    const opt = sc.options[optIdx];
+
+    if (opt.correct) {
+        audioSys.playCorrect();
+        updateMascot('success', opt.reason);
+
+        if (gameState.l4ScenarioIndex < config.scenarios.length - 1) {
+            gameState.l4ScenarioIndex++;
+            setTimeout(() => {
+                renderL4Scenario(document.getElementById('level-content'), config);
+            }, 1800);
+        } else {
+            updateMascot('celebrates', 'Xuất sắc! Em đã đẩy lùi mọi nguy cơ và bảo vệ an toàn!');
+            markLevelComplete(3);
+        }
+    } else {
+        audioSys.playWrong();
+        updateMascot('alert', opt.reason);
+    }
+}
+
+/* ==========================================================================
+   SUMMARY & VICTORY SCREEN RENDER
+   ========================================================================== */
+function showSummaryScreen() {
+    audioSys.playVictory();
+    showScreen('summary-screen');
+}
+</script>
+</body>
+</html>

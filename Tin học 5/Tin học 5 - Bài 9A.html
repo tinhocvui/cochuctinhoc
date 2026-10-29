@@ -1,0 +1,3798 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thiệp Chúc Mừng Sáng Tạo – Tin học 5 Bài 9A</title>
+  <style>
+    /* ==========================================================================
+       TIÊU CHUẨN MỸ THUẬT V5 – BẢNG MÀU PASTEL XỨ SỞ CÔNG NGHỆ
+       Tự chứa 100% (Offline-first), không dùng thư viện hay font ngoài.
+       ========================================================================== */
+    :root {
+      --bg-cream: #F8F7FF;
+      --bg-panel: #FFFFFF;
+      --primary-purple: #58429B;
+      --primary-purple-dark: #3F2E73;
+      --primary-purple-light: #EDE8FA;
+      --accent-mint: #4ABDAA;
+      --accent-mint-dark: #359484;
+      --accent-mint-light: #E2F7F3;
+      --accent-gold: #F2BE4A;
+      --accent-gold-dark: #C9941E;
+      --accent-gold-light: #FFF6DF;
+      --accent-peach: #F6B6C8;
+      --accent-peach-dark: #D97A96;
+      --accent-peach-light: #FFF0F4;
+      --text-main: #2A2246;
+      --text-muted: #625884;
+      --success: #28A766;
+      --success-bg: #E6F9EF;
+      --danger: #D94E5A;
+      --danger-bg: #FDECEE;
+      --border-soft: #DFD8F5;
+      --shadow-soft: 0 8px 24px rgba(88, 66, 155, 0.11);
+      --shadow-btn: 0 4px 0 rgba(63, 46, 115, 0.22);
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --font-main: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    input, textarea, select {
+      user-select: text;
+      -webkit-user-select: text;
+      font-family: var(--font-main);
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: radial-gradient(circle at 15% 20%, #FFF5F8 0%, #F8F7FF 52%, #E8F8F5 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-x: hidden;
+      line-height: 1.45;
+    }
+
+    /* Tôn trọng prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Khung chứa chuẩn 16:9 linh hoạt */
+    .app-shell {
+      width: 100%;
+      max-width: 1440px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 18px 20px;
+      gap: 12px;
+    }
+
+    /* ==========================================================================
+       THANH ĐIỀU HƯỚNG TRÊN CÙNG (TOP BAR)
+       ========================================================================== */
+    .topbar {
+      background: var(--bg-panel);
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 10px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: var(--shadow-soft);
+      z-index: 20;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--primary-purple), #7A5FD1);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 7px 14px;
+      border-radius: 999px;
+      letter-spacing: 0.3px;
+      box-shadow: 0 3px 8px rgba(88, 66, 155, 0.25);
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary-purple);
+    }
+
+    .brand-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .status-group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill-stat {
+      background: var(--primary-purple-light);
+      color: var(--primary-purple);
+      font-weight: 700;
+      font-size: 0.92rem;
+      padding: 8px 14px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1.5px solid #D5C8F5;
+    }
+
+    .pill-stat.score-pill {
+      background: var(--accent-gold-light);
+      color: #8A6100;
+      border-color: var(--accent-gold);
+    }
+
+    .pill-stat.mode-pill {
+      background: var(--accent-mint-light);
+      color: #1F6E61;
+      border-color: var(--accent-mint);
+    }
+
+    /* Các bước chuyển màn nhanh */
+    .level-stepper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step-dot {
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0 11px;
+      border-radius: 12px;
+      border: 2px solid var(--border-soft);
+      background: #F4F2FA;
+      color: var(--text-muted);
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .step-dot.active {
+      background: var(--primary-purple);
+      color: #fff;
+      border-color: var(--primary-purple-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(88, 66, 155, 0.28);
+    }
+
+    .step-dot.done {
+      background: var(--accent-mint-light);
+      color: #196B5D;
+      border-color: var(--accent-mint);
+    }
+
+    .step-dot:disabled {
+      opacity: 0.52;
+      cursor: not-allowed;
+    }
+
+    /* Cụm nút âm thanh và điều khiển */
+    .controls-group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* ==========================================================================
+       HỆ THỐNG NÚT BẤM TIÊU CHUẨN V5 (Tối thiểu 44x44px, rõ focus)
+       ========================================================================== */
+    .btn {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 16px;
+      border-radius: 14px;
+      border: 2px solid transparent;
+      font-family: var(--font-main);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.15s ease;
+      box-shadow: var(--shadow-btn);
+      text-decoration: none;
+      position: relative;
+    }
+
+    .btn:focus-visible,
+    .step-dot:focus-visible,
+    .choice-card:focus-visible,
+    .tool-btn:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 3px solid var(--accent-gold);
+      outline-offset: 2px;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(63, 46, 115, 0.2);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #6B52B8 0%, var(--primary-purple) 100%);
+      color: #fff;
+      border-color: var(--primary-purple-dark);
+    }
+
+    .btn-mint {
+      background: linear-gradient(180deg, #56CBB7 0%, var(--accent-mint) 100%);
+      color: #fff;
+      border-color: var(--accent-mint-dark);
+    }
+
+    .btn-gold {
+      background: linear-gradient(180deg, #F8CB5C 0%, var(--accent-gold) 100%);
+      color: #3D2B00;
+      border-color: var(--accent-gold-dark);
+    }
+
+    .btn-peach {
+      background: linear-gradient(180deg, #F9C5D5 0%, var(--accent-peach) 100%);
+      color: #4F1D2F;
+      border-color: var(--accent-peach-dark);
+    }
+
+    .btn-outline {
+      background: #FFFFFF;
+      color: var(--primary-purple);
+      border-color: #C7B9EE;
+      box-shadow: 0 3px 0 rgba(88, 66, 155, 0.12);
+    }
+
+    .btn-outline.active-toggle {
+      background: var(--primary-purple-light);
+      border-color: var(--primary-purple);
+      color: var(--primary-purple-dark);
+    }
+
+    .btn-outline.off-toggle {
+      background: #F4F3F8;
+      color: #8981A6;
+      border-color: #D8D3E8;
+    }
+
+    .btn-lg {
+      min-height: 54px;
+      padding: 12px 26px;
+      font-size: 1.12rem;
+      border-radius: 18px;
+    }
+
+    /* ==========================================================================
+       BỐ CỤC CHÍNH: CỘT NHÂN VẬT PIXEL & BỐI CẢNH + CỘT TƯƠNG TÁC MÀN CHƠI
+       ========================================================================== */
+    .main-stage {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 1080px) {
+      .main-stage {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cột trái: Trợ lí Pixel + Tiệm làm thiệp tiến triển theo màn */
+    .companion-sidebar {
+      background: var(--bg-panel);
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .studio-scene-box {
+      background: linear-gradient(180deg, #F3EEFF 0%, #FFF7FA 100%);
+      border: 2px solid #E3DAFA;
+      border-radius: var(--radius-md);
+      padding: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .studio-scene-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--primary-purple);
+      background: rgba(255, 255, 255, 0.88);
+      padding: 3px 10px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-bottom: 4px;
+      border: 1px solid #DCD0F8;
+    }
+
+    .pixel-card {
+      background: #FBF9FF;
+      border: 2px solid #E2D9FA;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pixel-avatar-wrap {
+      width: 130px;
+      height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Bong bóng chữ của trợ lí Pixel (TUYỆT ĐỐI CHỈ DÙNG CHỮ, KHÔNG GIỌNG ĐỌC) */
+    .pixel-bubble {
+      background: #FFFFFF;
+      border: 2.5px solid var(--primary-purple);
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-size: 0.96rem;
+      color: var(--text-main);
+      font-weight: 600;
+      width: 100%;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(88, 66, 155, 0.08);
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .pixel-bubble::before {
+      content: '';
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 0 10px 11px 10px;
+      border-style: solid;
+      border-color: transparent transparent var(--primary-purple) transparent;
+    }
+
+    .pixel-bubble.state-correct {
+      border-color: var(--success);
+      background: var(--success-bg);
+      color: #165B37;
+    }
+
+    .pixel-bubble.state-wrong {
+      border-color: var(--danger);
+      background: var(--danger-bg);
+      color: #7D1E27;
+    }
+
+    .pixel-name-tag {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--primary-purple);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Hộp gợi ý từng bước */
+    .hint-panel {
+      background: var(--accent-gold-light);
+      border: 2px dashed var(--accent-gold-dark);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      font-size: 0.9rem;
+      color: #593E00;
+      display: none;
+    }
+
+    .hint-panel.visible {
+      display: block;
+      animation: fadeSlideIn 0.25s ease;
+    }
+
+    /* Cột phải: Không gian màn chơi chính */
+    .workspace-panel {
+      background: var(--bg-panel);
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sim-disclaimer {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: #F3F0FA;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      border: 1px solid #DFD7F4;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .level-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #F0ECFA;
+      margin-bottom: 14px;
+    }
+
+    .level-title-wrap h2 {
+      font-size: 1.32rem;
+      color: var(--primary-purple);
+      font-weight: 800;
+    }
+
+    .level-title-wrap p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Thanh chân trang điều hướng màn chơi */
+    .level-footer {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 2px solid #F0ECFA;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .progress-checklist {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .check-pill {
+      font-size: 0.86rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #F4F2FA;
+      color: var(--text-muted);
+      border: 1.5px solid #DDD6F3;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .check-pill.done {
+      background: var(--success-bg);
+      color: var(--success);
+      border-color: var(--success);
+    }
+
+    /* ==========================================================================
+       MÀN CHÀO MỪNG (WELCOME SCREEN) & TỔNG KẾT (VICTORY SCREEN)
+       ========================================================================== */
+    .screen-view {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      height: 100%;
+    }
+
+    .screen-view.active {
+      display: flex;
+      animation: fadeSlideIn 0.28s ease;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .welcome-hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.95fr;
+      gap: 20px;
+      align-items: center;
+      background: linear-gradient(135deg, #F6F3FF 0%, #FFF5F8 55%, #EBFAF7 100%);
+      border: 2px solid #E1D8F7;
+      border-radius: var(--radius-lg);
+      padding: 22px;
+    }
+
+    @media (max-width: 900px) {
+      .welcome-hero {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .course-tag {
+      display: inline-block;
+      background: var(--primary-purple);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+
+    .game-main-title {
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: var(--primary-purple-dark);
+      line-height: 1.18;
+      margin-bottom: 10px;
+    }
+
+    .objective-box {
+      background: #FFFFFF;
+      border-left: 5px solid var(--accent-mint);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .objective-box h3 {
+      font-size: 0.95rem;
+      color: var(--accent-mint-dark);
+      margin-bottom: 4px;
+    }
+
+    .mode-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .mode-option {
+      flex: 1;
+      min-width: 190px;
+      background: #FFFFFF;
+      border: 2.5px solid #D7CEF2;
+      border-radius: 14px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-align: left;
+    }
+
+    .mode-option.selected {
+      border-color: var(--primary-purple);
+      background: var(--primary-purple-light);
+      box-shadow: 0 4px 12px rgba(88, 66, 155, 0.14);
+    }
+
+    .mode-option strong {
+      display: block;
+      font-size: 0.98rem;
+      color: var(--primary-purple-dark);
+    }
+
+    .mode-option span {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       CSS MÀN 1: PHÂN TÍCH 3 THIỆP MẪU
+       ========================================================================== */
+    .cards-tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .card-tab-btn {
+      flex: 1;
+      min-width: 170px;
+      min-height: 48px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 2px solid #D7CEF2;
+      background: #F9F7FF;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.18s ease;
+    }
+
+    .card-tab-btn.active {
+      background: var(--primary-purple);
+      color: #FFFFFF;
+      border-color: var(--primary-purple-dark);
+    }
+
+    .card-tab-btn.completed {
+      border-color: var(--success);
+      background: var(--success-bg);
+      color: #155E37;
+    }
+
+    .card-tab-btn.completed.active {
+      background: var(--success);
+      color: #FFFFFF;
+    }
+
+    .m1-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    @media (max-width: 860px) {
+      .m1-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sample-card-stage {
+      background: #F6F4FC;
+      border: 2px solid #DFD7F5;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      text-align: center;
+    }
+
+    .analysis-questions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .q-block {
+      background: #FBF9FF;
+      border: 2px solid #E4DCFA;
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+
+    .q-block.q-done {
+      border-color: var(--success);
+      background: #F2FCF6;
+    }
+
+    .q-title {
+      font-weight: 800;
+      font-size: 0.94rem;
+      color: var(--primary-purple-dark);
+      margin-bottom: 8px;
+    }
+
+    .q-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .choice-btn {
+      min-height: 44px;
+      padding: 7px 12px;
+      border-radius: 11px;
+      border: 2px solid #D5Cbf0;
+      background: #FFFFFF;
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: left;
+    }
+
+    .choice-btn:hover:not(:disabled) {
+      border-color: var(--primary-purple);
+      background: var(--primary-purple-light);
+    }
+
+    .choice-btn.correct {
+      background: var(--success);
+      color: #fff;
+      border-color: #1C7D4B;
+    }
+
+    .choice-btn.wrong {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+
+    /* ==========================================================================
+       CSS MÀN 2 & MÀN 3: PHẦN MỀM ĐỒ HỌA MÔ PHỎNG & SÂN KHẤU THIẾT KẾ THIỆP
+       ========================================================================== */
+    .editor-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 920px) {
+      .editor-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .canvas-preview-wrapper {
+      background: #F2EFFA;
+      border: 2px solid #D8CFF2;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .svg-card-container {
+      width: 100%;
+      max-width: 480px;
+      aspect-ratio: 4 / 3;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(42, 34, 70, 0.12);
+      overflow: hidden;
+      position: relative;
+      touch-action: none;
+    }
+
+    .svg-card-container svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .toolbox-panel {
+      background: #FBF9FF;
+      border: 2px solid #E3DBFA;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .tool-section {
+      background: #FFFFFF;
+      border: 1.5px solid #E6E0F8;
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .tool-section-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--primary-purple);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .swatch-row, .tool-btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .color-swatch {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 3px solid #D8D0F0;
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+      position: relative;
+    }
+
+    .color-swatch.active {
+      border-color: var(--primary-purple-dark);
+      transform: scale(1.08);
+      box-shadow: 0 0 0 3px var(--accent-gold);
+    }
+
+    .tool-btn {
+      min-height: 44px;
+      padding: 7px 12px;
+      border-radius: 11px;
+      border: 2px solid #D7CEF2;
+      background: #FFFFFF;
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.86rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .tool-btn.active {
+      background: var(--primary-purple);
+      color: #FFFFFF;
+      border-color: var(--primary-purple-dark);
+    }
+
+    .greeting-input {
+      width: 100%;
+      min-height: 44px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 2px solid #C8BCEB;
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .nudge-pad {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .nudge-btn {
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: 10px;
+      border: 2px solid #D0C5F0;
+      background: #fff;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    /* ==========================================================================
+       CSS MÀN 4: TRIỂN LÃM & KIỂM TRA TIÊU CHUẨN & XUẤT PNG
+       ========================================================================== */
+    .exhibit-criteria-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .criteria-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #F8F6FF;
+      border: 2px solid #DFD7F6;
+      border-radius: 12px;
+      padding: 9px 12px;
+    }
+
+    .criteria-item.verified {
+      border-color: var(--success);
+      background: var(--success-bg);
+    }
+
+    /* ==========================================================================
+       MODAL HƯỚNG DẪN & HIỆU ỨNG CONFETTI
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(34, 24, 64, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border: 3px solid var(--primary-purple);
+      border-radius: var(--radius-lg);
+      max-width: 680px;
+      width: 100%;
+      padding: 22px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .confetti-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 90;
+      overflow: hidden;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      animation: confettiFall 1.8s ease-out forwards;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(85vh) rotate(520deg); opacity: 0; }
+    }
+
+    /* Huy hiệu tổng kết */
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin: 12px 0;
+    }
+
+    .badge-card {
+      background: #FBF9FF;
+      border: 2px solid #E1D8F8;
+      border-radius: 16px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .badge-card.unlocked {
+      border-color: var(--accent-gold);
+      background: linear-gradient(180deg, #FFFDF7 0%, #FFF5D6 100%);
+    }
+  </style>
+</head>
+<body>
+  <!-- Lớp pháo giấy chúc mừng ngắn (tối đa ~1.8s) -->
+  <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <!-- ========================================================================
+         THANH ĐIỀU HƯỚNG TRÊN CÙNG (TOP BAR)
+         ======================================================================== -->
+    <header class="topbar" role="banner">
+      <div class="brand-group">
+        <span class="brand-badge">TIN HỌC 5 • BÀI 9A</span>
+        <div>
+          <div class="brand-title">THIỆP CHÚC MỪNG SÁNG TẠO</div>
+          <div class="brand-sub">Kết nối tri thức với cuộc sống (Trang 43–45)</div>
+        </div>
+      </div>
+
+      <!-- Tiến độ 4 màn chơi -->
+      <nav class="level-stepper" aria-label="Tiến độ màn chơi" id="levelStepper">
+        <button type="button" class="step-dot" data-step="1" onclick="GameApp.goToLevel(1)" disabled>Màn 1</button>
+        <button type="button" class="step-dot" data-step="2" onclick="GameApp.goToLevel(2)" disabled>Màn 2</button>
+        <button type="button" class="step-dot" data-step="3" onclick="GameApp.goToLevel(3)" disabled>Màn 3</button>
+        <button type="button" class="step-dot" data-step="4" onclick="GameApp.goToLevel(4)" disabled>Màn 4</button>
+      </nav>
+
+      <!-- Điểm số & chế độ -->
+      <div class="status-group">
+        <span class="pill-stat" id="progressIndicator">Màn: 0/4</span>
+        <span class="pill-stat score-pill" id="scoreIndicator">★ Điểm: 0 / 100</span>
+        <span class="pill-stat mode-pill" id="modeIndicator">Chế độ: Luyện tập</span>
+      </div>
+
+      <!-- Công tắc NHẠC NỀN và HIỆU ỨNG riêng biệt (KHÔNG CÓ GIỌNG ĐỌC) -->
+      <div class="controls-group">
+        <button type="button" id="btnToggleBgm" class="btn btn-outline active-toggle" onclick="SoundEngine.toggleBgm()" aria-pressed="true" title="Bật hoặc tắt Nhạc nền">
+          <span>🎵 Nhạc nền: BẬT</span>
+        </button>
+        <button type="button" id="btnToggleSfx" class="btn btn-outline active-toggle" onclick="SoundEngine.toggleSfx()" aria-pressed="true" title="Bật hoặc tắt Hiệu ứng âm thanh">
+          <span>✨ Hiệu ứng: BẬT</span>
+        </button>
+        <button type="button" class="btn btn-outline" onclick="GameApp.openGuideModal()" title="Xem hướng dẫn cách chơi">
+          <span>📖 Hướng dẫn</span>
+        </button>
+        <button type="button" class="btn btn-outline" onclick="GameApp.goHome()" title="Quay về màn hình chính">
+          <span>🏠 Trang chủ</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ========================================================================
+         KHÔNG GIAN CHÍNH (TRỢ LÍ PIXEL BÊN TRÁI + MÀN CHƠI BÊN PHẢI)
+         ======================================================================== -->
+    <main class="main-stage">
+      <!-- CỘT TRÁI: TRỢ LÍ PIXEL & BỐI CẢNH TIỆM LÀM THIỆP MỞ KHÓA DẦN -->
+      <aside class="companion-sidebar" aria-label="Trợ lí Pixel và Tiệm làm thiệp">
+        <div class="studio-scene-box">
+          <span class="studio-scene-label" id="studioStageLabel">Tiệm Thiệp Sáng Tạo • Khởi động</span>
+          <!-- Hình minh họa SVG bối cảnh tiệm làm thiệp thay đổi theo tiến độ màn 1-4 -->
+          <svg id="studioSvgScene" viewBox="0 0 300 165" width="100%" height="155" role="img" aria-label="Bối cảnh tiệm làm thiệp sinh nhật">
+            <defs>
+              <linearGradient id="wallGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#EDE6FF" />
+                <stop offset="100%" stop-color="#FFF5F9" />
+              </linearGradient>
+            </defs>
+            <!-- Tường & Bàn gỗ tiệm thiệp -->
+            <rect x="0" y="0" width="300" height="125" fill="url(#wallGrad)" />
+            <rect x="0" y="120" width="300" height="45" fill="#E6D7F5" />
+            <line x1="0" y1="120" x2="300" y2="120" stroke="#BFAEE3" stroke-width="3" />
+
+            <!-- Cửa sổ tiệm -->
+            <rect x="18" y="18" width="66" height="58" rx="8" fill="#DDF6F2" stroke="#58429B" stroke-width="2.5" />
+            <line x1="51" y1="18" x2="51" y2="76" stroke="#58429B" stroke-width="2" />
+            <line x1="18" y1="47" x2="84" y2="47" stroke="#58429B" stroke-width="2" />
+
+            <!-- Hộp dụng cụ màu & thiệp trắng cơ bản -->
+            <rect x="35" y="102" width="52" height="24" rx="4" fill="#F6B6C8" stroke="#58429B" stroke-width="2" />
+            <circle cx="48" cy="114" r="4" fill="#F2BE4A" />
+            <circle cx="61" cy="114" r="4" fill="#4ABDAA" />
+            <circle cx="74" cy="114" r="4" fill="#58429B" />
+
+            <!-- Mức mở khóa 1: Kệ 3 tấm thiệp mẫu (hiện rõ khi qua Màn 1) -->
+            <g id="studioUnlock1" opacity="0.35">
+              <rect x="102" y="24" width="96" height="8" rx="3" fill="#58429B" />
+              <rect x="108" y="8" width="22" height="16" rx="2" fill="#F6B6C8" stroke="#58429B" stroke-width="1.5" />
+              <rect x="138" y="6" width="24" height="18" rx="2" fill="#F2BE4A" stroke="#58429B" stroke-width="1.5" />
+              <rect x="170" y="8" width="22" height="16" rx="2" fill="#4ABDAA" stroke="#58429B" stroke-width="1.5" />
+            </g>
+
+            <!-- Mức mở khóa 2: Khung vẽ thiệp trên bàn (Màn 2) -->
+            <g id="studioUnlock2" opacity="0.35">
+              <rect x="115" y="72" width="70" height="50" rx="6" fill="#FFFFFF" stroke="#58429B" stroke-width="2.5" />
+              <rect x="121" y="78" width="58" height="38" rx="4" fill="#FFF6DF" stroke="#4ABDAA" stroke-width="1.5" stroke-dasharray="4 2" />
+            </g>
+
+            <!-- Mức mở khóa 3: Chùm bóng bay rực rỡ (Màn 3) -->
+            <g id="studioUnlock3" opacity="0.28">
+              <line x1="236" y1="62" x2="245" y2="115" stroke="#58429B" stroke-width="1.8" />
+              <line x1="256" y1="54" x2="248" y2="115" stroke="#58429B" stroke-width="1.8" />
+              <line x1="274" y1="66" x2="252" y2="115" stroke="#58429B" stroke-width="1.8" />
+              <ellipse cx="236" cy="48" rx="13" ry="16" fill="#F6B6C8" stroke="#58429B" stroke-width="2" />
+              <ellipse cx="256" cy="40" rx="14" ry="17" fill="#4ABDAA" stroke="#58429B" stroke-width="2" />
+              <ellipse cx="274" cy="52" rx="12" ry="15" fill="#F2BE4A" stroke="#58429B" stroke-width="2" />
+            </g>
+
+            <!-- Mức mở khóa 4: Dây cờ chúc mừng & Cúp sáng tạo (Màn 4) -->
+            <g id="studioUnlock4" opacity="0.25">
+              <path d="M 95,42 Q 150,58 210,40" fill="none" stroke="#58429B" stroke-width="2" />
+              <polygon points="110,46 122,49 115,62" fill="#F6B6C8" />
+              <polygon points="135,49 147,50 141,64" fill="#F2BE4A" />
+              <polygon points="160,49 172,48 166,63" fill="#4ABDAA" />
+              <polygon points="185,46 197,43 192,58" fill="#58429B" />
+            </g>
+          </svg>
+        </div>
+
+        <!-- Nhân vật đồng hành Pixel (SVG chibi tự dựng có biểu cảm động) -->
+        <div class="pixel-card">
+          <div class="pixel-avatar-wrap" aria-hidden="true">
+            <svg id="pixelCharacterSvg" viewBox="0 0 140 140" width="126" height="126">
+              <!-- Bóng đổ dưới chân -->
+              <ellipse cx="70" cy="130" rx="36" ry="7" fill="#DFD6F7" />
+              <!-- Ăng-ten phát sáng -->
+              <line x1="70" y1="14" x2="70" y2="28" stroke="#58429B" stroke-width="4" stroke-linecap="round" />
+              <circle id="pixelAntennaBulb" cx="70" cy="12" r="7" fill="#F2BE4A" stroke="#58429B" stroke-width="2.5" />
+              <!-- Tai rô-bốt -->
+              <rect x="18" y="48" width="12" height="24" rx="6" fill="#4ABDAA" stroke="#58429B" stroke-width="2.5" />
+              <rect x="110" y="48" width="12" height="24" rx="6" fill="#4ABDAA" stroke="#58429B" stroke-width="2.5" />
+              <!-- Đầu rô-bốt chibi -->
+              <rect x="26" y="26" width="88" height="64" rx="22" fill="#FFFFFF" stroke="#58429B" stroke-width="3.5" />
+              <!-- Màn hình khuôn mặt -->
+              <rect x="35" y="35" width="70" height="46" rx="14" fill="#2A2246" />
+              <!-- Má hồng -->
+              <ellipse cx="46" cy="66" rx="6" ry="3.5" fill="#F6B6C8" opacity="0.85" />
+              <ellipse cx="94" cy="66" rx="6" ry="3.5" fill="#F6B6C8" opacity="0.85" />
+
+              <!-- Biểu cảm mắt & miệng của Pixel (thay đổi theo trạng thái) -->
+              <g id="pixelFaceHappy">
+                <circle cx="53" cy="54" r="5.5" fill="#4ABDAA" />
+                <circle cx="51" cy="52" r="2" fill="#FFFFFF" />
+                <circle cx="87" cy="54" r="5.5" fill="#4ABDAA" />
+                <circle cx="85" cy="52" r="2" fill="#FFFFFF" />
+                <path d="M 60,65 Q 70,74 80,65" fill="none" stroke="#F2BE4A" stroke-width="3.2" stroke-linecap="round" />
+              </g>
+              <g id="pixelFaceCheering" style="display:none;">
+                <path d="M 46,56 Q 53,46 60,56" fill="none" stroke="#4ABDAA" stroke-width="3.5" stroke-linecap="round" />
+                <path d="M 80,56 Q 87,46 94,56" fill="none" stroke="#4ABDAA" stroke-width="3.5" stroke-linecap="round" />
+                <path d="M 58,63 Q 70,77 82,63 Z" fill="#F6B6C8" stroke="#F2BE4A" stroke-width="2" />
+              </g>
+              <g id="pixelFaceThinking" style="display:none;">
+                <circle cx="53" cy="53" r="5" fill="#F2BE4A" />
+                <rect x="81" y="51" width="12" height="4" rx="2" fill="#F2BE4A" />
+                <path d="M 62,68 Q 70,64 78,69" fill="none" stroke="#4ABDAA" stroke-width="3" stroke-linecap="round" />
+              </g>
+
+              <!-- Thân rô-bốt & bảng điều khiển thiết kế -->
+              <rect x="40" y="92" width="60" height="32" rx="12" fill="#58429B" />
+              <rect x="48" y="98" width="44" height="20" rx="6" fill="#F8F7FF" stroke="#4ABDAA" stroke-width="2" />
+              <circle cx="58" cy="108" r="3.5" fill="#F6B6C8" />
+              <circle cx="70" cy="108" r="3.5" fill="#F2BE4A" />
+              <circle cx="82" cy="108" r="3.5" fill="#4ABDAA" />
+            </svg>
+          </div>
+
+          <!-- Bong bóng lời nhắn bằng CHỮ của trợ lí Pixel -->
+          <div class="pixel-bubble" id="pixelSpeechBubble" role="status" aria-live="polite">
+            <div class="pixel-name-tag">
+              <span>🤖 Trợ lí Pixel</span>
+              <span id="pixelMoodBadge">Sẵn sàng</span>
+            </div>
+            <div id="pixelSpeechText">
+              Chào mừng em đến với Tiệm Thiệp Sáng Tạo! Hãy nhấn <strong>Bắt đầu</strong> để cùng mình thiết kế tấm thiệp chúc mừng thật đẹp nhé!
+            </div>
+          </div>
+        </div>
+
+        <!-- Nút Gợi ý & Làm lại màn -->
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" id="btnHint" class="btn btn-gold" style="flex:1;" onclick="GameApp.showNextHint()" disabled>
+            <span>💡 Gợi ý (<span id="hintStepLabel">0/2</span>)</span>
+          </button>
+          <button type="button" id="btnResetLevel" class="btn btn-outline" style="flex:1;" onclick="GameApp.resetCurrentLevel()" disabled>
+            <span>🔄 Làm lại màn</span>
+          </button>
+        </div>
+
+        <!-- Khung hiển thị gợi ý 2 bước -->
+        <div id="hintBox" class="hint-panel" role="region" aria-label="Gợi ý từng bước"></div>
+      </aside>
+
+      <!-- ======================================================================
+           CỘT PHẢI: CÁC MÀN HÌNH TRÒ CHƠI (CHÀO MỪNG, MÀN 1, 2, 3, 4, KẾT QUẢ)
+           ====================================================================== -->
+      <section class="workspace-panel" aria-live="polite">
+
+        <!-- 1. MÀN HÌNH CHÀO MỪNG (WELCOME SCREEN) -->
+        <div id="screenWelcome" class="screen-view active">
+          <div class="welcome-hero">
+            <div>
+              <span class="course-tag">TIN HỌC LỚP 5 • BÀI 9A (TRANG 43–45)</span>
+              <h1 class="game-main-title">THIỆP CHÚC MỪNG SÁNG TẠO</h1>
+              <p style="font-size:1rem; color:var(--text-muted); font-weight:600; margin-bottom:14px;">
+                Sử dụng phần mềm đồ họa tạo sản phẩm số: Phân tích bố cục, tạo khung nền, vẽ bóng bay trang trí, gõ lời chúc tiếng Việt và xuất bản tệp ảnh thiệp chúc mừng!
+              </p>
+
+              <div class="objective-box">
+                <h3>🎯 Sau bài chơi này em sẽ:</h3>
+                <ul style="padding-left:18px; font-size:0.92rem; font-weight:600; color:var(--text-main);">
+                  <li>Nhận biết các thành phần của thiệp chúc mừng (nền, hình trang trí, thông điệp) và công cụ đồ họa tương ứng.</li>
+                  <li>Phối hợp công cụ hình khối, tô màu, vẽ bóng bay và viết chữ để thiết kế tấm thiệp hài hòa, rõ chữ.</li>
+                  <li>Kiểm tra tiêu chí sản phẩm số và tải tấm thiệp PNG thực tế về máy tính.</li>
+                </ul>
+              </div>
+
+              <!-- Chọn chế độ Luyện tập / Thử thách -->
+              <div style="margin-bottom:8px; font-weight:800; font-size:0.9rem; color:var(--primary-purple);">
+                Chọn chế độ tham gia:
+              </div>
+              <div class="mode-selector" role="radiogroup" aria-label="Chế độ chơi">
+                <button type="button" id="modeBtnPractice" class="mode-option selected" onclick="GameApp.setMode('practice')">
+                  <strong>🌱 Chế độ Luyện tập</strong>
+                  <span>Hiển thị sẵn gợi ý trực quan ở từng bước giúp em làm quen dễ dàng.</span>
+                </button>
+                <button type="button" id="modeBtnChallenge" class="mode-option" onclick="GameApp.setMode('challenge')">
+                  <strong>🚀 Chế độ Thử thách</strong>
+                  <span>Ẩn gợi ý ban đầu để em tự khám phá (vẫn có thể bấm nút Gợi ý khi cần).</span>
+                </button>
+              </div>
+
+              <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-primary btn-lg" onclick="GameApp.startGame()">
+                  <span>▶ Bắt đầu ngay</span>
+                </button>
+                <button type="button" class="btn btn-outline btn-lg" onclick="GameApp.openGuideModal()">
+                  <span>📖 Hướng dẫn cách chơi</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tranh minh họa lớn bằng SVG trên màn chào mừng -->
+            <div style="text-align:center;">
+              <svg viewBox="0 0 380 300" width="100%" style="max-width:370px; border-radius:18px; background:#FFFFFF; border:2px solid #E2D9FA; box-shadow:0 10px 24px rgba(88,66,155,0.12);" role="img" aria-label="Minh họa thiết kế thiệp chúc mừng trên máy tính">
+                <!-- Màn hình máy tính mô phỏng phần mềm đồ họa -->
+                <rect x="24" y="20" width="332" height="210" rx="16" fill="#58429B" />
+                <rect x="34" y="30" width="312" height="182" rx="10" fill="#F8F7FF" />
+                <!-- Thanh công cụ đồ họa -->
+                <rect x="34" y="30" width="312" height="28" rx="8" fill="#EDE6FF" />
+                <circle cx="50" cy="44" r="6" fill="#F6B6C8" />
+                <circle cx="68" cy="44" r="6" fill="#F2BE4A" />
+                <circle cx="86" cy="44" r="6" fill="#4ABDAA" />
+                <rect x="115" y="37" width="150" height="14" rx="7" fill="#FFFFFF" />
+                <!-- Tấm thiệp đang thiết kế trong màn hình -->
+                <rect x="85" y="70" width="210" height="128" rx="12" fill="#FFF0F4" stroke="#F6B6C8" stroke-width="4" />
+                <rect x="95" y="80" width="190" height="108" rx="8" fill="none" stroke="#58429B" stroke-width="2" stroke-dasharray="6 4" />
+                <!-- Bóng bay trong thiệp -->
+                <line x1="125" y1="126" x2="132" y2="168" stroke="#58429B" stroke-width="2" />
+                <ellipse cx="125" cy="110" rx="16" ry="20" fill="#F6B6C8" stroke="#58429B" stroke-width="2" />
+                <line x1="255" y1="126" x2="248" y2="168" stroke="#58429B" stroke-width="2" />
+                <ellipse cx="255" cy="110" rx="16" ry="20" fill="#4ABDAA" stroke="#58429B" stroke-width="2" />
+                <!-- Dòng chữ chúc mừng -->
+                <rect x="145" y="102" width="90" height="36" rx="8" fill="#FFFFFF" stroke="#F2BE4A" stroke-width="2" />
+                <text x="190" y="118" text-anchor="middle" font-size="11" font-weight="800" fill="#58429B">CHÚC MỪNG</text>
+                <text x="190" y="132" text-anchor="middle" font-size="10" font-weight="800" fill="#D94E5A">SINH NHẬT!</text>
+                <!-- Chân đế màn hình -->
+                <rect x="160" y="230" width="60" height="26" fill="#D5Cbf0" />
+                <rect x="120" y="254" width="140" height="12" rx="6" fill="#58429B" />
+                <!-- Bảng màu & Bút vẽ nổi bật -->
+                <circle cx="62" cy="245" r="24" fill="#FFF6DF" stroke="#F2BE4A" stroke-width="3" />
+                <circle cx="54" cy="238" r="5" fill="#F6B6C8" />
+                <circle cx="70" cy="238" r="5" fill="#4ABDAA" />
+                <circle cx="62" cy="252" r="5" fill="#58429B" />
+              </svg>
+              <div style="margin-top:8px;">
+                <span class="sim-disclaimer">🖥️ Giao diện mô phỏng phục vụ học tập</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             2. MÀN 1 – PHÂN TÍCH THIỆP (25 ĐIỂM)
+             ==================================================================== -->
+        <div id="screenLevel1" class="screen-view">
+          <div class="level-header">
+            <div class="level-title-wrap">
+              <h2>MÀN 1: PHÂN TÍCH THIỆP CHÚC MỪNG</h2>
+              <p>Mở cả 3 tấm thiệp mẫu, xác định đúng Hình nền, Chi tiết trang trí, Thông điệp và Công cụ đồ họa tạo ra chúng.</p>
+            </div>
+            <span class="sim-disclaimer">🔍 Giao diện mô phỏng phục vụ học tập</span>
+          </div>
+
+          <!-- 3 Tab chọn 3 tấm thiệp mẫu -->
+          <div class="cards-tabs" id="m1CardTabs" role="tablist"></div>
+
+          <div class="m1-layout">
+            <!-- Khung SVG tấm thiệp mẫu có hiệu ứng highlight từng lớp -->
+            <div class="sample-card-stage">
+              <div style="font-weight:800; color:var(--primary-purple); margin-bottom:6px;" id="m1SampleTitle">
+                Thiệp mẫu 1
+              </div>
+              <div class="svg-card-container" id="m1SvgContainer" style="margin:0 auto;"></div>
+              <div style="margin-top:8px; display:flex; gap:6px; justify-content:center; flex-wrap:wrap;">
+                <button type="button" class="btn btn-outline" style="min-height:38px; padding:4px 10px; font-size:0.82rem;" onclick="GameApp.highlightM1Layer('bg')">🎨 Soi lớp Nền</button>
+                <button type="button" class="btn btn-outline" style="min-height:38px; padding:4px 10px; font-size:0.82rem;" onclick="GameApp.highlightM1Layer('decor')">🎈 Soi Trang trí</button>
+                <button type="button" class="btn btn-outline" style="min-height:38px; padding:4px 10px; font-size:0.82rem;" onclick="GameApp.highlightM1Layer('text')">🔤 Soi Lời chúc</button>
+              </div>
+            </div>
+
+            <!-- 3 Câu hỏi phân tích cho tấm thiệp đang mở -->
+            <div class="analysis-questions" id="m1QuestionsContainer"></div>
+          </div>
+
+          <div class="level-footer">
+            <div class="progress-checklist" id="m1Checklist"></div>
+            <button type="button" id="btnNextM1" class="btn btn-mint" onclick="GameApp.goToLevel(2)" disabled>
+              <span>Tiếp tục sang Màn 2 ➔</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             3. MÀN 2 – THIẾT KẾ KHUNG THIỆP (25 ĐIỂM)
+             ==================================================================== -->
+        <div id="screenLevel2" class="screen-view">
+          <div class="level-header">
+            <div class="level-title-wrap">
+              <h2>MÀN 2: THIẾT KẾ KHUNG VÀ NỀN THIỆP</h2>
+              <p>Chọn màu nền, kiểu đường viền khung và gắn ít nhất 4 hình khối trang trí (tròn, chữ nhật, trái tim, ngôi sao) lên viền thiệp.</p>
+            </div>
+            <span class="sim-disclaimer">🎨 Giao diện mô phỏng phục vụ học tập</span>
+          </div>
+
+          <div class="editor-grid">
+            <!-- Sân khấu xem trước khung thiệp trực tiếp -->
+            <div class="canvas-preview-wrapper">
+              <div style="font-weight:800; color:var(--primary-purple); font-size:0.92rem;">
+                Nháy trực tiếp vào 8 ô chấm tròn trên viền thiệp để gắn hình trang trí!
+              </div>
+              <div class="svg-card-container" id="m2CardStage"></div>
+              <div style="font-size:0.84rem; color:var(--text-muted); font-weight:600;">
+                Số họa tiết viền đã gắn: <strong id="m2StampCountLabel" style="color:var(--primary-purple);">0 / 4</strong> (Tối đa 8 vị trí)
+              </div>
+            </div>
+
+            <!-- Hộp công cụ thiết kế khung (Màn 2) -->
+            <div class="toolbox-panel">
+              <!-- Bước 1: Chọn màu nền thiệp -->
+              <div class="tool-section">
+                <div class="tool-section-title">
+                  <span>1. Công cụ Tô màu nền thiệp</span>
+                  <span id="m2BgNameLabel" style="font-size:0.8rem; color:var(--text-muted);">Chưa chọn</span>
+                </div>
+                <div class="swatch-row" id="m2BgSwatches"></div>
+              </div>
+
+              <!-- Bước 2: Chọn kiểu khung & màu viền -->
+              <div class="tool-section">
+                <div class="tool-section-title">
+                  <span>2. Công cụ Khung hình chữ nhật & Đường viền</span>
+                </div>
+                <div class="tool-btn-row" id="m2BorderStyles" style="margin-bottom:8px;"></div>
+                <div class="swatch-row" id="m2BorderSwatches"></div>
+              </div>
+
+              <!-- Bước 3: Chọn hình khối và màu để gắn lên viền -->
+              <div class="tool-section">
+                <div class="tool-section-title">
+                  <span>3. Chọn Hình khối & Màu rồi nháy vào viền thiệp</span>
+                </div>
+                <div class="tool-btn-row" id="m2ShapeTools" style="margin-bottom:8px;"></div>
+                <div class="swatch-row" id="m2ShapeColorSwatches" style="margin-bottom:8px;"></div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button type="button" class="btn btn-outline" style="font-size:0.84rem; min-height:40px;" onclick="GameApp.autoStampOneCorner()">
+                    <span>➕ Gắn vào vị trí trống tiếp theo</span>
+                  </button>
+                  <button type="button" class="btn btn-outline" style="font-size:0.84rem; min-height:40px;" onclick="GameApp.clearM2Stamps()">
+                    <span>🗑️ Xóa họa tiết viền</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="level-footer">
+            <div class="progress-checklist" id="m2Checklist"></div>
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn btn-gold" onclick="GameApp.verifyLevel2()">
+                <span>✔ Kiểm tra Khung thiệp</span>
+              </button>
+              <button type="button" id="btnNextM2" class="btn btn-mint" onclick="GameApp.goToLevel(3)" disabled>
+                <span>Tiếp tục sang Màn 3 ➔</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             4. MÀN 3 – VẼ BÓNG BAY VÀ LỜI CHÚC (25 ĐIỂM)
+             ==================================================================== -->
+        <div id="screenLevel3" class="screen-view">
+          <div class="level-header">
+            <div class="level-title-wrap">
+              <h2>MÀN 3: VẼ BÓNG BAY VÀ VIẾT LỜI CHÚC</h2>
+              <p>Thêm từ 3 đến 5 bóng bay/hình trang trí, nhập lời chúc tiếng Việt có dấu và sắp xếp sao cho bóng bay không đè lên chữ.</p>
+            </div>
+            <span class="sim-disclaimer">🎈 Giao diện mô phỏng phục vụ học tập</span>
+          </div>
+
+          <div class="editor-grid">
+            <!-- Sân khấu kéo thả bóng bay & lời chúc -->
+            <div class="canvas-preview-wrapper">
+              <div style="font-weight:800; color:var(--primary-purple); font-size:0.9rem;">
+                Kéo thả trực tiếp bóng bay hoặc khung chữ trên thiệp (hoặc dùng cụm nút mũi tên bên dưới)
+              </div>
+              <div class="svg-card-container" id="m3CardStage"></div>
+
+              <!-- Cụm điều khiển di chuyển bằng nút bấm / bàn phím cho đối tượng đang chọn -->
+              <div class="nudge-pad" aria-label="Điều khiển vị trí đối tượng đang chọn">
+                <span style="font-size:0.82rem; font-weight:700; color:var(--text-muted);">Di chuyển mục đang chọn:</span>
+                <button type="button" class="nudge-btn" onclick="GameApp.nudgeSelectedItem(-18, 0)" title="Sang trái">⬅</button>
+                <button type="button" class="nudge-btn" onclick="GameApp.nudgeSelectedItem(0, -14)" title="Lên trên">⬆</button>
+                <button type="button" class="nudge-btn" onclick="GameApp.nudgeSelectedItem(0, 14)" title="Xuống dưới">⬇</button>
+                <button type="button" class="nudge-btn" onclick="GameApp.nudgeSelectedItem(18, 0)" title="Sang phải">➡</button>
+                <button type="button" class="btn btn-outline" style="min-height:40px; padding:4px 10px; font-size:0.82rem;" onclick="GameApp.deleteSelectedM3Sticker()">🗑️ Xóa bóng đang chọn</button>
+              </div>
+            </div>
+
+            <!-- Hộp công cụ Màn 3: Thêm bóng bay & Công cụ chữ A -->
+            <div class="toolbox-panel">
+              <!-- Công cụ 1: Thêm bóng bay / hình trang trí (3-5 hình) -->
+              <div class="tool-section">
+                <div class="tool-section-title">
+                  <span>1. Thêm Bóng bay & Hình trang trí (<span id="m3BalloonCount">0</span>/5)</span>
+                  <span style="font-size:0.78rem; color:var(--text-muted);">Yêu cầu: 3–5 hình</span>
+                </div>
+                <div class="swatch-row" id="m3StickerColorSwatches" style="margin-bottom:8px;"></div>
+                <div class="tool-btn-row">
+                  <button type="button" class="tool-btn" onclick="GameApp.addM3Sticker('balloon_round')">🎈 + Bóng tròn</button>
+                  <button type="button" class="tool-btn" onclick="GameApp.addM3Sticker('balloon_heart')">💖 + Bóng trái tim</button>
+                  <button type="button" class="tool-btn" onclick="GameApp.addM3Sticker('balloon_star')">⭐ + Bóng ngôi sao</button>
+                  <button type="button" class="tool-btn" onclick="GameApp.addM3Sticker('gift_box')">🎁 + Hộp quà</button>
+                </div>
+              </div>
+
+              <!-- Công cụ 2: Công cụ Viết chữ A (Lời chúc tiếng Việt) -->
+              <div class="tool-section">
+                <div class="tool-section-title">
+                  <span>2. Công cụ Viết chữ (A) – Lời chúc mừng</span>
+                </div>
+                <label for="m3TextInput" style="font-size:0.82rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:4px;">
+                  Nhập lời chúc tiếng Việt (hoặc chọn nhanh mẫu bên dưới):
+                </label>
+                <input type="text" id="m3TextInput" class="greeting-input" maxlength="65" placeholder="Ví dụ: Chúc mừng sinh nhật bạn hiền!" oninput="GameApp.updateM3GreetingText(this.value)" />
+                <div class="tool-btn-row" style="margin-bottom:8px;" id="m3PresetTexts"></div>
+
+                <!-- Đổi cỡ chữ & màu chữ -->
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                  <div class="tool-btn-row" id="m3FontSizeBtns"></div>
+                  <div class="swatch-row" id="m3TextColorSwatches"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="level-footer">
+            <div class="progress-checklist" id="m3Checklist"></div>
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn btn-gold" onclick="GameApp.verifyLevel3()">
+                <span>✔ Kiểm tra Bố cục & Lời chúc</span>
+              </button>
+              <button type="button" id="btnNextM3" class="btn btn-mint" onclick="GameApp.goToLevel(4)" disabled>
+                <span>Tiếp tục sang Màn 4 ➔</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             5. MÀN 4 – TRIỂN LÃM & XUẤT SẢN PHẨM SỐ (25 ĐIỂM)
+             ==================================================================== -->
+        <div id="screenLevel4" class="screen-view">
+          <div class="level-header">
+            <div class="level-title-wrap">
+              <h2>MÀN 4: TRIỂN LÃM & XUẤT BẢN SẢN PHẨM SỐ</h2>
+              <p>Kiểm tra 3 tiêu chí chất lượng thiệp, trả lời câu hỏi vận dụng lưu tệp và xuất thiệp ra tệp ảnh PNG thực tế.</p>
+            </div>
+            <span class="sim-disclaimer">🖼️ Lưu trong lượt chơi & Xuất tệp PNG thật</span>
+          </div>
+
+          <div class="editor-grid">
+            <!-- Khung trưng bày thiệp hoàn chỉnh & Canvas xuất PNG -->
+            <div class="canvas-preview-wrapper">
+              <div style="font-weight:800; color:var(--primary-purple); font-size:0.94rem;">
+                Tác phẩm Thiệp Chúc Mừng của em trên Giá Triển Lãm
+              </div>
+              <div class="svg-card-container" id="m4CardStage"></div>
+
+              <!-- Chọn nhãn chữ ký tác giả nhí -->
+              <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin-top:4px;">
+                <span style="font-size:0.82rem; font-weight:700; color:var(--text-muted); align-self:center;">Gắn nhãn tác giả:</span>
+                <button type="button" class="tool-btn" onclick="GameApp.setAuthorBadge('Thiết kế bởi: Học sinh Lớp 5')">🏅 Học sinh Lớp 5</button>
+                <button type="button" class="tool-btn" onclick="GameApp.setAuthorBadge('Tác phẩm: Nhà Thiết Kế Nhí')">🌟 Nhà Thiết Kế Nhí</button>
+                <button type="button" class="tool-btn" onclick="GameApp.setAuthorBadge('Sản phẩm số Sáng Tạo 5A')">🎨 Sáng Tạo 5A</button>
+              </div>
+
+              <!-- Nút xuất tệp PNG thật sự qua HTML5 Canvas -->
+              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;">
+                <button type="button" class="btn btn-peach" onclick="GameApp.exportCardAsPng()">
+                  <span>📥 Tải thiệp PNG về máy</span>
+                </button>
+              </div>
+              <!-- Canvas ẩn độ phân giải 800x600 để kết xuất file PNG thực tế -->
+              <canvas id="exportCanvas" width="800" height="600" style="display:none;"></canvas>
+            </div>
+
+            <!-- Cột kiểm định tiêu chí & Câu hỏi vận dụng SGK trang 45 -->
+            <div class="toolbox-panel">
+              <div class="tool-section">
+                <div class="tool-section-title">
+                  <span>1. Bộ kiểm tra tiêu chí sản phẩm số (Nháy để rà soát)</span>
+                </div>
+                <div class="exhibit-criteria-list" id="m4CriteriaList"></div>
+              </div>
+
+              <div class="tool-section">
+                <div class="tool-section-title">
+                  <span>2. Câu hỏi Vận dụng thực tế (SGK trang 45)</span>
+                </div>
+                <div id="m4QuizBox"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="level-footer">
+            <div class="progress-checklist" id="m4Checklist"></div>
+            <button type="button" id="btnFinishGame" class="btn btn-primary" onclick="GameApp.showVictoryScreen()" disabled>
+              <span>🏆 Hoàn thành & Nhận Huy Hiệu</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- ====================================================================
+             6. MÀN HÌNH TỔNG KẾT & HUY HIỆU (VICTORY SCREEN)
+             ==================================================================== -->
+        <div id="screenVictory" class="screen-view">
+          <div style="text-align:center; padding:8px 0;">
+            <span class="course-tag">HOÀN THÀNH XUẤT SẮC BÀI 9A</span>
+            <h2 style="font-size:1.85rem; color:var(--primary-purple-dark); font-weight:900; margin-top:6px;">
+              CHÚC MỪNG NHÀ THIẾT KẾ SẢN PHẨM SỐ!
+            </h2>
+            <p style="font-size:1.05rem; font-weight:700; color:var(--text-muted);">
+              Tổng điểm đạt được: <strong id="finalScoreText" style="color:var(--accent-gold-dark); font-size:1.4rem;">100 / 100</strong> điểm
+            </p>
+          </div>
+
+          <!-- Danh sách 4 huy hiệu -->
+          <div class="badges-grid" id="victoryBadgesGrid"></div>
+
+          <!-- 3 Nhận xét kiến thức trọng tâm của Bài 9A -->
+          <div class="objective-box" style="margin-bottom:8px;">
+            <h3>📌 Ghi nhớ kiến thức Tin học 5 – Bài 9A:</h3>
+            <ul style="padding-left:18px; font-size:0.93rem; font-weight:600; color:var(--text-main);">
+              <li><strong>Cấu trúc sản phẩm đồ họa:</strong> Một tấm thiệp chúc mừng gồm màu nền/khung viền, các chi tiết vẽ trang trí (bóng bay, hoa, ngôi sao...) và thông điệp chữ có màu sắc tương phản, dễ đọc.</li>
+              <li><strong>Phối hợp công cụ:</strong> Sử dụng linh hoạt các công cụ hình khối (chữ nhật, hình tròn, đường cong), công cụ tô màu và công cụ viết chữ (A) để sắp xếp bố cục cân đối, không che khuất lời chúc.</li>
+              <li><strong>Quản lí tệp sản phẩm số:</strong> Nên lưu tệp gốc và tạo bản sao mới khi muốn chỉnh sửa thiệp cho người nhận khác để tiết kiệm thời gian và giữ lại được sản phẩm ban đầu.</li>
+            </ul>
+          </div>
+
+          <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-top:auto;">
+            <button type="button" class="btn btn-peach btn-lg" onclick="GameApp.exportCardAsPng()">
+              <span>📥 Tải lại ảnh PNG tấm thiệp của em</span>
+            </button>
+            <button type="button" class="btn btn-primary btn-lg" onclick="GameApp.playAgain()">
+              <span>🔄 Chơi lại từ đầu</span>
+            </button>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- ==========================================================================
+       HỘP THOẠI HƯỚNG DẪN CHƠI (CHỈ BẰNG CHỮ & BIỂU TƯỢNG, KHÔNG GIỌNG ĐỌC)
+       ========================================================================== -->
+  <div id="guideModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="guideModalTitle">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h2 id="guideModalTitle" style="color:var(--primary-purple); font-size:1.35rem;">📖 Hướng dẫn trò chơi: Thiệp Chúc Mừng Sáng Tạo</h2>
+        <button type="button" class="btn btn-outline" onclick="GameApp.closeGuideModal()">✖ Đóng</button>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px; font-size:0.94rem; color:var(--text-main); font-weight:600;">
+        <p>Trò chơi gồm <strong>4 màn tương tác thực hành</strong> (mỗi màn 25 điểm, tổng 100 điểm) bám sát Bài 9A – SGK Tin học 5:</p>
+        <div style="background:#F8F6FF; padding:10px 14px; border-radius:12px; border:1.5px solid #E1D8F8;">
+          <p>🔹 <strong>Màn 1 – Phân tích thiệp (25 điểm):</strong> Quan sát 3 tấm thiệp mẫu (Sinh nhật, Năm mới, Chúc mừng 20/11) và chọn đúng thành phần Hình nền, Chi tiết trang trí, Thông điệp cùng công cụ đồ họa tương ứng.</p>
+          <p style="margin-top:6px;">🔹 <strong>Màn 2 – Thiết kế khung (25 điểm):</strong> Chọn màu nền, kiểu đường viền và gắn tối thiểu 4 hình khối trang trí (tròn, chữ nhật, trái tim, ngôi sao) lên các góc/cạnh của khung thiệp.</p>
+          <p style="margin-top:6px;">🔹 <strong>Màn 3 – Vẽ bóng bay và lời chúc (25 điểm):</strong> Thêm từ 3 đến 5 bóng bay/hình trang trí, nhập lời chúc tiếng Việt có dấu, đổi màu/cỡ chữ và kéo thả sắp xếp để bóng bay không che khuất chữ.</p>
+          <p style="margin-top:6px;">🔹 <strong>Màn 4 – Triển lãm & Xuất PNG (25 điểm):</strong> Kiểm tra 3 tiêu chí chất lượng thiệp, gắn nhãn tác giả, trả lời câu hỏi vận dụng lưu tệp và tải tấm thiệp PNG thật về máy.</p>
+        </div>
+        <p>💡 <strong>Mẹo nhỏ:</strong> Em có thể dùng chuột kéo thả trực tiếp hoặc dùng các nút mũi tên ⬅⬆⬇➡ trên màn hình để di chuyển bóng bay và lời chúc. Nhạc nền và Hiệu ứng có thể bật/tắt độc lập ở góc trên phải màn hình.</p>
+      </div>
+      <div style="text-align:right; margin-top:16px;">
+        <button type="button" class="btn btn-primary" onclick="GameApp.closeGuideModal()">Đã hiểu, quay lại trò chơi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MÃ NGUỒN JAVASCRIPT: TÁCH BIỆT GAME_CONFIG, SOUND ENGINE & GAME LOGIC
+       ========================================================================== -->
+  <script>
+    /**
+     * ============================================================================
+     * PHẦN 1: GAME_CONFIG – CẤU HÌNH NỘI DUNG BÀI HỌC (GIÁO VIÊN DỄ CHỈNH SỬA)
+     * Giáo viên có thể thay đổi câu hỏi, màu sắc, lời chúc mẫu, gợi ý tại đây.
+     * ============================================================================
+     */
+    const GAME_CONFIG = {
+      meta: {
+        grade: "Tin học 5",
+        lesson: "Bài 9A: Sử dụng phần mềm đồ họa tạo sản phẩm số",
+        book: "Kết nối tri thức với cuộc sống (trang 43–45)",
+        gameTitle: "THIỆP CHÚC MỪNG SÁNG TẠO",
+        pointsPerLevel: 25,
+        maxScore: 100
+      },
+
+      audio: {
+        defaultBgmOn: true,
+        defaultSfxOn: true,
+        bgmVolume: 0.12, // Âm lượng nhạc nền êm dịu 12% theo đúng chuẩn V5
+        sfxVolume: 0.28
+      },
+
+      // Gợi ý 2 bước cho từng màn chơi
+      hints: {
+        1: [
+          "Gợi ý bước 1: Em hãy nháy các nút 'Soi lớp Nền', 'Soi Trang trí', 'Soi Lời chúc' dưới tấm thiệp để quan sát kỹ từng thành phần trước khi chọn đáp án.",
+          "Gợi ý bước 2: Trong phần mềm đồ họa, nền thiệp thường tạo bằng Công cụ Hình chữ nhật & Tô màu; chi tiết bóng bay/hoa vẽ bằng Công cụ Hình khối/Đường cong; còn lời chúc gõ bằng Công cụ Viết chữ (A). Hãy hoàn thành đủ cả 3 tấm thiệp nhé!"
+        ],
+        2: [
+          "Gợi ý bước 1: Hãy chọn 1 màu nền ở mục (1), chọn 1 kiểu đường viền và màu viền nổi bật ở mục (2).",
+          "Gợi ý bước 2: Ở mục (3), hãy chọn hình Tròn, Chữ nhật, Trái tim hoặc Ngôi sao rồi nháy trực tiếp vào ít nhất 4 chấm tròn trên khung thiệp (hoặc bấm nút 'Gắn vào vị trí trống tiếp theo')."
+        ],
+        3: [
+          "Gợi ý bước 1: Nháy các nút '+ Bóng tròn', '+ Bóng trái tim'... để thêm từ 3 đến 5 hình trang trí lên thiệp, sau đó nhập lời chúc tiếng Việt (ít nhất 6 ký tự) vào ô chữ.",
+          "Gợi ý bước 2: Dùng chuột kéo bóng bay ra hai bên cạnh thiệp để KHÔNG đè lên khung chữ lời chúc ở giữa, đồng thời chọn màu chữ đậm/nổi bật so với màu nền thiệp!"
+        ],
+        4: [
+          "Gợi ý bước 1: Nháy vào cả 3 nút kiểm tra trong 'Bộ kiểm tra tiêu chí sản phẩm số', chọn 1 nhãn tác giả nhí và trả lời câu hỏi vận dụng ở mục (2).",
+          "Gợi ý bước 2: Khi sửa thiệp cho người nhận mới, em nên dùng lệnh 'Save As' (Lưu với tên mới) để giữ lại tấm thiệp gốc. Đừng quên bấm nút 'Tải thiệp PNG về máy' để lưu sản phẩm số nhé!"
+        ]
+      },
+
+      // Dữ liệu Màn 1: 3 Tấm thiệp mẫu cần phân tích
+      level1Cards: [
+        {
+          id: "birthday",
+          name: "1. Thiệp Sinh Nhật",
+          themeBg: "#FFF0F4",
+          borderColor: "#D97A96",
+          headline: "CHÚC MỪNG SINH NHẬT",
+          subline: "Chúc bạn luôn chăm ngoan, học giỏi!",
+          questions: [
+            {
+              id: "q_bg",
+              prompt: "1. Hình nền và khung của tấm Thiệp Sinh Nhật này có đặc điểm gì?",
+              options: [
+                { text: "Nền hồng đào pastel kèm khung chữ nhật viền nét đứt", correct: true, feedback: "Chính xác! Nền hồng đào sáng giúp làm nổi bật chữ và bóng bay." },
+                { text: "Nền đen tuyền không có khung viền", correct: false, feedback: "Chưa đúng. Em hãy nhìn màu nền sáng dịu và đường khung viền quanh mép thiệp nhé." },
+                { text: "Chỉ có bảng tính số liệu mà không có màu nền", correct: false, feedback: "Chưa đúng. Đây là sản phẩm đồ họa có nền màu hồng đào ấm áp." }
+              ]
+            },
+            {
+              id: "q_decor",
+              prompt: "2. Chi tiết trang trí chính trên tấm thiệp này gồm những hình gì?",
+              options: [
+                { text: "Chùm bóng bay nhiều màu, bánh kem nến và ngôi sao nhỏ", correct: true, feedback: "Rất giỏi! Chùm bóng bay và bánh sinh nhật tạo không khí vui tươi đúng chủ đề." },
+                { text: "Chỉ có các đoạn mã lệnh lập trình", correct: false, feedback: "Chưa đúng. Trên thiệp có vẽ bóng bay, bánh sinh nhật và ngôi sao." },
+                { text: "Không có bất kỳ hình vẽ trang trí nào", correct: false, feedback: "Chưa đúng. Em hãy bấm nút 'Soi Trang trí' để thấy bóng bay và bánh kem nhé!" }
+              ]
+            },
+            {
+              id: "q_tool",
+              prompt: "3. Để vẽ dây bóng bay uốn lượn và gõ lời chúc trên phần mềm đồ họa (như Paint), em kết hợp công cụ nào?",
+              options: [
+                { text: "Công cụ Đường cong (Curve) vẽ dây bóng và Công cụ Chữ (A) gõ lời chúc", correct: true, feedback: "Hoàn toàn chính xác! Đường cong dùng vẽ dây bóng bay mềm mại và chữ A dùng nhập thông điệp." },
+                { text: "Công cụ Cục tẩy (Eraser) để tự động gõ chữ tiếng Việt", correct: false, feedback: "Cục tẩy chỉ dùng để xóa chi tiết thừa, không dùng để gõ chữ chúc mừng." },
+                { text: "Công cụ Phóng to (Magnifier) để tô màu nền", correct: false, feedback: "Kính lúp chỉ dùng phóng to vùng nhìn, không tạo ra dây bóng hay chữ viết." }
+              ]
+            }
+          ]
+        },
+        {
+          id: "newyear",
+          name: "2. Thiệp Năm Mới",
+          themeBg: "#FFF8E1",
+          borderColor: "#C9941E",
+          headline: "CHÚC MỪNG NĂM MỚI",
+          subline: "An khang thịnh vượng – Vạn sự như ý!",
+          questions: [
+            {
+              id: "q_bg",
+              prompt: "1. Tông màu nền và khung của Thiệp Năm Mới mang sắc thái nào?",
+              options: [
+                { text: "Nền vàng nắng ấm áp kết hợp khung viền đôi sắc đỏ – vàng lễ hội", correct: true, feedback: "Đúng rồi! Tông màu vàng – đỏ rất phù hợp với không khí Tết và năm mới." },
+                { text: "Nền xám tối che mờ toàn bộ chữ chúc mừng", correct: false, feedback: "Chưa đúng. Màu nền của thiệp là màu vàng kem rất tươi sáng." },
+                { text: "Không có khung và không có màu nền", correct: false, feedback: "Chưa đúng. Tấm thiệp có nền vàng kem và khung viền đôi rõ ràng." }
+              ]
+            },
+            {
+              id: "q_decor",
+              prompt: "2. Chi tiết trang trí đặc trưng trên tấm Thiệp Năm Mới này là gì?",
+              options: [
+                { text: "Cành hoa mai vàng, pháo hoa lấp lánh và đèn lồng đỏ", correct: true, feedback: "Tuyệt vời! Hoa mai, đèn lồng và pháo hoa là họa tiết đặc trưng của ngày Tết." },
+                { text: "Biểu tượng thùng rác máy tính và con trỏ chuột", correct: false, feedback: "Chưa đúng. Hãy quan sát các bông hoa vàng và đèn lồng trên thiệp nhé." },
+                { text: "Chỉ có một đường thẳng màu đen duy nhất", correct: false, feedback: "Chưa đúng. Thiệp có đèn lồng, hoa mai và pháo hoa rực rỡ." }
+              ]
+            },
+            {
+              id: "q_tool",
+              prompt: "3. Vì sao thông điệp 'CHÚC MỪNG NĂM MỚI' lại dễ đọc khi nhìn vào thiệp?",
+              options: [
+                { text: "Vì cỡ chữ lớn, đặt ở vị trí trung tâm và có màu đậm tương phản với nền sáng", correct: true, feedback: "Chuẩn xác! Chữ có màu tương phản và không bị hình trang trí đè lên sẽ rất dễ đọc." },
+                { text: "Vì chữ có màu trùng hệt với màu nền vàng nhạt", correct: false, feedback: "Nếu chữ trùng màu nền thì người xem sẽ không đọc được thông điệp." },
+                { text: "Vì các hình đèn lồng xếp đè kín lên mặt chữ", correct: false, feedback: "Hình trang trí được xếp gọn hai bên để nhường khoảng trống cho dòng chữ ở giữa." }
+              ]
+            }
+          ]
+        },
+        {
+          id: "teachers",
+          name: "3. Thiệp Chúc Mừng 20/11",
+          themeBg: "#E6FAF6",
+          borderColor: "#359484",
+          headline: "CHÚC MỪNG NGÀY 20/11",
+          subline: "Kính chúc thầy cô luôn mạnh khỏe, hạnh phúc!",
+          questions: [
+            {
+              id: "q_bg",
+              prompt: "1. Tấm Thiệp Chúc Mừng 20/11 sử dụng nền và khung như thế nào?",
+              options: [
+                { text: "Nền xanh ngọc bạc hà dịu mắt với khung viền đính họa tiết góc cân đối", correct: true, feedback: "Chính xác! Nền xanh ngọc dịu mắt giúp nổi bật bó hoa và lời tri ân thầy cô." },
+                { text: "Nền sọc chéo lộn xộn làm nhòe dòng chữ", correct: false, feedback: "Chưa đúng. Nền thiệp màu xanh ngọc rất phẳng và rõ ràng." },
+                { text: "Chỉ có khung viền bên ngoài mà bên trong bị thủng rỗng", correct: false, feedback: "Chưa đúng. Bên trong thiệp được tô màu xanh ngọc nhạt." }
+              ]
+            },
+            {
+              id: "q_decor",
+              prompt: "2. Những hình trang trí nào thể hiện lòng biết ơn thầy cô trên tấm thiệp này?",
+              options: [
+                { text: "Bó hoa tươi thắm, trang sách mở và hình trái tim yêu thương", correct: true, feedback: "Rất chính xác! Hoa tươi, trang sách và trái tim thể hiện tình cảm kính trọng thầy cô." },
+                { text: "Hình bánh xe ô tô và biển báo giao thông", correct: false, feedback: "Chưa đúng. Trên thiệp là hình trang sách, bông hoa và trái tim." },
+                { text: "Không có hình vẽ nào ngoài chữ số", correct: false, feedback: "Chưa đúng. Em hãy nhìn góc dưới tấm thiệp có trang sách và hoa tươi nhé." }
+              ]
+            },
+            {
+              id: "q_tool",
+              prompt: "3. Khi vẽ nhiều bông hoa giống nhau trên thiệp, thao tác nào trong phần mềm đồ họa giúp em làm nhanh hơn?",
+              options: [
+                { text: "Vẽ một bông hoa rồi dùng công cụ Chọn (Select) kết hợp Sao chép (Copy) và Dán (Paste)", correct: true, feedback: "Xuất sắc! Sao chép và dán rồi đổi màu/kích thước giúp tạo nhanh nhiều họa tiết trang trí." },
+                { text: "Tắt máy tính khởi động lại sau mỗi cánh hoa", correct: false, feedback: "Không cần khởi động lại máy tính khi đang vẽ hình." },
+                { text: "Xóa toàn bộ tấm thiệp mỗi khi muốn thêm một bông hoa", correct: false, feedback: "Xóa toàn bộ sẽ làm mất công sức đã vẽ trước đó." }
+              ]
+            }
+          ]
+        }
+      ],
+
+      // Dữ liệu Màn 2: Màu nền, kiểu khung, màu khung và hình khối trang trí viền
+      level2Options: {
+        backgrounds: [
+          { id: "bg_peach", name: "Hồng đào ấm áp", color: "#FFF0F4", isDark: false },
+          { id: "bg_mint", name: "Xanh ngọc tươi mát", color: "#E6FAF6", isDark: false },
+          { id: "bg_gold", name: "Vàng nắng mai", color: "#FFF8E1", isDark: false },
+          { id: "bg_lavender", name: "Tím oải hương dịu", color: "#F1ECFF", isDark: false },
+          { id: "bg_galaxy", name: "Tím ngân hà đậm", color: "#362669", isDark: true }
+        ],
+        borderStyles: [
+          { id: "solid_round", name: "Khung bo góc đơn" },
+          { id: "double_frame", name: "Khung kép sang trọng" },
+          { id: "dashed_art", name: "Khung nét đứt nghệ thuật" }
+        ],
+        borderColors: [
+          { id: "bc_purple", name: "Tím đậm", color: "#58429B" },
+          { id: "bc_mint", name: "Xanh ngọc", color: "#2D9B88" },
+          { id: "bc_gold", name: "Vàng kim", color: "#D99B16" },
+          { id: "bc_rose", name: "Hồng sen", color: "#D45079" },
+          { id: "bc_white", name: "Trắng kem", color: "#FFFDF9" }
+        ],
+        stampShapes: [
+          { id: "circle", name: "🟢 Hình tròn" },
+          { id: "rect", name: "🟦 Hình chữ nhật" },
+          { id: "heart", name: "💖 Trái tim" },
+          { id: "star", name: "⭐ Ngôi sao" }
+        ],
+        stampColors: [
+          "#F6B6C8", "#4ABDAA", "#F2BE4A", "#7A5FD1", "#FF7A6B"
+        ],
+        // 8 tọa độ điểm neo trên khung viền (tỉ lệ viewBox 400x300)
+        anchorNodes: [
+          { idx: 0, x: 26, y: 26, label: "Góc trên trái" },
+          { idx: 1, x: 200, y: 22, label: "Cạnh trên giữa" },
+          { idx: 2, x: 374, y: 26, label: "Góc trên phải" },
+          { idx: 3, x: 376, y: 150, label: "Cạnh phải giữa" },
+          { idx: 4, x: 374, y: 274, label: "Góc dưới phải" },
+          { idx: 5, x: 200, y: 278, label: "Cạnh dưới giữa" },
+          { idx: 6, x: 26, y: 274, label: "Góc dưới trái" },
+          { idx: 7, x: 24, y: 150, label: "Cạnh trái giữa" }
+        ]
+      },
+
+      // Dữ liệu Màn 3: Bóng bay trang trí & Lời chúc
+      level3Options: {
+        stickerColors: ["#F6B6C8", "#4ABDAA", "#F2BE4A", "#8B6CE8", "#FF7B6B", "#52B2CF"],
+        presetGreetings: [
+          "Chúc mừng sinh nhật bạn hiền!",
+          "Chúc cô giáo luôn vui vẻ, hạnh phúc!",
+          "Chúc mừng năm mới bình an, vui khỏe!",
+          "Chúc bạn học giỏi và luôn tươi cười!"
+        ],
+        fontSizes: [
+          { id: "sm", label: "Cỡ vừa", size: 17 },
+          { id: "md", label: "Cỡ lớn", size: 20 },
+          { id: "lg", label: "Cỡ đại", size: 23 }
+        ],
+        textColors: [
+          { name: "Tím đậm", color: "#3F2E73", forLightBg: true },
+          { name: "Đỏ hồng đậm", color: "#B8254F", forLightBg: true },
+          { name: "Xanh ngọc đậm", color: "#156557", forLightBg: true },
+          { name: "Vàng sáng", color: "#FFE066", forLightBg: false },
+          { name: "Trắng tinh", color: "#FFFFFF", forLightBg: false }
+        ]
+      },
+
+      // Dữ liệu Màn 4: Tiêu chí kiểm tra & Câu hỏi vận dụng SGK trang 45
+      level4Data: {
+        criteria: [
+          {
+            id: "crit_frame",
+            title: "Tiêu chí 1: Có màu nền và khung viền trang trí hài hòa",
+            desc: "Đã tạo nền màu, khung viền và tối thiểu 4 hình khối ở viền thiệp."
+          },
+          {
+            id: "crit_decor",
+            title: "Tiêu chí 2: Có tối thiểu 2 cụm hình trang trí / bóng bay",
+            desc: "Thiệp có từ 3–5 bóng bay/hình trang trí sắc màu sinh động."
+          },
+          {
+            id: "crit_text",
+            title: "Tiêu chí 3: Lời chúc rõ ràng, không bị bóng bay che khuất",
+            desc: "Thông điệp tiếng Việt dễ đọc, tương phản tốt và đặt ở vị trí thoáng."
+          }
+        ],
+        practicalQuestions: [
+          {
+            id: "pq1",
+            question: "Tình huống 1 (Vận dụng SGK trang 45): Sau khi làm xong tấm thiệp tặng bạn Lan, em muốn sửa lời chúc trên thiệp đó để tặng thêm bạn Minh mà KHÔNG làm mất tấm thiệp của bạn Lan. Em nên làm gì?",
+            options: [
+              { text: "Dùng lệnh 'Save As' (Lưu với tên khác) để tạo bản sao mới rồi sửa tên và lời chúc", correct: true, explain: "Rất chính xác! Lưu thành tệp mới giúp em giữ nguyên được tấm thiệp của bạn Lan và tạo nhanh thiệp cho bạn Minh." },
+              { text: "Xóa tệp cũ đi rồi vẽ lại từ đầu tất cả khung và bóng bay", correct: false, explain: "Vẽ lại từ đầu sẽ mất nhiều thời gian trong khi em có thể lưu bản sao mới." },
+              { text: "Không lưu tệp nào cả và tắt luôn phần mềm đồ họa", correct: false, explain: "Nếu không lưu tệp, sản phẩm số của em sẽ bị mất." }
+            ]
+          },
+          {
+            id: "pq2",
+            question: "Tình huống 2: Khi vẽ bóng bay trên phần mềm đồ họa bằng Công cụ Tô màu (Fill with color), nếu đường viền quả bóng bị hở một đoạn nhỏ thì điều gì sẽ xảy ra?",
+            options: [
+              { text: "Màu tô sẽ bị tràn ra ngoài nền thiệp qua chỗ hở", correct: true, explain: "Đúng rồi! Công cụ Tô màu chỉ tô gọn trong vùng khép kín; nếu viền bị hở, màu sẽ loang ra ngoài (khi đó em có thể nhấn Ctrl+Z / Undo để hoàn tác)." },
+              { text: "Phần mềm tự động tắt màn hình máy tính", correct: false, explain: "Phần mềm không tắt màn hình mà chỉ làm màu tràn qua khe hở." },
+              { text: "Quả bóng tự động biến thành dòng chữ chúc mừng", correct: false, explain: "Tô màu vào hình hở chỉ làm tràn màu, không biến hình thành chữ." }
+            ]
+          }
+        ]
+      }
+    };
+
+    /**
+     * ============================================================================
+     * PHẦN 2: SOUND ENGINE – TỔNG HỢP NHẠC NỀN & SFX BẰNG WEB AUDIO API
+     * Tuyệt đối KHÔNG dùng giọng đọc, KHÔNG TTS, KHÔNG speechSynthesis.
+     * Có 2 công tắc độc lập: Nhạc nền (BGM) và Hiệu ứng (SFX).
+     * ============================================================================
+     */
+    const SoundEngine = {
+      ctx: null,
+      bgmEnabled: GAME_CONFIG.audio.defaultBgmOn,
+      sfxEnabled: GAME_CONFIG.audio.defaultSfxOn,
+      bgmPlaying: false,
+      bgmTimer: null,
+      noteIndex: 0,
+
+      // Giai điệu vui tươi nguyên gốc (Pentatonic C major nhẹ nhàng)
+      melodyNotes: [
+        { f: 523.25, d: 0.28 }, // C5
+        { f: 587.33, d: 0.28 }, // D5
+        { f: 659.25, d: 0.35 }, // E5
+        { f: 783.99, d: 0.35 }, // G5
+        { f: 659.25, d: 0.28 }, // E5
+        { f: 880.00, d: 0.42 }, // A5
+        { f: 783.99, d: 0.45 }, // G5
+        { f: 0,      d: 0.22 }, // Nghỉ nhẹ
+        { f: 659.25, d: 0.28 }, // E5
+        { f: 587.33, d: 0.28 }, // D5
+        { f: 523.25, d: 0.35 }, // C5
+        { f: 587.33, d: 0.30 }, // D5
+        { f: 659.25, d: 0.35 }, // E5
+        { f: 523.25, d: 0.50 }, // C5
+        { f: 0,      d: 0.30 }
+      ],
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+          this.ctx.resume().catch(() => {});
+        }
+      },
+
+      startBgm() {
+        this.initContext();
+        this. stopBgm(); // Tránh chồng nhiều vòng nhạc
+        if (!this.bgmEnabled || !this.ctx) return;
+
+        this.bgmPlaying = true;
+        const scheduleNextNote = () => {
+          if (!this.bgmPlaying || !this.bgmEnabled || !this.ctx) return;
+          if (document.hidden) return;
+
+          const item = this.melodyNotes[this.noteIndex % this.melodyNotes.length];
+          this.noteIndex++;
+
+          if (item.f > 0 && this.ctx.state === "running") {
+            try {
+              const now = this.ctx.currentTime;
+              const osc = this.ctx.createOscillator();
+              const gain = this.ctx.createGain();
+              osc.type = "triangle";
+              osc.frequency.setValueAtTime(item.f, now);
+
+              const vol = GAME_CONFIG.audio.bgmVolume;
+              gain.gain.setValueAtTime(0.001, now);
+              gain.gain.linearRampToValueAtTime(vol, now + 0.04);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + item.d);
+
+              osc.connect(gain);
+              gain.connect(this.ctx.destination);
+              osc.start(now);
+              osc.stop(now + item.d + 0.02);
+            } catch (e) {}
+          }
+
+          this.bgmTimer = setTimeout(scheduleNextNote, Math.round((item.d + 0.08) * 1000));
+        };
+
+        scheduleNextNote();
+      },
+
+      stopBgm() {
+        this.bgmPlaying = false;
+        if (this.bgmTimer) {
+          clearTimeout(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      },
+
+      toggleBgm() {
+        this.initContext();
+        this.bgmEnabled = !this.bgmEnabled;
+        const btn = document.getElementById("btnToggleBgm");
+        if (this.bgmEnabled) {
+          btn.className = "btn btn-outline active-toggle";
+          btn.setAttribute("aria-pressed", "true");
+          btn.innerHTML = "<span>🎵 Nhạc nền: BẬT</span>";
+          if (GameApp.state.hasStarted) this.startBgm();
+        } else {
+          btn.className = "btn btn-outline off-toggle";
+          btn.setAttribute("aria-pressed", "false");
+          btn.innerHTML = "<span>🔇 Nhạc nền: TẮT</span>";
+          this.stopBgm();
+        }
+        this.playSfx("click");
+      },
+
+      toggleSfx() {
+        this.initContext();
+        this.sfxEnabled = !this.sfxEnabled;
+        const btn = document.getElementById("btnToggleSfx");
+        if (this.sfxEnabled) {
+          btn.className = "btn btn-outline active-toggle";
+          btn.setAttribute("aria-pressed", "true");
+          btn.innerHTML = "<span>✨ Hiệu ứng: BẬT</span>";
+          this.playSfx("click");
+        } else {
+          btn.className = "btn btn-outline off-toggle";
+          btn.setAttribute("aria-pressed", "false");
+          btn.innerHTML = "<span>🔕 Hiệu ứng: TẮT</span>";
+        }
+      },
+
+      playSfx(type) {
+        if (!this.sfxEnabled) return;
+        this.initContext();
+        if (!this.ctx || this.ctx.state !== "running") return;
+
+        const now = this.ctx.currentTime;
+        const vol = GAME_CONFIG.audio.sfxVolume;
+
+        try {
+          if (type === "click") {
+            this.tone(660, now, 0.06, "sine", vol * 0.6);
+          } else if (type === "pop") {
+            this.tone(520, now, 0.05, "triangle", vol * 0.7);
+            this.tone(780, now + 0.05, 0.08, "triangle", vol * 0.7);
+          } else if (type === "correct") {
+            this.tone(523.25, now, 0.09, "triangle", vol);
+            this.tone(659.25, now + 0.09, 0.09, "triangle", vol);
+            this.tone(783.99, now + 0.18, 0.18, "triangle", vol);
+          } else if (type === "wrong") {
+            // Âm báo nhẹ nhàng khi thao tác chưa đúng
+            this.tone(310, now, 0.12, "sine", vol * 0.65);
+            this.tone(260, now + 0.12, 0.18, "sine", vol * 0.65);
+          } else if (type === "levelUp") {
+            [523.25, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+              this.tone(freq, now + idx * 0.09, 0.16, "triangle", vol);
+            });
+          } else if (type === "victory") {
+            [523.25, 659.25, 783.99, 659.25, 783.99, 1046.5].forEach((freq, idx) => {
+              this.tone(freq, now + idx * 0.11, 0.20, "triangle", vol);
+            });
+          }
+        } catch (e) {}
+      },
+
+      tone(freq, startTime, duration, waveType, peakGain) {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = waveType;
+        osc.frequency.setValueAtTime(freq, startTime);
+        gain.gain.setValueAtTime(0.001, startTime);
+        gain.gain.linearRampToValueAtTime(peakGain, startTime + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(startTime);
+        osc.stop(startTime + duration + 0.02);
+      }
+    };
+
+    // Tạm dừng nhạc nền khi ẩn tab và khôi phục khi quay lại
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        SoundEngine.stopBgm();
+      } else if (GameApp && GameApp.state.hasStarted && SoundEngine.bgmEnabled) {
+        SoundEngine.startBgm();
+      }
+    });
+
+    /**
+     * ============================================================================
+     * PHẦN 3: GAME APPLICATION – QUẢN LÍ TRẠNG THÁI, ĐỒ HỌA SVG VÀ 4 MÀN CHƠI
+     * ============================================================================
+     */
+    const GameApp = {
+      state: {
+        hasStarted: false,
+        mode: "practice", // 'practice' | 'challenge'
+        currentLevel: 0,  // 0: Welcome, 1..4: Màn 1..4, 5: Victory
+        unlockedLevel: 1,
+        completedLevels: { 1: false, 2: false, 3: false, 4: false },
+        score: 0,
+        hintSteps: { 1: 0, 2: 0, 3: 0, 4: 0 },
+
+        // Dữ liệu Màn 1
+        m1CurrentCardIdx: 0,
+        m1LayerHighlight: null,
+        m1Answers: {
+          birthday: { q_bg: false, q_decor: false, q_tool: false },
+          newyear: { q_bg: false, q_decor: false, q_tool: false },
+          teachers: { q_bg: false, q_decor: false, q_tool: false }
+        },
+
+        // Dữ liệu Thiết kế Thiệp của học sinh (Xuyên suốt Màn 2 -> Màn 3 -> Màn 4)
+        cardDesign: {
+          bgId: "bg_peach",
+          bgColor: "#FFF0F4",
+          bgIsDark: false,
+          bgSelected: false,
+
+          borderStyle: "solid_round",
+          borderColor: "#58429B",
+          borderSelected: false,
+
+          currentStampShape: "heart",
+          currentStampColor: "#F6B6C8",
+          // 8 điểm neo trên khung viền
+          borderStamps: [null, null, null, null, null, null, null, null],
+
+          // Màn 3: Danh sách bóng bay/hình trang trí và lời chúc
+          currentStickerColor: "#F6B6C8",
+          stickers: [],
+          selectedItemId: "greetingText", // 'greetingText' hoặc id của sticker
+          greetingText: "",
+          textX: 200,
+          textY: 148,
+          fontSize: 20,
+          textColor: "#3F2E73",
+
+          // Màn 4: Nhãn tác giả & Kiểm tra triển lãm
+          authorBadge: "Thiết kế bởi: Học sinh Lớp 5",
+          criteriaChecked: { crit_frame: false, crit_decor: false, crit_text: false },
+          quizAnswered: { pq1: false, pq2: false },
+          exportedPngOnce: false
+        }
+      },
+
+      dragInfo: {
+        active: false,
+        targetId: null,
+        svgEl: null,
+        offsetX: 0,
+        offsetY: 0
+      },
+
+      init() {
+        this.setupKeyboardSupport();
+        this.updateTopBar();
+        this.updateStudioScene();
+      },
+
+      // Chọn chế độ Luyện tập hoặc Thử thách
+      setMode(mode) {
+        SoundEngine.playSfx("click");
+        this.state.mode = mode;
+        document.getElementById("modeBtnPractice").classList.toggle("selected", mode === "practice");
+        document.getElementById("modeBtnChallenge").classList.toggle("selected", mode === "challenge");
+        document.getElementById("modeIndicator").textContent =
+          mode === "practice" ? "Chế độ: Luyện tập" : "Chế độ: Thử thách";
+      },
+
+      // Nhấn nút Bắt đầu trên màn chào mừng
+      startGame() {
+        this.state.hasStarted = true;
+        SoundEngine.initContext();
+        SoundEngine.playSfx("levelUp");
+        if (SoundEngine.bgmEnabled) {
+          SoundEngine.startBgm();
+        }
+        this.goToLevel(1);
+      },
+
+      goHome() {
+        SoundEngine.playSfx("click");
+        this.state.currentLevel = 0;
+        this.switchScreen("screenWelcome");
+        document.getElementById("btnHint").disabled = true;
+        document.getElementById("btnResetLevel").disabled = true;
+        document.getElementById("hintBox").classList.remove("visible");
+        this.setPixelSpeech(
+          "happy",
+          "Sẵn sàng",
+          "Em đang ở màn hình chính. Nhấn <strong>Bắt đầu ngay</strong> hoặc chọn màn đã mở trên thanh tiến độ để tiếp tục thiết kế thiệp nhé!"
+        );
+        this.updateTopBar();
+      },
+
+      // Chuyển tới màn chơi 1..4
+      goToLevel(levelNum) {
+        if (levelNum > this.state.unlockedLevel) return;
+        SoundEngine.playSfx("click");
+        this.state.currentLevel = levelNum;
+        document.getElementById("btnHint").disabled = false;
+        document.getElementById("btnResetLevel").disabled = false;
+
+        // Xử lý hiển thị gợi ý theo chế độ Luyện tập / Thử thách
+        const hintBox = document.getElementById("hintBox");
+        if (this.state.mode === "practice") {
+          this.state.hintSteps[levelNum] = Math.max(1, this.state.hintSteps[levelNum]);
+          this.renderHintBox(levelNum);
+        } else {
+          if (this.state.hintSteps[levelNum] === 0) {
+            hintBox.classList.remove("visible");
+          } else {
+            this.renderHintBox(levelNum);
+          }
+        }
+        this.updateHintButtonLabel();
+
+        if (levelNum === 1) {
+          this.switchScreen("screenLevel1");
+          this.renderLevel1();
+          this.setPixelSpeech(
+            "happy",
+            "Màn 1/4",
+            "Chúng mình cùng khám phá <strong>3 tấm thiệp mẫu</strong> nhé! Hãy chọn từng tấm thiệp và trả lời 3 câu hỏi phân tích bố cục."
+          );
+        } else if (levelNum === 2) {
+          this.switchScreen("screenLevel2");
+          this.renderLevel2();
+          this.setPixelSpeech(
+            "happy",
+            "Màn 2/4",
+            "Bây giờ em hãy chọn <strong>màu nền</strong>, <strong>kiểu khung viền</strong> và nháy vào ít nhất <strong>4 chấm tròn trên viền thiệp</strong> để gắn hình trang trí nhé!"
+          );
+        } else if (levelNum === 3) {
+          // Khởi tạo dữ liệu mặc định nếu chưa có bóng bay hoặc lời chúc
+          if (this.state.cardDesign.stickers.length === 0) {
+            this.seedDefaultM3Stickers();
+          }
+          this.switchScreen("screenLevel3");
+          this.renderLevel3();
+          this.setPixelSpeech(
+            "happy",
+            "Màn 3/4",
+            "Hãy thêm từ <strong>3 đến 5 bóng bay/hình trang trí</strong>, nhập <strong>lời chúc tiếng Việt</strong> và kéo sắp xếp sao cho bóng bay không che khuất chữ nhé!"
+          );
+        } else if (levelNum === 4) {
+          this.switchScreen("screenLevel4");
+          this.renderLevel4();
+          this.setPixelSpeech(
+            "happy",
+            "Màn 4/4",
+            "Tấm thiệp đã lên kệ triển lãm! Em hãy rà soát <strong>3 tiêu chí chất lượng</strong>, trả lời câu hỏi vận dụng và <strong>tải ảnh PNG</strong> về máy nhé!"
+          );
+        }
+
+        this.updateTopBar();
+        this.updateStudioScene();
+      },
+
+      switchScreen(screenId) {
+        document.querySelectorAll(".screen-view").forEach(el => {
+          el.classList.toggle("active", el.id === screenId);
+        });
+      },
+
+      // Cập nhật thanh trạng thái trên cùng
+      updateTopBar() {
+        const lvl = this.state.currentLevel;
+        document.getElementById("progressIndicator").textContent =
+          lvl >= 1 && lvl <= 4 ? `Màn: ${lvl}/4` : (lvl === 5 ? "Hoàn thành 4/4" : "Màn: 0/4");
+        document.getElementById("scoreIndicator").textContent = `★ Điểm: ${this.state.score} / ${GAME_CONFIG.meta.maxScore}`;
+
+        document.querySelectorAll("#levelStepper .step-dot").forEach(btn => {
+          const step = Number(btn.getAttribute("data-step"));
+          btn.disabled = step > this.state.unlockedLevel;
+          btn.classList.toggle("active", step === lvl);
+          btn.classList.toggle("done", !!this.state.completedLevels[step]);
+          btn.innerHTML = this.state.completedLevels[step] ? `Màn ${step} ✔` : `Màn ${step}`;
+        });
+      },
+
+      // Cập nhật bối cảnh Tiệm làm thiệp ở cột trái theo tiến độ
+      updateStudioScene() {
+        const done1 = this.state.completedLevels[1];
+        const done2 = this.state.completedLevels[2];
+        const done3 = this.state.completedLevels[3];
+        const done4 = this.state.completedLevels[4];
+
+        document.getElementById("studioUnlock1").setAttribute("opacity", done1 ? "1" : "0.32");
+        document.getElementById("studioUnlock2").setAttribute("opacity", done2 ? "1" : "0.32");
+        document.getElementById("studioUnlock3").setAttribute("opacity", done3 ? "1" : "0.28");
+        document.getElementById("studioUnlock4").setAttribute("opacity", done4 ? "1" : "0.25");
+
+        const completedCount = [done1, done2, done3, done4].filter(Boolean).length;
+        const labels = [
+          "Tiệm Thiệp Sáng Tạo • Khởi động",
+          "Tiệm Thiệp • Đã mở Kệ Thiệp Mẫu",
+          "Tiệm Thiệp • Đã dựng Khung Nền",
+          "Tiệm Thiệp • Rực rỡ Bóng Bay",
+          "Tiệm Thiệp • Triển Lãm Hoàn Hảo!"
+        ];
+        document.getElementById("studioStageLabel").textContent = labels[completedCount];
+      },
+
+      // Thay đổi biểu cảm SVG và bong bóng CHỮ của trợ lí Pixel
+      setPixelSpeech(mood, badgeText, htmlMessage, stateClass = "") {
+        document.getElementById("pixelFaceHappy").style.display = mood === "happy" ? "block" : "none";
+        document.getElementById("pixelFaceCheering").style.display = mood === "cheering" ? "block" : "none";
+        document.getElementById("pixelFaceThinking").style.display = mood === "thinking" ? "block" : "none";
+
+        const bulb = document.getElementById("pixelAntennaBulb");
+        if (mood === "cheering") bulb.setAttribute("fill", "#28A766");
+        else if (mood === "thinking") bulb.setAttribute("fill", "#D94E5A");
+        else bulb.setAttribute("fill", "#F2BE4A");
+
+        document.getElementById("pixelMoodBadge").textContent = badgeText;
+        document.getElementById("pixelSpeechText").innerHTML = htmlMessage;
+
+        const bubble = document.getElementById("pixelSpeechBubble");
+        bubble.classList.remove("state-correct", "state-wrong");
+        if (stateClass) bubble.classList.add(stateClass);
+      },
+
+      // Hệ thống Gợi ý 2 bước
+      showNextHint() {
+        const lvl = this.state.currentLevel;
+        if (lvl < 1 || lvl > 4) return;
+        SoundEngine.playSfx("pop");
+        const currentStep = this.state.hintSteps[lvl] || 0;
+        this.state.hintSteps[lvl] = currentStep < 2 ? currentStep + 1 : 2;
+        this.renderHintBox(lvl);
+        this.updateHintButtonLabel();
+      },
+
+      renderHintBox(lvl) {
+        const step = this.state.hintSteps[lvl] || 0;
+        const hintBox = document.getElementById("hintBox");
+        if (step <= 0) {
+          hintBox.classList.remove("visible");
+          return;
+        }
+        const hintsArr = GAME_CONFIG.hints[lvl] || [];
+        let html = `<div style="font-weight:800; margin-bottom:4px;">💡 Gợi ý hỗ trợ (Mức ${step}/2):</div>`;
+        html += `<p>${hintsArr[0]}</p>`;
+        if (step >= 2 && hintsArr[1]) {
+          html += `<p style="margin-top:6px; padding-top:6px; border-top:1px dashed #C9941E;">${hintsArr[1]}</p>`;
+        }
+        hintBox.innerHTML = html;
+        hintBox.classList.add("visible");
+      },
+
+      updateHintButtonLabel() {
+        const lvl = this.state.currentLevel;
+        const step = (lvl >= 1 && lvl <= 4) ? (this.state.hintSteps[lvl] || 0) : 0;
+        document.getElementById("hintStepLabel").textContent = `${step}/2`;
+      },
+
+      // Cộng 25 điểm duy nhất 1 lần cho mỗi màn hoàn thành đúng
+      awardLevelCompletion(levelNum, successMessage) {
+        const firstTime = !this.state.completedLevels[levelNum];
+        if (firstTime) {
+          this.state.completedLevels[levelNum] = true;
+          this.state.score = Math.min(
+            GAME_CONFIG.meta.maxScore,
+            this.state.score + GAME_CONFIG.meta.pointsPerLevel
+          );
+          if (levelNum < 4 && this.state.unlockedLevel < levelNum + 1) {
+            this.state.unlockedLevel = levelNum + 1;
+          }
+          SoundEngine.playSfx("levelUp");
+          this.launchConfetti();
+        } else {
+          SoundEngine.playSfx("correct");
+        }
+
+        this.setPixelSpeech("cheering", `Hoàn thành Màn ${levelNum}!`, successMessage, "state-correct");
+        this.updateTopBar();
+        this.updateStudioScene();
+      },
+
+      // Làm lại màn hiện tại
+      resetCurrentLevel() {
+        const lvl = this.state.currentLevel;
+        if (lvl < 1 || lvl > 4) return;
+        SoundEngine.playSfx("click");
+
+        if (lvl === 1) {
+          this.state.m1CurrentCardIdx = 0;
+          this.state.m1LayerHighlight = null;
+          this.state.m1Answers = {
+            birthday: { q_bg: false, q_decor: false, q_tool: false },
+            newyear: { q_bg: false, q_decor: false, q_tool: false },
+            teachers: { q_bg: false, q_decor: false, q_tool: false }
+          };
+          this.renderLevel1();
+        } else if (lvl === 2) {
+          this.state.cardDesign.bgSelected = false;
+          this.state.cardDesign.borderSelected = false;
+          this.state.cardDesign.borderStamps = [null, null, null, null, null, null, null, null];
+          this.renderLevel2();
+        } else if (lvl === 3) {
+          this.state.cardDesign.stickers = [];
+          this.state.cardDesign.greetingText = "";
+          this.state.cardDesign.textX = 200;
+          this.state.cardDesign.textY = 148;
+          const input = document.getElementById("m3TextInput");
+          if (input) input.value = "";
+          this.renderLevel3();
+        } else if (lvl === 4) {
+          this.state.cardDesign.criteriaChecked = { crit_frame: false, crit_decor: false, crit_text: false };
+          this.state.cardDesign.quizAnswered = { pq1: false, pq2: false };
+          this.renderLevel4();
+        }
+
+        this.setPixelSpeech(
+          "happy",
+          "Đã đặt lại màn",
+          `Mình đã làm mới thao tác của <strong>Màn ${lvl}</strong> để em thực hành lại từ đầu nhé!`
+        );
+      },
+
+      /* ========================================================================
+         LOGIC MÀN 1: PHÂN TÍCH 3 TẤM THIỆP MẪU
+         ======================================================================== */
+      renderLevel1() {
+        const cards = GAME_CONFIG.level1Cards;
+        const curIdx = this.state.m1CurrentCardIdx;
+        const curCard = cards[curIdx];
+
+        // Render 3 nút tab thiệp
+        const tabsEl = document.getElementById("m1CardTabs");
+        tabsEl.innerHTML = cards.map((c, idx) => {
+          const ans = this.state.m1Answers[c.id];
+          const isCardDone = ans.q_bg && ans.q_decor && ans.q_tool;
+          const classes = [
+            "card-tab-btn",
+            idx === curIdx ? "active" : "",
+            isCardDone ? "completed" : ""
+          ].filter(Boolean).join(" ");
+          return `
+            <button type="button" class="${classes}" onclick="GameApp.selectM1Card(${idx})">
+              <span>${c.name}</span>
+              <span>${isCardDone ? "✔ Đã xong" : "Đang mở"}</span>
+            </button>
+          `;
+        }).join("");
+
+        document.getElementById("m1SampleTitle").textContent = curCard.name;
+        document.getElementById("m1SvgContainer").innerHTML = this.buildSampleCardSvg(curCard.id, this.state.m1LayerHighlight);
+
+        // Render 3 câu hỏi phân tích của tấm thiệp đang mở
+        const qContainer = document.getElementById("m1QuestionsContainer");
+        const ansState = this.state.m1Answers[curCard.id];
+
+        qContainer.innerHTML = curCard.questions.map(q => {
+          const isDone = ansState[q.id];
+          return `
+            <div class="q-block ${isDone ? "q-done" : ""}">
+              <div class="q-title">${q.prompt} ${isDone ? "<span style='color:var(--success);'>✔</span>" : ""}</div>
+              <div class="q-options">
+                ${q.options.map((opt, oIdx) => `
+                  <button type="button"
+                    class="choice-btn ${isDone && opt.correct ? "correct" : ""}"
+                    ${isDone ? "disabled" : ""}
+                    onclick="GameApp.answerM1Question('${curCard.id}', '${q.id}', ${oIdx}, this)">
+                    ${opt.text}
+                  </button>
+                `).join("")}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        // Cập nhật checklist tiến độ Màn 1
+        const checklistEl = document.getElementById("m1Checklist");
+        checklistEl.innerHTML = cards.map(c => {
+          const a = this.state.m1Answers[c.id];
+          const done = a.q_bg && a.q_decor && a.q_tool;
+          return `<span class="check-pill ${done ? "done" : ""}">${done ? "✔" : "○"} ${c.name}</span>`;
+        }).join("");
+
+        const all3CardsDone = cards.every(c => {
+          const a = this.state.m1Answers[c.id];
+          return a.q_bg && a.q_decor && a.q_tool;
+        });
+
+        document.getElementById("btnNextM1").disabled = !all3CardsDone;
+        if (all3CardsDone && !this.state.completedLevels[1]) {
+          this.awardLevelCompletion(
+            1,
+            "Tuyệt vời! Em đã phân tích chính xác cả 3 tấm thiệp mẫu (Hình nền, Chi tiết trang trí, Thông điệp và Công cụ đồ họa) và nhận <strong>+25 điểm</strong>! Hãy nhấn <strong>Tiếp tục sang Màn 2</strong> nhé!"
+          );
+        }
+      },
+
+      selectM1Card(idx) {
+        SoundEngine.playSfx("click");
+        this.state.m1CurrentCardIdx = idx;
+        this.state.m1LayerHighlight = null;
+        this.renderLevel1();
+      },
+
+      highlightM1Layer(layer) {
+        SoundEngine.playSfx("pop");
+        this.state.m1LayerHighlight = layer;
+        const curCard = GAME_CONFIG.level1Cards[this.state.m1CurrentCardIdx];
+        document.getElementById("m1SvgContainer").innerHTML = this.buildSampleCardSvg(curCard.id, layer);
+
+        const layerNames = {
+          bg: "Lớp Hình nền & Khung viền của tấm thiệp",
+          decor: "Lớp Chi tiết trang trí (bóng bay, hoa, pháo hoa, bánh kem...)",
+          text: "Lớp Thông điệp / Chữ chúc mừng ở trung tâm"
+        };
+        this.setPixelSpeech("happy", "Soi lớp đồ họa", `Đang làm nổi bật: <strong>${layerNames[layer]}</strong>.`);
+      },
+
+      answerM1Question(cardId, qId, optIdx, btnEl) {
+        const card = GAME_CONFIG.level1Cards.find(c => c.id === cardId);
+        const question = card.questions.find(q => q.id === qId);
+        const chosen = question.options[optIdx];
+
+        if (chosen.correct) {
+          SoundEngine.playSfx("correct");
+          this.state.m1Answers[cardId][qId] = true;
+          this.setPixelSpeech("cheering", "Chính xác!", chosen.feedback, "state-correct");
+          this.renderLevel1();
+        } else {
+          SoundEngine.playSfx("wrong");
+          btnEl.classList.add("wrong");
+          this.setPixelSpeech("thinking", "Thử lại nhé!", chosen.feedback, "state-wrong");
+        }
+      },
+
+      // Hàm dựng SVG trực quan cho 3 tấm thiệp mẫu ở Màn 1
+      buildSampleCardSvg(cardId, highlightLayer) {
+        const bgOpacity = highlightLayer && highlightLayer !== "bg" ? "0.35" : "1";
+        const decorOpacity = highlightLayer && highlightLayer !== "decor" ? "0.25" : "1";
+        const textOpacity = highlightLayer && highlightLayer !== "text" ? "0.25" : "1";
+
+        if (cardId === "birthday") {
+          return `
+            <svg viewBox="0 0 400 300" role="img" aria-label="Thiệp Sinh Nhật Mẫu">
+              <g opacity="${bgOpacity}">
+                <rect x="8" y="8" width="384" height="284" rx="18" fill="#FFF0F4" stroke="#D97A96" stroke-width="6" />
+                <rect x="22" y="22" width="356" height="256" rx="12" fill="none" stroke="#58429B" stroke-width="2.5" stroke-dasharray="8 6" />
+              </g>
+              <g opacity="${decorOpacity}">
+                <!-- Chùm bóng bay hai bên -->
+                <path d="M 65,125 Q 55,165 72,210" fill="none" stroke="#58429B" stroke-width="2" />
+                <ellipse cx="65" cy="95" rx="24" ry="30" fill="#F6B6C8" stroke="#58429B" stroke-width="2.5" />
+                <path d="M 335,125 Q 345,165 328,210" fill="none" stroke="#58429B" stroke-width="2" />
+                <ellipse cx="335" cy="95" rx="24" ry="30" fill="#4ABDAA" stroke="#58429B" stroke-width="2.5" />
+                <!-- Bánh sinh nhật -->
+                <rect x="155" y="212" width="90" height="44" rx="8" fill="#F2BE4A" stroke="#58429B" stroke-width="2.5" />
+                <path d="M 155,226 Q 170,236 185,226 Q 200,236 215,226 Q 230,236 245,226" fill="none" stroke="#FFFFFF" stroke-width="4" />
+                <rect x="196" y="190" width="8" height="22" fill="#4ABDAA" stroke="#58429B" stroke-width="2" />
+                <ellipse cx="200" cy="183" rx="5" ry="8" fill="#FF6B4A" />
+                <!-- Ngôi sao -->
+                <circle cx="115" cy="58" r="6" fill="#F2BE4A" />
+                <circle cx="285" cy="58" r="6" fill="#F2BE4A" />
+              </g>
+              <g opacity="${textOpacity}">
+                <rect x="92" y="88" width="216" height="82" rx="14" fill="#FFFFFF" stroke="#F6B6C8" stroke-width="3" />
+                <text x="200" y="122" text-anchor="middle" font-size="18" font-weight="900" fill="#58429B">CHÚC MỪNG SINH NHẬT</text>
+                <text x="200" y="149" text-anchor="middle" font-size="13" font-weight="700" fill="#B8254F">Chúc bạn luôn vui vẻ, học giỏi!</text>
+              </g>
+            </svg>
+          `;
+        } else if (cardId === "newyear") {
+          return `
+            <svg viewBox="0 0 400 300" role="img" aria-label="Thiệp Năm Mới Mẫu">
+              <g opacity="${bgOpacity}">
+                <rect x="8" y="8" width="384" height="284" rx="18" fill="#FFF8E1" stroke="#D94E5A" stroke-width="6" />
+                <rect x="20" y="20" width="360" height="260" rx="12" fill="none" stroke="#C9941E" stroke-width="3" />
+              </g>
+              <g opacity="${decorOpacity}">
+                <!-- Đèn lồng đỏ hai bên -->
+                <line x1="65" y1="20" x2="65" y2="52" stroke="#C9941E" stroke-width="3" />
+                <ellipse cx="65" cy="74" rx="24" ry="20" fill="#D94E5A" stroke="#C9941E" stroke-width="2.5" />
+                <line x1="335" y1="20" x2="335" y2="52" stroke="#C9941E" stroke-width="3" />
+                <ellipse cx="335" cy="74" rx="24" ry="20" fill="#D94E5A" stroke="#C9941E" stroke-width="2.5" />
+                <!-- Hoa mai vàng & Pháo hoa -->
+                <circle cx="80" cy="225" r="16" fill="#F2BE4A" stroke="#C9941E" stroke-width="2" />
+                <circle cx="80" cy="225" r="5" fill="#D94E5A" />
+                <circle cx="320" cy="225" r="16" fill="#F2BE4A" stroke="#C9941E" stroke-width="2" />
+                <circle cx="320" cy="225" r="5" fill="#D94E5A" />
+              </g>
+              <g opacity="${textOpacity}">
+                <rect x="85" y="102" width="230" height="86" rx="14" fill="#FFFFFF" stroke="#F2BE4A" stroke-width="3" />
+                <text x="200" y="138" text-anchor="middle" font-size="18" font-weight="900" fill="#B8254F">CHÚC MỪNG NĂM MỚI</text>
+                <text x="200" y="165" text-anchor="middle" font-size="13" font-weight="700" fill="#58429B">An khang thịnh vượng – Vạn sự như ý!</text>
+              </g>
+            </svg>
+          `;
+        } else {
+          return `
+            <svg viewBox="0 0 400 300" role="img" aria-label="Thiệp Chúc Mừng 20/11 Mẫu">
+              <g opacity="${bgOpacity}">
+                <rect x="8" y="8" width="384" height="284" rx="18" fill="#E6FAF6" stroke="#359484" stroke-width="6" />
+                <rect x="22" y="22" width="356" height="256" rx="12" fill="none" stroke="#58429B" stroke-width="2" />
+              </g>
+              <g opacity="${decorOpacity}">
+                <!-- Trang sách mở & Bó hoa tri ân -->
+                <path d="M 145,245 Q 172,232 200,245 Q 228,232 255,245 L 255,212 Q 228,200 200,212 Q 172,200 145,212 Z" fill="#FFFFFF" stroke="#58429B" stroke-width="2.5" />
+                <circle cx="70" cy="195" r="16" fill="#F6B6C8" stroke="#58429B" stroke-width="2" />
+                <circle cx="330" cy="195" r="16" fill="#F2BE4A" stroke="#58429B" stroke-width="2" />
+                <path d="M 200,68 C 192,54 174,58 174,72 C 174,84 200,96 200,102 C 200,96 226,84 226,72 C 226,58 208,54 200,68 Z" fill="#F6B6C8" stroke="#D94E5A" stroke-width="2" />
+              </g>
+              <g opacity="${textOpacity}">
+                <rect x="78" y="108" width="244" height="82" rx="14" fill="#FFFFFF" stroke="#4ABDAA" stroke-width="3" />
+                <text x="200" y="142" text-anchor="middle" font-size="17" font-weight="900" fill="#3F2E73">CHÚC MỪNG NGÀY 20/11</text>
+                <text x="200" y="168" text-anchor="middle" font-size="12.5" font-weight="700" fill="#156557">Kính chúc thầy cô luôn mạnh khỏe, hạnh phúc!</text>
+              </g>
+            </svg>
+          `;
+        }
+      },
+
+      /* ========================================================================
+         LOGIC MÀN 2: THIẾT KẾ KHUNG VÀ NỀN THIỆP
+         ======================================================================== */
+      renderLevel2() {
+        const opts = GAME_CONFIG.level2Options;
+        const cd = this.state.cardDesign;
+
+        // 1. Swatches màu nền
+        document.getElementById("m2BgSwatches").innerHTML = opts.backgrounds.map(bg => `
+          <button type="button"
+            class="color-swatch ${cd.bgSelected && cd.bgId === bg.id ? "active" : ""}"
+            style="background:${bg.color};"
+            title="${bg.name}"
+            aria-label="Màu nền ${bg.name}"
+            onclick="GameApp.selectM2Background('${bg.id}')">
+          </button>
+        `).join("");
+
+        const chosenBgObj = opts.backgrounds.find(b => b.id === cd.bgId);
+        document.getElementById("m2BgNameLabel").textContent =
+          cd.bgSelected && chosenBgObj ? chosenBgObj.name : "Hãy chọn 1 màu nền";
+
+        // 2. Kiểu khung viền & màu khung
+        document.getElementById("m2BorderStyles").innerHTML = opts.borderStyles.map(bs => `
+          <button type="button"
+            class="tool-btn ${cd.borderSelected && cd.borderStyle === bs.id ? "active" : ""}"
+            onclick="GameApp.selectM2BorderStyle('${bs.id}')">
+            ${bs.name}
+          </button>
+        `).join("");
+
+        document.getElementById("m2BorderSwatches").innerHTML = opts.borderColors.map(bc => `
+          <button type="button"
+            class="color-swatch ${cd.borderSelected && cd.borderColor === bc.color ? "active" : ""}"
+            style="background:${bc.color};"
+            title="Màu viền: ${bc.name}"
+            aria-label="Màu viền ${bc.name}"
+            onclick="GameApp.selectM2BorderColor('${bc.color}')">
+          </button>
+        `).join("");
+
+        // 3. Công cụ hình khối gắn lên viền
+        document.getElementById("m2ShapeTools").innerHTML = opts.stampShapes.map(sh => `
+          <button type="button"
+            class="tool-btn ${cd.currentStampShape === sh.id ? "active" : ""}"
+            onclick="GameApp.selectM2StampShape('${sh.id}')">
+            ${sh.name}
+          </button>
+        `).join("");
+
+        document.getElementById("m2ShapeColorSwatches").innerHTML = opts.stampColors.map(sc => `
+          <button type="button"
+            class="color-swatch ${cd.currentStampColor === sc ? "active" : ""}"
+            style="background:${sc};"
+            title="Màu hình khối"
+            onclick="GameApp.selectM2StampColor('${sc}')">
+          </button>
+        `).join("");
+
+        this.updateM2StageAndChecklist();
+      },
+
+      selectM2Background(bgId) {
+        SoundEngine.playSfx("pop");
+        const bgObj = GAME_CONFIG.level2Options.backgrounds.find(b => b.id === bgId);
+        if (!bgObj) return;
+        this.state.cardDesign.bgId = bgObj.id;
+        this.state.cardDesign.bgColor = bgObj.color;
+        this.state.cardDesign.bgIsDark = bgObj.isDark;
+        this.state.cardDesign.bgSelected = true;
+
+        // Tự động điều chỉnh màu chữ nếu học sinh chọn nền tối
+        if (bgObj.isDark && this.state.cardDesign.textColor === "#3F2E73") {
+          this.state.cardDesign.textColor = "#FFE066";
+        } else if (!bgObj.isDark && this.state.cardDesign.textColor === "#FFE066") {
+          this.state.cardDesign.textColor = "#3F2E73";
+        }
+        this.renderLevel2();
+      },
+
+      selectM2BorderStyle(styleId) {
+        SoundEngine.playSfx("pop");
+        this.state.cardDesign.borderStyle = styleId;
+        this.state.cardDesign.borderSelected = true;
+        this.renderLevel2();
+      },
+
+      selectM2BorderColor(colorHex) {
+        SoundEngine.playSfx("pop");
+        this.state.cardDesign.borderColor = colorHex;
+        this.state.cardDesign.borderSelected = true;
+        this.renderLevel2();
+      },
+
+      selectM2StampShape(shapeId) {
+        SoundEngine.playSfx("click");
+        this.state.cardDesign.currentStampShape = shapeId;
+        this.renderLevel2();
+      },
+
+      selectM2StampColor(colorHex) {
+        SoundEngine.playSfx("click");
+        this.state.cardDesign.currentStampColor = colorHex;
+        this.renderLevel2();
+      },
+
+      stampM2Node(nodeIdx) {
+        SoundEngine.playSfx("pop");
+        const cd = this.state.cardDesign;
+        cd.borderStamps[nodeIdx] = {
+          shape: cd.currentStampShape,
+          color: cd.currentStampColor
+        };
+        this.updateM2StageAndChecklist();
+      },
+
+      autoStampOneCorner() {
+        const stamps = this.state.cardDesign.borderStamps;
+        const emptyIdx = stamps.findIndex(s => s === null);
+        const targetIdx = emptyIdx !== -1 ? emptyIdx : Math.floor(Math.random() * stamps.length);
+        this.stampM2Node(targetIdx);
+      },
+
+      clearM2Stamps() {
+        SoundEngine.playSfx("click");
+        this.state.cardDesign.borderStamps = [null, null, null, null, null, null, null, null];
+        this.updateM2StageAndChecklist();
+      },
+
+      updateM2StageAndChecklist() {
+        const cd = this.state.cardDesign;
+        const stampCount = cd.borderStamps.filter(Boolean).length;
+        document.getElementById("m2StampCountLabel").textContent = `${stampCount} / 4`;
+
+        // Render SVG sân khấu Màn 2
+        document.getElementById("m2CardStage").innerHTML = this.buildCustomCardSvg({
+          mode: "m2",
+          showInteractiveNodes: true
+        });
+
+        const c1 = cd.bgSelected;
+        const c2 = cd.borderSelected;
+        const c3 = stampCount >= 4;
+
+        document.getElementById("m2Checklist").innerHTML = `
+          <span class="check-pill ${c1 ? "done" : ""}">${c1 ? "✔" : "○"} 1. Chọn màu nền</span>
+          <span class="check-pill ${c2 ? "done" : ""}">${c2 ? "✔" : "○"} 2. Chọn khung viền</span>
+          <span class="check-pill ${c3 ? "done" : ""}">${c3 ? "✔" : "○"} 3. Gắn ≥ 4 hình viền (${stampCount}/4)</span>
+        `;
+
+        document.getElementById("btnNextM2").disabled = !this.state.completedLevels[2];
+      },
+
+      verifyLevel2() {
+        const cd = this.state.cardDesign;
+        const stampCount = cd.borderStamps.filter(Boolean).length;
+
+        if (!cd.bgSelected) {
+          SoundEngine.playSfx("wrong");
+          this.setPixelSpeech("thinking", "Chưa chọn nền", "Em hãy nháy chọn một <strong>màu nền thiệp</strong> ở mục (1) trước nhé!", "state-wrong");
+          return;
+        }
+        if (!cd.borderSelected) {
+          SoundEngine.playSfx("wrong");
+          this.setPixelSpeech("thinking", "Chưa chọn khung", "Em hãy chọn <strong>kiểu khung hình chữ nhật</strong> hoặc màu viền ở mục (2) nhé!", "state-wrong");
+          return;
+        }
+        if (stampCount < 4) {
+          SoundEngine.playSfx("wrong");
+          this.setPixelSpeech(
+            "thinking",
+            "Thiếu họa tiết viền",
+            `Em mới gắn <strong>${stampCount}</strong> hình trang trí lên viền. Hãy nháy vào các chấm tròn trên khung thiệp để gắn đủ ít nhất <strong>4 hình khối</strong> nhé!`,
+            "state-wrong"
+          );
+          return;
+        }
+
+        this.awardLevelCompletion(
+          2,
+          "Khung thiệp đẹp quá! Em đã phối hợp màu nền, khung hình chữ nhật và các hình khối trang trí viền rất cân đối, nhận <strong>+25 điểm</strong>! Nhấn <strong>Tiếp tục sang Màn 3</strong> nhé!"
+        );
+        document.getElementById("btnNextM2").disabled = false;
+      },
+
+      /* ========================================================================
+         LOGIC MÀN 3: VẼ BÓNG BAY VÀ VIẾT LỜI CHÚC (KÉO THẢ + KIỂM TRA ĐÈ CHỮ)
+         ======================================================================== */
+      seedDefaultM3Stickers() {
+        // Nếu người chơi chưa chọn nền ở Màn 2 thì bật mặc định
+        this.state.cardDesign.bgSelected = true;
+        this.state.cardDesign.borderSelected = true;
+        if (this.state.cardDesign.borderStamps.filter(Boolean).length < 4) {
+          [0, 2, 4, 6].forEach(idx => {
+            this.state.cardDesign.borderStamps[idx] = { shape: "heart", color: "#F6B6C8" };
+          });
+        }
+      },
+
+      renderLevel3() {
+        const opts = GAME_CONFIG.level3Options;
+        const cd = this.state.cardDesign;
+
+        // Swatches màu cho bóng bay/sticker
+        document.getElementById("m3StickerColorSwatches").innerHTML = opts.stickerColors.map(sc => `
+          <button type="button"
+            class="color-swatch ${cd.currentStickerColor === sc ? "active" : ""}"
+            style="background:${sc};"
+            title="Đổi màu bóng bay"
+            onclick="GameApp.selectM3StickerColor('${sc}')">
+          </button>
+        `).join("");
+
+        // Các câu chúc gợi ý nhanh
+        document.getElementById("m3PresetTexts").innerHTML = opts.presetGreetings.map(txt => `
+          <button type="button" class="tool-btn" style="font-size:0.8rem; min-height:36px; padding:4px 10px;"
+            onclick="GameApp.applyPresetGreeting('${txt}')">
+            ✨ ${txt}
+          </button>
+        `).join("");
+
+        // Cỡ chữ
+        document.getElementById("m3FontSizeBtns").innerHTML = opts.fontSizes.map(fs => `
+          <button type="button"
+            class="tool-btn ${cd.fontSize === fs.size ? "active" : ""}"
+            style="min-height:38px; padding:4px 10px;"
+            onclick="GameApp.selectM3FontSize(${fs.size})">
+            ${fs.label}
+          </button>
+        `).join("");
+
+        // Màu chữ
+        document.getElementById("m3TextColorSwatches").innerHTML = opts.textColors.map(tc => `
+          <button type="button"
+            class="color-swatch ${cd.textColor === tc.color ? "active" : ""}"
+            style="background:${tc.color}; width:38px; height:38px;"
+            title="Màu chữ: ${tc.name}"
+            onclick="GameApp.selectM3TextColor('${tc.color}')">
+          </button>
+        `).join("");
+
+        const inputEl = document.getElementById("m3TextInput");
+        if (inputEl && inputEl.value !== cd.greetingText) {
+          inputEl.value = cd.greetingText;
+        }
+
+        this.updateM3StageAndChecklist();
+      },
+
+      selectM3StickerColor(colorHex) {
+        SoundEngine.playSfx("click");
+        const cd = this.state.cardDesign;
+        cd.currentStickerColor = colorHex;
+        // Nếu đang chọn 1 quả bóng bay thì đổi màu luôn cho quả bóng đó
+        const selSticker = cd.stickers.find(s => s.id === cd.selectedItemId);
+        if (selSticker) {
+          selSticker.color = colorHex;
+        }
+        this.renderLevel3();
+      },
+
+      addM3Sticker(type) {
+        const cd = this.state.cardDesign;
+        if (cd.stickers.length >= 5) {
+          SoundEngine.playSfx("wrong");
+          this.setPixelSpeech(
+            "thinking",
+            "Đã đủ 5 hình",
+            "Trên thiệp đã có <strong>5 bóng bay/hình trang trí</strong> rồi! Em có thể kéo thả sắp xếp hoặc xóa bớt nếu muốn đổi hình khác nhé.",
+            "state-wrong"
+          );
+          return;
+        }
+
+        SoundEngine.playSfx("pop");
+        // Đặt vị trí khởi tạo ưu tiên hai bên trái/phải để ít đè lên chữ
+        const defaultPositions = [
+          { x: 75, y: 115 },
+          { x: 325, y: 115 },
+          { x: 78, y: 205 },
+          { x: 322, y: 205 },
+          { x: 200, y: 68 }
+        ];
+        const pos = defaultPositions[cd.stickers.length % defaultPositions.length];
+        const newId = "stk_" + Date.now() + "_" + Math.floor(Math.random() * 999);
+
+        cd.stickers.push({
+          id: newId,
+          type,
+          color: cd.currentStickerColor,
+          x: pos.x,
+          y: pos.y
+        });
+        cd.selectedItemId = newId;
+        this.updateM3StageAndChecklist();
+      },
+
+      deleteSelectedM3Sticker() {
+        const cd = this.state.cardDesign;
+        const idx = cd.stickers.findIndex(s => s.id === cd.selectedItemId);
+        if (idx === -1) {
+          SoundEngine.playSfx("wrong");
+          this.setPixelSpeech("thinking", "Chọn bóng cần xóa", "Hãy nháy chọn một quả bóng bay trên thiệp trước khi bấm nút Xóa nhé!");
+          return;
+        }
+        SoundEngine.playSfx("click");
+        cd.stickers.splice(idx, 1);
+        cd.selectedItemId = cd.stickers.length > 0 ? cd.stickers[cd.stickers.length - 1].id : "greetingText";
+        this.updateM3StageAndChecklist();
+      },
+
+      updateM3GreetingText(val) {
+        this.state.cardDesign.greetingText = val;
+        this.state.cardDesign.selectedItemId = "greetingText";
+        this.updateM3StageAndChecklist();
+      },
+
+      applyPresetGreeting(txt) {
+        SoundEngine.playSfx("pop");
+        this.state.cardDesign.greetingText = txt;
+        this.state.cardDesign.selectedItemId = "greetingText";
+        const inputEl = document.getElementById("m3TextInput");
+        if (inputEl) inputEl.value = txt;
+        this.updateM3StageAndChecklist();
+      },
+
+      selectM3FontSize(sizeNum) {
+        SoundEngine.playSfx("click");
+        this.state.cardDesign.fontSize = sizeNum;
+        this.renderLevel3();
+      },
+
+      selectM3TextColor(colorHex) {
+        SoundEngine.playSfx("click");
+        this.state.cardDesign.textColor = colorHex;
+        this.renderLevel3();
+      },
+
+      nudgeSelectedItem(dx, dy) {
+        const cd = this.state.cardDesign;
+        if (!cd.selectedItemId) return;
+        SoundEngine.playSfx("click");
+
+        if (cd.selectedItemId === "greetingText") {
+          cd.textX = Math.max(115, Math.min(285, cd.textX + dx));
+          cd.textY = Math.max(70, Math.min(235, cd.textY + dy));
+        } else {
+          const stk = cd.stickers.find(s => s.id === cd.selectedItemId);
+          if (stk) {
+            stk.x = Math.max(52, Math.min(348, stk.x + dx));
+            stk.y = Math.max(55, Math.min(242, stk.y + dy));
+          }
+        }
+        this.updateM3StageAndChecklist();
+      },
+
+      // Kiểm tra va chạm (bounding box) xem có quả bóng bay nào đè lên khung lời chúc không
+      checkBalloonTextOverlap() {
+        const cd = this.state.cardDesign;
+        if (!cd.greetingText || cd.greetingText.trim().length === 0) return false;
+
+        const textHalfW = 92;
+        const textHalfH = 28;
+        const tx1 = cd.textX - textHalfW;
+        const tx2 = cd.textX + textHalfW;
+        const ty1 = cd.textY - textHalfH;
+        const ty2 = cd.textY + textHalfH;
+
+        for (const stk of cd.stickers) {
+          const r = 24;
+          const sx1 = stk.x - r;
+          const sx2 = stk.x + r;
+          const sy1 = stk.y - r;
+          const sy2 = stk.y + r;
+
+          const overlapsX = sx1 < tx2 && sx2 > tx1;
+          const overlapsY = sy1 < ty2 && sy2 > ty1;
+          if (overlapsX && overlapsY) {
+            return true;
+          }
+        }
+        return false;
+      },
+
+      // Kiểm tra độ tương phản màu chữ so với nền thiệp
+      hasGoodTextContrast() {
+        const cd = this.state.cardDesign;
+        const lightColors = ["#FFE066", "#FFFFFF"];
+        const isLightText = lightColors.includes(cd.textColor);
+        return cd.bgIsDark ? isLightText : !isLightText;
+      },
+
+      updateM3StageAndChecklist() {
+        const cd = this.state.cardDesign;
+        document.getElementById("m3BalloonCount").textContent = cd.stickers.length;
+
+        const stageEl = document.getElementById("m3CardStage");
+        stageEl.innerHTML = this.buildCustomCardSvg({
+          mode: "m3",
+          showInteractiveNodes: false
+        });
+        this.attachM3PointerDrag(stageEl);
+
+        const countOk = cd.stickers.length >= 3 && cd.stickers.length <= 5;
+        const textOk = cd.greetingText.trim().length >= 6;
+        const noOverlap = !this.checkBalloonTextOverlap();
+        const contrastOk = this.hasGoodTextContrast();
+
+        document.getElementById("m3Checklist").innerHTML = `
+          <span class="check-pill ${countOk ? "done" : ""}">${countOk ? "✔" : "○"} 3–5 bóng bay (${cd.stickers.length}/5)</span>
+          <span class="check-pill ${textOk ? "done" : ""}">${textOk ? "✔" : "○"} Lời chúc tiếng Việt</span>
+          <span class="check-pill ${noOverlap && contrastOk ? "done" : ""}">${noOverlap && contrastOk ? "✔" : "○"} Rõ chữ, không bị che</span>
+        `;
+
+        document.getElementById("btnNextM3").disabled = !this.state.completedLevels[3];
+      },
+
+      // Hỗ trợ kéo thả trực tiếp bằng Pointer Events trên SVG Màn 3
+      attachM3PointerDrag(stageEl) {
+        const svgEl = stageEl.querySelector("svg");
+        if (!svgEl) return;
+
+        const getSvgCoords = (evt) => {
+          const rect = svgEl.getBoundingClientRect();
+          const scaleX = 400 / rect.width;
+          const scaleY = 300 / rect.height;
+          return {
+            x: (evt.clientX - rect.left) * scaleX,
+            y: (evt.clientY - rect.top) * scaleY
+          };
+        };
+
+        svgEl.querySelectorAll("[data-draggable-id]").forEach(node => {
+          node.style.cursor = "grab";
+          node.addEventListener("pointerdown", (evt) => {
+            evt.stopPropagation();
+            const id = node.getAttribute("data-draggable-id");
+            this.state.cardDesign.selectedItemId = id;
+            const pt = getSvgCoords(evt);
+            let curX = this.state.cardDesign.textX;
+            let curY = this.state.cardDesign.textY;
+
+            if (id !== "greetingText") {
+              const stk = this.state.cardDesign.stickers.find(s => s.id === id);
+              if (stk) {
+                curX = stk.x;
+                curY = stk.y;
+              }
+            }
+
+            this.dragInfo = {
+              active: true,
+              targetId: id,
+              svgEl,
+              offsetX: pt.x - curX,
+              offsetY: pt.y - curY
+            };
+            try { svgEl.setPointerCapture(evt.pointerId); } catch (e) {}
+          });
+        });
+
+        svgEl.addEventListener("pointermove", (evt) => {
+          if (!this.dragInfo.active) return;
+          const pt = getSvgCoords(evt);
+          const cd = this.state.cardDesign;
+          if (this.dragInfo.targetId === "greetingText") {
+            cd.textX = Math.round(Math.max(115, Math.min(285, pt.x - this.dragInfo.offsetX)));
+            cd.textY = Math.round(Math.max(70, Math.min(235, pt.y - this.dragInfo.offsetY)));
+          } else {
+            const stk = cd.stickers.find(s => s.id === this.dragInfo.targetId);
+            if (stk) {
+              stk.x = Math.round(Math.max(52, Math.min(348, pt.x - this.dragInfo.offsetX)));
+              stk.y = Math.round(Math.max(55, Math.min(242, pt.y - this.dragInfo.offsetY)));
+            }
+          }
+          this.updateM3StageAndChecklist();
+        });
+
+        const endDrag = () => {
+          if (this.dragInfo.active) {
+            this.dragInfo.active = false;
+            SoundEngine.playSfx("pop");
+            this.updateM3StageAndChecklist();
+          }
+        };
+        svgEl.addEventListener("pointerup", endDrag);
+        svgEl.addEventListener("pointercancel", endDrag);
+      },
+
+      verifyLevel3() {
+        const cd = this.state.cardDesign;
+        if (cd.stickers.length < 3 || cd.stickers.length > 5) {
+          SoundEngine.playSfx("wrong");
+          this.setPixelSpeech(
+            "thinking",
+            "Số lượng bóng bay",
+            `Hiện tại trên thiệp có <strong>${cd.stickers.length}</strong> hình trang trí. Em hãy thêm để có từ <strong>3 đến 5 bóng bay/hình trang trí</strong> nhé!`,
+            "state-wrong"
+          );
+          return;
+        }
+        if (cd.greetingText.trim().length < 6) {
+          SoundEngine.playSfx("wrong");
+          this.setPixelSpeech(
+            "thinking",
+            "Nhập lời chúc",
+            "Em hãy nhập một <strong>lời chúc tiếng Việt có ý nghĩa</strong> (ít nhất 6 ký tự) hoặc bấm chọn một câu chúc mẫu ở mục (2) nhé!",
+            "state-wrong"
+          );
+          return;
+        }
+        if (!this.hasGoodTextContrast()) {
+          SoundEngine.playSfx("wrong");
+          this.setPixelSpeech(
+            "thinking",
+            "Độ tương phản chữ",
+            "Màu chữ hiện tại hơi khó đọc trên nền thiệp này. Em hãy chọn <strong>màu chữ đậm trên nền sáng</strong> (hoặc chữ sáng trên nền tối) nhé!",
+            "state-wrong"
+          );
+          return;
+        }
+        if (this.checkBalloonTextOverlap()) {
+          SoundEngine.playSfx("wrong");
+          this.setPixelSpeech(
+            "thinking",
+            "Bóng bay đè lên chữ!",
+            "Có một quả bóng bay đang che khuất khung chữ chúc mừng! Em hãy <strong>kéo bóng bay ra hai bên</strong> để lời chúc hiển thị rõ ràng nhé!",
+            "state-wrong"
+          );
+          return;
+        }
+
+        this.awardLevelCompletion(
+          3,
+          "Xuất sắc! Tấm thiệp đã có bóng bay rực rỡ và lời chúc tiếng Việt nổi bật, không bị che khuất. Em nhận được <strong>+25 điểm</strong>! Hãy nhấn <strong>Tiếp tục sang Màn 4</strong> nhé!"
+        );
+        document.getElementById("btnNextM3").disabled = false;
+      },
+
+      /* ========================================================================
+         LOGIC MÀN 4: TRIỂN LÃM, KIỂM ĐỊNH TIÊU CHÍ & XUẤT TỆP PNG THỰC TẾ
+         ======================================================================== */
+      renderLevel4() {
+        // Nếu người chơi nhảy vào Màn 4 mà chưa có lời chúc mặc định thì bổ sung để thiệp đầy đủ
+        const cd = this.state.cardDesign;
+        if (!cd.greetingText.trim()) {
+          cd.greetingText = "Chúc mừng sinh nhật bạn hiền!";
+        }
+        if (cd.stickers.length < 3) {
+          cd.stickers = [
+            { id: "s1", type: "balloon_round", color: "#F6B6C8", x: 72, y: 112 },
+            { id: "s2", type: "balloon_heart", color: "#4ABDAA", x: 328, y: 112 },
+            { id: "s3", type: "balloon_star", color: "#F2BE4A", x: 76, y: 205 }
+          ];
+        }
+
+        document.getElementById("m4CardStage").innerHTML = this.buildCustomCardSvg({
+          mode: "m4",
+          showInteractiveNodes: false
+        });
+
+        // 1. Render danh sách 3 tiêu chí kiểm định
+        const critEl = document.getElementById("m4CriteriaList");
+        critEl.innerHTML = GAME_CONFIG.level4Data.criteria.map(c => {
+          const checked = cd.criteriaChecked[c.id];
+          return `
+            <div class="criteria-item ${checked ? "verified" : ""}">
+              <div>
+                <div style="font-weight:800; font-size:0.9rem; color:var(--primary-purple-dark);">${c.title}</div>
+                <div style="font-size:0.8rem; color:var(--text-muted);">${c.desc}</div>
+              </div>
+              <button type="button" class="btn ${checked ? "btn-mint" : "btn-outline"}" style="min-height:40px; padding:6px 12px; font-size:0.84rem;"
+                onclick="GameApp.checkM4Criterion('${c.id}')">
+                ${checked ? "✔ Đạt chuẩn" : "🔍 Kiểm tra"}
+              </button>
+            </div>
+          `;
+        }).join("");
+
+        // 2. Render 2 câu hỏi tình huống vận dụng SGK trang 45
+        const quizEl = document.getElementById("m4QuizBox");
+        quizEl.innerHTML = GAME_CONFIG.level4Data.practicalQuestions.map(pq => {
+          const done = cd.quizAnswered[pq.id];
+          return `
+            <div class="q-block ${done ? "q-done" : ""}" style="margin-bottom:8px;">
+              <div class="q-title" style="font-size:0.88rem;">${pq.question} ${done ? "✔" : ""}</div>
+              <div class="q-options">
+                ${pq.options.map((opt, oIdx) => `
+                  <button type="button"
+                    class="choice-btn ${done && opt.correct ? "correct" : ""}"
+                    style="font-size:0.83rem; padding:6px 10px;"
+                    ${done ? "disabled" : ""}
+                    onclick="GameApp.answerM4Quiz('${pq.id}', ${oIdx}, this)">
+                    ${opt.text}
+                  </button>
+                `).join("")}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        this.updateM4Checklist();
+      },
+
+      setAuthorBadge(badgeText) {
+        SoundEngine.playSfx("pop");
+        this.state.cardDesign.authorBadge = badgeText;
+        document.getElementById("m4CardStage").innerHTML = this.buildCustomCardSvg({
+          mode: "m4",
+          showInteractiveNodes: false
+        });
+        this.setPixelSpeech("happy", "Gắn nhãn tác giả", `Đã gắn dòng chữ ký <strong>"${badgeText}"</strong> lên góc dưới tấm thiệp!`);
+      },
+
+      checkM4Criterion(critId) {
+        SoundEngine.playSfx("correct");
+        this.state.cardDesign.criteriaChecked[critId] = true;
+        this.setPixelSpeech("cheering", "Đạt tiêu chí!", "Tiêu chí này trên tấm thiệp của em đã hoàn toàn đạt chuẩn!", "state-correct");
+        this.renderLevel4();
+      },
+
+      answerM4Quiz(pqId, optIdx, btnEl) {
+        const pq = GAME_CONFIG.level4Data.practicalQuestions.find(item => item.id === pqId);
+        const chosen = pq.options[optIdx];
+        if (chosen.correct) {
+          SoundEngine.playSfx("correct");
+          this.state.cardDesign.quizAnswered[pqId] = true;
+          this.setPixelSpeech("cheering", "Vận dụng chuẩn xác!", chosen.explain, "state-correct");
+          this.renderLevel4();
+        } else {
+          SoundEngine.playSfx("wrong");
+          btnEl.classList.add("wrong");
+          this.setPixelSpeech("thinking", "Suy nghĩ thêm nhé!", chosen.explain, "state-wrong");
+        }
+      },
+
+      updateM4Checklist() {
+        const cd = this.state.cardDesign;
+        const allCrit = Object.values(cd.criteriaChecked).every(Boolean);
+        const allQuiz = Object.values(cd.quizAnswered).every(Boolean);
+
+        document.getElementById("m4Checklist").innerHTML = `
+          <span class="check-pill ${allCrit ? "done" : ""}">${allCrit ? "✔" : "○"} Duyệt 3 tiêu chí thiệp</span>
+          <span class="check-pill ${allQuiz ? "done" : ""}">${allQuiz ? "✔" : "○"} 2 Câu hỏi vận dụng</span>
+          <span class="check-pill ${cd.exportedPngOnce ? "done" : ""}">${cd.exportedPngOnce ? "✔" : "○"} Đã xuất/kiểm tra ảnh PNG</span>
+        `;
+
+        const canComplete = allCrit && allQuiz;
+        document.getElementById("btnFinishGame").disabled = !canComplete;
+
+        if (canComplete && !this.state.completedLevels[4]) {
+          this.awardLevelCompletion(
+            4,
+            "Chúc mừng em đã hoàn thành toàn bộ 4 màn chơi với <strong>+25 điểm</strong> ở Màn Triển Lãm! Em có thể bấm <strong>Tải thiệp PNG về máy</strong> hoặc nhấn <strong>Hoàn thành & Nhận Huy Hiệu</strong> nhé!"
+          );
+        }
+      },
+
+      // Hàm dựng SVG cho tấm thiệp do chính học sinh thiết kế (dùng chung cho Màn 2, 3, 4)
+      buildCustomCardSvg({ mode, showInteractiveNodes }) {
+        const cd = this.state.cardDesign;
+        const nodes = GAME_CONFIG.level2Options.anchorNodes;
+
+        // Khung viền theo kiểu đã chọn
+        let borderSvg = "";
+        if (cd.borderStyle === "solid_round") {
+          borderSvg = `<rect x="18" y="18" width="364" height="264" rx="18" fill="none" stroke="${cd.borderColor}" stroke-width="6" />`;
+        } else if (cd.borderStyle === "double_frame") {
+          borderSvg = `
+            <rect x="15" y="15" width="370" height="270" rx="18" fill="none" stroke="${cd.borderColor}" stroke-width="5" />
+            <rect x="25" y="25" width="350" height="250" rx="12" fill="none" stroke="${cd.borderColor}" stroke-width="2.5" />
+          `;
+        } else {
+          borderSvg = `
+            <rect x="18" y="18" width="364" height="264" rx="18" fill="none" stroke="${cd.borderColor}" stroke-width="5" stroke-dasharray="12 7" />
+          `;
+        }
+
+        // Họa tiết gắn trên 8 điểm neo viền thiệp
+        const stampsSvg = nodes.map(n => {
+          const st = cd.borderStamps[n.idx];
+          const clickAttr = showInteractiveNodes ? `onclick="GameApp.stampM2Node(${n.idx})" style="cursor:pointer;"` : "";
+          let shapeMarkup = "";
+
+          if (st) {
+            if (st.shape === "circle") {
+              shapeMarkup = `<circle cx="${n.x}" cy="${n.y}" r="13" fill="${st.color}" stroke="#2A2246" stroke-width="2" />`;
+            } else if (st.shape === "rect") {
+              shapeMarkup = `<rect x="${n.x - 12}" y="${n.y - 10}" width="24" height="20" rx="4" fill="${st.color}" stroke="#2A2246" stroke-width="2" />`;
+            } else if (st.shape === "heart") {
+              shapeMarkup = `<path d="M ${n.x},${n.y - 4} C ${n.x - 6},${n.y - 14} ${n.x - 16},${n.y - 8} ${n.x - 16},${n.y} C ${n.x - 16},${n.y + 8} ${n.x},${n.y + 14} ${n.x},${n.y + 16} C ${n.x},${n.y + 14} ${n.x + 16},${n.y + 8} ${n.x + 16},${n.y} C ${n.x + 16},${n.y - 8} ${n.x + 6},${n.y - 14} ${n.x},${n.y - 4} Z" fill="${st.color}" stroke="#2A2246" stroke-width="1.8" />`;
+            } else {
+              shapeMarkup = `<polygon points="${n.x},${n.y - 14} ${n.x + 4},${n.y - 4} ${n.x + 14},${n.y - 4} ${n.x + 6},${n.y + 3} ${n.x + 9},${n.y + 13} ${n.x},${n.y + 7} ${n.x - 9},${n.y + 13} ${n.x - 6},${n.y + 3} ${n.x - 14},${n.y - 4} ${n.x - 4},${n.y - 4}" fill="${st.color}" stroke="#2A2246" stroke-width="1.6" />`;
+            }
+          }
+
+          const guideRing = showInteractiveNodes
+            ? `<circle cx="${n.x}" cy="${n.y}" r="${st ? 16 : 11}" fill="${st ? "none" : "rgba(255,255,255,0.85)"}" stroke="#58429B" stroke-width="2" stroke-dasharray="3 2" />`
+            : "";
+
+          return `<g ${clickAttr} role="button" aria-label="${n.label}">${guideRing}${shapeMarkup}</g>`;
+        }).join("");
+
+        // Các bóng bay & hình trang trí ở Màn 3 & Màn 4
+        let stickersSvg = "";
+        if (mode === "m3" || mode === "m4") {
+          stickersSvg = cd.stickers.map(stk => {
+            const isSelected = mode === "m3" && cd.selectedItemId === stk.id;
+            const selRing = isSelected
+              ? `<circle cx="${stk.x}" cy="${stk.y}" r="33" fill="none" stroke="#F2BE4A" stroke-width="3" stroke-dasharray="5 3" />`
+              : "";
+
+            let graphic = "";
+            if (stk.type === "balloon_round") {
+              graphic = `
+                <path d="M ${stk.x},${stk.y + 24} Q ${stk.x - 6},${stk.y + 42} ${stk.x + 4},${stk.y + 58}" fill="none" stroke="#58429B" stroke-width="2" />
+                <ellipse cx="${stk.x}" cy="${stk.y}" rx="20" ry="25" fill="${stk.color}" stroke="#2A2246" stroke-width="2.2" />
+                <ellipse cx="${stk.x - 6}" cy="${stk.y - 8}" rx="4" ry="7" fill="#FFFFFF" opacity="0.65" />
+              `;
+            } else if (stk.type === "balloon_heart") {
+              graphic = `
+                <path d="M ${stk.x},${stk.y + 22} Q ${stk.x + 6},${stk.y + 40} ${stk.x - 4},${stk.y + 56}" fill="none" stroke="#58429B" stroke-width="2" />
+                <path d="M ${stk.x},${stk.y - 8} C ${stk.x - 10},${stk.y - 24} ${stk.x - 26},${stk.y - 14} ${stk.x - 26},${stk.y} C ${stk.x - 26},${stk.y + 12} ${stk.x},${stk.y + 22} ${stk.x},${stk.y + 26} C ${stk.x},${stk.y + 22} ${stk.x + 26},${stk.y + 12} ${stk.x + 26},${stk.y} C ${stk.x + 26},${stk.y - 14} ${stk.x + 10},${stk.y - 24} ${stk.x},${stk.y - 8} Z" fill="${stk.color}" stroke="#2A2246" stroke-width="2.2" />
+              `;
+            } else if (stk.type === "balloon_star") {
+              graphic = `
+                <path d="M ${stk.x},${stk.y + 22} Q ${stk.x - 5},${stk.y + 40} ${stk.x + 3},${stk.y + 54}" fill="none" stroke="#58429B" stroke-width="2" />
+                <polygon points="${stk.x},${stk.y - 24} ${stk.x + 7},${stk.y - 8} ${stk.x + 24},${stk.y - 8} ${stk.x + 10},${stk.y + 4} ${stk.x + 15},${stk.y + 21} ${stk.x},${stk.y + 11} ${stk.x - 15},${stk.y + 21} ${stk.x - 10},${stk.y + 4} ${stk.x - 24},${stk.y - 8} ${stk.x - 7},${stk.y - 8}" fill="${stk.color}" stroke="#2A2246" stroke-width="2" />
+              `;
+            } else {
+              graphic = `
+                <rect x="${stk.x - 18}" y="${stk.y - 14}" width="36" height="30" rx="5" fill="${stk.color}" stroke="#2A2246" stroke-width="2.2" />
+                <line x1="${stk.x}" y1="${stk.y - 14}" x2="${stk.x}" y2="${stk.y + 16}" stroke="#FFF6DF" stroke-width="5" />
+                <line x1="${stk.x - 18}" y1="${stk.y}" x2="${stk.x + 18}" y2="${stk.y}" stroke="#FFF6DF" stroke-width="5" />
+              `;
+            }
+
+            return `<g data-draggable-id="${stk.id}">${selRing}${graphic}</g>`;
+          }).join("");
+        }
+
+        // Khung chữ chúc mừng ở Màn 3 & Màn 4
+        let greetingSvg = "";
+        if (mode === "m3" || mode === "m4") {
+          const displayTxt = cd.greetingText.trim() || "Nhập lời chúc ở hộp công cụ...";
+          const isSelected = mode === "m3" && cd.selectedItemId === "greetingText";
+          const overlapWarn = mode === "m3" && this.checkBalloonTextOverlap();
+          const boxStroke = overlapWarn ? "#D94E5A" : (isSelected ? "#F2BE4A" : cd.borderColor);
+
+          // Tự động ngắt thành 2 dòng nếu lời chúc dài hơn 24 ký tự
+          const lines = this.splitTextIntoTwoLines(displayTxt, 24);
+          greetingSvg = `
+            <g data-draggable-id="greetingText">
+              <rect x="${cd.textX - 96}" y="${cd.textY - 30}" width="192" height="60" rx="12"
+                fill="${cd.bgIsDark ? "rgba(42,34,70,0.85)" : "rgba(255,255,255,0.9)"}"
+                stroke="${boxStroke}" stroke-width="${isSelected || overlapWarn ? 3 : 2}" />
+              ${lines.length === 1 ? `
+                <text x="${cd.textX}" y="${cd.textY + 6}" text-anchor="middle"
+                  font-size="${cd.fontSize}" font-weight="800" fill="${cd.textColor}">
+                  ${this.escapeXml(lines[0])}
+                </text>
+              ` : `
+                <text x="${cd.textX}" y="${cd.textY - 4}" text-anchor="middle"
+                  font-size="${Math.max(14, cd.fontSize - 3)}" font-weight="800" fill="${cd.textColor}">
+                  ${this.escapeXml(lines[0])}
+                </text>
+                <text x="${cd.textX}" y="${cd.textY + 17}" text-anchor="middle"
+                  font-size="${Math.max(14, cd.fontSize - 3)}" font-weight="800" fill="${cd.textColor}">
+                  ${this.escapeXml(lines[1])}
+                </text>
+              `}
+            </g>
+          `;
+        } else {
+          greetingSvg = `
+            <text x="200" y="154" text-anchor="middle" font-size="14" font-weight="700"
+              fill="${cd.bgIsDark ? "#EDE8FA" : "#7A6F9B"}" opacity="0.75">
+              (Vùng đặt bóng bay & lời chúc ở Màn 3)
+            </text>
+          `;
+        }
+
+        // Nhãn tác giả ở Màn 4
+        const badgeSvg = mode === "m4" ? `
+          <rect x="115" y="242" width="170" height="22" rx="11" fill="#FFFFFF" stroke="${cd.borderColor}" stroke-width="1.5" />
+          <text x="200" y="257" text-anchor="middle" font-size="10.5" font-weight="800" fill="#58429B">
+            ${this.escapeXml(cd.authorBadge)}
+          </text>
+        ` : "";
+
+        return `
+          <svg viewBox="0 0 400 300" role="img" aria-label="Bản thiết kế thiệp chúc mừng của học sinh">
+            <rect x="6" y="6" width="388" height="288" rx="22" fill="${cd.bgColor}" />
+            ${borderSvg}
+            ${ greetingSvg }
+            ${ stickersSvg }
+            ${ stampsSvg }
+            ${ badgeSvg }
+          </svg>
+        `;
+      },
+
+      // Tải tệp PNG thực tế về máy tính bằng cách vẽ trực tiếp lên HTML5 Canvas 800x600
+      exportCardAsPng() {
+        SoundEngine.playSfx("levelUp");
+        const canvas = document.getElementById("exportCanvas");
+        const ctx = canvas.getContext("2d");
+        const cd = this.state.cardDesign;
+
+        // Phóng tỉ lệ gấp đôi từ 400x300 lên 800x600 sắc nét
+        ctx.save();
+        ctx.clearRect(0, 0, 800, 600);
+        ctx.scale(2, 2);
+
+        // 1. Vẽ nền thiệp
+        this.roundRectCanvas(ctx, 6, 6, 388, 288, 22);
+        ctx.fillStyle = cd.bgColor;
+        ctx.fill();
+
+        // 2. Vẽ khung viền
+        ctx.strokeStyle = cd.borderColor;
+        ctx.setLineDash([]);
+        if (cd.borderStyle === "solid_round") {
+          ctx.lineWidth = 6;
+          this.roundRectCanvas(ctx, 18, 18, 364, 264, 18);
+          ctx.stroke();
+        } else if (cd.borderStyle === "double_frame") {
+          ctx.lineWidth = 5;
+          this.roundRectCanvas(ctx, 15, 15, 370, 270, 18);
+          ctx.stroke();
+          ctx.lineWidth = 2.5;
+          this.roundRectCanvas(ctx, 25, 25, 350, 250, 12);
+          ctx.stroke();
+        } else {
+          ctx.lineWidth = 5;
+          ctx.setLineDash([12, 7]);
+          this.roundRectCanvas(ctx, 18, 18, 364, 264, 18);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        // 3. Vẽ khung lời chúc
+        const displayTxt = cd.greetingText.trim() || "Chúc mừng sinh nhật bạn hiền!";
+        const lines = this.splitTextIntoTwoLines(displayTxt, 24);
+        this.roundRectCanvas(ctx, cd.textX - 96, cd.textY - 30, 192, 60, 12);
+        ctx.fillStyle = cd.bgIsDark ? "rgba(42,34,70,0.88)" : "rgba(255,255,255,0.92)";
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = cd.borderColor;
+        ctx.stroke();
+
+        ctx.fillStyle = cd.textColor;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        if (lines.length === 1) {
+          ctx.font = `bold ${cd.fontSize}px "Segoe UI", Arial, sans-serif`;
+          ctx.fillText(lines[0], cd.textX, cd.textY + 2);
+        } else {
+          const fSize = Math.max(14, cd.fontSize - 3);
+          ctx.font = `bold ${fSize}px "Segoe UI", Arial, sans-serif`;
+          ctx.fillText(lines[0], cd.textX, cd.textY - 9);
+          ctx.fillText(lines[1], cd.textX, cd.textY + 12);
+        }
+
+        // 4. Vẽ các quả bóng bay & hình trang trí
+        cd.stickers.forEach(stk => {
+          ctx.save();
+          // Dây bóng
+          if (stk.type !== "gift_box") {
+            ctx.beginPath();
+            ctx.moveTo(stk.x, stk.y + 22);
+            ctx.quadraticCurveTo(stk.x - 5, stk.y + 40, stk.x + 4, stk.y + 55);
+            ctx.strokeStyle = "#58429B";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          }
+
+          ctx.fillStyle = stk.color;
+          ctx.strokeStyle = "#2A2246";
+          ctx.lineWidth = 2.2;
+          if (stk.type === "balloon_round") {
+            ctx.beginPath();
+            ctx.ellipse(stk.x, stk.y, 20, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+          } else if (stk.type === "balloon_heart") {
+            this.drawHeartCanvas(ctx, stk.x, stk.y, 22);
+          } else if (stk.type === "balloon_star") {
+            this.drawStarCanvas(ctx, stk.x, stk.y, 5, 22, 10);
+          } else {
+            this.roundRectCanvas(ctx, stk.x - 18, stk.y - 14, 36, 30, 5);
+            ctx.fill();
+            ctx.stroke();
+          }
+          ctx.restore();
+        });
+
+        // 5. Vẽ các họa tiết gắn trên viền thiệp
+        GAME_CONFIG.level2Options.anchorNodes.forEach(n => {
+          const st = cd.borderStamps[n.idx];
+          if (!st) return;
+          ctx.save();
+          ctx.fillStyle = st.color;
+          ctx.strokeStyle = "#2A2246";
+          ctx.lineWidth = 2;
+          if (st.shape === "circle") {
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, 13, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+          } else if (st.shape === "rect") {
+            this.roundRectCanvas(ctx, n.x - 12, n.y - 10, 24, 20, 4);
+            ctx.fill();
+            ctx.stroke();
+          } else if (st.shape === "heart") {
+            this.drawHeartCanvas(ctx, n.x, n.y, 15);
+          } else {
+            this.drawStarCanvas(ctx, n.x, n.y, 5, 14, 6);
+          }
+          ctx.restore();
+        });
+
+        // 6. Nhãn tác giả
+        this.roundRectCanvas(ctx, 115, 242, 170, 22, 11);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fill();
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = cd.borderColor;
+        ctx.stroke();
+        ctx.fillStyle = "#58429B";
+        ctx.font = 'bold 10.5px "Segoe UI", Arial, sans-serif';
+        ctx.textAlign = "center";
+        ctx.fillText(cd.authorBadge, 200, 253);
+
+        ctx.restore();
+
+        // Kích hoạt tải tệp PNG thực sự
+        try {
+          const dataUrl = canvas.toDataURL("image/png");
+          const link = document.createElement("a");
+          link.download = "thiep-chuc-mung-sang-tao-lop5.png";
+          link.href = dataUrl;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          this.state.cardDesign.exportedPngOnce = true;
+          if (this.state.currentLevel === 4) {
+            this.updateM4Checklist();
+          }
+          this.setPixelSpeech(
+            "cheering",
+            "Đã xuất PNG!",
+            "Tệp ảnh <strong>thiep-chuc-mung-sang-tao-lop5.png</strong> đã được tạo và tải về máy tính của em thành công!",
+            "state-correct"
+          );
+        } catch (err) {
+          this.setPixelSpeech("thinking", "Lưu trong lượt chơi", "Trình duyệt đã kết xuất xong bản vẽ thiệp trên Canvas.");
+        }
+      },
+
+      roundRectCanvas(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      },
+
+      drawHeartCanvas(ctx, cx, cy, size) {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - size * 0.25);
+        ctx.bezierCurveTo(cx - size * 0.5, cy - size * 0.9, cx - size, cy - size * 0.3, cx - size, cy + size * 0.1);
+        ctx.bezierCurveTo(cx - size, cy + size * 0.55, cx, cy + size * 0.85, cx, cy + size);
+        ctx.bezierCurveTo(cx, cy + size * 0.85, cx + size, cy + size * 0.55, cx + size, cy + size * 0.1);
+        ctx.bezierCurveTo(cx + size, cy - size * 0.3, cx + size * 0.5, cy - size * 0.9, cx, cy - size * 0.25);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      },
+
+      drawStarCanvas(ctx, cx, cy, spikes, outerR, innerR) {
+        let rot = (Math.PI / 2) * 3;
+        let x = cx;
+        let y = cy;
+        const step = Math.PI / spikes;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - outerR);
+        for (let i = 0; i < spikes; i++) {
+          x = cx + Math.cos(rot) * outerR;
+          y = cy + Math.sin(rot) * outerR;
+          ctx.lineTo(x, y);
+          rot += step;
+          x = cx + Math.cos(rot) * innerR;
+          y = cy + Math.sin(rot) * innerR;
+          ctx.lineTo(x, y);
+          rot += step;
+        }
+        ctx.lineTo(cx, cy - outerR);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      },
+
+      /* ========================================================================
+         MÀN HÌNH TỔNG KẾT & TRAO HUY HIỆU (VICTORY SCREEN)
+         ======================================================================== */
+      showVictoryScreen() {
+        SoundEngine.playSfx("victory");
+        this.launchConfetti();
+        this.state.currentLevel = 5;
+        this.switchScreen("screenVictory");
+        document.getElementById("btnHint").disabled = true;
+        document.getElementById("btnResetLevel").disabled = true;
+        document.getElementById("hintBox").classList.remove("visible");
+
+        document.getElementById("finalScoreText").textContent = `${this.state.score} / ${GAME_CONFIG.meta.maxScore}`;
+
+        const badges = [
+          { lvl: 1, icon: "🔍", title: "Nhà Phân Tích Đồ Họa", desc: "Nhận diện chuẩn xác nền, trang trí, thông điệp & công cụ" },
+          { lvl: 2, icon: "🖼️", title: "Kiến Trúc Sư Khung Hình", desc: "Thiết kế nền & khung viền hình học hài hòa" },
+          { lvl: 3, icon: "🎈", title: "Nghệ Sĩ Sắc Màu", desc: "Trang trí bóng bay & gõ lời chúc rõ ràng, cân đối" },
+          { lvl: 4, icon: "🏆", title: "Nhà Thiết Kế Sản Phẩm Số", desc: "Kiểm định tiêu chuẩn & xuất bản tệp ảnh PNG" }
+        ];
+
+        document.getElementById("victoryBadgesGrid").innerHTML = badges.map(b => {
+          const unlocked = !!this.state.completedLevels[b.lvl];
+          return `
+            <div class="badge-card ${unlocked ? "unlocked" : ""}">
+              <div style="font-size:2rem; margin-bottom:4px;">${b.icon}</div>
+              <div style="font-weight:800; color:var(--primary-purple-dark); font-size:0.95rem;">${b.title}</div>
+              <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">${b.desc}</div>
+            </div>
+          `;
+        }).join("");
+
+        this.setPixelSpeech(
+          "cheering",
+          "Chiến thắng 100 điểm!",
+          "Chúc mừng em đã hoàn thành xuất sắc cả 4 nhiệm vụ tại <strong>Tiệm Thiệp Sáng Tạo</strong>! Em có thể tải lại tấm thiệp PNG hoặc bấm Chơi lại để thiết kế mẫu mới nhé!",
+          "state-correct"
+        );
+        this.updateTopBar();
+      },
+
+      // Chơi lại từ đầu (Reset sạch trạng thái, không chồng vòng nhạc)
+      playAgain() {
+        SoundEngine.playSfx("click");
+        this.state = {
+          hasStarted: true,
+          mode: this.state.mode,
+          currentLevel: 1,
+          unlockedLevel: 1,
+          completedLevels: { 1: false, 2: false, 3: false, 4: false },
+          score: 0,
+          hintSteps: { 1: 0, 2: 0, 3: 0, 4: 0 },
+          m1CurrentCardIdx: 0,
+          m1LayerHighlight: null,
+          m1Answers: {
+            birthday: { q_bg: false, q_decor: false, q_tool: false },
+            newyear: { q_bg: false, q_decor: false, q_tool: false },
+            teachers: { q_bg: false, q_decor: false, q_tool: false }
+          },
+          cardDesign: {
+            bgId: "bg_peach",
+            bgColor: "#FFF0F4",
+            bgIsDark: false,
+            bgSelected: false,
+            borderStyle: "solid_round",
+            borderColor: "#58429B",
+            borderSelected: false,
+            currentStampShape: "heart",
+            currentStampColor: "#F6B6C8",
+            borderStamps: [null, null, null, null, null, null, null, null],
+            currentStickerColor: "#F6B6C8",
+            stickers: [],
+            selectedItemId: "greetingText",
+            greetingText: "",
+            textX: 200,
+            textY: 148,
+            fontSize: 20,
+            textColor: "#3F2E73",
+            authorBadge: "Thiết kế bởi: Học sinh Lớp 5",
+            criteriaChecked: { crit_frame: false, crit_decor: false, crit_text: false },
+            quizAnswered: { pq1: false, pq2: false },
+            exportedPngOnce: false
+          }
+        };
+
+        const inputEl = document.getElementById("m3TextInput");
+        if (inputEl) inputEl.value = "";
+
+        if (SoundEngine.bgmEnabled) {
+          SoundEngine.startBgm();
+        }
+        this.goToLevel(1);
+      },
+
+      // Hỗ trợ di chuyển bóng bay & lời chúc ở Màn 3 bằng bàn phím mũi tên
+      setupKeyboardSupport() {
+        window.addEventListener("keydown", (evt) => {
+          if (evt.key === "Escape") {
+            this.closeGuideModal();
+            return;
+          }
+          if (this.state.currentLevel !== 3) return;
+          if (document.activeElement && document.activeElement.tagName === "INPUT") return;
+
+          if (evt.key === "ArrowLeft") {
+            evt.preventDefault();
+            this.nudgeSelectedItem(-14, 0);
+          } else if (evt.key === "ArrowRight") {
+            evt.preventDefault();
+            this.nudgeSelectedItem(14, 0);
+          } else if (evt.key === "ArrowUp") {
+            evt.preventDefault();
+            this.nudgeSelectedItem(0, -12);
+          } else if (evt.key === "ArrowDown") {
+            evt.preventDefault();
+            this.nudgeSelectedItem(0, 12);
+          }
+        });
+      },
+
+      openGuideModal() {
+        SoundEngine.playSfx("click");
+        document.getElementById("guideModal").classList.add("open");
+      },
+
+      closeGuideModal() {
+        SoundEngine.playSfx("click");
+        document.getElementById("guideModal").classList.remove("open");
+      },
+
+      // Hiệu ứng confetti ngắn ~1.8 giây khi hoàn thành màn
+      launchConfetti() {
+        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          return;
+        }
+        const layer = document.getElementById("confettiLayer");
+        layer.innerHTML = "";
+        const colors = ["#58429B", "#4ABDAA", "#F2BE4A", "#F6B6C8", "#28A766"];
+        for (let i = 0; i < 28; i++) {
+          const piece = document.createElement("div");
+          piece.className = "confetti-piece";
+          piece.style.left = Math.round(Math.random() * 96 + 2) + "%";
+          piece.style.backgroundColor = colors[i % colors.length];
+          piece.style.animationDelay = (Math.random() * 0.35).toFixed(2) + "s";
+          layer.appendChild(piece);
+        }
+        setTimeout(() => {
+          layer.innerHTML = "";
+        }, 1900);
+      },
+
+      splitTextIntoTwoLines(text, maxCharsPerLine) {
+        const clean = text.trim();
+        if (clean.length <= maxCharsPerLine) return [clean];
+        const words = clean.split(/\s+/);
+        let line1 = "";
+        let line2 = "";
+        for (const w of words) {
+          if ((line1 + " " + w).trim().length <= maxCharsPerLine || line1.length === 0) {
+            line1 = (line1 + " " + w).trim();
+          } else {
+            line2 = (line2 + " " + w).trim();
+          }
+        }
+        return line2 ? [line1, line2] : [line1];
+      },
+
+      escapeXml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+    };
+
+    window.addEventListener("DOMContentLoaded", () => {
+      GameApp.init();
+    });
+  </script>
+</body>
+</html>

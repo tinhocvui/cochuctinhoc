@@ -1,0 +1,3105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHÉP TÍNH KÌ DIỆU - Tin học 5 Bài 15</title>
+    <style>
+        /* ==========================================================================
+           TIÊU CHUẨN MỸ THUẬT V5 - BẢNG MÀU XỨ SỞ CÔNG NGHỆ & PASTEL
+           Hoàn toàn ngoại tuyến, không dùng thư viện hay font ngoài
+           ========================================================================== */
+        :root {
+            --bg-main: #F8F7FF;
+            --bg-card: #FFFFFF;
+            --bg-panel: #EFECE6;
+            --primary: #58429B;
+            --primary-light: #7B61C4;
+            --primary-dark: #3F2E73;
+            --teal: #4ABDAA;
+            --teal-dark: #359686;
+            --yellow: #F2BE4A;
+            --yellow-dark: #D9A126;
+            --pink: #F6B6C8;
+            --pink-dark: #E089A2;
+            --mint-bg: #E6F8F5;
+            --peach-bg: #FFF2F5;
+            --lavender-bg: #F0EBFF;
+            --cream-bg: #FFFDF7;
+            
+            /* Màu chuẩn khối lệnh Scratch */
+            --scratch-op: #59C059;
+            --scratch-op-dark: #389438;
+            --scratch-looks: #9966FF;
+            --scratch-looks-dark: #774DCB;
+            --scratch-var: #FF8C1A;
+            --scratch-var-dark: #DB6E00;
+            --scratch-event: #FFBF00;
+            
+            --text-main: #2B234A;
+            --text-muted: #5E5482;
+            --success: #28A745;
+            --danger: #DC3545;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-pill: 999px;
+            --shadow-soft: 0 8px 24px rgba(88, 66, 155, 0.12);
+            --shadow-btn: 0 5px 0 rgba(43, 35, 74, 0.22);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        input, select, button {
+            font-family: inherit;
+            user-select: auto;
+            -webkit-user-select: auto;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at top right, #E8E2FF 0%, var(--bg-main) 55%, #E6F8F5 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            line-height: 1.45;
+        }
+
+        /* Trạng thái Focus rõ nét cho bàn phím (Accessibility) */
+        button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible {
+            outline: 3px solid var(--yellow);
+            outline-offset: 3px;
+            box-shadow: 0 0 0 6px rgba(242, 190, 74, 0.35);
+        }
+
+        /* Tôn trọng prefers-reduced-motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* ==========================================================================
+           THANH ĐẦU TRANG (TOP HEADER BAR)
+           ========================================================================== */
+        .app-header {
+            background: linear-gradient(90deg, var(--primary) 0%, #6B52B8 100%);
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(88, 66, 155, 0.25);
+            z-index: 20;
+        }
+
+        .brand-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            background: var(--yellow);
+            color: var(--text-main);
+            font-weight: 800;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            border-radius: var(--radius-pill);
+            box-shadow: 0 3px 0 var(--yellow-dark);
+        }
+
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: rgba(255, 255, 255, 0.18);
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            padding: 6px 14px;
+            border-radius: var(--radius-pill);
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-pill strong {
+            color: var(--yellow);
+            font-size: 1.1rem;
+        }
+
+        /* Nút bấm chuẩn V5 >= 44x44px */
+        .btn {
+            min-height: 44px;
+            min-width: 44px;
+            padding: 8px 18px;
+            border-radius: var(--radius-pill);
+            border: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+            box-shadow: var(--shadow-btn);
+            text-decoration: none;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(43, 35, 74, 0.22);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-teal {
+            background: var(--teal);
+            color: #fff;
+            box-shadow: 0 5px 0 var(--teal-dark);
+        }
+
+        .btn-yellow {
+            background: var(--yellow);
+            color: var(--text-main);
+            box-shadow: 0 5px 0 var(--yellow-dark);
+        }
+
+        .btn-pink {
+            background: var(--pink);
+            color: var(--text-main);
+            box-shadow: 0 5px 0 var(--pink-dark);
+        }
+
+        .btn-outline-light {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-outline-light.active-toggle {
+            background: var(--teal);
+            border-color: #fff;
+        }
+
+        .btn-outline-light.muted-toggle {
+            background: rgba(220, 53, 69, 0.35);
+            border-color: #ff9aa2;
+        }
+
+        /* ==========================================================================
+           BỐ CỤC CHÍNH (MAIN CONTAINER 16:9 RESPONSIVE)
+           ========================================================================== */
+        .main-wrapper {
+            flex: 1;
+            max-width: 1440px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 14px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* Bối cảnh Phòng tính toán Scratch đa lớp nâng cấp theo tiến độ */
+        .lab-environment {
+            position: relative;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            border: 3px solid #E2DCFF;
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Thanh năng lượng Phòng Tính Toán ở đầu khung game */
+        .lab-energy-bar {
+            background: linear-gradient(90deg, #F0EBFF 0%, #E6F8F5 50%, #FFF6E0 100%);
+            padding: 10px 18px;
+            border-bottom: 2px dashed #D3C8F7;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .stage-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .stage-tab {
+            min-height: 44px;
+            padding: 6px 14px;
+            border-radius: var(--radius-md);
+            border: 2px solid #D0C4F7;
+            background: #fff;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .stage-tab.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary-dark);
+            box-shadow: 0 4px 10px rgba(88, 66, 155, 0.25);
+        }
+
+        .stage-tab.completed {
+            border-color: var(--teal);
+            background: var(--mint-bg);
+            color: var(--teal-dark);
+        }
+
+        .stage-tab.completed.active {
+            background: var(--teal);
+            color: #fff;
+        }
+
+        .energy-cores {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .core-node {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #E2DFEC;
+            border: 2px solid #C5BFE0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #888;
+            transition: all 0.35s ease;
+        }
+
+        .core-node.powered {
+            background: var(--scratch-op);
+            border-color: #fff;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(89, 192, 89, 0.7);
+            transform: scale(1.08);
+        }
+
+        /* Nội dung màn hình chuyển đổi */
+        .screen-view {
+            display: none;
+            padding: 20px;
+            flex: 1;
+            flex-direction: column;
+            justify-content: space-between;
+            animation: fadeInView 0.3s ease;
+        }
+
+        .screen-view.active {
+            display: flex;
+        }
+
+        @keyframes fadeInView {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==========================================================================
+           MÀN HÌNH CHÀO MỪNG (WELCOME SCREEN)
+           ========================================================================== */
+        .welcome-grid {
+            display: grid;
+            grid-template-columns: 1.05fr 1fr;
+            gap: 24px;
+            align-items: center;
+            margin: auto 0;
+        }
+
+        .welcome-illustration {
+            background: linear-gradient(145deg, var(--lavender-bg), var(--mint-bg));
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 3px solid #D7CEFA;
+            position: relative;
+            text-align: center;
+        }
+
+        .welcome-info h1 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .book-sub {
+            display: inline-block;
+            background: var(--peach-bg);
+            color: #A63A5B;
+            border: 2px solid var(--pink);
+            padding: 5px 14px;
+            border-radius: var(--radius-pill);
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 14px;
+        }
+
+        .mission-card {
+            background: var(--cream-bg);
+            border: 2px solid var(--yellow);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 18px;
+        }
+
+        .mission-card h3 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 1.08rem;
+        }
+
+        .mission-list {
+            list-style: none;
+            display: grid;
+            gap: 6px;
+        }
+
+        .mission-list li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.96rem;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .mode-option {
+            flex: 1;
+            min-width: 180px;
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            border: 3px solid #D9D2F5;
+            background: #fff;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .mode-option.selected {
+            border-color: var(--teal);
+            background: var(--mint-bg);
+            box-shadow: 0 4px 12px rgba(74, 189, 170, 0.2);
+        }
+
+        .mode-option strong {
+            display: block;
+            color: var(--primary);
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .mode-option span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ==========================================================================
+           LINH VẬT PIXEL & KHUNG PHẢN HỒI SƯ PHẠM
+           ========================================================================== */
+        .mascot-banner {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 16px;
+            align-items: center;
+            background: linear-gradient(90deg, var(--lavender-bg) 0%, #FFFFFF 60%, var(--mint-bg) 100%);
+            border: 2px solid #D5C8FA;
+            border-radius: var(--radius-lg);
+            padding: 12px 18px;
+            margin-bottom: 14px;
+        }
+
+        .pixel-avatar-wrap {
+            width: 84px;
+            height: 84px;
+            background: #fff;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(88, 66, 155, 0.15);
+            flex-shrink: 0;
+        }
+
+        .speech-bubble {
+            position: relative;
+            background: #fff;
+            border: 2px solid #C8B9F7;
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            box-shadow: 0 4px 12px rgba(88, 66, 155, 0.06);
+        }
+
+        .speech-bubble.status-correct {
+            border-color: var(--success);
+            background: #F0FFF4;
+        }
+
+        .speech-bubble.status-wrong {
+            border-color: var(--danger);
+            background: #FFF5F5;
+        }
+
+        .speech-bubble.status-hint {
+            border-color: var(--yellow-dark);
+            background: #FFFDF0;
+        }
+
+        .speech-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-weight: 800;
+            font-size: 0.92rem;
+            color: var(--primary);
+        }
+
+        .speech-text {
+            font-size: 1rem;
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .sim-disclaimer {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            background: rgba(88, 66, 155, 0.08);
+            padding: 4px 10px;
+            border-radius: var(--radius-pill);
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* ==========================================================================
+           KHỐI LỆNH SCRATCH MÔ PHỎNG (SCRATCH BLOCKS STYLING)
+           ========================================================================== */
+        .scratch-op-block {
+            background: var(--scratch-op);
+            border: 2px solid var(--scratch-op-dark);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: var(--radius-pill);
+            font-weight: 800;
+            font-size: 1.05rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), 0 4px 0 var(--scratch-op-dark);
+        }
+
+        .scratch-looks-block {
+            background: var(--scratch-looks);
+            border: 2px solid var(--scratch-looks-dark);
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.05rem;
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), 0 4px 0 var(--scratch-looks-dark);
+            position: relative;
+        }
+
+        .scratch-var-pill {
+            background: var(--scratch-var);
+            border: 2px solid var(--scratch-var-dark);
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: var(--radius-pill);
+            font-weight: 800;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 0 var(--scratch-var-dark);
+            cursor: pointer;
+        }
+
+        .scratch-input-oval {
+            background: #fff;
+            color: var(--text-main);
+            border: 2px solid rgba(0,0,0,0.2);
+            border-radius: var(--radius-pill);
+            padding: 4px 10px;
+            min-width: 58px;
+            min-height: 36px;
+            font-weight: 800;
+            font-size: 1rem;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ==========================================================================
+           MÀN 1: NHẬN DIỆN TOÁN TỬ (KÉO THẢ & NHẤN CHỌN + CHẠY THỬ)
+           ========================================================================== */
+        .stage1-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.45fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .palette-box, .workspace-box {
+            background: #FBF9FF;
+            border: 2px solid #DFD7FA;
+            border-radius: var(--radius-lg);
+            padding: 16px;
+        }
+
+        .box-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ECE6FF;
+        }
+
+        .box-header h3 {
+            font-size: 1.08rem;
+            color: var(--primary);
+        }
+
+        .draggable-pool {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .drag-block-item {
+            cursor: grab;
+            transition: transform 0.15s, box-shadow 0.15s;
+            min-height: 48px;
+            justify-content: center;
+            touch-action: none;
+        }
+
+        .drag-block-item:hover {
+            transform: scale(1.03);
+        }
+
+        .drag-block-item.selected-block {
+            outline: 4px solid var(--yellow);
+            transform: scale(1.05);
+        }
+
+        .drag-block-item.used-block {
+            opacity: 0.35;
+            pointer-events: none;
+            filter: grayscale(0.5);
+        }
+
+        .match-row-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .match-row {
+            background: #fff;
+            border: 2px solid #E3DCFA;
+            border-radius: var(--radius-md);
+            padding: 10px 14px;
+            display: grid;
+            grid-template-columns: 115px 1fr auto auto;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .math-card-badge {
+            background: var(--peach-bg);
+            border: 2px solid var(--pink);
+            color: var(--primary-dark);
+            font-weight: 800;
+            font-size: 1.15rem;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .drop-slot {
+            min-height: 50px;
+            border: 2px dashed #A99AE0;
+            border-radius: var(--radius-pill);
+            background: var(--lavender-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .drop-slot.highlight-target {
+            border-color: var(--teal);
+            background: var(--mint-bg);
+            box-shadow: 0 0 0 3px rgba(74, 189, 170, 0.25);
+        }
+
+        .drop-slot.filled {
+            border-style: solid;
+            border-color: var(--scratch-op-dark);
+            background: #E8F8E8;
+        }
+
+        .result-monitor {
+            min-width: 78px;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            background: #2B234A;
+            color: var(--yellow);
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-align: center;
+        }
+
+        /* ==========================================================================
+           MÀN 2: NHÀ MÁY TÍNH NHẨM (RUNTIME INPUT & STAGE SAY)
+           ========================================================================== */
+        .stage2-layout {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .quest-progress-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .quest-card {
+            background: #fff;
+            border: 2px solid #DED6FA;
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .quest-card.active-quest {
+            border-color: var(--primary);
+            background: var(--lavender-bg);
+            box-shadow: 0 4px 10px rgba(88, 66, 155, 0.15);
+        }
+
+        .quest-card.done-quest {
+            border-color: var(--teal);
+            background: var(--mint-bg);
+        }
+
+        .quest-card .q-badge {
+            font-size: 0.78rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: var(--radius-pill);
+            background: #E5E0F8;
+            color: var(--primary);
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+
+        .quest-card.done-quest .q-badge {
+            background: var(--teal);
+            color: #fff;
+        }
+
+        .quest-card p {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .factory-editor {
+            background: #F4F1FF;
+            border: 2px solid #D3C8F7;
+            border-radius: var(--radius-md);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .num-input {
+            width: 78px;
+            height: 44px;
+            border-radius: var(--radius-pill);
+            border: 2px solid var(--scratch-op-dark);
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .op-select {
+            height: 44px;
+            padding: 0 12px;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--scratch-op-dark);
+            background: #fff;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            cursor: pointer;
+        }
+
+        .scratch-stage-preview {
+            background: linear-gradient(180deg, #E8F6FF 0%, #F7FFF9 100%);
+            border: 3px solid #C9D8E8;
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .stage-say-bubble {
+            background: #fff;
+            border: 3px solid var(--scratch-looks);
+            border-radius: 18px;
+            padding: 12px 20px;
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--text-main);
+            box-shadow: 0 6px 16px rgba(153, 102, 255, 0.2);
+            text-align: center;
+            min-width: 180px;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .stage-say-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 12px 10px 0;
+            border-style: solid;
+            border-color: var(--scratch-looks) transparent;
+        }
+
+        /* ==========================================================================
+           MÀN 3: LẮP BIỂU THỨC CHU VI & DIỆN TÍCH HÌNH CHỮ NHẬT
+           ========================================================================== */
+        .stage3-layout {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .step-tracker {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .step-pill {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            background: #EEEAF9;
+            border: 2px solid #D5CDF0;
+            font-weight: 700;
+            font-size: 0.88rem;
+            text-align: center;
+        }
+
+        .step-pill.done {
+            background: var(--mint-bg);
+            border-color: var(--teal);
+            color: var(--teal-dark);
+        }
+
+        .token-bank {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            background: #fff;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            border: 2px solid #E2DAFA;
+            margin-bottom: 14px;
+            align-items: center;
+        }
+
+        .slot-inline {
+            min-width: 68px;
+            min-height: 40px;
+            padding: 4px 12px;
+            border-radius: var(--radius-pill);
+            border: 2px dashed #fff;
+            background: rgba(255, 255, 255, 0.22);
+            color: #fff;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .slot-inline.filled-var {
+            background: var(--scratch-var);
+            border: 2px solid #fff;
+        }
+
+        .slot-inline.filled-num {
+            background: #fff;
+            color: var(--text-main);
+            border: 2px solid var(--scratch-op-dark);
+        }
+
+        .slider-control-group {
+            background: var(--cream-bg);
+            border: 2px solid var(--yellow);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .var-readout-badge {
+            background: var(--scratch-var);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: var(--radius-pill);
+            font-weight: 800;
+        }
+
+        /* ==========================================================================
+           MÀN 4: TÌM LỖI TÍNH TOÁN (DEBUGGER)
+           ========================================================================== */
+        .stage4-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.35fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .bug-case-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bug-case-btn {
+            background: #fff;
+            border: 2px solid #DDD4FA;
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .bug-case-btn.active {
+            border-color: var(--primary);
+            background: var(--lavender-bg);
+            box-shadow: 0 4px 12px rgba(88, 66, 155, 0.14);
+        }
+
+        .bug-case-btn.fixed {
+            border-color: var(--teal);
+            background: var(--mint-bg);
+        }
+
+        .debug-panel {
+            background: #fff;
+            border: 2px solid #DFD7FA;
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .bug-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .compare-box {
+            padding: 12px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .compare-box.expected {
+            background: var(--mint-bg);
+            border: 2px solid var(--teal);
+            color: var(--teal-dark);
+        }
+
+        .compare-box.actual {
+            background: var(--peach-bg);
+            border: 2px solid var(--pink);
+            color: #A63A5B;
+        }
+
+        .compare-box.actual.matched {
+            background: var(--mint-bg);
+            border-color: var(--teal);
+            color: var(--teal-dark);
+        }
+
+        /* ==========================================================================
+           THANH ĐIỀU KHIỂN DƯỚI CÙNG (BOTTOM ACTION BAR)
+           ========================================================================== */
+        .bottom-nav-bar {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 2px solid #ECE6FF;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .left-actions, .right-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* ==========================================================================
+           MÀN HÌNH TỔNG KẾT & MODAL HƯỚNG DẪN
+           ========================================================================== */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 24px;
+            align-items: center;
+            margin: auto 0;
+        }
+
+        .badge-showcase {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .badge-item {
+            background: #fff;
+            border: 2px solid var(--teal);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 0.92rem;
+        }
+
+        .takeaway-card {
+            background: var(--lavender-bg);
+            border-left: 6px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 10px;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(43, 35, 74, 0.65);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 100;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #fff;
+            max-width: 680px;
+            width: 100%;
+            border-radius: var(--radius-lg);
+            border: 4px solid var(--primary);
+            padding: 24px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Canvas hiệu ứng pháo giấy / ngôi sao chiến thắng (<= 2 giây) */
+        #confettiCanvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 90;
+        }
+
+        /* Responsive cho màn hình nhỏ */
+        @media (max-width: 980px) {
+            .welcome-grid,
+            .stage1-layout,
+            .stage2-layout,
+            .stage3-layout,
+            .stage4-layout,
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+            .mascot-banner {
+                grid-template-columns: auto 1fr;
+            }
+            .mascot-banner .sim-disclaimer {
+                grid-column: 1 / -1;
+                justify-self: start;
+            }
+            .match-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas hiệu ứng chúc mừng hoàn thành màn (tự tắt sau 1.8 giây) -->
+    <canvas id="confettiCanvas"></canvas>
+
+    <!-- THANH CÔNG CỤ ĐẦU TRANG (TOP HEADER) -->
+    <header class="app-header" role="banner">
+        <div class="brand-group">
+            <span class="brand-badge">TIN HỌC 5 • BÀI 15</span>
+            <span class="brand-title">PHÉP TÍNH KÌ DIỆU</span>
+        </div>
+
+        <div class="header-controls">
+            <div class="stat-pill" aria-live="polite">
+                <span>Tiến độ:</span>
+                <strong id="headerProgressText">0/4</strong>
+            </div>
+            <div class="stat-pill" aria-live="polite">
+                <span>Điểm số:</span>
+                <strong id="headerScoreText">0 / 100</strong>
+            </div>
+
+            <!-- ĐÚNG 2 CÔNG TẮC ÂM THANH ĐỘC LẬP: NHẠC NỀN VÀ HIỆU ỨNG -->
+            <button type="button" id="btnToggleBgm" class="btn btn-outline-light active-toggle" aria-pressed="true">
+                <span>♪ Nhạc nền: Bật</span>
+            </button>
+            <button type="button" id="btnToggleSfx" class="btn btn-outline-light active-toggle" aria-pressed="true">
+                <span>★ Hiệu ứng: Bật</span>
+            </button>
+
+            <button type="button" id="btnOpenGuideTop" class="btn btn-yellow">
+                <span>? Hướng dẫn</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- KHUNG TRÒ CHƠI CHÍNH -->
+    <main class="main-wrapper">
+        <div class="lab-environment">
+
+            <!-- THANH TRẠNG THÁI NĂNG LƯỢNG PHÒNG TÍNH TOÁN (Hiện khi vào màn chơi) -->
+            <div id="labTopBar" class="lab-energy-bar" style="display: none;">
+                <div class="stage-tabs" role="tablist" aria-label="Các màn chơi">
+                    <button type="button" class="stage-tab active" data-stage="1" id="tabStage1">1. Nhận diện toán tử</button>
+                    <button type="button" class="stage-tab" data-stage="2" id="tabStage2" disabled>2. Nhà máy tính nhẩm</button>
+                    <button type="button" class="stage-tab" data-stage="3" id="tabStage3" disabled>3. Lắp biểu thức</button>
+                    <button type="button" class="stage-tab" data-stage="4" id="tabStage4" disabled>4. Tìm lỗi tính toán</button>
+                </div>
+
+                <div class="energy-cores" title="Các cụm năng lượng toán tử đã khôi phục">
+                    <span>Cụm năng lượng:</span>
+                    <div class="core-node" id="coreNode1">+</div>
+                    <div class="core-node" id="coreNode2">−</div>
+                    <div class="core-node" id="coreNode3">×</div>
+                    <div class="core-node" id="coreNode4">÷</div>
+                </div>
+            </div>
+
+            <!-- ==================================================================
+                 MÀN HÌNH 0: CHÀO MỪNG (WELCOME SCREEN)
+                 ================================================================== -->
+            <section id="screenWelcome" class="screen-view active" aria-labelledby="welcomeHeading">
+                <div class="welcome-grid">
+                    <!-- Tranh minh họa SVG lớn Phòng tính toán Scratch & Rô-bốt Pixel -->
+                    <div class="welcome-illustration">
+                        <svg viewBox="0 0 500 340" width="100%" height="auto" role="img" aria-label="Minh họa Phòng tính toán Scratch cùng trợ lí Pixel">
+                            <defs>
+                                <linearGradient id="bgGradLab" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0%" stop-color="#58429B"/>
+                                    <stop offset="100%" stop-color="#3B2B6E"/>
+                                </linearGradient>
+                            </defs>
+                            <!-- Nền phòng máy công nghệ -->
+                            <rect x="10" y="10" width="480" height="320" rx="22" fill="url(#bgGradLab)"/>
+                            <!-- Lưới trang trí -->
+                            <path d="M 10 90 H 490 M 10 170 H 490 M 10 250 H 490 M 110 10 V 330 M 250 10 V 330 M 390 10 V 330" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+                            
+                            <!-- Bảng hiển thị công thức lớn phía sau -->
+                            <rect x="40" y="32" width="250" height="125" rx="14" fill="#231942" stroke="#4ABDAA" stroke-width="4"/>
+                            <text x="58" y="62" fill="#F2BE4A" font-size="15" font-weight="bold">PHÒNG TÍNH TOÁN SCRATCH</text>
+                            
+                            <!-- Khối lệnh minh họa trên màn hình -->
+                            <rect x="55" y="76" width="215" height="34" rx="17" fill="#59C059" stroke="#389438" stroke-width="2"/>
+                            <circle cx="82" cy="93" r="11" fill="#FFF"/>
+                            <text x="82" y="98" text-anchor="middle" fill="#2B234A" font-size="13" font-weight="bold">2</text>
+                            <text x="108" y="99" text-anchor="middle" fill="#FFF" font-size="16" font-weight="bold">*</text>
+                            <rect x="125" y="81" width="132" height="24" rx="12" fill="#46A846" stroke="#fff" stroke-width="1.5"/>
+                            <text x="191" y="97" text-anchor="middle" fill="#FFF" font-size="13" font-weight="bold">( a + b )</text>
+
+                            <rect x="55" y="118" width="175" height="28" rx="8" fill="#9966FF"/>
+                            <text x="142" y="137" text-anchor="middle" fill="#FFF" font-size="13" font-weight="bold">nói ( Kết quả = 20 )</text>
+
+                            <!-- Các viên ngọc toán tử bay lơ lửng -->
+                            <g transform="translate(55, 195)">
+                                <rect x="0" y="0" width="95" height="40" rx="20" fill="#59C059" stroke="#fff" stroke-width="2"/>
+                                <text x="47" y="25" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">2 + 3</text>
+                            </g>
+                            <g transform="translate(165, 210)">
+                                <rect x="0" y="0" width="95" height="40" rx="20" fill="#59C059" stroke="#fff" stroke-width="2"/>
+                                <text x="47" y="25" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">8 / 2</text>
+                            </g>
+                            <g transform="translate(85, 255)">
+                                <rect x="0" y="0" width="135" height="38" rx="19" fill="#FF8C1A" stroke="#fff" stroke-width="2"/>
+                                <text x="67" y="24" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">chiều dài (a)</text>
+                            </g>
+
+                            <!-- Nhân vật trợ lí rô-bốt chibi PIXEL -->
+                            <g transform="translate(310, 65)">
+                                <!-- Bóng dưới chân -->
+                                <ellipse cx="80" cy="230" rx="55" ry="12" fill="rgba(0,0,0,0.28)"/>
+                                <!-- Ăng-ten -->
+                                <line x1="80" y1="10" x2="80" y2="35" stroke="#F2BE4A" stroke-width="6" stroke-linecap="round"/>
+                                <circle cx="80" cy="10" r="10" fill="#F6B6C8" stroke="#fff" stroke-width="2"/>
+                                <!-- Đầu rô-bốt -->
+                                <rect x="25" y="32" width="110" height="86" rx="26" fill="#FFFFFF" stroke="#4ABDAA" stroke-width="5"/>
+                                <!-- Màn hình mặt -->
+                                <rect x="38" y="46" width="84" height="58" rx="16" fill="#2B234A"/>
+                                <!-- Mắt cười tươi -->
+                                <path d="M 52 72 Q 60 60 68 72" stroke="#4ABDAA" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+                                <path d="M 92 72 Q 100 60 108 72" stroke="#4ABDAA" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+                                <!-- Miệng cười -->
+                                <path d="M 66 86 Q 80 98 94 86" stroke="#F2BE4A" stroke-width="4" fill="none" stroke-linecap="round"/>
+                                <!-- Má hồng -->
+                                <circle cx="48" cy="82" r="5" fill="#F6B6C8"/>
+                                <circle cx="112" cy="82" r="5" fill="#F6B6C8"/>
+                                <!-- Thân rô-bốt kèm bảng điều khiển -->
+                                <rect x="35" y="124" width="90" height="82" rx="22" fill="#FFFFFF" stroke="#4ABDAA" stroke-width="5"/>
+                                <rect x="48" y="138" width="64" height="44" rx="10" fill="#58429B"/>
+                                <text x="80" y="166" text-anchor="middle" fill="#F2BE4A" font-size="18" font-weight="bold">+ − × ÷</text>
+                                <!-- Tay cầm bảng -->
+                                <path d="M 35 145 Q 10 160 22 182" stroke="#4ABDAA" stroke-width="10" fill="none" stroke-linecap="round"/>
+                                <path d="M 125 145 Q 150 130 142 108" stroke="#4ABDAA" stroke-width="10" fill="none" stroke-linecap="round"/>
+                            </g>
+                        </svg>
+                        <div style="margin-top: 8px;">
+                            <span class="sim-disclaimer">Giao diện mô phỏng phục vụ học tập • Sách Kết nối tri thức với cuộc sống</span>
+                        </div>
+                    </div>
+
+                    <!-- Cột thông tin bài học và nút bắt đầu -->
+                    <div class="welcome-info">
+                        <span class="book-sub">Tin học lớp 5 • Bài 15 (Trang 73–77)</span>
+                        <h1 id="welcomeHeading">PHÉP TÍNH KÌ DIỆU</h1>
+                        <p style="color: var(--text-muted); font-size: 1.02rem; margin-bottom: 16px;">
+                            Cùng trợ lí rô-bốt <strong>Pixel</strong> khôi phục 4 cụm năng lượng của Phòng tính toán Scratch bằng cách làm chủ các khối toán tử số học!
+                        </p>
+
+                        <div class="mission-card">
+                            <h3>Sau bài chơi này, em sẽ làm chủ:</h3>
+                            <ul class="mission-list">
+                                <li>✅ Nhận biết 4 khối phép toán số học <strong>+ , - , * , /</strong> trong Scratch.</li>
+                                <li>✅ Nhập số và chọn toán tử để nhân vật tính nhẩm kết quả tự động.</li>
+                                <li>✅ Lắp biến vào biểu thức tính <strong>Chu vi & Diện tích hình chữ nhật</strong>.</li>
+                                <li>✅ Phát hiện và sửa lỗi biểu thức tính toán sai trong chương trình.</li>
+                            </ul>
+                        </div>
+
+                        <!-- Chọn chế độ Luyện tập / Thử thách -->
+                        <div style="margin-bottom: 6px; font-weight: 800; color: var(--primary);">Chọn chế độ tham gia:</div>
+                        <div class="mode-selector" role="radiogroup" aria-label="Chế độ chơi">
+                            <button type="button" class="mode-option selected" id="modePracticeBtn" data-mode="practice">
+                                <strong>🌱 Chế độ Luyện tập</strong>
+                                <span>Hiển thị sẵn gợi ý nhẹ ở đầu mỗi màn</span>
+                            </button>
+                            <button type="button" class="mode-option" id="modeChallengeBtn" data-mode="challenge">
+                                <strong>🚀 Chế độ Thử thách</strong>
+                                <span>Tự mình khám phá, chỉ mở gợi ý khi cần</span>
+                            </button>
+                        </div>
+
+                        <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+                            <button type="button" id="btnStartGame" class="btn btn-teal" style="font-size: 1.15rem; padding: 12px 28px;">
+                                ▶ Bắt đầu khám phá
+                            </button>
+                            <button type="button" id="btnWelcomeGuide" class="btn btn-yellow" style="font-size: 1.05rem;">
+                                📖 Hướng dẫn cách chơi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================================================================
+                 KHUNG CHƠI CHÍNH CHO 4 MÀN (GAMEPLAY CONTAINER)
+                 ================================================================== -->
+            <section id="screenGameplay" class="screen-view" aria-live="polite">
+                <!-- Banner trợ lí Pixel + Bong bóng chữ hướng dẫn / phản hồi -->
+                <div class="mascot-banner">
+                    <div class="pixel-avatar-wrap" id="pixelAvatarContainer">
+                        <!-- SVG Pixel động đổi biểu cảm theo trạng thái -->
+                    </div>
+                    <div class="speech-bubble" id="pixelSpeechBox">
+                        <div class="speech-header">
+                            <span id="pixelStageTitle">TRỢ LÍ PIXEL • MÀN 1</span>
+                            <span id="pixelModeBadge" style="font-size: 0.8rem; background: #EDE8FF; padding: 2px 10px; border-radius: 99px;">Chế độ Luyện tập</span>
+                        </div>
+                        <div class="speech-text" id="pixelSpeechText">
+                            Chào mừng em! Hãy ghép từng phép tính toán học với khối toán tử Scratch tương ứng rồi nhấn "Chạy thử" nhé!
+                        </div>
+                    </div>
+                    <span class="sim-disclaimer">Giao diện mô phỏng phục vụ học tập</span>
+                </div>
+
+                <!-- NỘI DUNG MÀN 1: NHẬN DIỆN TOÁN TỬ -->
+                <div id="stageContent1" class="stage-pane">
+                    <div class="stage1-layout">
+                        <div class="palette-box">
+                            <div class="box-header">
+                                <h3>1. Kho khối toán tử Scratch</h3>
+                                <span style="font-size: 0.82rem; color: var(--text-muted);">Kéo thả hoặc Nháy chọn khối</span>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">
+                                Lưu ý: Trong Scratch, phép nhân kí hiệu là dấu sao <strong>(*)</strong> và phép chia kí hiệu là dấu gạch chéo <strong>(/)</strong>.
+                            </p>
+                            <div id="stage1BlockPool" class="draggable-pool">
+                                <!-- Các khối Scratch được tạo từ GAME_CONFIG -->
+                            </div>
+                        </div>
+
+                        <div class="workspace-box">
+                            <div class="box-header">
+                                <h3>2. Bàn ghép & Chạy thử giá trị</h3>
+                                <span id="stage1SubProgress" style="font-weight: 800; color: var(--teal-dark);">Đã chạy thử: 0/4</span>
+                            </div>
+                            <div id="stage1MatchList" class="match-row-list">
+                                <!-- 4 hàng ghép nối + nút Chạy thử -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NỘI DUNG MÀN 2: NHÀ MÁY TÍNH NHẨM -->
+                <div id="stageContent2" class="stage-pane" style="display: none;">
+                    <div class="stage2-layout">
+                        <div>
+                            <div class="box-header">
+                                <h3>1. Chọn nhiệm vụ tính nhẩm (Hoàn thành cả 4 nhiệm vụ)</h3>
+                                <span id="stage2SubProgress" style="font-weight: 800; color: var(--teal-dark);">0/4 nhiệm vụ</span>
+                            </div>
+                            <div id="stage2QuestList" class="quest-progress-list">
+                                <!-- 4 thẻ nhiệm vụ từ GAME_CONFIG -->
+                            </div>
+
+                            <div class="factory-editor">
+                                <div style="font-weight: 800; color: var(--primary); font-size: 1rem;" id="stage2CurrentQuestPrompt">
+                                    Nhiệm vụ 1: Hãy nhập hai số và chọn phép toán để tạo ra phép cộng có kết quả bằng 15.
+                                </div>
+
+                                <!-- Khối lệnh nói chứa khối toán tử có ô nhập thật -->
+                                <div class="scratch-looks-block">
+                                    <span>nói</span>
+                                    <div class="scratch-op-block">
+                                        <input type="number" id="s2InputA" class="num-input" value="10" aria-label="Số thứ nhất">
+                                        <select id="s2SelectOp" class="op-select" aria-label="Chọn phép toán Scratch">
+                                            <option value="+">+</option>
+                                            <option value="-">-</option>
+                                            <option value="*">* (nhân)</option>
+                                            <option value="/">/ (chia)</option>
+                                        </select>
+                                        <input type="number" id="s2InputB" class="num-input" value="5" aria-label="Số thứ hai">
+                                    </div>
+                                    <span>trong 2 giây</span>
+                                </div>
+
+                                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                    <button type="button" id="btnRunStage2" class="btn btn-teal">
+                                        ▶ Chạy khối lệnh & Kiểm tra
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sân khấu mô phỏng nhân vật nói kết quả thực -->
+                        <div class="scratch-stage-preview">
+                            <div style="width: 100%; display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">
+                                <span>SÂN KHẤU MÔ PHỎNG</span>
+                                <span id="s2FormulaPreview">Biểu thức: 10 + 5</span>
+                            </div>
+
+                            <div class="stage-say-bubble" id="s2CatBubble">
+                                Hãy bấm "Chạy khối lệnh" nhé!
+                            </div>
+
+                            <!-- SVG Nhân vật Mèo Máy Scratch trên sân khấu -->
+                            <svg viewBox="0 0 180 150" width="155" height="130" role="img" aria-label="Nhân vật mèo máy trên sân khấu">
+                                <ellipse cx="90" cy="138" rx="52" ry="9" fill="rgba(0,0,0,0.12)"/>
+                                <!-- Tai mèo -->
+                                <polygon points="48,48 60,16 78,42" fill="#FF8C1A" stroke="#2B234A" stroke-width="3"/>
+                                <polygon points="132,48 120,16 102,42" fill="#FF8C1A" stroke="#2B234A" stroke-width="3"/>
+                                <!-- Đầu -->
+                                <rect x="42" y="36" width="96" height="68" rx="30" fill="#FFAB19" stroke="#2B234A" stroke-width="3"/>
+                                <!-- Mắt -->
+                                <circle cx="70" cy="64" r="8" fill="#fff" stroke="#2B234A" stroke-width="2.5"/>
+                                <circle cx="72" cy="64" r="4" fill="#2B234A"/>
+                                <circle cx="110" cy="64" r="8" fill="#fff" stroke="#2B234A" stroke-width="2.5"/>
+                                <circle cx="108" cy="64" r="4" fill="#2B234A"/>
+                                <!-- Mũi & Miệng -->
+                                <polygon points="86,73 94,73 90,79" fill="#58429B"/>
+                                <path d="M 78 84 Q 90 94 102 84" stroke="#2B234A" stroke-width="3" fill="none" stroke-linecap="round"/>
+                                <!-- Thân -->
+                                <rect x="58" y="102" width="64" height="34" rx="14" fill="#4ABDAA" stroke="#2B234A" stroke-width="3"/>
+                                <text x="90" y="124" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">MATH</text>
+                            </svg>
+
+                            <div style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">
+                                Kết quả được tính trực tiếp từ hai số và phép toán em chọn!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NỘI DUNG MÀN 3: LẮP BIỂU THỨC (CHU VI & DIỆN TÍCH HÌNH CHỮ NHẬT) -->
+                <div id="stageContent3" class="stage-pane" style="display: none;">
+                    <div class="step-tracker">
+                        <div class="step-pill" id="s3Step1Indicator">Bước 1: Lắp công thức Diện tích (a * b)</div>
+                        <div class="step-pill" id="s3Step2Indicator">Bước 2: Lắp công thức Chu vi 2 * (a + b)</div>
+                        <div class="step-pill" id="s3Step3Indicator">Bước 3: Đổi a, b và chạy thử (0/2 lần)</div>
+                    </div>
+
+                    <div class="stage3-layout">
+                        <div class="workspace-box">
+                            <div class="box-header">
+                                <h3>1. Kho thẻ biến & số (Nháy chọn thẻ rồi nháy vào ô trống)</h3>
+                            </div>
+                            <div class="token-bank" id="s3TokenBank">
+                                <button type="button" class="scratch-var-pill s3-token" data-token="a">chiều dài (a)</button>
+                                <button type="button" class="scratch-var-pill s3-token" data-token="b">chiều rộng (b)</button>
+                                <button type="button" class="btn btn-yellow s3-token" data-token="2" style="min-height: 38px; padding: 6px 16px;">Số 2</button>
+                                <span style="font-size: 0.85rem; color: var(--text-muted); margin-left: auto;">
+                                    Mẹo: Nháy vào ô trống để điền hoặc đổi thẻ!
+                                </span>
+                            </div>
+
+                            <!-- Lắp biểu thức 1: Diện tích = a * b -->
+                            <div style="background: #F4F1FF; padding: 12px 14px; border-radius: var(--radius-md); margin-bottom: 12px; border: 2px solid #D8CEFA;">
+                                <div style="font-weight: 800; color: var(--primary); margin-bottom: 8px;">
+                                    Khối lệnh 1: Tính Diện tích hình chữ nhật (Chiều dài nhân Chiều rộng)
+                                </div>
+                                <div class="scratch-looks-block">
+                                    <span>nói Diện tích =</span>
+                                    <div class="scratch-op-block">
+                                        <button type="button" class="slot-inline" id="s3AreaSlot1" data-slot="area1">[ Ô 1 ]</button>
+                                        <span>*</span>
+                                        <button type="button" class="slot-inline" id="s3AreaSlot2" data-slot="area2">[ Ô 2 ]</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Lắp biểu thức 2: Chu vi = 2 * (a + b) -->
+                            <div style="background: #F4F1FF; padding: 12px 14px; border-radius: var(--radius-md); border: 2px solid #D8CEFA;">
+                                <div style="font-weight: 800; color: var(--primary); margin-bottom: 8px;">
+                                    Khối lệnh 2: Tính Chu vi hình chữ nhật (Biểu thức lồng nhau: 2 nhân tổng chiều dài và chiều rộng)
+                                </div>
+                                <div class="scratch-looks-block">
+                                    <span>nói Chu vi =</span>
+                                    <div class="scratch-op-block">
+                                        <button type="button" class="slot-inline" id="s3PeriSlot1" data-slot="peri1">[ Số ? ]</button>
+                                        <span>*</span>
+                                        <div class="scratch-op-block" style="background: #42A642; padding: 4px 10px;">
+                                            <span>(</span>
+                                            <button type="button" class="slot-inline" id="s3PeriSlot2" data-slot="peri2">[ Ô a ]</button>
+                                            <span>+</span>
+                                            <button type="button" class="slot-inline" id="s3PeriSlot3" data-slot="peri3">[ Ô b ]</button>
+                                            <span>)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bộ điều chỉnh giá trị biến a, b ở thời gian chạy -->
+                            <div class="slider-control-group">
+                                <div>
+                                    <label for="s3RangeA" style="font-weight: 800; display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                        <span>Biến chiều dài (a):</span>
+                                        <span class="var-readout-badge" id="s3ValAText">6</span>
+                                    </label>
+                                    <input type="range" id="s3RangeA" min="3" max="12" value="6" style="width: 100%; accent-color: var(--scratch-var);">
+                                </div>
+                                <div>
+                                    <label for="s3RangeB" style="font-weight: 800; display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                        <span>Biến chiều rộng (b):</span>
+                                        <span class="var-readout-badge" id="s3ValBText">4</span>
+                                    </label>
+                                    <input type="range" id="s3RangeB" min="2" max="9" value="4" style="width: 100%; accent-color: var(--scratch-var);">
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 12px; display: flex; justify-content: center;">
+                                <button type="button" id="btnRunStage3" class="btn btn-teal">
+                                    ▶ Chạy chương trình với a, b hiện tại
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Sân khấu trực quan hình chữ nhật co giãn theo a, b -->
+                        <div class="scratch-stage-preview">
+                            <div style="font-weight: 800; color: var(--primary);">MÔ PHỎNG HÌNH CHỮ NHẬT TRỰC QUAN</div>
+                            <svg id="s3RectSvg" viewBox="0 0 320 210" width="100%" height="200">
+                                <!-- Lưới nền -->
+                                <rect x="10" y="10" width="300" height="190" rx="12" fill="#FFFFFF" stroke="#D5E3F0" stroke-width="2"/>
+                                <!-- Hình chữ nhật động thay đổi width/height theo a, b -->
+                                <rect id="s3DynamicRect" x="60" y="45" width="144" height="96" rx="6" fill="rgba(74, 189, 170, 0.28)" stroke="#4ABDAA" stroke-width="4"/>
+                                <text id="s3LabelTopA" x="132" y="36" text-anchor="middle" fill="#FF8C1A" font-weight="bold" font-size="15">a = 6 cm</text>
+                                <text id="s3LabelSideB" x="48" y="95" text-anchor="end" fill="#FF8C1A" font-weight="bold" font-size="15">b = 4 cm</text>
+                            </svg>
+
+                            <div style="width: 100%; background: #fff; border: 2px solid var(--scratch-looks); border-radius: var(--radius-md); padding: 12px; text-align: center;">
+                                <div id="s3OutputArea" style="font-weight: 800; color: var(--primary); font-size: 1.05rem;">
+                                    Diện tích = (Chưa lắp xong công thức)
+                                </div>
+                                <div id="s3OutputPeri" style="font-weight: 800; color: var(--teal-dark); font-size: 1.05rem; margin-top: 4px;">
+                                    Chu vi = (Chưa lắp xong công thức)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NỘI DUNG MÀN 4: TÌM LỖI TÍNH TOÁN (DEBUG CHƯƠNG TRÌNH) -->
+                <div id="stageContent4" class="stage-pane" style="display: none;">
+                    <div class="stage4-layout">
+                        <div class="palette-box">
+                            <div class="box-header">
+                                <h3>Danh sách 3 ca lỗi cần sửa</h3>
+                                <span id="stage4SubProgress" style="font-weight: 800; color: var(--teal-dark);">Đã sửa: 0/3</span>
+                            </div>
+                            <div id="stage4CaseList" class="bug-case-list">
+                                <!-- 3 ca lỗi từ GAME_CONFIG -->
+                            </div>
+                        </div>
+
+                        <div class="debug-panel">
+                            <div class="box-header">
+                                <h3 id="s4CaseTitle">Ca lỗi 1: Tính số kẹo còn lại</h3>
+                                <span id="s4CaseStatusBadge" style="background: var(--peach-bg); color: #A63A5B; padding: 4px 12px; border-radius: 99px; font-weight: 800; font-size: 0.85rem;">Đang có lỗi!</span>
+                            </div>
+
+                            <p id="s4ProblemDesc" style="font-size: 1rem; font-weight: 700; color: var(--text-main); background: var(--cream-bg); padding: 12px; border-radius: var(--radius-md); border: 2px solid var(--yellow);">
+                                Đề bài: Bạn An có 20 cái kẹo, An đã ăn bớt 5 cái kẹo. Hãy viết biểu thức tính số kẹo còn lại.
+                            </p>
+
+                            <div class="bug-comparison">
+                                <div class="compare-box expected">
+                                    <div>Kết quả đúng theo đề bài:</div>
+                                    <strong id="s4ExpectedVal" style="font-size: 1.35rem;">15 cái kẹo</strong>
+                                </div>
+                                <div class="compare-box actual" id="s4ActualBox">
+                                    <div>Kết quả khối lệnh hiện tại:</div>
+                                    <strong id="s4ActualVal" style="font-size: 1.35rem;">25 (Sai!)</strong>
+                                </div>
+                            </div>
+
+                            <!-- Khu vực chỉnh sửa khối lệnh bị lỗi -->
+                            <div style="background: #F4F1FF; border: 2px solid #D3C8F7; border-radius: var(--radius-md); padding: 18px; display: flex; flex-direction: column; align-items: center; gap: 14px;">
+                                <div style="font-weight: 800; color: var(--primary);">
+                                    Hãy đổi toán tử hoặc nhấn nút "⇄ Đổi vị trí 2 số" để sửa lại khối lệnh:
+                                </div>
+
+                                <div class="scratch-looks-block">
+                                    <span>nói Kết quả =</span>
+                                    <div class="scratch-op-block">
+                                        <span class="scratch-input-oval" id="s4LeftOperand">20</span>
+                                        <select id="s4OperatorSelect" class="op-select" aria-label="Sửa toán tử Scratch">
+                                            <option value="+">+</option>
+                                            <option value="-">-</option>
+                                            <option value="*">* (nhân)</option>
+                                            <option value="/">/ (chia)</option>
+                                        </select>
+                                        <span class="scratch-input-oval" id="s4RightOperand">5</span>
+                                    </div>
+                                </div>
+
+                                <!-- Thanh thử đổi giá trị biến nếu ca lỗi có biến -->
+                                <div id="s4VariableTester" style="display: none; align-items: center; gap: 10px; background: #fff; padding: 8px 16px; border-radius: 99px; border: 2px solid var(--scratch-var);">
+                                    <span style="font-weight: 800; color: var(--scratch-var-dark);">Thử đổi giá mỗi quyển vở (g):</span>
+                                    <input type="number" id="s4VarGInput" value="6" min="2" max="20" class="num-input" style="width: 68px; height: 36px;">
+                                    <span style="font-weight: 700;">nghìn đồng</span>
+                                </div>
+
+                                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                    <button type="button" id="btnSwapOperandsS4" class="btn btn-yellow">
+                                        ⇄ Đổi vị trí 2 số/biến
+                                    </button>
+                                    <button type="button" id="btnVerifyBugS4" class="btn btn-teal">
+                                        ▶ Chạy kiểm tra lỗi
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- THANH ĐIỀU HƯỚNG DƯỚI CÙNG CỦA MÀN CHƠI -->
+                <div class="bottom-nav-bar">
+                    <div class="left-actions">
+                        <button type="button" id="btnBackHome" class="btn btn-pink">
+                            ⌂ Trang chủ
+                        </button>
+                        <button type="button" id="btnResetStage" class="btn btn-yellow">
+                            ↻ Làm lại màn
+                        </button>
+                        <button type="button" id="btnHintStage" class="btn btn-primary">
+                            💡 Gợi ý (Mức 1/2)
+                        </button>
+                    </div>
+                    <div class="right-actions">
+                        <button type="button" id="btnNextStage" class="btn btn-teal" disabled>
+                            Tiếp tục màn sau ➔
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================================================================
+                 MÀN HÌNH 5: TỔNG KẾT & HUY HIỆU (SUMMARY SCREEN)
+                 ================================================================== -->
+            <section id="screenSummary" class="screen-view" aria-labelledby="summaryHeading">
+                <div class="summary-grid">
+                    <div class="welcome-illustration">
+                        <h2 id="summaryHeading" style="color: var(--primary); font-size: 1.8rem; margin-bottom: 6px;">
+                            CHÚC MỪNG KĨ SƯ NHÍ!
+                        </h2>
+                        <p style="font-weight: 700; color: var(--teal-dark); margin-bottom: 12px;">
+                            Phòng tính toán Scratch đã khôi phục 100% năng lượng!
+                        </p>
+
+                        <div style="background: #fff; border: 4px solid var(--yellow); border-radius: var(--radius-lg); padding: 16px; display: inline-block; margin-bottom: 14px; min-width: 220px;">
+                            <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-muted);">TỔNG ĐIỂM ĐẠT ĐƯỢC</div>
+                            <div id="finalTotalScore" style="font-size: 3rem; font-weight: 900; color: var(--primary);">100 / 100</div>
+                        </div>
+
+                        <div class="badge-showcase">
+                            <div class="badge-item">🏅 Chuyên gia Toán tử (+ − * /)</div>
+                            <div class="badge-item">🧮 Bậc thầy Tính nhẩm</div>
+                            <div class="badge-item">📐 Kiến trúc sư Hình học</div>
+                            <div class="badge-item">🔍 Thám tử Sửa lỗi Code</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="color: var(--primary); font-size: 1.35rem; margin-bottom: 12px;">
+                            📌 3 Ghi nhớ kiến thức trọng tâm Bài 15:
+                        </h3>
+
+                        <div class="takeaway-card">
+                            <strong>1. Kí hiệu phép toán số học trong Scratch:</strong>
+                            <p style="font-size: 0.95rem; margin-top: 4px;">
+                                Nhóm lệnh Các phép toán (màu xanh lá cây) dùng kí hiệu <strong>+</strong> (cộng), <strong>-</strong> (trừ), <strong>*</strong> (nhân) và <strong>/</strong> (chia).
+                            </p>
+                        </div>
+
+                        <div class="takeaway-card">
+                            <strong>2. Lắp ghép và lồng các khối biểu thức:</strong>
+                            <p style="font-size: 0.95rem; margin-top: 4px;">
+                                Ta có thể kéo khối biểu thức hình bầu dục đặt vào ô tròn của khối lệnh <strong>nói (...)</strong>, hoặc lồng biểu thức này vào trong biểu thức khác như <strong>2 * (a + b)</strong>.
+                            </p>
+                        </div>
+
+                        <div class="takeaway-card">
+                            <strong>3. Biểu thức chứa biến tự động cập nhật:</strong>
+                            <p style="font-size: 0.95rem; margin-top: 4px;">
+                                Khi đưa biến (như chiều dài <strong>a</strong>, chiều rộng <strong>b</strong>) vào biểu thức, mỗi khi giá trị biến thay đổi thì kết quả tính Chu vi, Diện tích cũng tự động thay đổi theo!
+                            </p>
+                        </div>
+
+                        <div style="display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap;">
+                            <button type="button" id="btnReplayAll" class="btn btn-teal" style="font-size: 1.1rem; padding: 12px 24px;">
+                                ↻ Chơi lại từ đầu
+                            </button>
+                            <button type="button" id="btnReviewStages" class="btn btn-yellow">
+                                🔍 Xem lại các màn đã hoàn thành
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MODAL HƯỚNG DẪN CÁCH CHƠI (CHỈ DÙNG CHỮ & BIỂU TƯỢNG MINH HỌA) -->
+    <div id="guideModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="guideModalTitle">
+        <div class="modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 2px solid #EEE; padding-bottom: 10px;">
+                <h2 id="guideModalTitle" style="color: var(--primary);">📖 Hướng dẫn tham gia "Phép Tính Kì Diệu"</h2>
+                <button type="button" id="btnCloseGuide" class="btn btn-pink" style="min-height: 40px; padding: 6px 14px;">Đóng ✕</button>
+            </div>
+            <div style="display: grid; gap: 12px; font-size: 0.96rem;">
+                <div style="background: var(--lavender-bg); padding: 12px; border-radius: var(--radius-md);">
+                    <strong>🎯 Mục tiêu trò chơi:</strong> Hoàn thành 4 màn thử thách tại Phòng tính toán Scratch. Mỗi màn hoàn thành đúng được cộng <strong>25 điểm</strong> (Tổng 100 điểm).
+                </div>
+                <div style="background: var(--mint-bg); padding: 12px; border-radius: var(--radius-md);">
+                    <strong>🖱️ Cách thao tác (Chuột, Cảm ứng hoặc Bàn phím):</strong>
+                    <ul style="margin-left: 18px; margin-top: 6px;">
+                        <li><strong>Màn 1:</strong> Kéo khối toán tử màu xanh lá thả vào ô tương ứng (hoặc nháy chọn khối rồi nháy vào ô trống), sau đó bấm nút <strong>Chạy thử</strong>.</li>
+                        <li><strong>Màn 2:</strong> Gõ hai số vào ô tròn, chọn phép toán <code>+ - * /</code> rồi bấm <strong>Chạy khối lệnh</strong> để nhân vật tính kết quả thật.</li>
+                        <li><strong>Màn 3:</strong> Nháy chọn thẻ biến <code>a</code>, <code>b</code>, <code>Số 2</code> để lắp công thức Diện tích và Chu vi, rồi kéo thanh trượt đổi <code>a, b</code> và bấm chạy.</li>
+                        <li><strong>Màn 4:</strong> Chọn lại toán tử đúng hoặc bấm <strong>Đổi vị trí 2 số</strong> để sửa lỗi cho 3 chương trình của Pixel.</li>
+                    </ul>
+                </div>
+                <div style="background: var(--cream-bg); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--yellow);">
+                    <strong>💡 Trợ giúp & Âm thanh:</strong> Em có thể nhấn nút <strong>Gợi ý</strong> (có 2 mức gợi ý chi tiết dần) bất cứ lúc nào mà không bị trừ điểm. Bật/tắt <strong>Nhạc nền</strong> và <strong>Hiệu ứng</strong> độc lập ở góc trên bên phải.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           CẤU HÌNH NỘI DUNG TRÒ CHƠI (GAME_CONFIG)
+           Giáo viên có thể dễ dàng chỉnh sửa câu hỏi, số liệu, gợi ý tại đây
+           ========================================================================== */
+        const GAME_CONFIG = {
+            gameTitle: "PHÉP TÍNH KÌ DIỆU",
+            gradeSubject: "Tin học 5 - Bài 15: Sử dụng biểu thức trong chương trình",
+            pointsPerStage: 25,
+            audio: {
+                defaultBgmVolume: 0.12, // Âm lượng nhạc nền mặc định 12% êm dịu
+                defaultSfxVolume: 0.25
+            },
+
+            // Dữ liệu Màn 1: Nhận diện toán tử Scratch (+, -, *, /)
+            stage1: {
+                title: "MÀN 1: NHẬN DIỆN TOÁN TỬ",
+                introPractice: "Gợi ý nhẹ: Trong Scratch, dấu sao (*) là phép nhân và dấu gạch chéo (/) là phép chia. Hãy ghép 4 khối rồi bấm 'Chạy thử' từng hàng nhé!",
+                introChallenge: "Hãy ghép 4 biểu thức toán học với khối Scratch tương ứng và bấm 'Chạy thử' để kiểm tra giá trị của cả 4 khối!",
+                hints: [
+                    "Gợi ý mức 1: Phép cộng (+) và phép trừ (-) giữ nguyên kí hiệu. Riêng phép nhân (×) đổi thành dấu sao (*) và phép chia (÷) đổi thành dấu gạch chéo (/).",
+                    "Gợi ý mức 2: Em ghép: (2 + 3) ➔ [2 + 3]; (9 − 4) ➔ [9 - 4]; (3 × 2) ➔ [3 * 2]; (8 ÷ 2) ➔ [8 / 2]. Sau đó nhớ bấm nút 'Chạy thử' ở cả 4 dòng!"
+                ],
+                items: [
+                    { id: "op_add", mathText: "2 + 3", scratchLabel: "2 + 3", a: 2, op: "+", b: 3, expected: 5 },
+                    { id: "op_sub", mathText: "9 − 4", scratchLabel: "9 - 4", a: 9, op: "-", b: 4, expected: 5 },
+                    { id: "op_mul", mathText: "3 × 2", scratchLabel: "3 * 2", a: 3, op: "*", b: 2, expected: 6 },
+                    { id: "op_div", mathText: "8 ÷ 2", scratchLabel: "8 / 2", a: 8, op: "/", b: 2, expected: 4 }
+                ]
+            },
+
+            // Dữ liệu Màn 2: Nhà máy tính nhẩm (4 nhiệm vụ tính toán thời gian chạy)
+            stage2: {
+                title: "MÀN 2: NHÀ MÁY TÍNH NHẨM",
+                introPractice: "Gợi ý nhẹ: Em nhập hai số bất kì và chọn phép toán (+, -, *, /) sao cho thỏa mãn yêu cầu của từng nhiệm vụ rồi bấm 'Chạy khối lệnh' nhé!",
+                introChallenge: "Hoàn thành cả 4 nhiệm vụ tính nhẩm bên dưới bằng cách nhập số và chọn phép toán phù hợp!",
+                hints: [
+                    "Gợi ý mức 1: Hãy đọc kỹ yêu cầu của nhiệm vụ đang chọn (phép cộng, phép nhân hay phép chia) và chọn đúng kí hiệu phép toán ở ô giữa.",
+                    "Gợi ý mức 2: Nhiệm vụ 1 có thể nhập 10 + 5 = 15; Nhiệm vụ 2 nhập 4 * 6 = 24; Nhiệm vụ 3 nhập 18 / 3 = 6; Nhiệm vụ 4 thử nhập 12 / 0 để xem cảnh báo rồi sửa thành 12 / 3 = 4."
+                ],
+                quests: [
+                    {
+                        id: "q1",
+                        badge: "Nhiệm vụ 1",
+                        shortName: "Phép cộng ra 15",
+                        prompt: "Nhiệm vụ 1: Hãy nhập hai số và chọn phép cộng (+) để khối lệnh nói ra kết quả bằng 15.",
+                        requiredOp: "+",
+                        targetValue: 15
+                    },
+                    {
+                        id: "q2",
+                        badge: "Nhiệm vụ 2",
+                        shortName: "Phép nhân ra 24",
+                        prompt: "Nhiệm vụ 2: Hãy tạo một phép nhân (*) từ hai số đều lớn hơn 1 sao cho kết quả bằng 24.",
+                        requiredOp: "*",
+                        targetValue: 24,
+                        noOneFactor: true
+                    },
+                    {
+                        id: "q3",
+                        badge: "Nhiệm vụ 3",
+                        shortName: "Phép chia ra 6",
+                        prompt: "Nhiệm vụ 3: Hãy chọn phép chia (/) và nhập hai số sao cho thương của chúng bằng 6.",
+                        requiredOp: "/",
+                        targetValue: 6
+                    },
+                    {
+                        id: "q4",
+                        badge: "Nhiệm vụ 4",
+                        shortName: "Kiểm tra chia an toàn",
+                        prompt: "Nhiệm vụ 4: Hãy thử nhập số chia bằng 0 để xem máy cảnh báo (hoặc tạo ngay một phép chia / có kết quả bằng 4).",
+                        requiredOp: "/",
+                        targetValue: 4
+                    }
+                ]
+            },
+
+            // Dữ liệu Màn 3: Lắp biểu thức Chu vi & Diện tích hình chữ nhật
+            stage3: {
+                title: "MÀN 3: LẮP BIỂU THỨC HÌNH CHỮ NHẬT",
+                introPractice: "Gợi ý nhẹ: Diện tích = chiều dài (a) * chiều rộng (b). Chu vi = 2 * (chiều dài (a) + chiều rộng (b)). Lắp xong hãy kéo thanh trượt đổi a, b và chạy 2 lần nhé!",
+                introChallenge: "Hãy lắp các biến vào khối toán tử tính Diện tích và Chu vi hình chữ nhật, sau đó thay đổi giá trị a, b và chạy chương trình ít nhất 2 lần!",
+                hints: [
+                    "Gợi ý mức 1: Nháy chọn thẻ 'chiều dài (a)' và 'chiều rộng (b)' đặt vào 2 ô của công thức Diện tích. Với công thức Chu vi, ô đầu tiên là 'Số 2'.",
+                    "Gợi ý mức 2: Công thức đúng: Diện tích = [a] * [b]; Chu vi = [2] * ( [a] + [b] ). Sau khi lắp đúng, em bấm 'Chạy chương trình', rồi kéo thanh trượt đổi số a hoặc b và bấm 'Chạy chương trình' thêm 1 lần nữa!"
+                ]
+            },
+
+            // Dữ liệu Màn 4: Tìm lỗi tính toán (Debug 3 ca lỗi)
+            stage4: {
+                title: "MÀN 4: TÌM LỖI TÍNH TOÁN",
+                introPractice: "Gợi ý nhẹ: Các đoạn chương trình của Pixel đang chọn nhầm phép toán hoặc đặt ngược vị trí số bị trừ và số trừ. Hãy sửa lại từng ca lỗi nhé!",
+                introChallenge: "Hãy kiểm tra 3 ca lỗi tính toán bên trái, sửa lại toán tử hoặc vị trí hai số/biến rồi bấm 'Chạy kiểm tra lỗi'!",
+                hints: [
+                    "Gợi ý mức 1: Ca 1 'ăn bớt kẹo' phải dùng phép trừ (-). Ca 2 'gấp lên 4 quyển vở' phải dùng phép nhân (*). Ca 3 lấy số lớn trừ số bé (50 - 18) nên cần bấm nút 'Đổi vị trí 2 số'.",
+                    "Gợi ý mức 2: Sửa Ca 1 thành [20 - 5]; Ca 2 thành [4 * g]; Ca 3 bấm nút '⇄ Đổi vị trí 2 số' để thành [50 - 18] (bằng 32). Nhớ bấm 'Chạy kiểm tra lỗi' ở từng ca!"
+                ],
+                cases: [
+                    {
+                        id: "bug1",
+                        title: "Ca lỗi 1: Tính số kẹo còn lại",
+                        desc: "Đề bài: Bạn An có 20 cái kẹo, An ăn bớt 5 cái kẹo. Chương trình đang lắp thành 20 + 5 nên ra 25. Em hãy sửa lại phép toán đúng!",
+                        initLeft: 20,
+                        initRight: 5,
+                        initOp: "+",
+                        correctLeft: 20,
+                        correctRight: 5,
+                        correctOp: "-",
+                        unit: "cái kẹo",
+                        hasVar: false
+                    },
+                    {
+                        id: "bug2",
+                        title: "Ca lỗi 2: Tính tiền mua 4 quyển vở",
+                        desc: "Đề bài: Mua 4 quyển vở, mỗi quyển giá g nghìn đồng. Chương trình đang dùng phép cộng (4 + g). Hãy sửa lại để tính đúng tổng số tiền!",
+                        initLeft: 4,
+                        initRight: "g",
+                        initOp: "+",
+                        correctLeft: 4,
+                        correctRight: "g",
+                        correctOp: "*",
+                        unit: "nghìn đồng",
+                        hasVar: true
+                    },
+                    {
+                        id: "bug3",
+                        title: "Ca lỗi 3: Đặt ngược vị trí phép trừ",
+                        desc: "Đề bài: Sợi dây dài 50 cm, cắt đi 18 cm. Chương trình đang đặt nhầm thứ tự thành 18 - 50 (ra -32). Hãy đảo lại vị trí 2 số để ra kết quả đúng!",
+                        initLeft: 18,
+                        initRight: 50,
+                        initOp: "-",
+                        correctLeft: 50,
+                        correctRight: 18,
+                        correctOp: "-",
+                        unit: "cm",
+                        hasVar: false
+                    }
+                ]
+            }
+        };
+
+        /* ==========================================================================
+           BỘ TỔNG HỢP ÂM THANH NGUYÊN GỐC WEB AUDIO API (100% KHÔNG GIỌNG ĐỌC / TTS)
+           ========================================================================== */
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.bgmEnabled = true;
+                this.sfxEnabled = true;
+                this.bgmTimer = null;
+                this.isPlayingBgm = false;
+                this.noteIndex = 0;
+                // Giai điệu pentatonic tươi sáng nguyên gốc
+                this.melodyNotes = [523.25, 659.25, 783.99, 659.25, 880.00, 783.99, 659.25, 587.33];
+            }
+
+            initContext() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) {
+                        this.ctx = new AudioCtx();
+                    }
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            startBgm() {
+                this.initContext();
+                if (!this.ctx || !this.bgmEnabled || this.isPlayingBgm) return;
+                this.isPlayingBgm = true;
+                this.scheduleNextNote();
+            }
+
+            scheduleNextNote() {
+                if (!this.isPlayingBgm || !this.bgmEnabled || document.hidden) return;
+                try {
+                    const now = this.ctx.currentTime;
+                    const freq = this.melodyNotes[this.noteIndex % this.melodyNotes.length];
+                    this.noteIndex++;
+
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now);
+
+                    const vol = GAME_CONFIG.audio.defaultBgmVolume;
+                    gain.gain.setValueAtTime(0.001, now);
+                    gain.gain.linearRampToValueAtTime(vol, now + 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.42);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.44);
+                } catch (e) {
+                    // Bỏ qua nếu trình duyệt chặn âm thanh
+                }
+
+                this.bgmTimer = setTimeout(() => this.scheduleNextNote(), 480);
+            }
+
+            stopBgm() {
+                this.isPlayingBgm = false;
+                if (this.bgmTimer) {
+                    clearTimeout(this.bgmTimer);
+                    this.bgmTimer = null;
+                }
+            }
+
+            toggleBgm() {
+                this.bgmEnabled = !this.bgmEnabled;
+                if (this.bgmEnabled) {
+                    this.startBgm();
+                } else {
+                    this.stopBgm();
+                }
+                return this.bgmEnabled;
+            }
+
+            toggleSfx() {
+                this.sfxEnabled = !this.sfxEnabled;
+                if (this.sfxEnabled) {
+                    this.playClick();
+                }
+                return this.sfxEnabled;
+            }
+
+            playTone(freq, duration, type = 'triangle', delay = 0) {
+                if (!this.sfxEnabled) return;
+                this.initContext();
+                if (!this.ctx) return;
+                try {
+                    const start = this.ctx.currentTime + delay;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, start);
+
+                    gain.gain.setValueAtTime(0.001, start);
+                    gain.gain.linearRampToValueAtTime(GAME_CONFIG.audio.defaultSfxVolume, start + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(start);
+                    osc.stop(start + duration + 0.02);
+                } catch (e) {}
+            }
+
+            playClick() {
+                this.playTone(660, 0.08, 'sine');
+            }
+
+            playSnap() {
+                this.playTone(520, 0.09, 'triangle');
+                this.playTone(780, 0.11, 'triangle', 0.06);
+            }
+
+            playCorrect() {
+                this.playTone(523.25, 0.12, 'triangle', 0);
+                this.playTone(659.25, 0.12, 'triangle', 0.1);
+                this.playTone(783.99, 0.22, 'triangle', 0.2);
+            }
+
+            playWrong() {
+                this.playTone(300, 0.16, 'sine', 0);
+                this.playTone(250, 0.22, 'sine', 0.14);
+            }
+
+            playStageClear() {
+                const notes = [523.25, 659.25, 783.99, 1046.5];
+                notes.forEach((n, idx) => this.playTone(n, 0.18, 'triangle', idx * 0.11));
+            }
+        }
+
+        const sound = new SoundEngine();
+
+        // Tạm dừng nhạc nền khi ẩn tab trình duyệt
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                sound.stopBgm();
+            } else if (appState.hasStarted && sound.bgmEnabled) {
+                sound.startBgm();
+            }
+        });
+
+        /* ==========================================================================
+           QUẢN LÍ TRẠNG THÁI TRÒ CHƠI (APPLICATION STATE)
+           ========================================================================== */
+        const appState = {
+            hasStarted: false,
+            mode: 'practice', // 'practice' | 'challenge'
+            currentStage: 1,
+            score: 0,
+            completedStages: { 1: false, 2: false, 3: false, 4: false },
+            hintLevel: { 1: 0, 2: 0, 3: 0, 4: 0 },
+
+            // Trạng thái riêng Màn 1
+            stage1: {
+                selectedBlockId: null,
+                slots: { 0: null, 1: null, 2: null, 3: null },
+                tested: { 0: false, 1: false, 2: false, 3: false }
+            },
+
+            // Trạng thái riêng Màn 2
+            stage2: {
+                activeQuestIndex: 0,
+                questDone: { q1: false, q2: false, q3: false, q4: false }
+            },
+
+            // Trạng thái riêng Màn 3
+            stage3: {
+                selectedToken: 'a',
+                slots: { area1: null, area2: null, peri1: null, peri2: null, peri3: null },
+                testedPairs: new Set() // Lưu các cặp "a-b" đã chạy thử đúng công thức
+            },
+
+            // Trạng thái riêng Màn 4
+            stage4: {
+                activeCaseIndex: 0,
+                casesState: []
+            }
+        };
+
+        /* ==========================================================================
+           VẼ BIỂU CẢM LINH VẬT RÔ-BỐT PIXEL (SVG ĐỘNG)
+           mood: 'happy' | 'thinking' | 'excited' | 'encourage'
+           ========================================================================== */
+        function renderPixelAvatar(mood = 'happy') {
+            const container = document.getElementById('pixelAvatarContainer');
+            let eyesSvg = '';
+            let mouthSvg = '';
+            let antennaColor = '#F6B6C8';
+
+            if (mood === 'excited') {
+                antennaColor = '#59C059';
+                eyesSvg = `
+                    <path d="M 24 38 L 30 32 L 36 38" stroke="#F2BE4A" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    <path d="M 52 38 L 58 32 L 64 38" stroke="#F2BE4A" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                `;
+                mouthSvg = `<path d="M 32 48 Q 44 60 56 48 Z" fill="#F2BE4A"/>`;
+            } else if (mood === 'thinking') {
+                antennaColor = '#F2BE4A';
+                eyesSvg = `
+                    <circle cx="30" cy="36" r="4.5" fill="#4ABDAA"/>
+                    <line x1="50" y1="36" x2="62" y2="36" stroke="#4ABDAA" stroke-width="3.5" stroke-linecap="round"/>
+                `;
+                mouthSvg = `<line x1="36" y1="50" x2="52" y2="48" stroke="#F2BE4A" stroke-width="3.5" stroke-linecap="round"/>`;
+            } else if (mood === 'encourage') {
+                antennaColor = '#FF8C1A';
+                eyesSvg = `
+                    <circle cx="30" cy="37" r="4.5" fill="#4ABDAA"/>
+                    <circle cx="58" cy="37" r="4.5" fill="#4ABDAA"/>
+                `;
+                mouthSvg = `<path d="M 35 52 Q 44 46 53 52" stroke="#F6B6C8" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+            } else {
+                // happy
+                eyesSvg = `
+                    <path d="M 24 38 Q 30 30 36 38" stroke="#4ABDAA" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                    <path d="M 52 38 Q 58 30 64 38" stroke="#4ABDAA" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                `;
+                mouthSvg = `<path d="M 33 48 Q 44 57 55 48" stroke="#F2BE4A" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+            }
+
+            container.innerHTML = `
+                <svg viewBox="0 0 88 80" width="72" height="68" role="img" aria-label="Biểu cảm trợ lí Pixel">
+                    <line x1="44" y1="4" x2="44" y2="16" stroke="#58429B" stroke-width="4" stroke-linecap="round"/>
+                    <circle cx="44" cy="6" r="5" fill="${antennaColor}"/>
+                    <rect x="12" y="16" width="64" height="52" rx="16" fill="#FFFFFF" stroke="#4ABDAA" stroke-width="3.5"/>
+                    <rect x="19" y="23" width="50" height="38" rx="10" fill="#2B234A"/>
+                    ${eyesSvg}
+                    ${mouthSvg}
+                </svg>
+            `;
+        }
+
+        function setFeedback(message, type = 'normal', mood = 'happy') {
+            const box = document.getElementById('pixelSpeechBox');
+            const textEl = document.getElementById('pixelSpeechText');
+            box.classList.remove('status-correct', 'status-wrong', 'status-hint');
+            if (type === 'correct') box.classList.add('status-correct');
+            if (type === 'wrong') box.classList.add('status-wrong');
+            if (type === 'hint') box.classList.add('status-hint');
+            textEl.textContent = message;
+            renderPixelAvatar(mood);
+        }
+
+        /* ==========================================================================
+           HIỆU ỨNG CONFETTI / NGÔI SAO KHI VƯỢT MÀN (TỐI ĐA 1.8 GIÂY)
+           ========================================================================== */
+        let confettiAnimId = null;
+        function launchCelebrationEffect() {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const colors = ['#58429B', '#4ABDAA', '#F2BE4A', '#F6B6C8', '#59C059'];
+            const particles = Array.from({ length: 55 }, () => ({
+                x: canvas.width / 2 + (Math.random() - 0.5) * 260,
+                y: canvas.height / 2 - 40,
+                vx: (Math.random() - 0.5) * 11,
+                vy: -Math.random() * 10 - 3,
+                size: Math.random() * 8 + 6,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                angle: Math.random() * Math.PI * 2
+            }));
+
+            const startTime = performance.now();
+            if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+
+            function frame(now) {
+                const elapsed = now - startTime;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (elapsed > 1800) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    return;
+                }
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.32;
+                    p.angle += 0.1;
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.angle);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                });
+                confettiAnimId = requestAnimationFrame(frame);
+            }
+            confettiAnimId = requestAnimationFrame(frame);
+        }
+
+        /* ==========================================================================
+           CẬP NHẬT ĐIỂM SỐ, TIẾN ĐỘ & KHÓA/MỞ MÀN CHƠI
+           ========================================================================== */
+        function updateGlobalHeader() {
+            const completedCount = Object.values(appState.completedStages).filter(Boolean).length;
+            document.getElementById('headerProgressText').textContent = `${completedCount}/4`;
+            document.getElementById('headerScoreText').textContent = `${appState.score} / 100`;
+
+            for (let s = 1; s <= 4; s++) {
+                const tab = document.getElementById(`tabStage${s}`);
+                const core = document.getElementById(`coreNode${s}`);
+                const isDone = appState.completedStages[s];
+
+                tab.classList.toggle('active', appState.currentStage === s);
+                tab.classList.toggle('completed', isDone);
+                core.classList.toggle('powered', isDone);
+
+                // Cho phép mở màn kế tiếp nếu màn trước đã xong
+                if (s === 1 || appState.completedStages[s - 1] || isDone) {
+                    tab.disabled = false;
+                } else {
+                    tab.disabled = true;
+                }
+            }
+
+            // Nút "Tiếp tục" chỉ bật khi màn hiện tại đã hoàn thành
+            const btnNext = document.getElementById('btnNextStage');
+            const currentDone = appState.completedStages[appState.currentStage];
+            btnNext.disabled = !currentDone;
+            btnNext.textContent = appState.currentStage === 4 ? "Xem Bảng Tổng Kết 🏆" : "Tiếp tục màn sau ➔";
+        }
+
+        function markStageCompleted(stageNum, customCongrats) {
+            if (!appState.completedStages[stageNum]) {
+                appState.completedStages[stageNum] = true;
+                appState.score += GAME_CONFIG.pointsPerStage;
+                sound.playStageClear();
+                launchCelebrationEffect();
+            } else {
+                sound.playCorrect();
+            }
+            updateGlobalHeader();
+            setFeedback(customCongrats, 'correct', 'excited');
+        }
+
+        /* ==========================================================================
+           LOGIC MÀN 1: NHẬN DIỆN TOÁN TỬ SCRATCH (KÉO THẢ + NHẤN CHỌN + CHẠY THỬ)
+           ========================================================================== */
+        function initStage1() {
+            appState.stage1.selectedBlockId = null;
+            appState.stage1.slots = { 0: null, 1: null, 2: null, 3: null };
+            appState.stage1.tested = { 0: false, 1: false, 2: false, 3: false };
+            renderStage1UI();
+        }
+
+        function renderStage1UI() {
+            const poolEl = document.getElementById('stage1BlockPool');
+            const listEl = document.getElementById('stage1MatchList');
+            const items = GAME_CONFIG.stage1.items;
+
+            // Trình tự các khối trong kho để học sinh quan sát và chọn
+            const poolOrder = [items[2], items[0], items[3], items[1]];
+            const usedIds = Object.values(appState.stage1.slots).filter(Boolean);
+
+            poolEl.innerHTML = '';
+            poolOrder.forEach(item => {
+                const isUsed = usedIds.includes(item.id);
+                const isSelected = appState.stage1.selectedBlockId === item.id;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `scratch-op-block drag-block-item ${isUsed ? 'used-block' : ''} ${isSelected ? 'selected-block' : ''}`;
+                btn.setAttribute('draggable', !isUsed);
+                btn.dataset.blockId = item.id;
+                btn.innerHTML = `
+                    <span class="scratch-input-oval">${item.a}</span>
+                    <span>${item.op}</span>
+                    <span class="scratch-input-oval">${item.b}</span>
+                `;
+
+                btn.addEventListener('click', () => {
+                    if (isUsed) return;
+                    sound.playClick();
+                    appState.stage1.selectedBlockId = (appState.stage1.selectedBlockId === item.id) ? null : item.id;
+                    renderStage1UI();
+                });
+
+                btn.addEventListener('dragstart', (e) => {
+                    appState.stage1.selectedBlockId = item.id;
+                    e.dataTransfer.setData('text/plain', item.id);
+                });
+
+                poolEl.appendChild(btn);
+            });
+
+            listEl.innerHTML = '';
+            items.forEach((rowItem, rowIndex) => {
+                const placedBlockId = appState.stage1.slots[rowIndex];
+                const placedObj = items.find(i => i.id === placedBlockId);
+                const isTested = appState.stage1.tested[rowIndex];
+
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'match-row';
+
+                // Cột 1: Biểu thức toán học
+                const mathBadge = document.createElement('div');
+                mathBadge.className = 'math-card-badge';
+                mathBadge.textContent = rowItem.mathText;
+
+                // Cột 2: Ô thả khối Scratch
+                const slotBtn = document.createElement('button');
+                slotBtn.type = 'button';
+                slotBtn.className = `drop-slot ${placedObj ? 'filled' : ''} ${appState.stage1.selectedBlockId ? 'highlight-target' : ''}`;
+                if (placedObj) {
+                    slotBtn.innerHTML = `
+                        <span class="scratch-op-block" style="padding: 4px 12px; font-size: 0.95rem;">
+                            <span class="scratch-input-oval" style="min-width: 36px; min-height: 28px;">${placedObj.a}</span>
+                            <span>${placedObj.op}</span>
+                            <span class="scratch-input-oval" style="min-width: 36px; min-height: 28px;">${placedObj.b}</span>
+                        </span>
+                    `;
+                } else {
+                    slotBtn.textContent = appState.stage1.selectedBlockId
+                        ? "Nháy vào đây để đặt khối"
+                        : "Thả hoặc nháy đặt khối Scratch";
+                }
+
+                slotBtn.addEventListener('click', () => handlePlaceStage1Slot(rowIndex));
+                slotBtn.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    slotBtn.classList.add('highlight-target');
+                });
+                slotBtn.addEventListener('dragleave', () => {
+                    slotBtn.classList.remove('highlight-target');
+                });
+                slotBtn.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const draggedId = e.dataTransfer.getData('text/plain') || appState.stage1.selectedBlockId;
+                    if (draggedId) {
+                        appState.stage1.selectedBlockId = draggedId;
+                        handlePlaceStage1Slot(rowIndex);
+                    }
+                });
+
+                // Cột 3: Nút Chạy thử
+                const runBtn = document.createElement('button');
+                runBtn.type = 'button';
+                runBtn.className = `btn ${isTested ? 'btn-teal' : 'btn-yellow'}`;
+                runBtn.textContent = isTested ? "✓ Đã chạy" : "▶ Chạy thử";
+                runBtn.disabled = !placedObj;
+                runBtn.addEventListener('click', () => handleTestStage1Row(rowIndex));
+
+                // Cột 4: Màn hình giá trị
+                const monitor = document.createElement('div');
+                monitor.className = 'result-monitor';
+                monitor.textContent = isTested ? `= ${placedObj.expected}` : "= ?";
+
+                rowDiv.appendChild(mathBadge);
+                rowDiv.appendChild(slotBtn);
+                rowDiv.appendChild(runBtn);
+                rowDiv.appendChild(monitor);
+                listEl.appendChild(rowDiv);
+            });
+
+            const testedCount = Object.values(appState.stage1.tested).filter(Boolean).length;
+            document.getElementById('stage1SubProgress').textContent = `Đã chạy thử đúng: ${testedCount}/4`;
+        }
+
+        function handlePlaceStage1Slot(rowIndex) {
+            const pickedId = appState.stage1.selectedBlockId;
+            if (!pickedId) {
+                // Nếu nháy vào ô đã có khối mà chưa chọn khối mới -> trả khối về kho
+                if (appState.stage1.slots[rowIndex]) {
+                    appState.stage1.slots[rowIndex] = null;
+                    appState.stage1.tested[rowIndex] = false;
+                    sound.playClick();
+                    renderStage1UI();
+                }
+                return;
+            }
+
+            // Gỡ khối này khỏi ô cũ nếu có
+            Object.keys(appState.stage1.slots).forEach(k => {
+                if (appState.stage1.slots[k] === pickedId) {
+                    appState.stage1.slots[k] = null;
+                    appState.stage1.tested[k] = false;
+                }
+            });
+
+            appState.stage1.slots[rowIndex] = pickedId;
+            appState.stage1.tested[rowIndex] = false;
+            appState.stage1.selectedBlockId = null;
+            sound.playSnap();
+            renderStage1UI();
+        }
+
+        function handleTestStage1Row(rowIndex) {
+            const expectedItem = GAME_CONFIG.stage1.items[rowIndex];
+            const placedId = appState.stage1.slots[rowIndex];
+            const placedItem = GAME_CONFIG.stage1.items.find(i => i.id === placedId);
+
+            if (!placedItem) return;
+
+            if (placedItem.id === expectedItem.id) {
+                appState.stage1.tested[rowIndex] = true;
+                renderStage1UI();
+
+                const allTested = Object.values(appState.stage1.tested).every(Boolean);
+                if (allTested) {
+                    markStageCompleted(
+                        1,
+                        "Xuất sắc! Em đã ghép đúng cả 4 khối toán tử (+, -, *, /) và chạy thử hiển thị đầy đủ giá trị. Cụm năng lượng số 1 đã bật sáng (+25 điểm)!"
+                    );
+                } else {
+                    sound.playCorrect();
+                    setFeedback(
+                        `Chính xác! Biểu thức ${expectedItem.mathText} được viết trong Scratch là [${expectedItem.scratchLabel}] và có giá trị bằng ${expectedItem.expected}.`,
+                        'correct',
+                        'happy'
+                    );
+                }
+            } else {
+                appState.stage1.tested[rowIndex] = false;
+                sound.playWrong();
+                setFeedback(
+                    `Chưa khớp rồi! Ô "${expectedItem.mathText}" đang gắn nhầm khối [${placedItem.scratchLabel}]. Em hãy nháy vào ô để đổi lại khối đúng nhé!`,
+                    'wrong',
+                    'encourage'
+                );
+                renderStage1UI();
+            }
+        }
+
+        /* ==========================================================================
+           LOGIC MÀN 2: NHÀ MÁY TÍNH NHẨM (NHẬP SỐ & PHÉP TOÁN THỜI GIAN CHẠY)
+           ========================================================================== */
+        function initStage2() {
+            appState.stage2.activeQuestIndex = 0;
+            appState.stage2.questDone = { q1: false, q2: false, q3: false, q4: false };
+            renderStage2UI();
+        }
+
+        function renderStage2UI() {
+            const quests = GAME_CONFIG.stage2.quests;
+            const listEl = document.getElementById('stage2QuestList');
+            listEl.innerHTML = '';
+
+            quests.forEach((q, idx) => {
+                const isDone = appState.stage2.questDone[q.id];
+                const isActive = appState.stage2.activeQuestIndex === idx;
+                const card = document.createElement('button');
+                card.type = 'button';
+                card.className = `quest-card ${isActive ? 'active-quest' : ''} ${isDone ? 'done-quest' : ''}`;
+                card.innerHTML = `
+                    <span class="q-badge">${isDone ? '✓ Hoàn thành' : q.badge}</span>
+                    <p>${q.shortName}</p>
+                `;
+                card.addEventListener('click', () => {
+                    sound.playClick();
+                    appState.stage2.activeQuestIndex = idx;
+                    renderStage2UI();
+                });
+                listEl.appendChild(card);
+            });
+
+            const currentQuest = quests[appState.stage2.activeQuestIndex];
+            document.getElementById('stage2CurrentQuestPrompt').textContent = currentQuest.prompt;
+
+            const doneCount = Object.values(appState.stage2.questDone).filter(Boolean).length;
+            document.getElementById('stage2SubProgress').textContent = `Đã xong: ${doneCount}/4 nhiệm vụ`;
+            updateStage2LivePreview();
+        }
+
+        function updateStage2LivePreview() {
+            const a = document.getElementById('s2InputA').value;
+            const op = document.getElementById('s2SelectOp').value;
+            const b = document.getElementById('s2InputB').value;
+            document.getElementById('s2FormulaPreview').textContent = `Biểu thức: ${a} ${op} ${b}`;
+        }
+
+        function evaluateRuntimeExpression(a, op, b) {
+            if (isNaN(a) || isNaN(b)) {
+                return { valid: false, error: "Em hãy nhập đầy đủ hai số vào ô dữ liệu nhé!" };
+            }
+            if (op === '/' && b === 0) {
+                return { valid: false, isZeroDiv: true, error: "Không thể chia cho 0! Em hãy thay số chia khác 0 nhé!" };
+            }
+            let result = 0;
+            if (op === '+') result = a + b;
+            else if (op === '-') result = a - b;
+            else if (op === '*') result = a * b;
+            else if (op === '/') result = Number((a / b).toFixed(2));
+            return { valid: true, result };
+        }
+
+        function handleRunStage2() {
+            const rawA = parseFloat(document.getElementById('s2InputA').value);
+            const rawB = parseFloat(document.getElementById('s2InputB').value);
+            const op = document.getElementById('s2SelectOp').value;
+            const bubble = document.getElementById('s2CatBubble');
+            const currentQuest = GAME_CONFIG.stage2.quests[appState.stage2.activeQuestIndex];
+
+            const evalRes = evaluateRuntimeExpression(rawA, op, rawB);
+
+            // Xử lí chia cho 0 an toàn
+            if (!evalRes.valid) {
+                bubble.textContent = evalRes.error;
+                if (evalRes.isZeroDiv && currentQuest.id === 'q4') {
+                    sound.playSnap();
+                    setFeedback(
+                        "Em đã phát hiện ra cơ chế bảo vệ chia cho 0! Trong toán học và lập trình, không thể chia một số cho 0. Bây giờ hãy đổi số chia khác 0 để tạo phép chia có kết quả bằng 4 nhé!",
+                        'hint',
+                        'thinking'
+                    );
+                } else {
+                    sound.playWrong();
+                    setFeedback(evalRes.error, 'wrong', 'encourage');
+                }
+                return;
+            }
+
+            // Hiển thị kết quả tính thật trên sân khấu
+            bubble.textContent = `${rawA} ${op} ${rawB} = ${evalRes.result}`;
+
+            // Kiểm tra điều kiện của nhiệm vụ đang chọn
+            if (op !== currentQuest.requiredOp) {
+                sound.playWrong();
+                setFeedback(
+                    `Máy tính được ${rawA} ${op} ${rawB} = ${evalRes.result}, nhưng ${currentQuest.badge} yêu cầu dùng phép toán (${currentQuest.requiredOp}). Em hãy chọn lại phép toán nhé!`,
+                    'wrong',
+                    'encourage'
+                );
+                return;
+            }
+
+            if (currentQuest.noOneFactor && (rawA === 1 || rawB === 1)) {
+                sound.playWrong();
+                setFeedback(
+                    `Kết quả đúng bằng 24 nhưng nhiệm vụ yêu cầu hai thừa số đều lớn hơn 1 (ví dụ 4 * 6 hoặc 3 * 8). Em thử lại nhé!`,
+                    'wrong',
+                    'thinking'
+                );
+                return;
+            }
+
+            if (evalRes.result === currentQuest.targetValue) {
+                appState.stage2.questDone[currentQuest.id] = true;
+
+                // Tự động chuyển sang nhiệm vụ chưa hoàn thành tiếp theo nếu có
+                const nextIdx = GAME_CONFIG.stage2.quests.findIndex(q => !appState.stage2.questDone[q.id]);
+                if (nextIdx !== -1) {
+                    appState.stage2.activeQuestIndex = nextIdx;
+                    sound.playCorrect();
+                    setFeedback(
+                        `Tuyệt vời! Nhân vật đã nói kết quả ${rawA} ${op} ${rawB} = ${evalRes.result}. Hãy tiếp tục với nhiệm vụ tiếp theo nhé!`,
+                        'correct',
+                        'happy'
+                    );
+                } else {
+                    markStageCompleted(
+                        2,
+                        "Chúc mừng em đã hoàn thành xuất sắc cả 4 nhiệm vụ tại Nhà máy tính nhẩm! Cụm năng lượng số 2 đã hoạt động (+25 điểm)!"
+                    );
+                }
+                renderStage2UI();
+            } else {
+                sound.playWrong();
+                setFeedback(
+                    `Biểu thức ${rawA} ${op} ${rawB} cho kết quả là ${evalRes.result}, chưa bằng ${currentQuest.targetValue} như yêu cầu của ${currentQuest.badge}. Em điều chỉnh lại số nhé!`,
+                    'wrong',
+                    'encourage'
+                );
+            }
+        }
+
+        /* ==========================================================================
+           LOGIC MÀN 3: LẮP BIỂU THỨC CHU VI & DIỆN TÍCH HÌNH CHỮ NHẬT
+           ========================================================================== */
+        function initStage3() {
+            appState.stage3.selectedToken = 'a';
+            appState.stage3.slots = { area1: null, area2: null, peri1: null, peri2: null, peri3: null };
+            appState.stage3.testedPairs = new Set();
+            document.getElementById('s3RangeA').value = 6;
+            document.getElementById('s3RangeB').value = 4;
+            renderStage3UI();
+        }
+
+        function isStage3AreaFormulaValid() {
+            const { area1, area2 } = appState.stage3.slots;
+            return (area1 === 'a' && area2 === 'b') || (area1 === 'b' && area2 === 'a');
+        }
+
+        function isStage3PeriFormulaValid() {
+            const { peri1, peri2, peri3 } = appState.stage3.slots;
+            return peri1 === '2' && ((peri2 === 'a' && peri3 === 'b') || (peri2 === 'b' && peri3 === 'a'));
+        }
+
+        function formatTokenLabel(token) {
+            if (token === 'a') return 'chiều dài (a)';
+            if (token === 'b') return 'chiều rộng (b)';
+            if (token === '2') return '2';
+            return '[ Ô trống ]';
+        }
+
+        function renderStage3UI() {
+            // Đánh dấu thẻ đang chọn
+            document.querySelectorAll('.s3-token').forEach(btn => {
+                const isSel = btn.dataset.token === appState.stage3.selectedToken;
+                btn.style.outline = isSel ? '4px solid var(--yellow)' : 'none';
+            });
+
+            // Cập nhật các ô slot
+            const slotMap = [
+                { id: 's3AreaSlot1', key: 'area1', placeholder: '[ Ô 1 ]' },
+                { id: 's3AreaSlot2', key: 'area2', placeholder: '[ Ô 2 ]' },
+                { id: 's3PeriSlot1', key: 'peri1', placeholder: '[ Số ? ]' },
+                { id: 's3PeriSlot2', key: 'peri2', placeholder: '[ Ô a ]' },
+                { id: 's3PeriSlot3', key: 'peri3', placeholder: '[ Ô b ]' }
+            ];
+
+            slotMap.forEach(s => {
+                const el = document.getElementById(s.id);
+                const val = appState.stage3.slots[s.key];
+                el.classList.remove('filled-var', 'filled-num');
+                if (val === 'a' || val === 'b') {
+                    el.classList.add('filled-var');
+                    el.textContent = formatTokenLabel(val);
+                } else if (val === '2') {
+                    el.classList.add('filled-num');
+                    el.textContent = '2';
+                } else {
+                    el.textContent = s.placeholder;
+                }
+            });
+
+            // Cập nhật thanh tiến trình 3 bước
+            const areaOk = isStage3AreaFormulaValid();
+            const periOk = isStage3PeriFormulaValid();
+            const runCount = appState.stage3.testedPairs.size;
+
+            const step1El = document.getElementById('s3Step1Indicator');
+            const step2El = document.getElementById('s3Step2Indicator');
+            const step3El = document.getElementById('s3Step3Indicator');
+
+            step1El.classList.toggle('done', areaOk);
+            step1El.textContent = areaOk ? "✓ Bước 1: Đã lắp Diện tích (a * b)" : "Bước 1: Lắp công thức Diện tích (a * b)";
+
+            step2El.classList.toggle('done', periOk);
+            step2El.textContent = periOk ? "✓ Bước 2: Đã lắp Chu vi 2 * (a + b)" : "Bước 2: Lắp công thức Chu vi 2 * (a + b)";
+
+            step3El.classList.toggle('done', runCount >= 2);
+            step3El.textContent = `Bước 3: Đổi a, b và chạy thử (${Math.min(runCount, 2)}/2 lần)`;
+
+            updateStage3GeometryVisual();
+        }
+
+        function updateStage3GeometryVisual() {
+            const a = parseInt(document.getElementById('s3RangeA').value, 10);
+            const b = parseInt(document.getElementById('s3RangeB').value, 10);
+
+            document.getElementById('s3ValAText').textContent = a;
+            document.getElementById('s3ValBText').textContent = b;
+
+            // Vẽ lại kích thước hình chữ nhật SVG theo tỉ lệ
+            const rectW = a * 18;
+            const rectH = b * 16;
+            const rectX = 160 - rectW / 2;
+            const rectY = 105 - rectH / 2;
+
+            const rectEl = document.getElementById('s3DynamicRect');
+            rectEl.setAttribute('x', rectX);
+            rectEl.setAttribute('y', rectY);
+            rectEl.setAttribute('width', rectW);
+            rectEl.setAttribute('height', rectH);
+
+            const labelA = document.getElementById('s3LabelTopA');
+            labelA.setAttribute('x', 160);
+            labelA.setAttribute('y', Math.max(22, rectY - 8));
+            labelA.textContent = `chiều dài a = ${a} cm`;
+
+            const labelB = document.getElementById('s3LabelSideB');
+            labelB.setAttribute('x', Math.max(55, rectX - 8));
+            labelB.setAttribute('y', 108);
+            labelB.textContent = `b = ${b} cm`;
+        }
+
+        function handleRunStage3Program() {
+            const a = parseInt(document.getElementById('s3RangeA').value, 10);
+            const b = parseInt(document.getElementById('s3RangeB').value, 10);
+            const areaOk = isStage3AreaFormulaValid();
+            const periOk = isStage3PeriFormulaValid();
+
+            if (!areaOk || !periOk) {
+                sound.playWrong();
+                let reason = "Em cần lắp đúng cả hai công thức trước khi chạy thử: ";
+                if (!areaOk) reason += "Diện tích hình chữ nhật phải là [chiều dài (a)] * [chiều rộng (b)]. ";
+                if (!periOk) reason += "Chu vi hình chữ nhật phải là [2] * ( [chiều dài (a)] + [chiều rộng (b)] ).";
+                setFeedback(reason, 'wrong', 'encourage');
+                return;
+            }
+
+            // Tính toán giá trị thực từ biến a, b
+            const areaVal = a * b;
+            const periVal = 2 * (a + b);
+
+            document.getElementById('s3OutputArea').textContent = `nói: Diện tích = ${a} * ${b} = ${areaVal} (cm²)`;
+            document.getElementById('s3OutputPeri').textContent = `nói: Chu vi = 2 * (${a} + ${b}) = ${periVal} (cm)`;
+
+            const pairKey = `${a}-${b}`;
+            appState.stage3.testedPairs.add(pairKey);
+            renderStage3UI();
+
+            if (appState.stage3.testedPairs.size >= 2) {
+                markStageCompleted(
+                    3,
+                    `Tuyệt vời! Với a = ${a}, b = ${b}, Diện tích = ${areaVal} cm² và Chu vi = ${periVal} cm. Em đã thấy khi biến thay đổi thì giá trị biểu thức tự động cập nhật! (+25 điểm)`
+                );
+            } else {
+                sound.playCorrect();
+                setFeedback(
+                    `Chạy lần 1 thành công! Với a = ${a}, b = ${b} thì Diện tích = ${areaVal} và Chu vi = ${periVal}. Bây giờ em hãy kéo thanh trượt đổi giá trị a hoặc b rồi bấm 'Chạy chương trình' thêm 1 lần nữa nhé!`,
+                    'correct',
+                    'happy'
+                );
+            }
+        }
+
+        /* ==========================================================================
+           LOGIC MÀN 4: TÌM LỖI TÍNH TOÁN (DEBUG 3 CA LỖI)
+           ========================================================================== */
+        function initStage4() {
+            appState.stage4.activeCaseIndex = 0;
+            appState.stage4.casesState = GAME_CONFIG.stage4.cases.map(c => ({
+                id: c.id,
+                left: c.initLeft,
+                right: c.initRight,
+                op: c.initOp,
+                varG: 6,
+                fixed: false
+            }));
+            renderStage4UI();
+        }
+
+        function computeStage4CaseValue(left, op, right, varG) {
+            const numL = left === 'g' ? varG : Number(left);
+            const numR = right === 'g' ? varG : Number(right);
+            if (op === '+') return numL + numR;
+            if (op === '-') return numL - numR;
+            if (op === '*') return numL * numR;
+            if (op === '/') return numR !== 0 ? Number((numL / numR).toFixed(2)) : 'Lỗi chia 0';
+            return 0;
+        }
+
+        function renderStage4UI() {
+            const casesCfg = GAME_CONFIG.stage4.cases;
+            const listEl = document.getElementById('stage4CaseList');
+            listEl.innerHTML = '';
+
+            casesCfg.forEach((cfg, idx) => {
+                const st = appState.stage4.casesState[idx];
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `bug-case-btn ${appState.stage4.activeCaseIndex === idx ? 'active' : ''} ${st.fixed ? 'fixed' : ''}`;
+                btn.innerHTML = `
+                    <div style="font-weight: 800; color: var(--primary);">${st.fixed ? '✅ ' : '🐞 '}${cfg.title}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+                        Trạng thái: <strong>${st.fixed ? 'Đã sửa đúng' : 'Cần kiểm tra sửa lỗi'}</strong>
+                    </div>
+                `;
+                btn.addEventListener('click', () => {
+                    sound.playClick();
+                    appState.stage4.activeCaseIndex = idx;
+                    renderStage4UI();
+                });
+                listEl.appendChild(btn);
+            });
+
+            const idx = appState.stage4.activeCaseIndex;
+            const cfg = casesCfg[idx];
+            const st = appState.stage4.casesState[idx];
+
+            document.getElementById('s4CaseTitle').textContent = cfg.title;
+            document.getElementById('s4ProblemDesc').textContent = cfg.desc;
+
+            const badge = document.getElementById('s4CaseStatusBadge');
+            if (st.fixed) {
+                badge.textContent = "Đã sửa thành công ✓";
+                badge.style.background = "var(--mint-bg)";
+                badge.style.color = "var(--teal-dark)";
+            } else {
+                badge.textContent = "Đang có lỗi!";
+                badge.style.background = "var(--peach-bg)";
+                badge.style.color = "#A63A5B";
+            }
+
+            // Hiển thị ô thử biến g cho Ca lỗi 2
+            const varTester = document.getElementById('s4VariableTester');
+            varTester.style.display = cfg.hasVar ? 'flex' : 'none';
+            if (cfg.hasVar) {
+                document.getElementById('s4VarGInput').value = st.varG;
+            }
+
+            // Cập nhật khối lệnh trên màn hình
+            document.getElementById('s4LeftOperand').textContent = st.left === 'g' ? `g (${st.varG})` : st.left;
+            document.getElementById('s4RightOperand').textContent = st.right === 'g' ? `g (${st.varG})` : st.right;
+            document.getElementById('s4OperatorSelect').value = st.op;
+
+            // Tính giá trị mong đợi và giá trị hiện tại
+            const expectedVal = computeStage4CaseValue(cfg.correctLeft, cfg.correctOp, cfg.correctRight, st.varG);
+            const actualVal = computeStage4CaseValue(st.left, st.op, st.right, st.varG);
+
+            document.getElementById('s4ExpectedVal').textContent = `${expectedVal} ${cfg.unit}`;
+            document.getElementById('s4ActualVal').textContent = `${actualVal} ${cfg.unit}`;
+
+            const actualBox = document.getElementById('s4ActualBox');
+            actualBox.classList.toggle('matched', expectedVal === actualVal && st.op === cfg.correctOp);
+
+            const fixedCount = appState.stage4.casesState.filter(c => c.fixed).length;
+            document.getElementById('stage4SubProgress').textContent = `Đã sửa: ${fixedCount}/3`;
+        }
+
+        function handleVerifyStage4Bug() {
+            const idx = appState.stage4.activeCaseIndex;
+            const cfg = GAME_CONFIG.stage4.cases[idx];
+            const st = appState.stage4.casesState[idx];
+
+            const expectedVal = computeStage4CaseValue(cfg.correctLeft, cfg.correctOp, cfg.correctRight, st.varG);
+            const actualVal = computeStage4CaseValue(st.left, st.op, st.right, st.varG);
+
+            const isOperatorCorrect = st.op === cfg.correctOp;
+            const isValueMatching = expectedVal === actualVal;
+
+            if (isOperatorCorrect && isValueMatching) {
+                st.fixed = true;
+                renderStage4UI();
+
+                const allFixed = appState.stage4.casesState.every(c => c.fixed);
+                if (allFixed) {
+                    markStageCompleted(
+                        4,
+                        "Hoàn hảo! Em đã tìm và sửa xong cả 3 ca lỗi biểu thức tính toán. Toàn bộ Phòng tính toán Scratch đã được khôi phục (+25 điểm)!"
+                    );
+                } else {
+                    const nextIdx = appState.stage4.casesState.findIndex(c => !c.fixed);
+                    if (nextIdx !== -1) appState.stage4.activeCaseIndex = nextIdx;
+                    sound.playCorrect();
+                    setFeedback(
+                        `Chính xác! Biểu thức đã được sửa đúng và cho kết quả ${actualVal} ${cfg.unit}. Hãy tiếp tục kiểm tra ca lỗi tiếp theo nhé!`,
+                        'correct',
+                        'happy'
+                    );
+                    renderStage4UI();
+                }
+            } else {
+                st.fixed = false;
+                sound.playWrong();
+                let explain = `Chưa đúng rồi! Biểu thức [${st.left} ${st.op} ${st.right}] đang ra kết quả là ${actualVal}, trong khi đề bài cần kết quả là ${expectedVal} ${cfg.unit}. `;
+                if (st.op !== cfg.correctOp) {
+                    explain += "Em hãy chọn lại toán tử số học phù hợp với tình huống đề bài nhé!";
+                } else {
+                    explain += "Phép trừ không có tính giao hoán, em hãy bấm nút '⇄ Đổi vị trí 2 số' để lấy số lớn trừ số bé nhé!";
+                }
+                setFeedback(explain, 'wrong', 'encourage');
+                renderStage4UI();
+            }
+        }
+
+        /* ==========================================================================
+           ĐIỀU HƯỚNG MÀN HÌNH & GỢI Ý 2 CẤP ĐỘ
+           ========================================================================== */
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen-view').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            document.getElementById('labTopBar').style.display = (screenId === 'screenGameplay') ? 'flex' : 'none';
+        }
+
+        function loadStage(stageNum) {
+            appState.currentStage = stageNum;
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`stageContent${i}`).style.display = (i === stageNum) ? 'block' : 'none';
+            }
+
+            const stageCfg = GAME_CONFIG[`stage${stageNum}`];
+            document.getElementById('pixelStageTitle').textContent = `TRỢ LÍ PIXEL • ${stageCfg.title}`;
+            document.getElementById('pixelModeBadge').textContent =
+                appState.mode === 'practice' ? '🌱 Chế độ Luyện tập' : '🚀 Chế độ Thử thách';
+
+            const introMsg = appState.mode === 'practice' ? stageCfg.introPractice : stageCfg.introChallenge;
+            setFeedback(introMsg, 'normal', 'happy');
+
+            // Cập nhật nhãn nút Gợi ý
+            const currentHintLv = appState.hintLevel[stageNum] || 0;
+            document.getElementById('btnHintStage').textContent = `💡 Gợi ý (Mức ${Math.min(currentHintLv + 1, 2)}/2)`;
+
+            updateGlobalHeader();
+        }
+
+        function handleShowHint() {
+            sound.playClick();
+            const s = appState.currentStage;
+            const stageCfg = GAME_CONFIG[`stage${s}`];
+            const currentLv = appState.hintLevel[s] || 0;
+            const nextLv = currentLv === 0 ? 1 : 2;
+            appState.hintLevel[s] = nextLv;
+
+            const hintText = stageCfg.hints[nextLv - 1];
+            setFeedback(hintText, 'hint', 'thinking');
+            document.getElementById('btnHintStage').textContent = `💡 Gợi ý (Mức ${nextLv}/2)`;
+        }
+
+        function handleResetCurrentStage() {
+            sound.playClick();
+            const s = appState.currentStage;
+            appState.hintLevel[s] = 0;
+            if (s === 1) initStage1();
+            if (s === 2) initStage2();
+            if (s === 3) initStage3();
+            if (s === 4) initStage4();
+            loadStage(s);
+            setFeedback("Đã đặt lại màn chơi! Em có thể thực hành lại từ đầu màn này nhé.", 'normal', 'happy');
+        }
+
+        /* ==========================================================================
+           KHỞI TẠO SỰ KIỆN (EVENT LISTENERS)
+           ========================================================================== */
+        function bindEvents() {
+            // Công tắc Nhạc nền & Hiệu ứng độc lập
+            const btnBgm = document.getElementById('btnToggleBgm');
+            btnBgm.addEventListener('click', () => {
+                const isOn = sound.toggleBgm();
+                btnBgm.setAttribute('aria-pressed', isOn);
+                btnBgm.classList.toggle('active-toggle', isOn);
+                btnBgm.classList.toggle('muted-toggle', !isOn);
+                btnBgm.innerHTML = `<span>♪ Nhạc nền: ${isOn ? 'Bật' : 'Tắt'}</span>`;
+            });
+
+            const btnSfx = document.getElementById('btnToggleSfx');
+            btnSfx.addEventListener('click', () => {
+                const isOn = sound.toggleSfx();
+                btnSfx.setAttribute('aria-pressed', isOn);
+                btnSfx.classList.toggle('active-toggle', isOn);
+                btnSfx.classList.toggle('muted-toggle', !isOn);
+                btnSfx.innerHTML = `<span>★ Hiệu ứng: ${isOn ? 'Bật' : 'Tắt'}</span>`;
+            });
+
+            // Chọn chế độ chơi ở màn chào mừng
+            const btnPractice = document.getElementById('modePracticeBtn');
+            const btnChallenge = document.getElementById('modeChallengeBtn');
+            btnPractice.addEventListener('click', () => {
+                sound.playClick();
+                appState.mode = 'practice';
+                btnPractice.classList.add('selected');
+                btnChallenge.classList.remove('selected');
+            });
+            btnChallenge.addEventListener('click', () => {
+                sound.playClick();
+                appState.mode = 'challenge';
+                btnChallenge.classList.add('selected');
+                btnPractice.classList.remove('selected');
+            });
+
+            // Bắt đầu trò chơi (Khởi tạo nhạc nền sau thao tác của người chơi)
+            document.getElementById('btnStartGame').addEventListener('click', () => {
+                appState.hasStarted = true;
+                sound.playClick();
+                sound.startBgm();
+                switchScreen('screenGameplay');
+                loadStage(appState.currentStage);
+            });
+
+            // Modal hướng dẫn
+            const guideModal = document.getElementById('guideModal');
+            document.getElementById('btnOpenGuideTop').addEventListener('click', () => {
+                sound.playClick();
+                guideModal.classList.add('open');
+            });
+            document.getElementById('btnWelcomeGuide').addEventListener('click', () => {
+                sound.playClick();
+                guideModal.classList.add('open');
+            });
+            document.getElementById('btnCloseGuide').addEventListener('click', () => {
+                sound.playClick();
+                guideModal.classList.remove('open');
+            });
+
+            // Chuyển tab giữa các màn đã mở khóa
+            document.querySelectorAll('.stage-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetStage = parseInt(tab.dataset.stage, 10);
+                    if (!tab.disabled) {
+                        sound.playClick();
+                        loadStage(targetStage);
+                    }
+                });
+            });
+
+            // Sự kiện Màn 2
+            ['s2InputA', 's2SelectOp', 's2InputB'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updateStage2LivePreview);
+                document.getElementById(id).addEventListener('change', updateStage2LivePreview);
+            });
+            document.getElementById('btnRunStage2').addEventListener('click', handleRunStage2);
+
+            // Sự kiện Màn 3
+            document.querySelectorAll('.s3-token').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    sound.playClick();
+                    appState.stage3.selectedToken = btn.dataset.token;
+                    renderStage3UI();
+                });
+            });
+
+            ['s3AreaSlot1', 's3AreaSlot2', 's3PeriSlot1', 's3PeriSlot2', 's3PeriSlot3'].forEach(id => {
+                const slotEl = document.getElementById(id);
+                slotEl.addEventListener('click', () => {
+                    const key = slotEl.dataset.slot;
+                    appState.stage3.slots[key] = appState.stage3.selectedToken;
+                    sound.playSnap();
+                    renderStage3UI();
+                });
+            });
+
+            ['s3RangeA', 's3RangeB'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updateStage3GeometryVisual);
+            });
+            document.getElementById('btnRunStage3').addEventListener('click', handleRunStage3Program);
+
+            // Sự kiện Màn 4
+            document.getElementById('s4OperatorSelect').addEventListener('change', (e) => {
+                sound.playClick();
+                const st = appState.stage4.casesState[appState.stage4.activeCaseIndex];
+                st.op = e.target.value;
+                st.fixed = false;
+                renderStage4UI();
+            });
+
+            document.getElementById('btnSwapOperandsS4').addEventListener('click', () => {
+                sound.playSnap();
+                const st = appState.stage4.casesState[appState.stage4.activeCaseIndex];
+                const temp = st.left;
+                st.left = st.right;
+                st.right = temp;
+                st.fixed = false;
+                renderStage4UI();
+            });
+
+            document.getElementById('s4VarGInput').addEventListener('input', (e) => {
+                const val = parseInt(e.target.value, 10);
+                if (!isNaN(val) && val > 0) {
+                    appState.stage4.casesState[appState.stage4.activeCaseIndex].varG = val;
+                    renderStage4UI();
+                }
+            });
+
+            document.getElementById('btnVerifyBugS4').addEventListener('click', handleVerifyStage4Bug);
+
+            // Nút điều hướng dưới cùng
+            document.getElementById('btnBackHome').addEventListener('click', () => {
+                sound.playClick();
+                sound.stopBgm();
+                switchScreen('screenWelcome');
+            });
+
+            document.getElementById('btnResetStage').addEventListener('click', handleResetCurrentStage);
+            document.getElementById('btnHintStage').addEventListener('click', handleShowHint);
+
+            document.getElementById('btnNextStage').addEventListener('click', () => {
+                sound.playClick();
+                if (appState.currentStage < 4) {
+                    loadStage(appState.currentStage + 1);
+                } else {
+                    document.getElementById('finalTotalScore').textContent = `${appState.score} / 100`;
+                    switchScreen('screenSummary');
+                    launchCelebrationEffect();
+                }
+            });
+
+            // Nút ở màn Tổng kết
+            document.getElementById('btnReplayAll').addEventListener('click', () => {
+                sound.playClick();
+                appState.score = 0;
+                appState.completedStages = { 1: false, 2: false, 3: false, 4: false };
+                appState.hintLevel = { 1: 0, 2: 0, 3: 0, 4: 0 };
+                initStage1();
+                initStage2();
+                initStage3();
+                initStage4();
+                updateGlobalHeader();
+                switchScreen('screenGameplay');
+                loadStage(1);
+            });
+
+            document.getElementById('btnReviewStages').addEventListener('click', () => {
+                sound.playClick();
+                switchScreen('screenGameplay');
+                loadStage(1);
+            });
+        }
+
+        // Khởi chạy toàn bộ trò chơi khi trang tải xong
+        window.addEventListener('DOMContentLoaded', () => {
+            renderPixelAvatar('happy');
+            initStage1();
+            initStage2();
+            initStage3();
+            initStage4();
+            bindEvents();
+            updateGlobalHeader();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thủ Thư Số - Học quản lí tệp và thư mục</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+        :root {
+            --bg-outer: #FDF6E3;
+            --bg-explorer: #101529;
+            --text-explorer: #9BE5F2;
+            --folder-color: #FFC986;
+            --accent-purple: #9A82F6;
+            --candy-pink: #FF9EBB;
+            --candy-blue: #70D6FF;
+            --candy-green: #90F1EF;
+            --candy-yellow: #FFD670;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-outer);
+            background-image: radial-gradient(circle at 50% 50%, #fff 20%, transparent 20%), radial-gradient(circle at 100% 100%, #fff 20%, transparent 20%);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+            color: #34466A;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        /* Candy Button Styles */
+        .btn-candy {
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        .btn-candy::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: -4px;
+            border-radius: inherit;
+            background: rgba(0,0,0,0.15);
+            z-index: -1;
+            transition: all 0.2s;
+        }
+        .btn-candy:active {
+            transform: translateY(4px);
+        }
+        .btn-candy:active::after {
+            bottom: 0px;
+        }
+        .btn-candy:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-candy:disabled::after {
+            bottom: -4px;
+        }
+
+        .bg-gradient-pink { background: linear-gradient(135deg, #FF9EBB, #FF7AA2); }
+        .bg-gradient-blue { background: linear-gradient(135deg, #70D6FF, #48B6FF); }
+        .bg-gradient-green { background: linear-gradient(135deg, #90F1EF, #5EE1DF); }
+        .bg-gradient-yellow { background: linear-gradient(135deg, #FFD670, #FFC13B); }
+        .bg-gradient-purple { background: linear-gradient(135deg, #D4A5FF, #B57AFF); }
+
+        /* Explorer Styles */
+        .explorer-container {
+            background-color: var(--bg-explorer);
+            color: var(--text-explorer);
+            border: 8px solid #cce3f0;
+            border-radius: 20px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .file-tree {
+            list-style: none;
+            padding-left: 20px;
+        }
+        .file-tree li {
+            margin: 6px 0;
+            position: relative;
+        }
+        .file-tree li::before {
+            content: '';
+            position: absolute;
+            top: -10px; left: -14px;
+            border-left: 2px dashed #3a4b75;
+            height: 100%; width: 10px;
+        }
+        .file-tree li::after {
+            content: '';
+            position: absolute;
+            top: 15px; left: -14px;
+            border-top: 2px dashed #3a4b75;
+            width: 10px;
+        }
+        .file-tree li:last-child::before {
+            height: 25px;
+        }
+        
+        .tree-node {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            border: 2px solid transparent;
+        }
+        .tree-node:hover {
+            background-color: rgba(155, 229, 242, 0.1);
+        }
+        .tree-node.selected {
+            background-color: rgba(155, 229, 242, 0.2);
+            border-color: var(--text-explorer);
+            font-weight: bold;
+        }
+        .tree-node.cut-pending {
+            opacity: 0.5;
+            border-style: dashed;
+        }
+        .tree-node.copy-pending {
+            border-color: var(--folder-color);
+            border-style: dashed;
+        }
+
+        .icon-folder svg path { fill: var(--folder-color); }
+        .icon-file svg path { fill: #fff; }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .animate-shake { animation: shake 0.3s ease-in-out; }
+
+        /* Mascot SVGs (Hidden templates) */
+        .svg-template { display: none; }
+        
+        /* Quiz Styles */
+        .quiz-card {
+            background: rgba(255,255,255,0.9);
+            border: 4px solid var(--accent-purple);
+            border-radius: 20px;
+        }
+
+        /* Custom Scrollbar for Explorer */
+        .explorer-scroll::-webkit-scrollbar { width: 10px; }
+        .explorer-scroll::-webkit-scrollbar-track { background: #1a2240; border-radius: 5px; }
+        .explorer-scroll::-webkit-scrollbar-thumb { background: #3a4b75; border-radius: 5px; }
+        .explorer-scroll::-webkit-scrollbar-thumb:hover { background: var(--text-explorer); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Audio System (Hidden) -->
+    <div id="audio-system" style="display:none;"></div>
+
+    <!-- UI Container -->
+    <div class="flex-grow flex items-center justify-center p-4">
+        <div id="app-container" class="w-full max-w-5xl bg-white/60 backdrop-blur-md rounded-[40px] shadow-2xl overflow-hidden relative border-4 border-white">
+            
+            <!-- Header (Hidden on Welcome screen) -->
+            <header id="game-header" class="hidden flex justify-between items-center p-4 bg-white/80 border-b-4 border-white">
+                <div class="flex items-center gap-4">
+                    <div class="font-black text-2xl text-[var(--accent-purple)]">THỦ THƯ SỐ</div>
+                    <div class="bg-gray-200 h-6 w-48 rounded-full overflow-hidden border-2 border-white shadow-inner relative">
+                        <div id="progress-bar" class="h-full bg-gradient-green w-0 transition-all duration-500"></div>
+                        <div class="absolute inset-0 flex justify-center items-center text-xs font-bold text-gray-600">
+                            Màn <span id="current-level-text">1</span>/4
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="text-xl font-bold bg-white px-4 py-1 rounded-full shadow text-orange-500">
+                        ⭐ <span id="score-display">0</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="btn-toggle-bgm" class="p-2 rounded-full bg-white shadow hover:bg-gray-100 transition-colors" title="Nhạc nền" aria-label="Nhạc nền">
+                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#9A82F6" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+                        </button>
+                        <button id="btn-toggle-sfx" class="p-2 rounded-full bg-white shadow hover:bg-gray-100 transition-colors" title="Hiệu ứng" aria-label="Hiệu ứng">
+                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="#FF9EBB" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main id="main-content" class="relative w-full h-[600px]">
+                
+                <!-- SCREEN 1: Welcome -->
+                <div id="screen-welcome" class="absolute inset-0 flex flex-col items-center justify-center p-8 bg-gradient-to-b from-[#e0f7fa] to-[#fff3e0]">
+                    <h1 class="text-6xl md:text-7xl font-black text-center text-[#34466A] drop-shadow-md mb-6 animate-pop">THỦ THƯ SỐ</h1>
+                    <p class="text-xl md:text-2xl font-bold text-center text-[#9A82F6] mb-8 bg-white px-6 py-2 rounded-full shadow-sm">Học viện Quản lí Kỹ thuật số</p>
+                    
+                    <div class="flex flex-col md:flex-row items-center gap-10 mb-10">
+                        <div class="w-64 h-64 animate-float">
+                            <!-- Mascot Big SVG (Happy) -->
+                            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="100" cy="100" r="90" fill="#FFD670"/>
+                                <circle cx="100" cy="100" r="80" fill="#FFF5D1"/>
+                                <!-- Glasses -->
+                                <circle cx="70" cy="85" r="25" fill="none" stroke="#9A82F6" stroke-width="6"/>
+                                <circle cx="130" cy="85" r="25" fill="none" stroke="#9A82F6" stroke-width="6"/>
+                                <line x1="95" y1="85" x2="105" y2="85" stroke="#9A82F6" stroke-width="6"/>
+                                <!-- Happy Eyes -->
+                                <path d="M 60 85 Q 70 70 80 85" fill="none" stroke="#34466A" stroke-width="5" stroke-linecap="round"/>
+                                <path d="M 120 85 Q 130 70 140 85" fill="none" stroke="#34466A" stroke-width="5" stroke-linecap="round"/>
+                                <!-- Beak -->
+                                <path d="M 90 105 L 110 105 L 100 120 Z" fill="#FF9EBB"/>
+                                <!-- Wing -->
+                                <path d="M 20 120 Q 0 100 30 160 Z" fill="#FFD670"/>
+                                <path d="M 180 120 Q 200 100 170 160 Z" fill="#FFD670"/>
+                                <!-- Book -->
+                                <rect x="70" y="140" width="60" height="40" rx="5" fill="#70D6FF" stroke="#34466A" stroke-width="3"/>
+                                <line x1="100" y1="140" x2="100" y2="180" stroke="#34466A" stroke-width="3"/>
+                            </svg>
+                        </div>
+                        <div class="max-w-md bg-white p-6 rounded-[24px] shadow-lg border-4 border-dashed border-[#FFC986] relative">
+                            <div class="absolute -top-5 -left-5 bg-[#FF9EBB] text-white font-bold py-1 px-3 rounded-full transform -rotate-12">Lớp 4</div>
+                            <h2 class="text-2xl font-bold mb-4">Chào mừng em!</h2>
+                            <p class="text-lg leading-relaxed mb-4">
+                                Em sẽ vào vai một <strong class="text-[#9A82F6]">Thủ Thư Số</strong>. Nhiệm vụ của em là sắp xếp gọn gàng các tệp và thư mục trong hệ thống lưu trữ.
+                            </p>
+                            <p class="text-md text-gray-500 italic">Bài học: Thao tác với tệp và thư mục (Di chuyển, Sao chép, Đổi tên).</p>
+                        </div>
+                    </div>
+                    
+                    <button id="btn-start" class="btn-candy bg-gradient-pink text-white font-black text-2xl py-4 px-12 rounded-full shadow-xl">
+                        BẮT ĐẦU NGAY!
+                    </button>
+                </div>
+
+                <!-- SCREEN 2: Game Area -->
+                <div id="screen-game" class="hidden absolute inset-0 flex flex-col md:flex-row bg-[#F0F8FF]">
+                    
+                    <!-- Left: Explorer Simulation -->
+                    <div class="w-full md:w-[60%] p-4 flex flex-col h-full">
+                        <div class="bg-yellow-100 text-yellow-800 text-xs text-center p-1 rounded-t-lg font-bold">
+                            ⚠️ Giao diện mô phỏng phục vụ học tập – không thay đổi tệp trên máy tính
+                        </div>
+                        <div class="explorer-container flex-grow flex flex-col relative overflow-hidden">
+                            <!-- Window Header -->
+                            <div class="bg-[#1a2240] px-4 py-2 flex items-center border-b border-[#3a4b75]">
+                                <div class="flex gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                </div>
+                                <div class="ml-4 text-sm font-mono opacity-70">Ổ Đĩa D: / Hệ Thống Kỹ Thuật Số</div>
+                            </div>
+                            <!-- Tool/Address Bar -->
+                            <div class="bg-[#243054] px-4 py-2 flex items-center gap-2 border-b border-[#3a4b75]">
+                                <svg class="w-5 h-5 opacity-70 cursor-not-allowed" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                <svg class="w-5 h-5 opacity-70 cursor-not-allowed" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                <div class="flex-grow bg-[#101529] rounded px-3 py-1 font-mono text-sm border border-[#3a4b75]">
+                                    <span id="address-bar">D:\</span>
+                                </div>
+                            </div>
+                            <!-- Main Explorer Area -->
+                            <div class="flex-grow p-4 overflow-y-auto explorer-scroll relative">
+                                <ul id="file-tree-root" class="file-tree text-lg font-medium">
+                                    <!-- Rendered via JS -->
+                                </ul>
+                                
+                                <!-- Rename Input Overlay -->
+                                <div id="rename-overlay" class="hidden absolute inset-0 bg-black/50 flex items-center justify-center z-10 backdrop-blur-sm">
+                                    <div class="bg-white p-6 rounded-xl shadow-2xl w-80 text-[#34466A]">
+                                        <h3 class="font-bold text-lg mb-4">Đổi tên tệp/thư mục</h3>
+                                        <input type="text" id="rename-input" class="w-full border-2 border-gray-300 p-2 rounded-lg mb-4 text-black focus:border-[#9A82F6] focus:outline-none" autocomplete="off">
+                                        <div class="flex justify-end gap-2">
+                                            <button id="btn-cancel-rename" class="px-4 py-2 bg-gray-200 rounded-lg font-bold hover:bg-gray-300">Hủy</button>
+                                            <button id="btn-confirm-rename" class="px-4 py-2 btn-candy bg-gradient-blue text-white rounded-lg font-bold">Lưu</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Instructions & Controls -->
+                    <div class="w-full md:w-[40%] p-4 flex flex-col h-full bg-white/50 border-l border-white shadow-[inset_10px_0_20px_rgba(0,0,0,0.02)] relative">
+                        
+                        <!-- Level Info -->
+                        <div class="bg-white p-5 rounded-2xl shadow-sm mb-4 relative overflow-visible mt-6">
+                            <!-- Mascot overlapping border -->
+                            <div class="absolute -top-12 -left-6 w-24 h-24" id="mascot-container">
+                                <!-- Rendered via JS -->
+                            </div>
+                            <h3 class="text-xl font-bold text-[#9A82F6] mb-2 ml-16" id="level-title">Nhiệm vụ</h3>
+                            <div class="text-lg font-semibold text-[#34466A] min-h-[80px]" id="level-instruction" role="status" aria-live="polite">
+                                <!-- Instruction text -->
+                            </div>
+                        </div>
+
+                        <!-- Actions Toolbar -->
+                        <div class="bg-white p-4 rounded-2xl shadow-sm mb-4" id="action-toolbar">
+                            <div class="text-sm font-bold text-gray-500 mb-2 uppercase tracking-wide">Bảng điều khiển</div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button id="btn-cut" class="btn-candy bg-gradient-yellow text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"></path></svg>
+                                    Cắt
+                                </button>
+                                <button id="btn-copy" class="btn-candy bg-gradient-blue text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    Sao chép
+                                </button>
+                                <button id="btn-paste" class="btn-candy bg-gradient-green text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 col-span-2 opacity-50 cursor-not-allowed" disabled>
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                                    Dán
+                                </button>
+                                <button id="btn-rename" class="btn-candy bg-gradient-purple text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 col-span-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                    Đổi tên
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-auto flex justify-between">
+                            <button id="btn-retry-level" class="text-gray-500 hover:text-gray-700 font-bold underline px-4 py-2 hidden">Làm lại màn này</button>
+                            <button id="btn-next-level" class="btn-candy bg-gray-400 text-white font-bold py-3 px-8 rounded-full ml-auto hidden">Tiếp tục ➔</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN 4: Quiz Area (Replaces Game Area temporarily) -->
+                <div id="screen-quiz" class="hidden absolute inset-0 bg-[#F0F8FF] p-6 flex flex-col items-center justify-center">
+                    <h2 class="text-3xl font-black text-[#9A82F6] mb-8 bg-white px-8 py-3 rounded-full shadow">Kiểm tra An toàn Dữ liệu</h2>
+                    
+                    <div id="quiz-container" class="w-full max-w-2xl quiz-card p-8 flex flex-col items-center shadow-xl">
+                        <div id="quiz-illustration" class="w-48 h-48 mb-6">
+                            <!-- SVG Rendered via JS -->
+                        </div>
+                        <h3 id="quiz-question" class="text-2xl font-bold text-center text-[#34466A] mb-8 min-h-[80px]">
+                            <!-- Question Text -->
+                        </h3>
+                        <div class="flex gap-6 w-full justify-center">
+                            <button id="btn-quiz-true" class="btn-candy bg-gradient-green text-white font-black text-xl py-4 px-12 rounded-2xl w-48">ĐÚNG</button>
+                            <button id="btn-quiz-false" class="btn-candy bg-gradient-pink text-white font-black text-xl py-4 px-12 rounded-2xl w-48">SAI</button>
+                        </div>
+                        <div id="quiz-feedback" class="mt-6 text-lg font-bold text-center h-8"></div>
+                    </div>
+                </div>
+
+                <!-- SCREEN 5: Summary -->
+                <div id="screen-summary" class="hidden absolute inset-0 flex flex-col items-center justify-center p-8 bg-gradient-to-t from-[#e0f7fa] to-[#fff3e0]">
+                    <div class="w-48 h-48 mb-6 animate-pop">
+                        <!-- Medal SVG -->
+                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M60 0 L140 0 L160 80 L100 120 L40 80 Z" fill="#70D6FF"/>
+                            <path d="M70 0 L130 0 L145 75 L100 105 L55 75 Z" fill="#48B6FF"/>
+                            <circle cx="100" cy="120" r="70" fill="#FFD670"/>
+                            <circle cx="100" cy="120" r="55" fill="#FFF5D1"/>
+                            <path d="M100 80 L110 105 L135 105 L115 120 L125 145 L100 130 L75 145 L85 120 L65 105 L90 105 Z" fill="#FF9EBB"/>
+                        </svg>
+                    </div>
+                    <h1 class="text-5xl font-black text-[#34466A] mb-4 text-center">HOÀN THÀNH XUẤT SẮC!</h1>
+                    <p class="text-2xl font-bold text-[#9A82F6] mb-6 text-center">Em đã đạt danh hiệu <br><span class="text-4xl text-orange-500">THỦ THƯ SỐ TÀI BA</span></p>
+                    
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border-2 border-dashed border-[#70D6FF] max-w-md text-center mb-8">
+                        <div class="text-4xl font-black text-[#34466A] mb-2">Điểm: <span id="final-score">100</span>/100</div>
+                        <p class="text-lg text-gray-600">Em đã nắm vững cách di chuyển, sao chép, đổi tên và bảo vệ dữ liệu!</p>
+                    </div>
+
+                    <button id="btn-restart" class="btn-candy bg-gradient-green text-white font-black text-2xl py-4 px-12 rounded-full shadow-xl">
+                        CHƠI LẠI
+                    </button>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- SVG Templates Library -->
+    <svg class="svg-template">
+        <!-- Mascot Normal -->
+        <g id="mascot-normal">
+            <circle cx="50" cy="50" r="45" fill="#FFD670"/><circle cx="50" cy="50" r="40" fill="#FFF5D1"/>
+            <circle cx="35" cy="40" r="10" fill="none" stroke="#9A82F6" stroke-width="3"/><circle cx="65" cy="40" r="10" fill="none" stroke="#9A82F6" stroke-width="3"/><line x1="45" y1="40" x2="55" y2="40" stroke="#9A82F6" stroke-width="3"/>
+            <circle cx="35" cy="40" r="3" fill="#34466A"/><circle cx="65" cy="40" r="3" fill="#34466A"/>
+            <path d="M 45 52 L 55 52 L 50 60 Z" fill="#FF9EBB"/>
+        </g>
+        <!-- Mascot Happy -->
+        <g id="mascot-happy">
+            <circle cx="50" cy="50" r="45" fill="#FFD670"/><circle cx="50" cy="50" r="40" fill="#FFF5D1"/>
+            <circle cx="35" cy="40" r="10" fill="none" stroke="#9A82F6" stroke-width="3"/><circle cx="65" cy="40" r="10" fill="none" stroke="#9A82F6" stroke-width="3"/><line x1="45" y1="40" x2="55" y2="40" stroke="#9A82F6" stroke-width="3"/>
+            <path d="M 30 40 Q 35 32 40 40" fill="none" stroke="#34466A" stroke-width="2" stroke-linecap="round"/>
+            <path d="M 60 40 Q 65 32 70 40" fill="none" stroke="#34466A" stroke-width="2" stroke-linecap="round"/>
+            <path d="M 45 50 L 55 50 L 50 60 Z" fill="#FF9EBB"/>
+        </g>
+        <!-- Mascot Sad -->
+        <g id="mascot-sad">
+            <circle cx="50" cy="50" r="45" fill="#FFD670"/><circle cx="50" cy="50" r="40" fill="#FFF5D1"/>
+            <circle cx="35" cy="40" r="10" fill="none" stroke="#9A82F6" stroke-width="3"/><circle cx="65" cy="40" r="10" fill="none" stroke="#9A82F6" stroke-width="3"/><line x1="45" y1="40" x2="55" y2="40" stroke="#9A82F6" stroke-width="3"/>
+            <path d="M 30 38 Q 35 45 40 38" fill="none" stroke="#34466A" stroke-width="2" stroke-linecap="round"/>
+            <path d="M 60 38 Q 65 45 70 38" fill="none" stroke="#34466A" stroke-width="2" stroke-linecap="round"/>
+            <path d="M 45 55 Q 50 50 55 55" fill="none" stroke="#FF9EBB" stroke-width="3"/>
+        </g>
+        <!-- Icon Folder -->
+        <g id="icon-folder-svg"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></g>
+        <!-- Icon File -->
+        <g id="icon-file-svg"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></g>
+    </svg>
+
+    <script>
+        /**
+         * AUDIO SYSTEM (Web Audio API Synthesizer)
+         */
+        const AudioSys = {
+            ctx: null,
+            bgmOscillator: null,
+            bgmInterval: null,
+            bgmGain: null,
+            isBgmOn: true,
+            isSfxOn: true,
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if(AudioContext) {
+                        this.ctx = new AudioContext();
+                        this.bgmGain = this.ctx.createGain();
+                        this.bgmGain.connect(this.ctx.destination);
+                        this.bgmGain.gain.value = 0.05; // Low volume for BGM
+                    }
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            },
+
+            playTone(freq, type = 'sine', duration = 0.1, vol = 0.1) {
+                if (!this.ctx || !this.isSfxOn) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                
+                gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            },
+
+            startBgm() {
+                if (!this.ctx || !this.isBgmOn) return;
+                this.stopBgm();
+                
+                const melody = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63]; // C E G C G E (C major arpeggio)
+                let noteIdx = 0;
+                
+                this.bgmInterval = setInterval(() => {
+                    if(!this.isBgmOn) return;
+                    const osc = this.ctx.createOscillator();
+                    osc.type = 'triangle';
+                    osc.frequency.value = melody[noteIdx];
+                    osc.connect(this.bgmGain);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.2);
+                    
+                    noteIdx = (noteIdx + 1) % melody.length;
+                }, 400); // 150 BPM approx
+            },
+
+            stopBgm() {
+                if (this.bgmInterval) {
+                    clearInterval(this.bgmInterval);
+                    this.bgmInterval = null;
+                }
+            },
+
+            sfxClick() { this.playTone(600, 'square', 0.05, 0.05); },
+            sfxSuccess() { 
+                this.playTone(523.25, 'sine', 0.1, 0.1); 
+                setTimeout(() => this.playTone(659.25, 'sine', 0.1, 0.1), 100);
+                setTimeout(() => this.playTone(783.99, 'sine', 0.2, 0.1), 200);
+            },
+            sfxError() {
+                this.playTone(200, 'sawtooth', 0.15, 0.1);
+                setTimeout(() => this.playTone(150, 'sawtooth', 0.2, 0.1), 150);
+            },
+            sfxWin() {
+                const notes = [440, 554.37, 659.25, 880, 880];
+                notes.forEach((f, i) => setTimeout(() => this.playTone(f, 'square', 0.15, 0.1), i * 150));
+            },
+            
+            toggleBgm() {
+                this.isBgmOn = !this.isBgmOn;
+                if(this.isBgmOn) this.startBgm(); else this.stopBgm();
+                return this.isBgmOn;
+            },
+            toggleSfx() {
+                this.isSfxOn = !this.isSfxOn;
+                return this.isSfxOn;
+            }
+        };
+
+        /**
+         * GAME STATE & LOGIC
+         */
+        const Config = {
+            levels: [
+                {
+                    id: 1, type: 'explorer',
+                    title: 'Màn 1: Di chuyển thư mục',
+                    instruction: 'Hãy chọn thư mục <strong>ThuAn</strong>, nhấn <strong>Cắt</strong>, sau đó chọn thư mục <strong>Nhom2</strong> và nhấn <strong>Dán</strong> để di chuyển.',
+                    validate: (fs) => {
+                        const thuan = fs.find(f => f.id === 'ThuAn');
+                        if (!thuan) return {ok: false, msg: 'Không tìm thấy thư mục ThuAn!'};
+                        if (thuan.parent === 'Nhom2') return {ok: true, msg: 'Giỏi quá! Em đã di chuyển đúng cách.'};
+                        if (thuan.parent === 'Nhom1') return {ok: false, msg: 'ThuAn vẫn đang ở Nhom1. Em chưa dán vào Nhom2.'};
+                        return {ok: false, msg: 'Đích đến chưa đúng. Phải dán vào Nhom2.'};
+                    }
+                },
+                {
+                    id: 2, type: 'explorer',
+                    title: 'Màn 2: Sao chép tệp',
+                    instruction: 'Hãy tìm tệp <strong>GioiThieu.txt</strong> (trong ThuAn), nhấn <strong>Sao chép</strong>, rồi chọn <strong>Nhom1</strong> và nhấn <strong>Dán</strong>.',
+                    validate: (fs) => {
+                        // Check original exists in ThuAn
+                        const original = fs.find(f => f.name === 'GioiThieu.txt' && f.parent === 'ThuAn');
+                        // Check copy exists in Nhom1
+                        const copy = fs.find(f => f.name === 'GioiThieu.txt' && f.parent === 'Nhom1');
+                        
+                        if (original && copy) return {ok: true, msg: 'Tuyệt vời! Tệp gốc vẫn còn và bản sao đã được tạo ở Nhom1.'};
+                        if (!original && copy) return {ok: false, msg: 'Ồ không, em đã dùng lệnh Cắt thay vì Sao chép làm mất tệp gốc rồi!'};
+                        if (original && !copy) return {ok: false, msg: 'Chưa có bản sao ở Nhom1. Em dán đúng chỗ chưa?'};
+                        return {ok: false, msg: 'Thao tác chưa chính xác.'};
+                    }
+                },
+                {
+                    id: 3, type: 'explorer',
+                    title: 'Màn 3: Đổi tên tệp',
+                    instruction: 'Hãy chọn bản sao tệp <strong>GioiThieu.txt</strong> (nằm trong Nhom1), nhấn <strong>Đổi tên</strong> thành <strong>Giới thiệu mới.txt</strong>.',
+                    validate: (fs) => {
+                        const newFile = fs.find(f => f.parent === 'Nhom1' && f.name.toLowerCase() === 'giới thiệu mới.txt');
+                        if (newFile) return {ok: true, msg: 'Chính xác! Tên tệp phải rõ ràng để dễ tìm kiếm.'};
+                        
+                        const copy = fs.find(f => f.parent === 'Nhom1');
+                        if (!copy) return {ok: false, msg: 'Không tìm thấy tệp trong Nhom1 để đổi tên.'};
+                        if (copy.name === 'GioiThieu.txt') return {ok: false, msg: 'Em chưa đổi tên tệp.'};
+                        return {ok: false, msg: `Tên "${copy.name}" chưa đúng yêu cầu. Cần đổi thành "Giới thiệu mới.txt".`};
+                    }
+                },
+                {
+                    id: 4, type: 'quiz',
+                    title: 'Màn 4: Bảo vệ dữ liệu',
+                    questions: [
+                        {
+                            q: 'Xóa nhầm thư mục mẹ thì các tệp và thư mục con bên trong cũng sẽ bị xóa mất.',
+                            a: true,
+                            ill: '<path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6" stroke="#EF4444" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M4 4l16 16" stroke="#EF4444" stroke-width="3" stroke-linecap="round"/>',
+                            explain: 'Đúng! Xóa thư mục là xóa tất cả những gì chứa trong đó. Phải thật cẩn thận!'
+                        },
+                        {
+                            q: 'Khi dùng lệnh Sao chép (Copy) tệp sang nơi khác, tệp ở vị trí cũ sẽ biến mất.',
+                            a: false,
+                            ill: '<rect x="2" y="4" width="8" height="10" rx="1" fill="#70D6FF"/><rect x="14" y="4" width="8" height="10" rx="1" fill="#70D6FF"/><path d="M11 9h2" stroke="#34466A" stroke-width="2"/><path d="M12 8l1 1-1 1" stroke="#34466A" stroke-width="2" fill="none"/>',
+                            explain: 'Sai! Sao chép (Copy) sẽ tạo ra một BẢN SAO mới, tệp gốc vẫn còn nguyên vẹn.'
+                        },
+                        {
+                            q: 'Trước khi di chuyển hoặc đổi tên tệp/thư mục của người khác, cần kiểm tra kĩ hoặc hỏi ý kiến để tránh làm rối loạn dữ liệu.',
+                            a: true,
+                            ill: '<circle cx="12" cy="12" r="10" stroke="#FFC13B" stroke-width="2" fill="none"/><path d="M12 8v4M12 16h.01" stroke="#FFC13B" stroke-width="2" stroke-linecap="round"/>',
+                            explain: 'Đúng! Di chuyển lung tung sẽ làm mất trật tự lưu trữ và người khác không tìm thấy tệp của họ.'
+                        }
+                    ]
+                }
+            ],
+            initialFS: [
+                { id: 'Lop4', name: 'Lop4', type: 'folder', parent: null },
+                { id: 'Nhom1', name: 'Nhom1', type: 'folder', parent: 'Lop4' },
+                { id: 'Nhom2', name: 'Nhom2', type: 'folder', parent: 'Lop4' },
+                { id: 'ThuAn', name: 'ThuAn', type: 'folder', parent: 'Nhom1' },
+                { id: 'GiaMinh', name: 'GiaMinh', type: 'folder', parent: 'Nhom1' },
+                { id: 'TranHuy', name: 'TranHuy', type: 'folder', parent: 'Nhom2' },
+                { id: 'GioiThieu', name: 'GioiThieu.txt', type: 'file', parent: 'ThuAn' }
+            ]
+        };
+
+        const State = {
+            currentScreen: 'welcome', // welcome, game, summary
+            currentLevelIdx: 0,
+            score: 0,
+            fs: [],
+            fsBackup: [], // for retry
+            selectedNodeId: null,
+            clipboard: { action: null, nodeId: null }, // action: 'cut'|'copy'
+            quizQuestionIdx: 0
+        };
+
+        /**
+         * DOM ELEMENTS
+         */
+        const El = {
+            screens: {
+                welcome: document.getElementById('screen-welcome'),
+                game: document.getElementById('screen-game'),
+                quiz: document.getElementById('screen-quiz'),
+                summary: document.getElementById('screen-summary')
+            },
+            header: document.getElementById('game-header'),
+            progressBar: document.getElementById('progress-bar'),
+            levelText: document.getElementById('current-level-text'),
+            scoreDisplay: document.getElementById('score-display'),
+            treeRoot: document.getElementById('file-tree-root'),
+            addressBar: document.getElementById('address-bar'),
+            levelTitle: document.getElementById('level-title'),
+            levelInst: document.getElementById('level-instruction'),
+            mascotContainer: document.getElementById('mascot-container'),
+            btnCut: document.getElementById('btn-cut'),
+            btnCopy: document.getElementById('btn-copy'),
+            btnPaste: document.getElementById('btn-paste'),
+            btnRename: document.getElementById('btn-rename'),
+            btnNextLevel: document.getElementById('btn-next-level'),
+            btnRetryLevel: document.getElementById('btn-retry-level'),
+            renameOverlay: document.getElementById('rename-overlay'),
+            renameInput: document.getElementById('rename-input'),
+            quizQuestion: document.getElementById('quiz-question'),
+            quizIllustration: document.getElementById('quiz-illustration'),
+            quizFeedback: document.getElementById('quiz-feedback'),
+            finalScore: document.getElementById('final-score')
+        };
+
+        /**
+         * RENDERERS
+         */
+        function setScreen(screenName) {
+            State.currentScreen = screenName;
+            Object.values(El.screens).forEach(el => el.classList.add('hidden'));
+            El.screens[screenName].classList.remove('hidden');
+            
+            if (screenName === 'welcome' || screenName === 'summary') {
+                El.header.classList.add('hidden');
+                El.screens.game.classList.add('hidden'); // Ensure game area is hidden
+            } else {
+                El.header.classList.remove('hidden');
+                if(screenName === 'game') {
+                    // Game screen handles explorer view
+                    document.getElementById('screen-game').classList.remove('hidden');
+                }
+            }
+        }
+
+        function updateHeader() {
+            El.scoreDisplay.innerText = State.score;
+            El.levelText.innerText = State.currentLevelIdx + 1;
+            El.progressBar.style.width = `${(State.currentLevelIdx / Config.levels.length) * 100}%`;
+        }
+
+        function setMascot(type, animate = true) {
+            El.mascotContainer.innerHTML = `<svg viewBox="0 0 100 100" class="w-full h-full ${animate ? 'animate-pop' : ''}"><use href="#mascot-${type}"></use></svg>`;
+        }
+
+        function getPath(nodeId) {
+            let path = [];
+            let curr = State.fs.find(n => n.id === nodeId);
+            while(curr) {
+                path.unshift(curr.name);
+                curr = State.fs.find(n => n.id === curr.parent);
+            }
+            return 'D:\\' + path.join('\\');
+        }
+
+        function renderTree() {
+            El.treeRoot.innerHTML = '';
+            
+            // Build hierarchical tree
+            const buildNodeHtml = (nodeId, level = 0) => {
+                const node = State.fs.find(n => n.id === nodeId);
+                if (!node) return '';
+
+                const isSelected = State.selectedNodeId === node.id;
+                const isCut = State.clipboard.action === 'cut' && State.clipboard.nodeId === node.id;
+                const isCopy = State.clipboard.action === 'copy' && State.clipboard.nodeId === node.id;
+
+                let classes = 'tree-node';
+                if(isSelected) classes += ' selected';
+                if(isCut) classes += ' cut-pending';
+                if(isCopy) classes += ' copy-pending';
+
+                const icon = node.type === 'folder' 
+                    ? `<svg class="w-5 h-5 mr-2 icon-folder inline" viewBox="0 0 24 24"><use href="#icon-folder-svg"></use></svg>`
+                    : `<svg class="w-5 h-5 mr-2 icon-file inline" viewBox="0 0 24 24"><use href="#icon-file-svg"></use></svg>`;
+                
+                let html = `<li>
+                    <div class="${classes}" onclick="handleNodeClick('${node.id}')" data-id="${node.id}">
+                        ${icon}
+                        <span class="truncate">${node.name}</span>
+                        ${isCopy ? '<span class="ml-2 text-xs bg-[var(--folder-color)] text-black px-1 rounded">Đang Copy</span>' : ''}
+                        ${isCut ? '<span class="ml-2 text-xs bg-yellow-400 text-black px-1 rounded">Đang Cắt</span>' : ''}
+                    </div>`;
+                
+                const children = State.fs.filter(n => n.parent === node.id);
+                if (children.length > 0) {
+                    html += `<ul class="file-tree ml-4 border-l border-gray-600">`;
+                    children.forEach(child => { html += buildNodeHtml(child.id, level + 1); });
+                    html += `</ul>`;
+                }
+                html += `</li>`;
+                return html;
+            };
+
+            // Render root nodes (parent null)
+            const roots = State.fs.filter(n => n.parent === null);
+            roots.forEach(root => {
+                El.treeRoot.innerHTML += buildNodeHtml(root.id);
+            });
+
+            // Update Address bar
+            El.addressBar.innerText = State.selectedNodeId ? getPath(State.selectedNodeId) : 'D:\\';
+            updateButtons();
+        }
+
+        function updateButtons() {
+            const selId = State.selectedNodeId;
+            const selNode = State.fs.find(n => n.id === selId);
+            const hasClip = !!State.clipboard.nodeId;
+
+            El.btnCut.disabled = !selNode || selNode.id === 'Lop4'; // Don't cut root
+            El.btnCopy.disabled = !selNode || selNode.id === 'Lop4';
+            El.btnRename.disabled = !selNode || selNode.id === 'Lop4';
+            
+            // Paste only valid if we have clipboard, and current selection is a folder
+            El.btnPaste.disabled = !(hasClip && selNode && selNode.type === 'folder');
+            
+            // Visual update for paste button
+            if(!El.btnPaste.disabled) {
+                El.btnPaste.classList.remove('opacity-50', 'cursor-not-allowed');
+                El.btnPaste.classList.add('animate-pulse');
+            } else {
+                El.btnPaste.classList.add('opacity-50', 'cursor-not-allowed');
+                El.btnPaste.classList.remove('animate-pulse');
+            }
+        }
+
+        function showMessage(msg, isSuccess) {
+            El.levelInst.innerHTML = `<div class="p-3 rounded-lg ${isSuccess ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'} animate-shake font-bold">${msg}</div>`;
+            setMascot(isSuccess ? 'happy' : 'sad');
+            if(isSuccess) {
+                AudioSys.sfxSuccess();
+                El.btnNextLevel.classList.remove('hidden');
+                El.btnNextLevel.classList.add('animate-pop');
+                El.btnRetryLevel.classList.add('hidden');
+                document.getElementById('action-toolbar').classList.add('opacity-50', 'pointer-events-none');
+            } else {
+                AudioSys.sfxError();
+                El.btnRetryLevel.classList.remove('hidden');
+            }
+        }
+
+        function initLevel() {
+            const level = Config.levels[State.currentLevelIdx];
+            updateHeader();
+            
+            if (level.type === 'explorer') {
+                setScreen('game');
+                El.levelTitle.innerText = level.title;
+                El.levelInst.innerHTML = level.instruction;
+                setMascot('normal', false);
+                
+                // Reset interaction state
+                State.selectedNodeId = null;
+                State.clipboard = { action: null, nodeId: null };
+                El.btnNextLevel.classList.add('hidden');
+                El.btnRetryLevel.classList.add('hidden');
+                document.getElementById('action-toolbar').classList.remove('opacity-50', 'pointer-events-none');
+                
+                // Backup FS for retry if not starting level 1
+                State.fsBackup = JSON.parse(JSON.stringify(State.fs));
+                renderTree();
+            } else if (level.type === 'quiz') {
+                El.screens.game.classList.add('hidden');
+                setScreen('quiz');
+                State.quizQuestionIdx = 0;
+                renderQuizQuestion();
+            }
+        }
+
+        /**
+         * INTERACTIONS
+         */
+        window.handleNodeClick = (nodeId) => {
+            AudioSys.sfxClick();
+            State.selectedNodeId = nodeId;
+            renderTree();
+        };
+
+        El.btnCut.addEventListener('click', () => {
+            if (!State.selectedNodeId) return;
+            AudioSys.sfxClick();
+            State.clipboard = { action: 'cut', nodeId: State.selectedNodeId };
+            renderTree();
+        });
+
+        El.btnCopy.addEventListener('click', () => {
+            if (!State.selectedNodeId) return;
+            AudioSys.sfxClick();
+            State.clipboard = { action: 'copy', nodeId: State.selectedNodeId };
+            renderTree();
+        });
+
+        El.btnPaste.addEventListener('click', () => {
+            const destId = State.selectedNodeId;
+            const destNode = State.fs.find(n => n.id === destId);
+            const clip = State.clipboard;
+
+            if (!destNode || destNode.type !== 'folder' || !clip.nodeId) return;
+            
+            // Prevent pasting into itself or its children
+            let curr = destNode;
+            while(curr) {
+                if(curr.id === clip.nodeId) {
+                    AudioSys.sfxError();
+                    alert("Không thể dán vào chính nó hoặc thư mục con của nó!");
+                    return;
+                }
+                curr = State.fs.find(n => n.id === curr.parent);
+            }
+
+            AudioSys.sfxClick();
+            const sourceNode = State.fs.find(n => n.id === clip.nodeId);
+
+            if (clip.action === 'cut') {
+                sourceNode.parent = destId;
+                State.clipboard = { action: null, nodeId: null };
+            } else if (clip.action === 'copy') {
+                // Generate new ID for copy to keep it flat
+                const newId = sourceNode.id + '_copy_' + Date.now();
+                const newNode = { ...sourceNode, id: newId, parent: destId };
+                State.fs.push(newNode);
+                State.clipboard = { action: null, nodeId: null };
+            }
+            
+            renderTree();
+            validateCurrentLevel();
+        });
+
+        El.btnRename.addEventListener('click', () => {
+            const selNode = State.fs.find(n => n.id === State.selectedNodeId);
+            if(!selNode) return;
+            AudioSys.sfxClick();
+            El.renameInput.value = selNode.name;
+            El.renameOverlay.classList.remove('hidden');
+            El.renameInput.focus();
+        });
+
+        document.getElementById('btn-cancel-rename').addEventListener('click', () => {
+            AudioSys.sfxClick();
+            El.renameOverlay.classList.add('hidden');
+        });
+
+        document.getElementById('btn-confirm-rename').addEventListener('click', confirmRename);
+        El.renameInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') confirmRename();
+        });
+
+        function confirmRename() {
+            const newName = El.renameInput.value.trim();
+            if(!newName) return;
+            AudioSys.sfxClick();
+            const selNode = State.fs.find(n => n.id === State.selectedNodeId);
+            if(selNode) {
+                selNode.name = newName;
+                renderTree();
+                validateCurrentLevel();
+            }
+            El.renameOverlay.classList.add('hidden');
+        }
+
+        function validateCurrentLevel() {
+            const level = Config.levels[State.currentLevelIdx];
+            const result = level.validate(State.fs);
+            
+            if (result.ok) {
+                showMessage(result.msg, true);
+                if(!State.scoreAddedForLevel) {
+                    State.score += 25;
+                    State.scoreAddedForLevel = true; // prevent double scoring
+                    updateHeader();
+                }
+            } else {
+                showMessage(result.msg, false);
+            }
+        }
+
+        El.btnNextLevel.addEventListener('click', () => {
+            AudioSys.sfxClick();
+            State.currentLevelIdx++;
+            State.scoreAddedForLevel = false;
+            
+            if (State.currentLevelIdx < Config.levels.length) {
+                initLevel();
+            } else {
+                showSummary();
+            }
+        });
+
+        El.btnRetryLevel.addEventListener('click', () => {
+            AudioSys.sfxClick();
+            State.fs = JSON.parse(JSON.stringify(State.fsBackup)); // Restore
+            initLevel();
+        });
+
+        /**
+         * QUIZ LOGIC
+         */
+        function renderQuizQuestion() {
+            const level = Config.levels[State.currentLevelIdx];
+            if (State.quizQuestionIdx >= level.questions.length) {
+                // Quiz done
+                State.score += 25;
+                updateHeader();
+                AudioSys.sfxWin();
+                setTimeout(showSummary, 1000);
+                return;
+            }
+
+            const q = level.questions[State.quizQuestionIdx];
+            El.quizQuestion.innerText = q.q;
+            El.quizIllustration.innerHTML = `<svg viewBox="0 0 24 24" class="w-full h-full">${q.ill}</svg>`;
+            El.quizFeedback.innerText = '';
+            El.quizFeedback.className = 'mt-6 text-lg font-bold text-center h-8';
+            
+            document.getElementById('btn-quiz-true').disabled = false;
+            document.getElementById('btn-quiz-false').disabled = false;
+        }
+
+        function handleQuizAnswer(isTrue) {
+            AudioSys.sfxClick();
+            const level = Config.levels[State.currentLevelIdx];
+            const q = level.questions[State.quizQuestionIdx];
+            
+            document.getElementById('btn-quiz-true').disabled = true;
+            document.getElementById('btn-quiz-false').disabled = true;
+
+            if (isTrue === q.a) {
+                AudioSys.sfxSuccess();
+                El.quizFeedback.innerText = 'ĐÚNG RỒI! ' + q.explain;
+                El.quizFeedback.classList.add('text-green-600');
+                setTimeout(() => {
+                    State.quizQuestionIdx++;
+                    renderQuizQuestion();
+                }, 3000);
+            } else {
+                AudioSys.sfxError();
+                El.quizFeedback.innerText = 'CHƯA ĐÚNG! ' + q.explain;
+                El.quizFeedback.classList.add('text-red-500');
+                setTimeout(() => {
+                    // Let them retry the question
+                    El.quizFeedback.innerText = '';
+                    document.getElementById('btn-quiz-true').disabled = false;
+                    document.getElementById('btn-quiz-false').disabled = false;
+                }, 2500);
+            }
+        }
+
+        document.getElementById('btn-quiz-true').addEventListener('click', () => handleQuizAnswer(true));
+        document.getElementById('btn-quiz-false').addEventListener('click', () => handleQuizAnswer(false));
+
+        /**
+         * SUMMARY & FLOW
+         */
+        function showSummary() {
+            setScreen('summary');
+            El.finalScore.innerText = State.score;
+            AudioSys.sfxWin();
+        }
+
+        function startGame() {
+            AudioSys.init();
+            AudioSys.startBgm();
+            AudioSys.sfxClick();
+            
+            State.currentLevelIdx = 0;
+            State.score = 0;
+            State.scoreAddedForLevel = false;
+            State.fs = JSON.parse(JSON.stringify(Config.initialFS));
+            
+            initLevel();
+        }
+
+        // Toggles
+        document.getElementById('btn-toggle-bgm').addEventListener('click', function() {
+            const isOn = AudioSys.toggleBgm();
+            this.style.opacity = isOn ? '1' : '0.5';
+        });
+        document.getElementById('btn-toggle-sfx').addEventListener('click', function() {
+            const isOn = AudioSys.toggleSfx();
+            this.style.opacity = isOn ? '1' : '0.5';
+        });
+
+        // Start
+        document.getElementById('btn-start').addEventListener('click', startGame);
+        document.getElementById('btn-restart').addEventListener('click', startGame);
+
+        // Initial setup
+        setScreen('welcome');
+    </script>
+</body>
+</html>

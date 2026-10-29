@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHÒNG MÁY BÍ MẬT - Tin học 3 Bài 9</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#FFF8E9',
+                        mint: '#53B77A',
+                        'mint-dark': '#3e9c61',
+                        yellowwarm: '#FFC65C',
+                        coral: '#EF7469',
+                        lavender: '#7766B7',
+                        'lavender-dark': '#5e4e9e',
+                        folder: '#FFE082',
+                        folderborder: '#FFC65C'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Segoe UI', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FFF8E9;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .custom-shadow {
+            box-shadow: 0 10px 25px -5px rgba(119, 102, 183, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+        .btn-3d {
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 0 0 rgba(0,0,0,0.2);
+        }
+        .btn-3d:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 0 rgba(0,0,0,0.2);
+        }
+        /* Pulse for target highlighting */
+        @keyframes targetPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(83, 183, 122, 0.6); }
+            50% { transform: scale(1.03); box-shadow: 0 0 0 10px rgba(83, 183, 122, 0); }
+        }
+        .highlight-target {
+            animation: targetPulse 1.8s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col font-sans overflow-x-hidden">
+
+    <!-- APPLICATON HEADER -->
+    <header class="bg-white/80 backdrop-blur-md border-b-2 border-lavender/20 sticky top-0 z-30 px-4 py-2.5">
+        <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
+            <!-- App Logo & Title -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-lavender flex items-center justify-center text-white font-bold text-xl shadow-md">
+                    💻
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg sm:text-xl text-lavender tracking-wide flex items-center gap-2">
+                        PHÒNG MÁY BÍ MẬT
+                        <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-mint/20 text-mint-dark hidden sm:inline-block">Tin học 3 - Bài 9</span>
+                    </h1>
+                    <p class="text-xs text-slate-500 font-medium hidden md:block">Thực hành với tệp và thư mục trong máy tính</p>
+                </div>
+            </div>
+
+            <!-- Header Controls & Status -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <!-- Mode Badge -->
+                <div id="mode-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300 hidden sm:block">
+                    🎮 Chế độ: Luyện tập
+                </div>
+
+                <!-- Score Counter -->
+                <div class="bg-yellowwarm/20 border-2 border-yellowwarm px-3 py-1 rounded-xl flex items-center gap-1.5 font-bold text-amber-900 text-sm sm:text-base">
+                    <span>⭐</span>
+                    <span id="score-text">0/100</span>
+                </div>
+
+                <!-- Audio Toggles -->
+                <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+                    <button id="btn-bgm-toggle" class="p-1.5 rounded-lg hover:bg-white text-xs font-bold transition flex items-center gap-1" title="Nhạc nền">
+                        <span id="bgm-icon">🎵</span>
+                        <span class="hidden lg:inline text-xs">BGM</span>
+                    </button>
+                    <button id="btn-sfx-toggle" class="p-1.5 rounded-lg hover:bg-white text-xs font-bold transition flex items-center gap-1" title="Hiệu ứng âm thanh">
+                        <span id="sfx-icon">🔊</span>
+                        <span class="hidden lg:inline text-xs">SFX</span>
+                    </button>
+                </div>
+
+                <!-- Home Button -->
+                <button id="btn-home" class="p-2 bg-slate-200 hover:bg-slate-300 rounded-xl text-slate-700 transition" title="Về trang chủ">
+                    🏠
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN GAME CONTAINER -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-3 sm:p-5 flex flex-col justify-center">
+
+        <!-- ================= 1. WELCOME SCREEN ================= -->
+        <section id="screen-welcome" class="bg-white rounded-3xl p-6 sm:p-10 custom-shadow border-4 border-lavender/20 flex flex-col items-center text-center max-w-3xl mx-auto my-auto w-full">
+            <!-- Hero Illustration -->
+            <div class="relative mb-4">
+                <div class="w-28 h-28 sm:w-36 sm:h-36 bg-cream rounded-full flex items-center justify-center border-4 border-yellowwarm shadow-inner">
+                    <!-- SVG Computer & Robot Art -->
+                    <svg class="w-20 h-20 sm:w-24 sm:h-24" viewBox="0 0 100 100">
+                        <rect x="15" y="20" width="70" height="50" rx="8" fill="#7766B7"/>
+                        <rect x="20" y="25" width="60" height="40" rx="5" fill="#FFF8E9"/>
+                        <rect x="40" y="70" width="20" height="12" fill="#53B77A"/>
+                        <path d="M 25 82 L 75 82 L 80 88 L 20 88 Z" fill="#EF7469"/>
+                        <!-- Folder graphic on screen -->
+                        <path d="M30 40 L45 40 L50 45 L65 45 L65 58 L30 58 Z" fill="#FFC65C"/>
+                    </svg>
+                </div>
+                <span class="absolute -top-2 -right-2 bg-coral text-white text-xs font-bold px-2.5 py-1 rounded-full animate-bounce">
+                    Mới V5
+                </span>
+            </div>
+
+            <h2 class="text-2xl sm:text-3xl font-black text-lavender mb-2">
+                TRÒ CHƠI PHÒNG MÁY BÍ MẬT
+            </h2>
+            <p class="text-slate-600 text-sm sm:text-base max-w-lg mb-6">
+                Chào mừng em đến với hành lang khám phá tệp và thư mục! Hãy giúp Rô-bốt Bíp thực hiện 4 nhiệm vụ để giải mã toàn bộ máy tính nhé.
+            </p>
+
+            <!-- Mode Selection Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md mb-8">
+                <button id="mode-select-practice" class="mode-card border-3 border-mint bg-mint/10 hover:bg-mint/20 p-4 rounded-2xl flex flex-col items-center transition cursor-pointer text-left ring-2 ring-mint">
+                    <span class="text-2xl mb-1">🎮</span>
+                    <span class="font-bold text-mint-dark text-base">Chế độ Luyện tập</span>
+                    <span class="text-xs text-slate-600 text-center mt-1">Có hướng dẫn từng bước chi tiết, gợi ý luôn hiển thị.</span>
+                </button>
+
+                <button id="mode-select-challenge" class="mode-card border-2 border-slate-200 bg-slate-50 hover:bg-slate-100 p-4 rounded-2xl flex flex-col items-center transition cursor-pointer text-left">
+                    <span class="text-2xl mb-1">🏆</span>
+                    <span class="font-bold text-slate-700 text-base">Chế độ Thử thách</span>
+                    <span class="text-xs text-slate-500 text-center mt-1">Tự thực hiện nhiệm vụ, chỉ mở gợi ý khi bấm nút.</span>
+                </button>
+            </div>
+
+            <!-- Primary Action Buttons -->
+            <div class="flex flex-wrap justify-center gap-4 w-full">
+                <button id="btn-start-game" class="btn-3d bg-mint hover:bg-mint-dark text-white font-extrabold text-lg px-8 py-3.5 rounded-2xl flex items-center gap-2 shadow-lg">
+                    🚀 BẮT ĐẦU CHƠI
+                </button>
+                <button id="btn-open-guide" class="btn-3d bg-yellowwarm hover:bg-amber-400 text-amber-950 font-bold text-base px-6 py-3.5 rounded-2xl flex items-center gap-2">
+                    📖 Hướng Dẫn
+                </button>
+            </div>
+        </section>
+
+
+        <!-- ================= 2. LEVEL GAMEPLAY SCREEN ================= -->
+        <section id="screen-gameplay" class="hidden flex-col gap-4">
+            
+            <!-- Top Status Bar & Nav -->
+            <div class="bg-white rounded-2xl p-3 sm:p-4 custom-shadow border-2 border-lavender/20 flex flex-wrap items-center justify-between gap-3">
+                <!-- Level Indicator -->
+                <div class="flex items-center gap-3">
+                    <div id="level-badge" class="w-10 h-10 rounded-xl bg-lavender text-white font-black flex items-center justify-center text-lg">
+                        1
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider" id="level-num-text">MÀN 1 / 4</div>
+                        <h3 id="level-title" class="font-extrabold text-slate-800 text-base sm:text-lg">KHÁM PHÁ THIS PC</h3>
+                    </div>
+                </div>
+
+                <!-- Step Progress Dots -->
+                <div class="flex items-center gap-2 bg-cream px-3 py-1.5 rounded-xl border border-yellowwarm/40">
+                    <span class="text-xs font-bold text-slate-600 mr-1">Tiến độ:</span>
+                    <div id="step-dot-1" class="w-3.5 h-3.5 rounded-full bg-slate-300 transition"></div>
+                    <div id="step-dot-2" class="w-3.5 h-3.5 rounded-full bg-slate-300 transition"></div>
+                    <div id="step-dot-3" class="w-3.5 h-3.5 rounded-full bg-slate-300 transition"></div>
+                </div>
+
+                <!-- Action Toolbar Buttons -->
+                <div class="flex items-center gap-2">
+                    <button id="btn-hint" class="btn-3d bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold px-3.5 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5">
+                        💡 Gợi Ý
+                    </button>
+                    <button id="btn-reset-level" class="btn-3d bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 font-bold px-3.5 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5">
+                        🔄 Làm Lại
+                    </button>
+                    <button id="btn-next-level" class="btn-3d bg-slate-300 text-slate-500 font-extrabold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 cursor-not-allowed" disabled>
+                        Tiếp Tục ➡️
+                    </button>
+                </div>
+            </div>
+
+            <!-- Workspace Split Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                
+                <!-- Left Sidebar: Mascot Bíp & Speech Box & Task Checklist -->
+                <div class="lg:col-span-4 flex flex-col gap-4">
+                    <!-- Mascot Card -->
+                    <div class="bg-white rounded-2xl p-4 custom-shadow border-2 border-lavender/20 flex flex-col items-center relative overflow-hidden">
+                        <!-- Background Glow Accent -->
+                        <div class="absolute -top-10 -left-10 w-32 h-32 bg-mint/10 rounded-full blur-2xl"></div>
+
+                        <!-- Speech Bubble -->
+                        <div class="w-full bg-cream border-2 border-yellowwarm rounded-2xl p-3.5 mb-3 relative text-slate-800 font-medium text-xs sm:text-sm shadow-sm min-h-[70px] flex items-center">
+                            <!-- Speech Arrow -->
+                            <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-4 h-4 bg-cream border-r-2 border-b-2 border-yellowwarm transform rotate-45"></div>
+                            <p id="bip-speech-text" class="w-full">
+                                Xin chào! Bạn hãy mở Ổ D: trong File Explorer bên phải nhé!
+                            </p>
+                        </div>
+
+                        <!-- Mascot Robot SVG -->
+                        <div class="relative py-1">
+                            <svg id="robot-bip-svg" viewBox="0 0 120 140" class="w-28 h-32 drop-shadow-md transition-all duration-300">
+                                <!-- Antenna -->
+                                <line x1="60" y1="25" x2="60" y2="10" stroke="#7766B7" stroke-width="4" stroke-linecap="round"/>
+                                <circle id="bip-antenna-light" cx="60" cy="8" r="6" fill="#FFC65C" class="animate-pulse"/>
+                                
+                                <!-- Head Body -->
+                                <rect x="20" y="25" width="80" height="65" rx="18" fill="#53B77A" stroke="#3d8f5d" stroke-width="3"/>
+                                <!-- Screen Face -->
+                                <rect x="28" y="33" width="64" height="48" rx="12" fill="#2d3748"/>
+                                
+                                <!-- EXPRESSION: Happy / Normal -->
+                                <g id="exp-happy" class="expression-group">
+                                    <path d="M 40 52 Q 46 44 52 52" stroke="#FFC65C" stroke-width="4" fill="none" stroke-linecap="round"/>
+                                    <path d="M 68 52 Q 74 44 80 52" stroke="#FFC65C" stroke-width="4" fill="none" stroke-linecap="round"/>
+                                    <path d="M 50 65 Q 60 73 70 65" stroke="#FFF8E9" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+                                </g>
+
+                                <!-- EXPRESSION: Bravo / Excited -->
+                                <g id="exp-bravo" class="expression-group hidden">
+                                    <polygon points="46,45 48,50 53,50 49,53 51,58 46,55 41,58 43,53 39,50 44,50" fill="#FFC65C"/>
+                                    <polygon points="74,45 76,50 81,50 77,53 79,58 74,55 69,58 71,53 67,50 72,50" fill="#FFC65C"/>
+                                    <path d="M 46 62 Q 60 76 74 62 Z" fill="#EF7469"/>
+                                </g>
+
+                                <!-- EXPRESSION: Thinking / Oops -->
+                                <g id="exp-thinking" class="expression-group hidden">
+                                    <circle cx="44" cy="50" r="5" fill="#FFC65C"/>
+                                    <line x1="68" y1="48" x2="80" y2="52" stroke="#FFC65C" stroke-width="3" stroke-linecap="round"/>
+                                    <ellipse cx="60" cy="65" rx="6" ry="4" fill="#FFF8E9"/>
+                                </g>
+
+                                <!-- Robot Body -->
+                                <rect x="35" y="94" width="50" height="36" rx="10" fill="#7766B7"/>
+                                <circle cx="60" cy="112" r="7" fill="#FFC65C"/>
+                                <path d="M 35 102 C 20 102 15 115 22 120" stroke="#7766B7" stroke-width="6" stroke-linecap="round" fill="none"/>
+                                <path id="bip-arm-right" d="M 85 102 C 100 102 105 115 98 120" stroke="#7766B7" stroke-width="6" stroke-linecap="round" fill="none"/>
+                            </svg>
+                        </div>
+
+                        <div class="font-extrabold text-lavender text-sm tracking-wide">RÔ-BỐT BÍP</div>
+                    </div>
+
+                    <!-- Checklist Card -->
+                    <div class="bg-white rounded-2xl p-4 custom-shadow border-2 border-lavender/20">
+                        <h4 class="font-extrabold text-slate-700 text-xs uppercase tracking-wider mb-3 flex items-center justify-between">
+                            <span>📋 DANH SÁCH NHIỆM VỤ</span>
+                        </h4>
+                        <ul id="task-checklist" class="space-y-2 text-xs sm:text-sm">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Right Area: Simulated File Explorer Window -->
+                <div class="lg:col-span-8 flex flex-col">
+                    <div class="bg-white rounded-2xl custom-shadow border-3 border-lavender/30 overflow-hidden flex flex-col h-full min-h-[420px]">
+                        
+                        <!-- File Explorer Window Titlebar -->
+                        <div class="bg-slate-800 text-white px-4 py-2.5 flex items-center justify-between text-xs font-semibold">
+                            <div class="flex items-center gap-2">
+                                <span class="text-amber-400">📁</span>
+                                <span>File Explorer - [Giao diện mô phỏng phục vụ học tập]</span>
+                            </div>
+                            <!-- Mock Window Control Buttons -->
+                            <div class="flex items-center gap-1.5">
+                                <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                                <div class="w-3 h-3 rounded-full bg-slate-600"></div>
+                                <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                            </div>
+                        </div>
+
+                        <!-- Explorer Address Bar & Breadcrumb -->
+                        <div class="bg-slate-100 p-2.5 border-b border-slate-200 flex flex-wrap items-center gap-2 text-xs">
+                            <button id="explorer-btn-up" class="p-1.5 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 font-bold text-slate-700 flex items-center gap-1 disabled:opacity-40" title="Lên thư mục cấp trên">
+                                ⬆️ Lên một cấp
+                            </button>
+                            
+                            <!-- Address Breadcrumb Box -->
+                            <div class="flex-1 bg-white border border-slate-300 rounded-lg px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto text-slate-700 font-mono font-medium">
+                                <span class="text-slate-400">📍</span>
+                                <span id="explorer-breadcrumb-text">This PC</span>
+                            </div>
+                        </div>
+
+                        <!-- Explorer Action Toolbar (New Folder, Rename, Delete) -->
+                        <div id="explorer-toolbar" class="bg-slate-50 border-b border-slate-200 px-3 py-2 flex flex-wrap items-center gap-2 text-xs">
+                            <button id="tool-btn-newfolder" class="px-3 py-1.5 bg-white border border-slate-300 hover:bg-emerald-50 hover:border-emerald-400 rounded-lg font-bold text-slate-700 flex items-center gap-1.5 transition">
+                                <span class="text-emerald-600">➕</span> Thư mục mới
+                            </button>
+                            <button id="tool-btn-rename" class="px-3 py-1.5 bg-white border border-slate-300 hover:bg-amber-50 hover:border-amber-400 rounded-lg font-bold text-slate-700 flex items-center gap-1.5 transition">
+                                <span class="text-amber-600">✏️</span> Đổi tên
+                            </button>
+                            <button id="tool-btn-delete" class="px-3 py-1.5 bg-white border border-slate-300 hover:bg-rose-50 hover:border-rose-400 rounded-lg font-bold text-slate-700 flex items-center gap-1.5 transition">
+                                <span class="text-rose-600">🗑️</span> Xóa
+                            </button>
+                            <span class="text-slate-400 text-[11px] ml-auto italic hidden sm:inline">*Thao tác mô phỏng an toàn trong bộ nhớ</span>
+                        </div>
+
+                        <!-- Main File View Grid -->
+                        <div id="explorer-content-area" class="flex-1 p-4 sm:p-6 bg-slate-50/50 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 content-start overflow-y-auto">
+                            <!-- Items rendered dynamically -->
+                        </div>
+
+                        <!-- Explorer Footer Status Bar -->
+                        <div class="bg-slate-100 border-t border-slate-200 px-4 py-2 text-[11px] text-slate-500 flex justify-between items-center">
+                            <span id="explorer-item-count">3 mục</span>
+                            <span>Môi trường thực hành ảo Tin học 3</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= 3. SUMMARY & CERTIFICATE SCREEN ================= -->
+        <section id="screen-summary" class="hidden bg-white rounded-3xl p-6 sm:p-10 custom-shadow border-4 border-lavender/30 flex-col items-center text-center max-w-2xl mx-auto my-auto w-full relative overflow-hidden">
+            
+            <!-- Confetti Decorative Sparks SVG -->
+            <div class="absolute inset-0 pointer-events-none opacity-30">
+                <svg class="w-full h-full" viewBox="0 0 400 400">
+                    <circle cx="50" cy="50" r="8" fill="#FFC65C"/>
+                    <circle cx="350" cy="80" r="10" fill="#EF7469"/>
+                    <circle cx="80" cy="320" r="12" fill="#53B77A"/>
+                    <circle cx="320" cy="300" r="9" fill="#7766B7"/>
+                </svg>
+            </div>
+
+            <!-- Trophy Header SVG -->
+            <div class="w-24 h-24 mb-3 bg-yellowwarm/20 rounded-full flex items-center justify-center border-4 border-yellowwarm">
+                <span class="text-5xl">🏆</span>
+            </div>
+
+            <h2 class="text-2xl sm:text-3xl font-black text-lavender mb-1">
+                HOÀN THÀNH PHÒNG MÁY BÍ MẬT!
+            </h2>
+            <p class="text-slate-600 text-sm mb-6">Em đã hoàn thành xuất sắc bài thực hành tệp và thư mục!</p>
+
+            <!-- Final Score Display -->
+            <div class="bg-cream border-2 border-yellowwarm rounded-2xl p-4 w-full max-w-md mb-6">
+                <div class="text-xs font-bold text-amber-800 uppercase tracking-widest mb-1">TỔNG ĐIỂM ĐẠT ĐƯỢC</div>
+                <div id="summary-final-score" class="text-4xl sm:text-5xl font-black text-coral">
+                    100 / 100
+                </div>
+            </div>
+
+            <!-- Badges List -->
+            <div class="w-full max-w-md mb-6">
+                <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wider mb-3">HUY HIỆU VINH DANH ĐẠT ĐƯỢC</h4>
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="bg-purple-50 border border-purple-200 p-2.5 rounded-xl flex flex-col items-center">
+                        <span class="text-2xl mb-1">🏅</span>
+                        <span class="text-[11px] font-bold text-purple-900">Hiệp Sĩ Khám Phá</span>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl flex flex-col items-center">
+                        <span class="text-2xl mb-1">📁</span>
+                        <span class="text-[11px] font-bold text-emerald-900">Chuyên Gia Thư Mục</span>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl flex flex-col items-center">
+                        <span class="text-2xl mb-1">🗺️</span>
+                        <span class="text-[11px] font-bold text-amber-900">Bậc Thầy Đường Dẫn</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Feedback -->
+            <div id="summary-feedback-box" class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs sm:text-sm text-slate-700 max-w-md mb-8">
+                "Xuất sắc! Em đã hiểu rõ cấu trúc cây thư mục, biết cách tạo mới, đổi tên, xóa và tìm tệp ảnh chuẩn xác!"
+            </div>
+
+            <!-- Play Again Button -->
+            <button id="btn-restart-game" class="btn-3d bg-mint hover:bg-mint-dark text-white font-extrabold text-lg px-8 py-3.5 rounded-2xl flex items-center gap-2 shadow-lg">
+                🔄 CHƠI LẠI BÀI HỌC
+            </button>
+        </section>
+
+    </main>
+
+    <!-- FOOTER CREDITS -->
+    <footer class="text-center py-2 text-xs text-slate-400 border-t border-slate-200 bg-white/50">
+        SGK Tin học 3 - Bộ sách Kết nối tri thức với cuộc sống | Thiết kế chuẩn Mỹ thuật V5
+    </footer>
+
+
+    <!-- ================= MODALS & DIALOGS ================= -->
+
+    <!-- 1. HƯỚNG DẪN MODAL -->
+    <div id="modal-guide" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full custom-shadow border-4 border-lavender/30 relative max-h-[90vh] overflow-y-auto">
+            <button id="btn-close-guide" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold text-xl p-2">✕</button>
+            <h3 class="text-xl font-extrabold text-lavender mb-4 flex items-center gap-2">
+                📖 Hướng Dẫn Cách Chơi
+            </h3>
+            <div class="space-y-3 text-xs sm:text-sm text-slate-700">
+                <div class="bg-cream p-3 rounded-xl border border-yellowwarm">
+                    <strong class="text-amber-900">Màn 1: Khám phá This PC</strong>
+                    <p>Nhấp vào ổ đĩa D:, tìm thư mục 'Hoc tap' và mở tệp văn bản theo yêu cầu của Rô-bốt Bíp.</p>
+                </div>
+                <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200">
+                    <strong class="text-emerald-900">Màn 2: Tạo thư mục mới</strong>
+                    <p>Sử dụng nút <b>➕ Thư mục mới</b> để tạo các thư mục 'Truyện tranh', 'Doraemon' và 'Conan'.</p>
+                </div>
+                <div class="bg-purple-50 p-3 rounded-xl border border-purple-200">
+                    <strong class="text-purple-900">Màn 3: Đổi tên và Xóa</strong>
+                    <p>Chọn thư mục viết sai tên bấm <b>✏️ Đổi tên</b>. Chọn thư mục rác bấm <b>🗑️ Xóa</b> và xác nhận.</p>
+                </div>
+                <div class="bg-amber-50 p-3 rounded-xl border border-amber-200">
+                    <strong class="text-amber-900">Màn 4: Truy tìm tệp ảnh</strong>
+                    <p>Duyệt qua các cấp thư mục theo đường dẫn cho trước để mở chính xác bức ảnh bí mật!</p>
+                </div>
+            </div>
+            <button id="btn-understand-guide" class="w-full mt-6 bg-lavender hover:bg-lavender-dark text-white font-bold py-3 rounded-xl">
+                Đã hiểu, sẵn sàng chơi!
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. PROMPT INPUT MODAL (Dùng cho Tạo thư mục / Đổi tên) -->
+    <div id="modal-input" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full custom-shadow border-4 border-lavender/30">
+            <h3 id="modal-input-title" class="text-base font-extrabold text-slate-800 mb-2">Nhập tên thư mục</h3>
+            <p id="modal-input-desc" class="text-xs text-slate-500 mb-4">Hãy chọn hoặc gõ tên thư mục mới:</p>
+            
+            <!-- Quick Suggestion Buttons -->
+            <div id="modal-input-suggestions" class="flex flex-wrap gap-2 mb-4">
+                <!-- Preset buttons injected dynamically -->
+            </div>
+
+            <input type="text" id="modal-input-field" class="w-full border-2 border-slate-300 rounded-xl p-2.5 text-sm mb-4 focus:outline-none focus:border-lavender font-semibold" placeholder="Nhập tên tại đây...">
+            
+            <div class="flex justify-end gap-2">
+                <button id="btn-modal-input-cancel" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-xl text-xs font-bold text-slate-700">Hủy bỏ</button>
+                <button id="btn-modal-input-confirm" class="px-4 py-2 bg-mint hover:bg-mint-dark text-white rounded-xl text-xs font-extrabold">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. CONFIRMATION DIALOG MODAL (Dùng cho Xóa thư mục) -->
+    <div id="modal-confirm" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full custom-shadow border-4 border-coral/30 text-center">
+            <div class="w-12 h-12 bg-coral/20 text-coral rounded-full flex items-center justify-center text-2xl mx-auto mb-3">
+                ⚠️
+            </div>
+            <h3 class="text-base font-extrabold text-slate-800 mb-2">XÁC NHẬN XÓA THƯ MỤC</h3>
+            <p id="modal-confirm-text" class="text-xs text-slate-600 mb-6">Bạn có chắc chắn muốn xóa thư mục này không?</p>
+            
+            <div class="flex justify-center gap-3">
+                <button id="btn-modal-confirm-no" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 rounded-xl text-xs font-bold text-slate-700 w-1/2">
+                    ❌ Hủy bỏ
+                </button>
+                <button id="btn-modal-confirm-yes" class="px-4 py-2.5 bg-coral hover:bg-red-600 text-white rounded-xl text-xs font-extrabold w-1/2">
+                    🗑️ Đồng ý Xóa
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. FILE PREVIEW MODAL (Dùng cho xem tệp Gioi_thieu.txt & Co_Bich_Khu.png) -->
+    <div id="modal-file-preview" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl p-6 max-w-md w-full custom-shadow border-4 border-lavender/30 text-center relative">
+            <button id="btn-close-file-preview" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold text-xl p-2">✕</button>
+            <div id="file-preview-content" class="py-4">
+                <!-- Injected preview content -->
+            </div>
+            <button id="btn-file-preview-ok" class="mt-4 px-6 py-2.5 bg-mint text-white font-extrabold rounded-xl text-sm">
+                Đóng tệp
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ================= GAME ENGINE & LOGIC SCRIPT ================= -->
+    <script>
+        /* 
+         * GAME_CONFIG: Centralized Configuration for Lesson 9 Grade 3 
+         * Safe virtual File System states, hints, and objectives.
+         */
+        const GAME_CONFIG = {
+            lessonTitle: "Bài 9: Thực hành với tệp và thư mục trong máy tính",
+            gameTitle: "PHÒNG MÁY BÍ MẬT",
+            totalScore: 100,
+            scorePerLevel: 25,
+            
+            // Audio Web Audio API Synthesizer Config
+            audio: {
+                bgmVolume: 0.12,
+                sfxVolume: 0.35
+            },
+
+            // Levels definition
+            levels: [
+                {
+                    id: 1,
+                    title: "KHÁM PHÁ THIS PC",
+                    tasks: [
+                        "Nhấp mở Ổ D: (Dữ liệu)",
+                        "Tìm và nhấp mở thư mục 'Hoc tap'",
+                        "Mở tệp văn bản 'Gioi_thieu.txt'"
+                    ],
+                    hints: [
+                        "Bước 1: Hãy nhấp chuột vào biểu tượng Ổ D: trong ô bên phải.",
+                        "Bước 2: Bạn hãy chọn thư mục màu vàng tên 'Hoc tap'.",
+                        "Bước 3: Nhấp vào biểu tượng tệp văn bản 'Gioi_thieu.txt'."
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "TẠO THƯ MỤC MỚI",
+                    tasks: [
+                        "Bấm '➕ Thư mục mới' để tạo thư mục 'Truyện tranh'",
+                        "Mở thư mục 'Truyện tranh', tạo thư mục con 'Doraemon'",
+                        "Tạo tiếp thư mục con thứ hai tên 'Conan'"
+                    ],
+                    hints: [
+                        "Bước 1: Bấm nút ➕ Thư mục mới trên thanh công cụ và gõ 'Truyện tranh'.",
+                        "Bước 2: Nhấp mở 'Truyện tranh', sau đó bấm ➕ Thư mục mới để tạo 'Doraemon'.",
+                        "Bước 3: Bấm ➕ Thư mục mới một lần nữa để tạo 'Conan'."
+                    ]
+                },
+                {
+                    id: 3,
+                    title: "ĐỔI TÊN VÀ XÓA THƯ MỤC",
+                    tasks: [
+                        "Chọn thư mục 'Do-re-mon', bấm '✏️ Đổi tên' thành 'Doraemon'",
+                        "Chọn thư mục 'Thu_muc_rac', bấm '🗑️ Xóa'",
+                        "Xác nhận 'Đồng ý Xóa' trong hộp thoại"
+                    ],
+                    hints: [
+                        "Bước 1: Nhấp vào thư mục viết sai 'Do-re-mon', rồi bấm nút ✏️ Đổi tên.",
+                        "Bước 2: Chọn thư mục 'Thu_muc_rac', bấm nút 🗑️ Xóa trên thanh công cụ.",
+                        "Bước 3: Hộp thoại hiện ra, hãy bấm nút 🗑️ Đồng ý Xóa."
+                    ]
+                },
+                {
+                    id: 4,
+                    title: "TRUY TÌM TỆP ẢNH",
+                    targetPath: "D:\\Truyện tranh\\Doraemon\\Co_Bich_Khu.png",
+                    tasks: [
+                        "Duyệt vào Ổ D: -> Thư mục 'Truyện tranh'",
+                        "Mở thư mục 'Doraemon'",
+                        "Nhấp chọn tệp ảnh bí mật 'Co_Bich_Khu.png'"
+                    ],
+                    hints: [
+                        "Theo đường dẫn D:\\Truyện tranh\\Doraemon\\Co_Bich_Khu.png:",
+                        "1. Mở Ổ D: -> 2. Mở 'Truyện tranh' -> 3. Mở 'Doraemon' -> 4. Mở ảnh 'Co_Bich_Khu.png'."
+                    ]
+                }
+            ]
+        };
+
+        /* 
+         * WEB AUDIO API SOUND SYSTEM 
+         * Pure synthesized sound effects and BGM loop without external files.
+         */
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.bgmGain = null;
+                this.sfxGain = null;
+                this.bgmEnabled = true;
+                this.sfxEnabled = true;
+                this.bgmPlaying = false;
+                this.bgmTimer = null;
+                this.noteIdx = 0;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                    
+                    this.bgmGain = this.ctx.createGain();
+                    this.bgmGain.gain.value = GAME_CONFIG.audio.bgmVolume;
+                    this.bgmGain.connect(this.ctx.destination);
+
+                    this.sfxGain = this.ctx.createGain();
+                    this.sfxGain.gain.value = GAME_CONFIG.audio.sfxVolume;
+                    this.sfxGain.connect(this.ctx.destination);
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playTone(freq, type, duration, gainNode = this.sfxGain) {
+                if (!this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const g = this.ctx.createGain();
+                    osc.type = type || 'sine';
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    
+                    g.gain.setValueAtTime(gainNode.gain.value, this.ctx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+                    
+                    osc.connect(g);
+                    g.connect(this.ctx.destination);
+                    
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) {}
+            }
+
+            playClick() {
+                if (!this.sfxEnabled) return;
+                this.init();
+                this.playTone(600, 'sine', 0.06);
+            }
+
+            playCorrect() {
+                if (!this.sfxEnabled) return;
+                this.init();
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((f, i) => {
+                    setTimeout(() => this.playTone(f, 'triangle', 0.18), i * 70);
+                });
+            }
+
+            playWrong() {
+                if (!this.sfxEnabled) return;
+                this.init();
+                this.playTone(220, 'sawtooth', 0.15);
+                setTimeout(() => this.playTone(180, 'sawtooth', 0.22), 100);
+            }
+
+            playLevelComplete() {
+                if (!this.sfxEnabled) return;
+                this.init();
+                const notes = [523.25, 659.25, 783.99, 880, 1046.50];
+                notes.forEach((f, i) => {
+                    setTimeout(() => this.playTone(f, 'sine', 0.25), i * 90);
+                });
+            }
+
+            playVictory() {
+                if (!this.sfxEnabled) return;
+                this.init();
+                const notes = [392, 523.25, 659.25, 783.99, 1046.50, 1318.51];
+                notes.forEach((f, i) => {
+                    setTimeout(() => this.playTone(f, 'triangle', 0.35), i * 110);
+                });
+            }
+
+            startBGM() {
+                if (this.bgmPlaying || !this.bgmEnabled) return;
+                this.init();
+                this.bgmPlaying = true;
+                this.noteIdx = 0;
+                
+                // Cheerful pentatonic background melody
+                const melody = [
+                    261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63, 392.00,
+                    293.66, 349.23, 440.00, 587.33, 440.00, 349.23, 293.66, 440.00
+                ];
+                
+                const step = () => {
+                    if (!this.bgmPlaying || !this.bgmEnabled) return;
+                    const freq = melody[this.noteIdx % melody.length];
+                    this.playTone(freq, 'sine', 0.35, this.bgmGain);
+                    this.noteIdx++;
+                    this.bgmTimer = setTimeout(step, 480);
+                };
+                step();
+            }
+
+            stopBGM() {
+                this.bgmPlaying = false;
+                if (this.bgmTimer) clearTimeout(this.bgmTimer);
+            }
+
+            toggleBGM() {
+                this.bgmEnabled = !this.bgmEnabled;
+                if (this.bgmEnabled) {
+                    this.startBGM();
+                } else {
+                    this.stopBGM();
+                }
+                return this.bgmEnabled;
+            }
+
+            toggleSFX() {
+                this.sfxEnabled = !this.sfxEnabled;
+                return this.sfxEnabled;
+            }
+        }
+
+        const soundEngine = new SoundEngine();
+
+
+        /* 
+         * VIRTUAL FILE SYSTEM ENGINE & GAME STATE MANAGER
+         */
+        class GameEngine {
+            constructor() {
+                this.currentLevel = 1;
+                this.score = 0;
+                this.mode = 'practice'; // 'practice' or 'challenge'
+                this.levelCompleted = [false, false, false, false];
+                this.currentStep = 0; // 0, 1, 2
+                
+                this.selectedExplorerItem = null;
+                this.currentPath = "This PC";
+
+                // Simulated File System Database State
+                this.vfs = {};
+                this.resetVFS();
+            }
+
+            resetVFS() {
+                this.vfs = {
+                    "This PC": [
+                        { name: "Ổ C: (Hệ thống)", type: "drive", id: "drive_c" },
+                        { name: "Ổ D: (Dữ liệu)", type: "drive", id: "drive_d" }
+                    ],
+                    "Ổ D: (Dữ liệu)": [
+                        { name: "Hoc tap", type: "folder", id: "f_hoctap" },
+                        { name: "Giai tri", type: "folder", id: "f_giaitri" },
+                        { name: "Do hoa", type: "folder", id: "f_dohoa" }
+                    ],
+                    "Ổ D: (Dữ liệu)\\Hoc tap": [
+                        { name: "Gioi_thieu.txt", type: "file_txt", id: "file_intro" },
+                        { name: "Bai_tap_Toan.docx", type: "file_txt", id: "file_math" },
+                        { name: "So_do.png", type: "file_img", id: "file_sodo" }
+                    ],
+                    "Ổ D: (Dữ liệu)\\Truyện tranh": [
+                        { name: "Do-re-mon", type: "folder", id: "f_doremon_wrong" },
+                        { name: "Thu_muc_rac", type: "folder", id: "f_garbage" }
+                    ],
+                    "Ổ D: (Dữ liệu)\\Truyện tranh\\Doraemon": [
+                        { name: "Co_Bich_Khu.png", type: "file_img", id: "file_cobichkhu" },
+                        { name: "Monan.txt", type: "file_txt", id: "file_monan" }
+                    ]
+                };
+            }
+
+            initLevel(lvlNum) {
+                this.currentLevel = lvlNum;
+                this.currentStep = 0;
+                this.selectedExplorerItem = null;
+
+                if (lvlNum === 1) {
+                    this.currentPath = "This PC";
+                } else if (lvlNum === 2) {
+                    this.currentPath = "Ổ D: (Dữ liệu)";
+                    // Ensure D drive contains base structure
+                    if (!this.vfs["Ổ D: (Dữ liệu)"]) this.resetVFS();
+                } else if (lvlNum === 3) {
+                    this.currentPath = "Ổ D: (Dữ liệu)\\Truyện tranh";
+                    this.vfs["Ổ D: (Dữ liệu)\\Truyện tranh"] = [
+                        { name: "Do-re-mon", type: "folder", id: "f_doremon_wrong" },
+                        { name: "Conan", type: "folder", id: "f_conan" },
+                        { name: "Thu_muc_rac", type: "folder", id: "f_garbage" }
+                    ];
+                } else if (lvlNum === 4) {
+                    this.currentPath = "This PC";
+                    // Ensure path exists for target D:\Truyện tranh\Doraemon\Co_Bich_Khu.png
+                    this.vfs["Ổ D: (Dữ liệu)\\Truyện tranh\\Doraemon"] = [
+                        { name: "Co_Bich_Khu.png", type: "file_img", id: "file_cobichkhu" },
+                        { name: "Bao_booi.txt", type: "file_txt", id: "file_baoboi" }
+                    ];
+                }
+
+                this.renderUI();
+            }
+
+            setMascot(expression, text) {
+                // Expression: 'happy', 'bravo', 'thinking'
+                document.querySelectorAll('.expression-group').forEach(el => el.classList.add('hidden'));
+                const targetExp = document.getElementById(`exp-${expression}`);
+                if (targetExp) targetExp.classList.remove('hidden');
+
+                const speechTextEl = document.getElementById('bip-speech-text');
+                if (speechTextEl) speechTextEl.textContent = text;
+            }
+
+            renderUI() {
+                const levelConfig = GAME_CONFIG.levels[this.currentLevel - 1];
+
+                // Header & Badges
+                document.getElementById('level-num-text').textContent = `MÀN ${this.currentLevel} / 4`;
+                document.getElementById('level-badge').textContent = this.currentLevel;
+                document.getElementById('level-title').textContent = levelConfig.title;
+                document.getElementById('score-text').textContent = `${this.score}/100`;
+
+                // Step Dots
+                for (let i = 1; i <= 3; i++) {
+                    const dot = document.getElementById(`step-dot-${i}`);
+                    if (i <= this.currentStep) {
+                        dot.className = "w-3.5 h-3.5 rounded-full bg-mint transition shadow";
+                    } else {
+                        dot.className = "w-3.5 h-3.5 rounded-full bg-slate-300 transition";
+                    }
+                }
+
+                // Next Level Button state
+                const btnNext = document.getElementById('btn-next-level');
+                if (this.currentStep >= 3) {
+                    btnNext.disabled = false;
+                    btnNext.className = "btn-3d bg-mint hover:bg-mint-dark text-white font-extrabold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 shadow-md cursor-pointer animate-pulse";
+                } else {
+                    btnNext.disabled = true;
+                    btnNext.className = "btn-3d bg-slate-300 text-slate-500 font-extrabold px-4 py-2 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 cursor-not-allowed";
+                }
+
+                // Render Task Checklist
+                const checklistEl = document.getElementById('task-checklist');
+                checklistEl.innerHTML = '';
+                levelConfig.tasks.forEach((taskText, idx) => {
+                    const li = document.createElement('li');
+                    const isDone = idx < this.currentStep;
+                    const isCurrent = idx === this.currentStep;
+
+                    li.className = `p-2 rounded-xl border flex items-center gap-2 transition ${
+                        isDone ? 'bg-emerald-50 border-emerald-300 text-emerald-900 font-medium' :
+                        isCurrent ? 'bg-amber-50 border-amber-300 text-amber-900 font-bold ring-2 ring-amber-300/50' :
+                        'bg-slate-50 border-slate-200 text-slate-400'
+                    }`;
+
+                    li.innerHTML = `
+                        <span>${isDone ? '✅' : isCurrent ? '👉' : '🔲'}</span>
+                        <span class="flex-1">${taskText}</span>
+                    `;
+                    checklistEl.appendChild(li);
+                });
+
+                // Update Address Breadcrumb
+                document.getElementById('explorer-breadcrumb-text').textContent = this.currentPath;
+
+                // Render Explorer Workspace
+                this.renderExplorerContent();
+            }
+
+            renderExplorerContent() {
+                const container = document.getElementById('explorer-content-area');
+                container.innerHTML = '';
+
+                const items = this.vfs[this.currentPath] || [];
+                document.getElementById('explorer-item-count').textContent = `${items.length} mục`;
+
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    const isSelected = this.selectedExplorerItem === item;
+
+                    // Highlight for guidance in Practice Mode
+                    let isTargetHint = false;
+                    if (this.mode === 'practice') {
+                        if (this.currentLevel === 1 && this.currentStep === 0 && item.name.includes("Ổ D:")) isTargetHint = true;
+                        if (this.currentLevel === 1 && this.currentStep === 1 && item.name === "Hoc tap") isTargetHint = true;
+                        if (this.currentLevel === 1 && this.currentStep === 2 && item.name === "Gioi_thieu.txt") isTargetHint = true;
+                        if (this.currentLevel === 3 && this.currentStep === 0 && item.name === "Do-re-mon") isTargetHint = true;
+                        if (this.currentLevel === 3 && this.currentStep === 1 && item.name === "Thu_muc_rac") isTargetHint = true;
+                        if (this.currentLevel === 4 && item.name.includes("Ổ D:") && this.currentStep === 0) isTargetHint = true;
+                        if (this.currentLevel === 4 && item.name === "Truyện tranh" && this.currentStep === 1) isTargetHint = true;
+                        if (this.currentLevel === 4 && item.name === "Doraemon" && this.currentStep === 2) isTargetHint = true;
+                        if (this.currentLevel === 4 && item.name === "Co_Bich_Khu.png" && this.currentStep === 3) isTargetHint = true;
+                    }
+
+                    card.className = `p-3 rounded-2xl border-2 flex flex-col items-center justify-center text-center cursor-pointer transition transform hover:-translate-y-1 ${
+                        isSelected ? 'bg-purple-100 border-lavender ring-2 ring-lavender' : 'bg-white border-slate-200 hover:border-slate-300'
+                    } ${isTargetHint ? 'highlight-target border-mint bg-mint/10' : ''}`;
+
+                    let iconSvg = '';
+                    if (item.type === 'drive') {
+                        iconSvg = `
+                            <svg class="w-12 h-12 mb-1" viewBox="0 0 64 64">
+                                <rect x="8" y="16" width="48" height="32" rx="6" fill="#7766B7"/>
+                                <rect x="12" y="20" width="40" height="24" rx="4" fill="#8d7ccf"/>
+                                <circle cx="46" cy="32" r="3" fill="#53B77A"/>
+                                <line x1="16" y1="32" x2="36" y2="32" stroke="#FFF8E9" stroke-width="3" stroke-linecap="round"/>
+                            </svg>`;
+                    } else if (item.type === 'folder') {
+                        iconSvg = `
+                            <svg class="w-12 h-12 mb-1" viewBox="0 0 64 64">
+                                <path d="M8 16 C8 12, 12 10, 16 10 L26 10 C29 10, 31 12, 33 15 L36 18 L52 18 C56 18, 58 20, 58 24 L58 48 C58 52, 56 54, 52 54 L12 54 C8 54, 6 52, 6 48 Z" fill="#FFC65C"/>
+                                <path d="M6 24 C6 22, 8 20, 12 20 L52 20 C56 20, 58 22, 58 24 L58 48 C58 52, 56 54, 52 54 L12 54 C8 54, 6 52, 6 48 Z" fill="#FFE082"/>
+                            </svg>`;
+                    } else if (item.type === 'file_txt') {
+                        iconSvg = `
+                            <svg class="w-12 h-12 mb-1" viewBox="0 0 64 64">
+                                <path d="M14 8 L38 8 L50 20 L50 56 C50 58.2 48.2 60 46 60 L14 60 C11.8 60 10 58.2 10 56 L10 12 C10 9.8 11.8 8 14 8 Z" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+                                <path d="M38 8 L38 20 L50 20 Z" fill="#E2E8F0"/>
+                                <line x1="18" y1="28" x2="42" y2="28" stroke="#7766B7" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="18" y1="36" x2="42" y2="36" stroke="#94A3B8" stroke-width="3" stroke-linecap="round"/>
+                            </svg>`;
+                    } else if (item.type === 'file_img') {
+                        iconSvg = `
+                            <svg class="w-12 h-12 mb-1" viewBox="0 0 64 64">
+                                <path d="M14 8 L38 8 L50 20 L50 56 C50 58.2 48.2 60 46 60 L14 60 C11.8 60 10 58.2 10 56 L10 12 C10 9.8 11.8 8 14 8 Z" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+                                <path d="M38 8 L38 20 L50 20 Z" fill="#E2E8F0"/>
+                                <rect x="16" y="26" width="32" height="24" rx="3" fill="#EF7469"/>
+                                <circle cx="23" cy="33" r="3" fill="#FFC65C"/>
+                                <path d="M16 46 L26 36 L34 44 L40 38 L48 46 Z" fill="#53B77A"/>
+                            </svg>`;
+                    }
+
+                    card.innerHTML = `
+                        ${iconSvg}
+                        <span class="text-xs font-bold text-slate-700 truncate w-full">${item.name}</span>
+                    `;
+
+                    // Click Interaction Event
+                    card.onclick = () => this.handleItemClick(item);
+
+                    container.appendChild(card);
+                });
+            }
+
+            handleItemClick(item) {
+                soundEngine.playClick();
+                this.selectedExplorerItem = item;
+
+                // LEVEL 1 LOGIC
+                if (this.currentLevel === 1) {
+                    if (this.currentStep === 0 && item.name.includes("Ổ D:")) {
+                        this.currentPath = "Ổ D: (Dữ liệu)";
+                        this.currentStep = 1;
+                        soundEngine.playCorrect();
+                        this.setMascot('happy', "Giỏi lắm! Bạn đã mở Ổ D:. Bây giờ hãy nhấp mở thư mục 'Hoc tap' nhé!");
+                    } else if (this.currentStep === 1 && item.name === "Hoc tap") {
+                        this.currentPath = "Ổ D: (Dữ liệu)\\Hoc tap";
+                        this.currentStep = 2;
+                        soundEngine.playCorrect();
+                        this.setMascot('happy', "Xuất sắc! Thư mục 'Hoc tap' đã mở. Hãy nhấp chọn tệp văn bản 'Gioi_thieu.txt'!");
+                    } else if (this.currentStep === 2 && item.name === "Gioi_thieu.txt") {
+                        this.openFilePreview('txt', 'Gioi_thieu.txt', '📄 TỆP VĂN BẢN GƯƠNG MẪU\n\n"Chào mừng bạn đến với môn Tin học 3 - Bài 9!\nBạn đã khám phá xong cây thư mục đầu tiên!"');
+                        this.completeLevelStep();
+                    } else if (item.type === 'drive' || item.type === 'folder') {
+                        // Wrong navigation click in Level 1
+                        soundEngine.playWrong();
+                        this.setMascot('thinking', "Chưa đúng mục tiêu rồi! Bíp nhắc bạn mở đúng thư mục theo nhiệm vụ nhé.");
+                    }
+                }
+
+                // LEVEL 2 LOGIC (Folder creation level - navigation inside folder)
+                else if (this.currentLevel === 2) {
+                    if (item.name === "Truyện tranh" && this.currentStep === 1) {
+                        this.currentPath = "Ổ D: (Dữ liệu)\\Truyện tranh";
+                        soundEngine.playCorrect();
+                        this.setMascot('happy', "Đã vào thư mục 'Truyện tranh'! Bây giờ hãy bấm '➕ Thư mục mới' để tạo thư mục 'Doraemon'.");
+                    }
+                }
+
+                // LEVEL 3 LOGIC (Rename & Delete)
+                else if (this.currentLevel === 3) {
+                    if (item.name === "Do-re-mon" && this.currentStep === 0) {
+                        this.setMascot('happy', "Bạn đã chọn thư mục 'Do-re-mon'. Bây giờ hãy bấm nút '✏️ Đổi tên' trên thanh công cụ!");
+                    } else if (item.name === "Thu_muc_rac" && this.currentStep === 1) {
+                        this.setMascot('happy', "Bạn đã chọn thư mục 'Thu_muc_rac'. Bây giờ hãy bấm nút '🗑️ Xóa' trên thanh công cụ!");
+                    }
+                }
+
+                // LEVEL 4 LOGIC (Breadcrumb navigation)
+                else if (this.currentLevel === 4) {
+                    if (this.currentStep === 0 && item.name.includes("Ổ D:")) {
+                        this.currentPath = "Ổ D: (Dữ liệu)";
+                        this.currentStep = 1;
+                        soundEngine.playCorrect();
+                        this.setMascot('happy', "Đã vào Ổ D:! Tiếp theo nhấp chọn thư mục 'Truyện tranh'.");
+                    } else if (this.currentStep === 1 && item.name === "Truyện tranh") {
+                        this.currentPath = "Ổ D: (Dữ liệu)\\Truyện tranh";
+                        this.currentStep = 2;
+                        soundEngine.playCorrect();
+                        this.setMascot('happy', "Đã vào 'Truyện tranh'! Nhấp mở tiếp thư mục con 'Doraemon'.");
+                    } else if (this.currentStep === 2 && item.name === "Doraemon") {
+                        this.currentPath = "Ổ D: (Dữ liệu)\\Truyện tranh\\Doraemon";
+                        this.currentStep = 3;
+                        soundEngine.playCorrect();
+                        this.setMascot('happy', "Tuyệt vời! Đã ở trong 'Doraemon'. Hãy nhấp mở bức ảnh 'Co_Bich_Khu.png'!");
+                    } else if (this.currentStep === 3 && item.name === "Co_Bich_Khu.png") {
+                        this.openFilePreview('img', 'Co_Bich_Khu.png', 'Bức ảnh bí mật: Cổ Bích Khu!');
+                        this.completeLevelStep();
+                    } else {
+                        soundEngine.playWrong();
+                        this.setMascot('thinking', "Hãy theo đúng đường dẫn: D:\\Truyện tranh\\Doraemon\\Co_Bich_Khu.png nhé!");
+                    }
+                }
+
+                this.renderUI();
+            }
+
+            // Up folder level
+            navigateUpLevel() {
+                soundEngine.playClick();
+                if (this.currentPath.includes("\\")) {
+                    const lastIndex = this.currentPath.lastIndexOf("\\");
+                    this.currentPath = this.currentPath.substring(0, lastIndex);
+                } else if (this.currentPath.includes("Ổ D:")) {
+                    this.currentPath = "This PC";
+                }
+                this.renderUI();
+            }
+
+            // Toolbar New Folder Action
+            handleToolNewFolder() {
+                soundEngine.playClick();
+                if (this.currentLevel !== 2) {
+                    this.setMascot('thinking', "Nhiệm vụ tạo thư mục thuộc về Màn 2 bạn nhé!");
+                    return;
+                }
+
+                if (this.currentStep === 0) {
+                    openInputModal("Tạo thư mục chính", "Nhập tên thư mục mới cần tạo:", ["Truyện tranh"], (enteredName) => {
+                        if (enteredName.trim() === "Truyện tranh") {
+                            if (!this.vfs[this.currentPath]) this.vfs[this.currentPath] = [];
+                            this.vfs[this.currentPath].push({ name: "Truyện tranh", type: "folder", id: "f_truyentranh" });
+                            this.currentStep = 1;
+                            soundEngine.playCorrect();
+                            this.setMascot('happy', "Thư mục 'Truyện tranh' đã tạo thành công! Hãy nhấp mở nó để vào bên trong.");
+                            this.renderUI();
+                        } else {
+                            soundEngine.playWrong();
+                            this.setMascot('thinking', "Bạn cần gõ hoặc chọn đúng tên 'Truyện tranh' nhé!");
+                        }
+                    });
+                } else if (this.currentStep === 1) {
+                    if (!this.currentPath.includes("Truyện tranh")) {
+                        this.setMascot('thinking', "Hãy nhấp mở thư mục 'Truyện tranh' trước khi tạo thư mục con 'Doraemon'!");
+                        return;
+                    }
+                    openInputModal("Tạo thư mục con thứ nhất", "Nhập tên thư mục con:", ["Doraemon"], (enteredName) => {
+                        if (enteredName.trim() === "Doraemon") {
+                            if (!this.vfs[this.currentPath]) this.vfs[this.currentPath] = [];
+                            this.vfs[this.currentPath].push({ name: "Doraemon", type: "folder", id: "f_doraemon" });
+                            this.currentStep = 2;
+                            soundEngine.playCorrect();
+                            this.setMascot('happy', "Tuyệt quá! Đã tạo xong thư mục 'Doraemon'. Hãy bấm '➕ Thư mục mới' để tạo tiếp 'Conan'!");
+                            this.renderUI();
+                        } else {
+                            soundEngine.playWrong();
+                            this.setMascot('thinking', "Hãy nhập tên thư mục con là 'Doraemon' nhé!");
+                        }
+                    });
+                } else if (this.currentStep === 2) {
+                    openInputModal("Tạo thư mục con thứ hai", "Nhập tên thư mục con thứ 2:", ["Conan"], (enteredName) => {
+                        if (enteredName.trim() === "Conan") {
+                            if (!this.vfs[this.currentPath]) this.vfs[this.currentPath] = [];
+                            this.vfs[this.currentPath].push({ name: "Conan", type: "folder", id: "f_conan" });
+                            soundEngine.playCorrect();
+                            this.completeLevelStep();
+                        } else {
+                            soundEngine.playWrong();
+                            this.setMascot('thinking', "Hãy nhập tên thư mục con thứ hai là 'Conan' nhé!");
+                        }
+                    });
+                }
+            }
+
+            // Toolbar Rename Action
+            handleToolRename() {
+                soundEngine.playClick();
+                if (this.currentLevel !== 3) {
+                    this.setMascot('thinking', "Thao tác đổi tên được thực hành trong Màn 3 nhé!");
+                    return;
+                }
+
+                if (!this.selectedExplorerItem || this.selectedExplorerItem.name !== "Do-re-mon") {
+                    soundEngine.playWrong();
+                    this.setMascot('thinking', "Hãy nhấp chọn thư mục viết sai tên 'Do-re-mon' trước rồi mới bấm Đổi tên!");
+                    return;
+                }
+
+                openInputModal("Đổi tên thư mục", "Sửa tên 'Do-re-mon' thành tên đúng:", ["Doraemon"], (newName) => {
+                    if (newName.trim() === "Doraemon") {
+                        this.selectedExplorerItem.name = "Doraemon";
+                        this.currentStep = 1;
+                        soundEngine.playCorrect();
+                        this.setMascot('happy', "Sửa tên thành 'Doraemon' chuẩn xác! Tiếp theo, hãy chọn thư mục 'Thu_muc_rac' để xóa.");
+                        this.selectedExplorerItem = null;
+                        this.renderUI();
+                    } else {
+                        soundEngine.playWrong();
+                        this.setMascot('thinking', "Tên mới chính xác phải là 'Doraemon' nhé!");
+                    }
+                });
+            }
+
+            // Toolbar Delete Action
+            handleToolDelete() {
+                soundEngine.playClick();
+                if (this.currentLevel !== 3) {
+                    this.setMascot('thinking', "Thao tác xóa thư mục rác thực hành trong Màn 3 nhé!");
+                    return;
+                }
+
+                if (!this.selectedExplorerItem || this.selectedExplorerItem.name !== "Thu_muc_rac") {
+                    soundEngine.playWrong();
+                    this.setMascot('thinking', "Hãy chọn thư mục rác 'Thu_muc_rac' trước khi bấm Xóa nhé!");
+                    return;
+                }
+
+                openConfirmModal("Bạn có chắc chắn muốn xóa thư mục mô phỏng 'Thu_muc_rac' không?", () => {
+                    // Remove item from VFS
+                    const list = this.vfs[this.currentPath];
+                    const idx = list.indexOf(this.selectedExplorerItem);
+                    if (idx > -1) list.splice(idx, 1);
+                    
+                    soundEngine.playCorrect();
+                    this.completeLevelStep();
+                });
+            }
+
+            // Complete a full level step / Finish Level
+            completeLevelStep() {
+                this.currentStep = 3; // Fully completed step requirement
+                
+                if (!this.levelCompleted[this.currentLevel - 1]) {
+                    this.levelCompleted[this.currentLevel - 1] = true;
+                    this.score += GAME_CONFIG.scorePerLevel;
+                }
+
+                soundEngine.playLevelComplete();
+                this.setMascot('bravo', `HOAN HÔ! Bạn đã hoàn thành xuất sắc Màn ${this.currentLevel}! Bấm 'Tiếp Tục ➡️' để tiến lên.`);
+                this.renderUI();
+            }
+
+            openFilePreview(type, filename, content) {
+                const container = document.getElementById('file-preview-content');
+                if (type === 'txt') {
+                    container.innerHTML = `
+                        <div class="text-4xl mb-2">📄</div>
+                        <h4 class="font-extrabold text-slate-800 text-lg mb-2">${filename}</h4>
+                        <div class="bg-cream border border-yellowwarm rounded-2xl p-4 text-xs font-mono text-slate-700 whitespace-pre-line text-left">
+                            ${content}
+                        </div>
+                    `;
+                } else if (type === 'img') {
+                    container.innerHTML = `
+                        <div class="text-xs font-bold text-slate-500 mb-1">TỆP ẢNH BÍ MẬT</div>
+                        <h4 class="font-extrabold text-slate-800 text-lg mb-3">${filename}</h4>
+                        <!-- SVG Doraemon Secret Tool Artwork -->
+                        <div class="w-44 h-44 mx-auto bg-emerald-50 rounded-2xl border-2 border-emerald-300 flex items-center justify-center p-2 mb-2">
+                            <svg viewBox="0 0 200 200" class="w-full h-full">
+                                <circle cx="100" cy="100" r="85" fill="#53B77A" opacity="0.2"/>
+                                <rect x="40" y="60" width="120" height="90" rx="16" fill="#7766B7" stroke="#FFF8E9" stroke-width="4"/>
+                                <circle cx="100" cy="105" r="30" fill="#FFC65C" stroke="#FFF8E9" stroke-width="4"/>
+                                <circle cx="100" cy="105" r="18" fill="#EF7469"/>
+                                <rect x="60" y="45" width="30" height="15" rx="4" fill="#FFC65C"/>
+                                <circle cx="135" cy="80" r="6" fill="#53B77A"/>
+                            </svg>
+                        </div>
+                        <p class="text-xs text-emerald-800 font-bold">🎉 Bạn đã tìm thấy tệp ảnh Cổ Bích Khu!</p>
+                    `;
+                }
+                document.getElementById('modal-file-preview').classList.remove('hidden');
+            }
+        }
+
+        const gameEngine = new GameEngine();
+
+
+        /* 
+         * UI EVENT HANDLERS & MODAL CONTROLLERS
+         */
+
+        // Screen Switcher Helper
+        function showScreen(screenId) {
+            document.getElementById('screen-welcome').classList.add('hidden');
+            document.getElementById('screen-gameplay').classList.add('hidden');
+            document.getElementById('screen-summary').classList.add('hidden');
+
+            document.getElementById(screenId).classList.remove('hidden');
+            if (screenId === 'screen-gameplay') {
+                document.getElementById('screen-gameplay').style.display = 'flex';
+            }
+        }
+
+        // Input Modal Controller
+        let currentInputCallback = null;
+        function openInputModal(title, desc, suggestions, onConfirm) {
+            document.getElementById('modal-input-title').textContent = title;
+            document.getElementById('modal-input-desc').textContent = desc;
+            
+            const field = document.getElementById('modal-input-field');
+            field.value = '';
+
+            const suggBox = document.getElementById('modal-input-suggestions');
+            suggBox.innerHTML = '';
+            suggestions.forEach(sugg => {
+                const btn = document.createElement('button');
+                btn.className = "px-3 py-1 bg-purple-100 hover:bg-purple-200 text-purple-900 border border-purple-300 rounded-lg text-xs font-bold";
+                btn.textContent = `+ ${sugg}`;
+                btn.onclick = () => { field.value = sugg; };
+                suggBox.appendChild(btn);
+            });
+
+            currentInputCallback = onConfirm;
+            document.getElementById('modal-input').classList.remove('hidden');
+            field.focus();
+        }
+
+        document.getElementById('btn-modal-input-cancel').onclick = () => {
+            soundEngine.playClick();
+            document.getElementById('modal-input').classList.add('hidden');
+        };
+
+        document.getElementById('btn-modal-input-confirm').onclick = () => {
+            soundEngine.playClick();
+            const val = document.getElementById('modal-input-field').value;
+            document.getElementById('modal-input').classList.add('hidden');
+            if (currentInputCallback) currentInputCallback(val);
+        };
+
+        // Confirm Dialog Modal Controller
+        let currentConfirmCallback = null;
+        function openConfirmModal(text, onYes) {
+            document.getElementById('modal-confirm-text').textContent = text;
+            currentConfirmCallback = onYes;
+            document.getElementById('modal-confirm').classList.remove('hidden');
+        }
+
+        document.getElementById('btn-modal-confirm-no').onclick = () => {
+            soundEngine.playClick();
+            document.getElementById('modal-confirm').classList.add('hidden');
+        };
+
+        document.getElementById('btn-modal-confirm-yes').onclick = () => {
+            soundEngine.playClick();
+            document.getElementById('modal-confirm').classList.add('hidden');
+            if (currentConfirmCallback) currentConfirmCallback();
+        };
+
+        // File Preview Modal Close
+        document.getElementById('btn-close-file-preview').onclick = 
+        document.getElementById('btn-file-preview-ok').onclick = () => {
+            soundEngine.playClick();
+            document.getElementById('modal-file-preview').classList.add('hidden');
+        };
+
+        // Mode Switchers
+        document.getElementById('mode-select-practice').onclick = function() {
+            soundEngine.playClick();
+            gameEngine.mode = 'practice';
+            this.className = "mode-card border-3 border-mint bg-mint/10 p-4 rounded-2xl flex flex-col items-center transition cursor-pointer text-left ring-2 ring-mint";
+            document.getElementById('mode-select-challenge').className = "mode-card border-2 border-slate-200 bg-slate-50 hover:bg-slate-100 p-4 rounded-2xl flex flex-col items-center transition cursor-pointer text-left";
+            document.getElementById('mode-badge').textContent = "🎮 Chế độ: Luyện tập";
+        };
+
+        document.getElementById('mode-select-challenge').onclick = function() {
+            soundEngine.playClick();
+            gameEngine.mode = 'challenge';
+            this.className = "mode-card border-3 border-amber-400 bg-amber-50 p-4 rounded-2xl flex flex-col items-center transition cursor-pointer text-left ring-2 ring-amber-400";
+            document.getElementById('mode-select-practice').className = "mode-card border-2 border-slate-200 bg-slate-50 hover:bg-slate-100 p-4 rounded-2xl flex flex-col items-center transition cursor-pointer text-left";
+            document.getElementById('mode-badge').textContent = "🏆 Chế độ: Thử thách";
+        };
+
+        // Start Game
+        document.getElementById('btn-start-game').onclick = () => {
+            soundEngine.playClick();
+            soundEngine.startBGM();
+            gameEngine.initLevel(1);
+            showScreen('screen-gameplay');
+        };
+
+        // Audio Controls
+        document.getElementById('btn-bgm-toggle').onclick = () => {
+            const isBgmOn = soundEngine.toggleBGM();
+            document.getElementById('bgm-icon').textContent = isBgmOn ? "🎵" : "🔇";
+        };
+
+        document.getElementById('btn-sfx-toggle').onclick = () => {
+            const isSfxOn = soundEngine.toggleSFX();
+            document.getElementById('sfx-icon').textContent = isSfxOn ? "🔊" : "🔇";
+        };
+
+        // Navigation Header Buttons
+        document.getElementById('btn-home').onclick = () => {
+            soundEngine.playClick();
+            showScreen('screen-welcome');
+        };
+
+        // Guide Modal Actions
+        document.getElementById('btn-open-guide').onclick = () => {
+            soundEngine.playClick();
+            document.getElementById('modal-guide').classList.remove('hidden');
+        };
+        document.getElementById('btn-close-guide').onclick = 
+        document.getElementById('btn-understand-guide').onclick = () => {
+            soundEngine.playClick();
+            document.getElementById('modal-guide').classList.add('hidden');
+        };
+
+        // Gameplay Actions
+        document.getElementById('btn-hint').onclick = () => {
+            soundEngine.playClick();
+            const hints = GAME_CONFIG.levels[gameEngine.currentLevel - 1].hints;
+            const text = hints[gameEngine.currentStep] || hints[0];
+            gameEngine.setMascot('thinking', text);
+        };
+
+        document.getElementById('btn-reset-level').onclick = () => {
+            soundEngine.playClick();
+            gameEngine.initLevel(gameEngine.currentLevel);
+            gameEngine.setMascot('happy', "Đã làm lại màn chơi! Hãy thử lại theo từng bước nhé.");
+        };
+
+        document.getElementById('btn-next-level').onclick = () => {
+            soundEngine.playClick();
+            if (gameEngine.currentLevel < 4) {
+                gameEngine.initLevel(gameEngine.currentLevel + 1);
+            } else {
+                // Show Summary Screen
+                soundEngine.playVictory();
+                document.getElementById('summary-final-score').textContent = `${gameEngine.score} / 100`;
+                showScreen('screen-summary');
+            }
+        };
+
+        // Explorer Toolbar Button Bindings
+        document.getElementById('explorer-btn-up').onclick = () => gameEngine.navigateUpLevel();
+        document.getElementById('tool-btn-newfolder').onclick = () => gameEngine.handleToolNewFolder();
+        document.getElementById('tool-btn-rename').onclick = () => gameEngine.handleToolRename();
+        document.getElementById('tool-btn-delete').onclick = () => gameEngine.handleToolDelete();
+
+        // Restart Full Game
+        document.getElementById('btn-restart-game').onclick = () => {
+            soundEngine.playClick();
+            gameEngine.score = 0;
+            gameEngine.levelCompleted = [false, false, false, false];
+            gameEngine.resetVFS();
+            gameEngine.initLevel(1);
+            showScreen('screen-gameplay');
+        };
+
+        // Initialize App on Window Load
+        window.onload = function() {
+            // Default setup ready
+            console.log("Phòng Máy Bí Mật V5 loaded successfully.");
+        };
+    </script>
+</body>
+</html>

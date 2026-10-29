@@ -1,0 +1,2778 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THẦN TỐC HÀNG PHÍM SỐ – Tin học 4 Bài 2</title>
+  <style>
+    :root {
+      --bg-cream: #FFF9ED;
+      --bg-panel: #FFFFFF;
+      --bg-soft: #FFF2D9;
+      --orange: #FF9850;
+      --orange-dark: #E0782F;
+      --teal: #40B8B3;
+      --teal-dark: #28948F;
+      --purple: #8069C6;
+      --purple-dark: #6049A6;
+      --yellow: #FFD773;
+      --coral: #FF7A90;
+      --mint: #DDF7F5;
+      --lavender: #EFEAFC;
+      --text-main: #2D2A3E;
+      --text-muted: #66617A;
+      --success: #2BB673;
+      --error: #E85B6C;
+      --border-soft: #EADCC9;
+      --shadow-soft: 0 8px 24px rgba(64, 48, 86, 0.10);
+      --shadow-btn: 0 4px 0 rgba(45, 42, 62, 0.16);
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      /* Màu sắc quy ước ngón tay theo SGK */
+      --f-pinky-l: #FF7A90;
+      --f-ring-l: #FF9850;
+      --f-mid-l: #F4B942;
+      --f-index-l: #40B8B3;
+      --f-index-r: #5390D9;
+      --f-mid-r: #8069C6;
+      --f-ring-r: #C06C84;
+      --f-pinky-r: #46B585;
+      --f-thumb: #95A5A6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: radial-gradient(circle at top right, #EFEAFC 0%, #FFF9ED 55%, #FFEAD2 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+      line-height: 1.45;
+      user-select: none;
+    }
+
+    /* Tôn trọng prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    button, input, select {
+      font-family: inherit;
+    }
+
+    button:focus-visible, .interactive-focus:focus-visible {
+      outline: 3px solid var(--purple);
+      outline-offset: 2px;
+    }
+
+    /* KHUNG CHÍNH 16:9 LINH HOẠT */
+    .app-shell {
+      width: 100%;
+      max-width: 1380px;
+      min-height: 100vh;
+      padding: 12px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    /* THANH ĐIỀU HƯỚNG TRÊN CÙNG */
+    .topbar {
+      background: var(--bg-panel);
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 10px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: var(--shadow-soft);
+      z-index: 10;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-class {
+      background: var(--lavender);
+      color: var(--purple-dark);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1.5px solid #D3C6F5;
+    }
+
+    .game-title-mini {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--orange-dark);
+      letter-spacing: 0.3px;
+    }
+
+    .stage-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .stage-pill {
+      min-height: 44px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 2px solid var(--border-soft);
+      background: #FAF6EE;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .stage-pill:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .stage-pill.active {
+      background: var(--purple);
+      color: #fff;
+      border-color: var(--purple-dark);
+      box-shadow: 0 3px 0 var(--purple-dark);
+    }
+
+    .stage-pill.done {
+      background: var(--mint);
+      color: var(--teal-dark);
+      border-color: var(--teal);
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .score-box {
+      background: linear-gradient(135deg, #FFF3C4, #FFD773);
+      border: 2px solid #F0B836;
+      padding: 6px 14px;
+      min-height: 44px;
+      border-radius: 999px;
+      font-weight: 800;
+      color: #6B4700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.98rem;
+    }
+
+    /* NÚT BẤM CHUẨN V5 (>= 44x44px) */
+    .btn {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
+      box-shadow: var(--shadow-btn);
+      text-decoration: none;
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(45, 42, 62, 0.16);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      background: var(--orange);
+      color: #fff;
+      border-color: var(--orange-dark);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: #FF8836;
+    }
+
+    .btn-teal {
+      background: var(--teal);
+      color: #fff;
+      border-color: var(--teal-dark);
+    }
+    .btn-teal:hover:not(:disabled) {
+      background: #35A6A1;
+    }
+
+    .btn-purple {
+      background: var(--purple);
+      color: #fff;
+      border-color: var(--purple-dark);
+    }
+    .btn-purple:hover:not(:disabled) {
+      background: #7159B8;
+    }
+
+    .btn-soft {
+      background: #FFF7E8;
+      color: var(--text-main);
+      border-color: var(--border-soft);
+    }
+    .btn-soft:hover:not(:disabled) {
+      background: #FFECC8;
+    }
+
+    .btn-audio {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      background: #F4F1FA;
+      border: 2px solid #D8CEEE;
+      color: var(--text-main);
+    }
+
+    .btn-audio.on {
+      background: #E2F8F6;
+      border-color: var(--teal);
+      color: var(--teal-dark);
+    }
+
+    /* KHU VỰC SÂN KHẤU CHÍNH */
+    .stage-container {
+      flex: 1;
+      background: var(--bg-panel);
+      border: 2.5px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Dải bối cảnh Phòng thí nghiệm thay đổi theo màn */
+    .lab-backdrop {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+      transition: background 0.5s ease;
+    }
+
+    .screen-content {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* MÀN HÌNH CHÀO MỪNG */
+    .welcome-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.95fr;
+      gap: 24px;
+      align-items: center;
+      margin: auto 0;
+      padding: 10px 6px;
+    }
+
+    .welcome-info {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .book-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--mint);
+      color: var(--teal-dark);
+      border: 2px solid var(--teal);
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 999px;
+      width: fit-content;
+      font-size: 0.95rem;
+    }
+
+    .hero-title {
+      font-size: clamp(1.85rem, 3.2vw, 2.65rem);
+      font-weight: 900;
+      color: var(--purple-dark);
+      line-height: 1.15;
+      text-shadow: 0 3px 0 #EFEAFC;
+    }
+
+    .hero-subtitle {
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--orange-dark);
+    }
+
+    .mission-card {
+      background: var(--bg-cream);
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mission-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .mission-list li {
+      background: #fff;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid #EFE4D2;
+      font-weight: 600;
+      font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mode-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: #F6F3FC;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid #DCD2F5;
+    }
+
+    .mode-btn {
+      min-height: 44px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 2px solid #C9BBE9;
+      background: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-main);
+    }
+
+    .mode-btn.active {
+      background: var(--purple);
+      color: #fff;
+      border-color: var(--purple-dark);
+    }
+
+    /* KHUNG NHÂN VẬT MÂY & PHẢN HỒI */
+    .companion-bar {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(90deg, #F5F0FF 0%, #FFF9ED 60%, #EBF9F8 100%);
+      border: 2px solid #DFD4F7;
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+    }
+
+    .may-avatar-wrap {
+      width: 78px;
+      height: 78px;
+      background: #fff;
+      border-radius: 50%;
+      border: 3px solid var(--purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(128, 105, 198, 0.2);
+      overflow: hidden;
+    }
+
+    .speech-bubble {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .speech-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      color: var(--purple-dark);
+      font-size: 0.95rem;
+    }
+
+    .speech-text {
+      font-size: 1.02rem;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .feedback-pill {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.94rem;
+    }
+
+    .feedback-pill.ok {
+      background: #DCF7E8;
+      color: #156C42;
+      border: 1.5px solid #8CE0B3;
+    }
+
+    .feedback-pill.err {
+      background: #FFE5E9;
+      color: #A62639;
+      border: 1.5px solid #F7A8B4;
+    }
+
+    .feedback-pill.hint {
+      background: #FFF3CD;
+      color: #7A5400;
+      border: 1.5px solid #F5D276;
+    }
+
+    /* CHÚ THÍCH MÔ PHỎNG */
+    .sim-tag {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: #F4EFE6;
+      padding: 3px 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 600;
+    }
+
+    /* BỐ CỤC NỘI DUNG TỪNG MÀN */
+    .stage-workspace {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .stage-1-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .panel-card {
+      background: #FFFCF6;
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1.5px dashed #E6D8C3;
+      padding-bottom: 8px;
+    }
+
+    .panel-title {
+      font-weight: 800;
+      font-size: 1.04rem;
+      color: var(--purple-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* BÀN PHÍM SVG TƯƠNG TÁC */
+    .svg-keyboard-box {
+      width: 100%;
+      background: #2E2B3F;
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: inset 0 -4px 0 #1E1C2B, 0 6px 14px rgba(0,0,0,0.08);
+    }
+
+    .key-rect {
+      cursor: pointer;
+      transition: transform 0.1s ease, fill 0.2s ease, stroke 0.2s ease;
+    }
+    .key-rect:hover {
+      filter: brightness(1.08);
+    }
+    .key-target-pulse {
+      animation: keyPulse 1.1s infinite alternate ease-in-out;
+    }
+    @keyframes keyPulse {
+      0% { stroke-width: 2px; filter: drop-shadow(0 0 2px #FFD773); }
+      100% { stroke-width: 4.5px; filter: drop-shadow(0 0 10px #FF9850); }
+    }
+
+    /* THẺ LỢI ÍCH MÀN 1 */
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .benefit-card {
+      min-height: 48px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 2px solid #E2D5C1;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.94rem;
+      text-align: left;
+      transition: all 0.15s ease;
+    }
+
+    .benefit-card:hover {
+      border-color: var(--purple);
+      background: #FBF9FF;
+    }
+
+    .benefit-card.selected-correct {
+      background: #DCF7E8;
+      border-color: var(--success);
+      color: #145E38;
+    }
+
+    .benefit-card.selected-wrong {
+      background: #FFE5E9;
+      border-color: var(--error);
+      color: #9E2436;
+    }
+
+    /* MÀN 2: BÀN TAY & HÀNG PHÍM SỐ */
+    .stage-2-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .finger-btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .finger-choice-btn {
+      min-height: 46px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 2px solid #DED4EA;
+      background: #fff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.1s ease, border-color 0.15s ease;
+    }
+
+    .finger-choice-btn:hover {
+      border-color: var(--purple);
+      background: #F7F4FF;
+    }
+
+    .finger-choice-btn.active-finger {
+      border-color: var(--orange-dark);
+      background: #FFF1E2;
+      box-shadow: 0 0 0 2px var(--orange);
+    }
+
+    .color-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1.5px solid rgba(0,0,0,0.2);
+    }
+
+    /* MÀN 3 & 4: LUYỆN GÕ PHÍM THẬT */
+    .typing-display-box {
+      background: #1F1D2B;
+      color: #F8F8F2;
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 1.38rem;
+      letter-spacing: 1.5px;
+      line-height: 1.7;
+      border: 3px solid #4A4466;
+      min-height: 76px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2px;
+      user-select: none;
+    }
+
+    .typing-display-box.paragraph-mode {
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      font-size: 1.18rem;
+      letter-spacing: 0.3px;
+      line-height: 1.75;
+      min-height: 112px;
+    }
+
+    .t-char {
+      padding: 1px 2px;
+      border-radius: 4px;
+      white-space: pre-wrap;
+    }
+    .t-char.done {
+      color: #6EE7B7;
+      background: rgba(43, 182, 115, 0.18);
+    }
+    .t-char.current {
+      background: var(--yellow);
+      color: #1F1D2B;
+      font-weight: 900;
+      box-shadow: 0 0 8px var(--yellow);
+      text-decoration: underline;
+    }
+    .t-char.wrong {
+      background: var(--error);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .real-typing-input {
+      width: 100%;
+      min-height: 50px;
+      padding: 10px 16px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      border-radius: 12px;
+      border: 2.5px solid var(--purple);
+      background: #fff;
+      color: var(--text-main);
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .real-typing-input:focus {
+      outline: none;
+      border-color: var(--orange);
+      box-shadow: 0 0 0 4px rgba(255, 152, 80, 0.22);
+    }
+
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .stat-badge {
+      background: #fff;
+      border: 2px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 6px 14px;
+      font-weight: 800;
+      font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* THANH CHÂN TRANG ĐIỀU KHIỂN MÀN CHƠI */
+    .stage-footer {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 2px solid var(--border-soft);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      z-index: 2;
+    }
+
+    /* MÀN TỔNG KẾT */
+    .summary-card {
+      max-width: 960px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .badges-showcase {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      width: 100%;
+    }
+
+    .badge-item {
+      background: #FFF9ED;
+      border: 2px solid #F2D492;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .takeaways-box {
+      background: #F4FBF9;
+      border: 2px solid var(--teal);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      text-align: left;
+      width: 100%;
+    }
+
+    /* MODAL HƯỚNG DẪN */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(34, 28, 53, 0.58);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+    .modal-card {
+      background: #fff;
+      border: 3px solid var(--purple);
+      border-radius: var(--radius-lg);
+      max-width: 720px;
+      width: 100%;
+      padding: 22px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.22);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    /* CONFETTI CANVAS */
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 90;
+    }
+
+    /* ĐÁP ỨNG MÀN HÌNH NHỎ */
+    @media (max-width: 980px) {
+      .welcome-grid,
+      .stage-1-grid,
+      .stage-2-grid {
+        grid-template-columns: 1fr;
+      }
+      .badges-showcase {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .companion-bar {
+        grid-template-columns: auto 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .mission-list,
+      .badges-showcase,
+      .finger-btn-grid {
+        grid-template-columns: 1fr;
+      }
+      .topbar {
+        padding: 8px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confettiCanvas"></canvas>
+
+  <div class="app-shell">
+    <!-- THANH ĐIỀU KHIỂN TRÊN CÙNG -->
+    <header class="topbar" aria-label="Thanh điều khiển trò chơi">
+      <div class="brand-group">
+        <span class="badge-class" id="uiBookBadge">Tin học 4 • Bài 2</span>
+        <span class="game-title-mini" id="uiHeaderTitle">THẦN TỐC HÀNG PHÍM SỐ</span>
+      </div>
+
+      <!-- Tiến độ 4 màn -->
+      <nav class="stage-pills" id="stageNavPills" aria-label="Tiến độ các màn chơi">
+        <!-- Render động từ JS -->
+      </nav>
+
+      <!-- Điểm số & Công tắc Âm thanh (ĐÚNG 2 CÔNG TẮC ĐỘC LẬP: Nhạc nền & Hiệu ứng, KHÔNG CÓ GIỌNG ĐỌC) -->
+      <div class="top-controls">
+        <div class="score-box" title="Tổng điểm hiện tại">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#F59E0B" aria-hidden="true">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+          </svg>
+          <span>Điểm: <strong id="uiScore">0</strong>/100</span>
+        </div>
+
+        <button type="button" id="btnToggleBgm" class="btn btn-audio on" aria-pressed="true" title="Bật hoặc tắt nhạc nền">
+          <span>♫ Nhạc nền: BẬT</span>
+        </button>
+
+        <button type="button" id="btnToggleSfx" class="btn btn-audio on" aria-pressed="true" title="Bật hoặc tắt âm thanh hiệu ứng">
+          <span>✦ Hiệu ứng: BẬT</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- SÂN KHẤU CHÍNH -->
+    <main class="stage-container" id="mainStageContainer">
+      <!-- Lớp nền Phòng thí nghiệm thay đổi theo tiến độ màn -->
+      <div class="lab-backdrop" id="labBackdrop" aria-hidden="true"></div>
+
+      <!-- Nội dung động của màn hiện tại -->
+      <div class="screen-content" id="screenContent"></div>
+    </main>
+  </div>
+
+  <!-- MODAL HƯỚNG DẪN CHƠI (CHỈ DÙNG CHỮ & HÌNH MINH HỌA SVG) -->
+  <div class="modal-backdrop" id="guideModal" role="dialog" aria-modal="true" aria-labelledby="guideModalTitle">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 id="guideModalTitle" style="color:var(--purple-dark); font-size:1.35rem;">
+          Hướng dẫn tham gia Phòng thí nghiệm Bàn Phím
+        </h2>
+        <button type="button" class="btn btn-soft" id="btnCloseGuide" aria-label="Đóng hướng dẫn">Đóng ✕</button>
+      </div>
+
+      <p style="font-weight:600; color:var(--text-main);">
+        Chào mừng em đến với trò chơi <strong>THẦN TỐC HÀNG PHÍM SỐ</strong> (SGK Tin học 4 – Kết nối tri thức với cuộc sống, Bài 2: Gõ bàn phím đúng cách, trang 10–13).
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="mission-card">
+          <strong style="color:var(--orange-dark);">1. Quy tắc đặt tay xuất phát</strong>
+          <p style="font-size:0.92rem;">Đặt nhẹ hai bàn tay lên <strong>hàng phím cơ sở</strong>: tay trái ở <code>A S D F</code>, tay phải ở <code>J K L ;</code>. Hai ngón trỏ đặt trên hai phím có gai là <code>F</code> và <code>J</code>.</p>
+        </div>
+        <div class="mission-card">
+          <strong style="color:var(--teal-dark);">2. Quy tắc gõ hàng phím số</strong>
+          <p style="font-size:0.92rem;">Khi gõ các số từ <code>1</code> đến <code>0</code>, vươn đúng ngón tay phụ trách lên hàng phím số rồi <strong>đưa ngón tay về lại hàng phím cơ sở</strong>.</p>
+        </div>
+      </div>
+
+      <!-- Bảng phân công màu ngón tay -->
+      <div class="mission-card">
+        <strong style="color:var(--purple-dark);">3. Sơ đồ ngón tay phụ trách hàng phím số:</strong>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.9rem; margin-top:4px;">
+          <div>
+            <strong>Bàn tay trái:</strong><br/>
+            • Ngón út trái: Phím <strong>1</strong><br/>
+            • Ngón áp út trái: Phím <strong>2</strong><br/>
+            • Ngón giữa trái: Phím <strong>3</strong><br/>
+            • Ngón trỏ trái: Phím <strong>4, 5</strong>
+          </div>
+          <div>
+            <strong>Bàn tay phải:</strong><br/>
+            • Ngón trỏ phải: Phím <strong>6, 7</strong><br/>
+            • Ngón giữa phải: Phím <strong>8</strong><br/>
+            • Ngón áp út phải: Phím <strong>9</strong><br/>
+            • Ngón út phải: Phím <strong>0</strong>
+          </div>
+        </div>
+      </div>
+
+      <p style="font-size:0.88rem; color:var(--text-muted);">
+        * Lưu ý: Trò chơi hoàn toàn không giới hạn thời gian. Em hãy ưu tiên <strong>gõ đúng ngón và chính xác</strong>, không cần vội vàng!
+      </p>
+
+      <div style="display:flex; justify-content:flex-end;">
+        <button type="button" class="btn btn-primary" id="btnStartFromGuide">Đã hiểu, bắt đầu ngay!</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * ============================================================================
+     * GAME_CONFIG - CẤU HÌNH NỘI DUNG DÀNH CHO GIÁO VIÊN DỄ DÀNG CHỈNH SỬA
+     * ============================================================================
+     * Giáo viên có thể thay đổi tên bài, câu hỏi, chuỗi luyện gõ, đoạn văn mẫu,
+     * lời giải thích và ngưỡng điểm tại đối tượng GAME_CONFIG dưới đây.
+     */
+    const GAME_CONFIG = {
+      bookInfo: "Tin học 4 – Kết nối tri thức với cuộc sống • Bài 2 (Trang 10–13)",
+      lessonTitle: "Bài 2: Gõ bàn phím đúng cách",
+      gameTitle: "THẦN TỐC HÀNG PHÍM SỐ",
+      companionName: "Mây – Nhà phát minh nhí",
+      pointsPerStage: 25,
+      audioConfig: {
+        bgmDefaultVolume: 0.12, // Âm lượng nhạc nền mặc định 12%
+        sfxDefaultVolume: 0.25
+      },
+
+      // Danh sách 8 ngón tay gõ hàng phím số (cùng mã màu trực quan)
+      fingers: [
+        { id: "L_PINKY",  name: "Ngón út trái",     hand: "Tay trái", keys: ["1"],      homeKey: "A", color: "#FF7A90" },
+        { id: "L_RING",   name: "Ngón áp út trái",  hand: "Tay trái", keys: ["2"],      homeKey: "S", color: "#FF9850" },
+        { id: "L_MIDDLE", name: "Ngón giữa trái",   hand: "Tay trái", keys: ["3"],      homeKey: "D", color: "#F4B942" },
+        { id: "L_INDEX",  name: "Ngón trỏ trái",    hand: "Tay trái", keys: ["4", "5"], homeKey: "F", color: "#40B8B3" },
+        { id: "R_INDEX",  name: "Ngón trỏ phải",    hand: "Tay phải", keys: ["6", "7"], homeKey: "J", color: "#5390D9" },
+        { id: "R_MIDDLE", name: "Ngón giữa phải",   hand: "Tay phải", keys: ["8"],      homeKey: "K", color: "#8069C6" },
+        { id: "R_RING",   name: "Ngón áp út phải",  hand: "Tay phải", keys: ["9"],      homeKey: "L", color: "#C06C84" },
+        { id: "R_PINKY",  name: "Ngón út phải",     hand: "Tay phải", keys: ["0"],      homeKey: ";", color: "#46B585" }
+      ],
+
+      // Thông tin 4 màn chơi chính
+      stages: [
+        {
+          id: 1,
+          shortName: "Màn 1: Tư thế gõ",
+          title: "MÀN 1 – TƯ THẾ GÕ & VỊ TRÍ XUẤT PHÁT",
+          desc: "Đặt đôi bàn tay đúng hàng phím xuất phát, tìm hai phím có gai và chọn đúng lợi ích của việc gõ phím bằng 10 ngón.",
+          badgeName: "Chuẩn Tư Thế Cơ Sở",
+          hints: [
+            "Gợi ý 1: Khi bắt đầu gõ, hai bàn tay luôn đặt nhẹ tại Hàng phím cơ sở (A S D F và J K L ;). Hai phím có gai nhỏ giúp định vị ngón trỏ là phím F và phím J.",
+            "Gợi ý 2: Gõ đúng cách bằng 10 ngón giúp gõ nhanh hơn, chính xác hơn, đỡ mỏi mắt/cổ/tay và tiết kiệm thời gian soạn thảo."
+          ],
+          // Nhiệm vụ Phần A: Câu hỏi tương tác trên bàn phím
+          postureTasks: [
+            {
+              id: "home_row",
+              prompt: "Bước 1/2: Nháy chuột chọn đúng HÀNG PHÍM XUẤT PHÁT nơi hai bàn tay luôn đặt nhẹ khi bắt đầu gõ:",
+              options: [
+                { id: "NUM_ROW", label: "Hàng phím số (1 2 3 4 5 6 7 8 9 0)", correct: false, reason: "Chưa đúng! Hàng phím số ở phía trên, chỉ vươn ngón tay lên khi cần gõ số." },
+                { id: "TOP_ROW", label: "Hàng phím trên (Q W E R T Y U I O P)", correct: false, reason: "Chưa đúng! Đây là hàng phím trên, không phải vị trí đặt tay xuất phát." },
+                { id: "HOME_ROW", label: "Hàng phím cơ sở (A S D F và J K L ;)", correct: true, reason: "Chính xác! Hai bàn tay luôn xuất phát và quay về Hàng phím cơ sở." },
+                { id: "BOTTOM_ROW", label: "Hàng phím dưới (Z X C V B N M)", correct: false, reason: "Chưa đúng! Hàng phím dưới chỉ vươn ngón xuống khi cần gõ." }
+              ]
+            },
+            {
+              id: "bump_keys",
+              prompt: "Bước 2/2: Hãy nháy trực tiếp lên 2 PHÍM CÓ GAI trên bàn phím mô phỏng bên dưới (dành cho 2 ngón trỏ trái và phải):",
+              targetKeys: ["F", "J"],
+              correctMsg: "Tuyệt vời! Phím F (ngón trỏ trái) và phím J (ngón trỏ phải) có gai nhỏ giúp em nhận biết vị trí mà không cần nhìn bàn phím.",
+              wrongMsg: "Phím này không có gai định vị. Hãy quan sát hàng phím cơ sở và tìm hai phím dành cho hai ngón trỏ nhé!"
+            }
+          ],
+          // Nhiệm vụ Phần B: Chọn đúng 4 lợi ích của gõ bàn phím đúng cách
+          benefits: [
+            { id: "b1", text: "Gõ nhanh hơn và chính xác hơn", isTrue: true, explain: "Đúng! Mỗi ngón phụ trách một vùng phím giúp gõ chính xác, ít nhầm lẫn." },
+            { id: "b2", text: "Đỡ mỏi tay, mỏi cổ và mỏi mắt", isTrue: true, explain: "Đúng! Không phải cúi tìm từng phím giúp giữ tư thế ngồi thẳng, bảo vệ mắt và cổ." },
+            { id: "b3", text: "Chỉ cần dùng 2 ngón trỏ mổ cò thật mạnh", isTrue: false, explain: "Sai rồi! Dùng 2 ngón trỏ nhìn tìm từng phím sẽ rất mỏi và chậm." },
+            { id: "b4", text: "Tiết kiệm thời gian khi soạn thảo văn bản", isTrue: true, explain: "Đúng! Gõ 10 ngón thành thạo giúp hoàn thành bài học nhanh chóng." },
+            { id: "b5", text: "Tập trung nhìn màn hình thay vì cúi nhìn bàn phím", isTrue: true, explain: "Đúng! Nhờ đặt tay ở hàng cơ sở, em có thể nhìn màn hình để kiểm tra chữ ngay." },
+            { id: "b6", text: "Làm cho bàn phím tự động gõ bài hộ em", isTrue: false, explain: "Chưa đúng! Bàn phím không tự gõ được, nhưng gõ đúng cách giúp đôi tay em điều khiển phím thật nhẹ nhàng." }
+          ]
+        },
+        {
+          id: 2,
+          shortName: "Màn 2: Ngón tay & Số",
+          title: "MÀN 2 – NGÓN TAY VÀ HÀNG PHÍM SỐ",
+          desc: "Tô màu toàn bộ hàng phím số từ 1 đến 0 bằng cách nhấn phím số và chọn đúng ngón tay phụ trách.",
+          badgeName: "Bậc Thầy Ngón Tay Số",
+          hints: [
+            "Gợi ý 1: Bàn tay trái phụ trách các số 1, 2, 3, 4, 5. Bàn tay phải phụ trách các số 6, 7, 8, 9, 0.",
+            "Gợi ý 2: Ngón trỏ trái gõ tới 2 số là 4 và 5. Ngón trỏ phải gõ 2 số là 6 và 7. Các ngón còn lại mỗi ngón gõ 1 số theo thứ tự từ ngoài vào trong!"
+          ],
+          // Tất cả 10 phím số để học sinh khám phá và tô màu
+          numberKeysOrder: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
+        },
+        {
+          id: 3,
+          shortName: "Màn 3: Gõ hàng phím số",
+          title: "MÀN 3 – GÕ HÀNG PHÍM SỐ & PHÍM CƠ BẢN",
+          desc: "Sử dụng bàn phím thật (hoặc bàn phím mô phỏng) để gõ chính xác 4 chuỗi kết hợp phím cơ sở và hàng phím số.",
+          badgeName: "Tia Chớp Hàng Phím Số",
+          hints: [
+            "Gợi ý 1: Nhìn phím đang phát sáng màu vàng trên bàn phím SVG và tên ngón tay gợi ý. Đưa ngón tay từ hàng phím cơ sở lên gõ phím số rồi thu ngón về.",
+            "Gợi ý 2: Giữa các cụm kí tự có dấu cách (phím dài nhất ở dưới cùng – gõ bằng ngón cái). Nếu gõ nhầm, hãy gõ lại đúng kí tự đang được tô sáng!"
+          ],
+          sequences: [
+            {
+              id: "seq1",
+              title: "Chuỗi 1/4: Luyện bàn tay trái (Phím cơ sở + Số 1 đến 5)",
+              text: "f4 f5 d3 s2 a1",
+              note: "Ngón trỏ trái từ F vươn lên 4 và 5; ngón giữa D lên 3; áp út S lên 2; út A lên 1."
+            },
+            {
+              id: "seq2",
+              title: "Chuỗi 2/4: Luyện bàn tay phải (Phím cơ sở + Số 6 đến 0)",
+              text: "j6 j7 k8 l9 ;0",
+              note: "Ngón trỏ phải từ J vươn lên 6 và 7; ngón giữa K lên 8; áp út L lên 9; út ; lên 0."
+            },
+            {
+              id: "seq3",
+              title: "Chuỗi 3/4: Phối hợp nhịp nhàng hai tay trên hàng phím số",
+              text: "10 29 38 47 56",
+              note: "Kết hợp lần lượt hai ngón út (1-0), hai ngón áp út (2-9), hai ngón giữa (3-8) và hai ngón trỏ (4-7, 5-6)."
+            },
+            {
+              id: "seq4",
+              title: "Chuỗi 4/4: Gõ cụm từ và con số quen thuộc",
+              text: "lop 4a phong 102",
+              note: "Vận dụng gõ cả chữ cái và số có ý nghĩa mà không cần vội vàng."
+            }
+          ]
+        },
+        {
+          id: 4,
+          shortName: "Màn 4: Đoạn văn nhỏ",
+          title: "MÀN 4 – LUYỆN GÕ ĐOẠN VĂN NHỎ CÓ SỐ",
+          desc: "Thực hành gõ đoạn văn ngắn khoảng 40–50 từ có chứa các con số, theo dõi độ chính xác và ngón tay phụ trách.",
+          badgeName: "Nhà Soạn Thảo Nhí",
+          minAccuracy: 85, // Yêu cầu độ chính xác tối thiểu 85%
+          hints: [
+            "Gợi ý 1: Nếu máy tính của em chưa bật bộ gõ tiếng Việt (Unikey/Telex), em hãy nhấn chọn nút 'Chế độ gõ không dấu' ngay phía trên ô gõ để hoàn thành bài thuận lợi nhé!",
+            "Gợi ý 2: Đừng lo lắng về tốc độ! Hãy giữ đôi tay ở hàng phím cơ sở và gõ chậm rãi từng từ để đạt độ chính xác từ 85% trở lên."
+          ],
+          passages: [
+            {
+              id: "p1",
+              title: "Chủ đề 1: Giờ học Tin học lớp 4",
+              withDiacritics: "Hôm nay lớp 4A có tiết Tin học tại phòng máy số 2. Nhóm em gồm 5 bạn cùng luyện gõ 10 ngón tay trên hàng phím số từ 1 đến 0. Sau 15 phút chăm chỉ, cả nhóm đều đạt trên 90 điểm.",
+              withoutDiacritics: "Hom nay lop 4A co tiet Tin hoc tai phong may so 2. Nhom em gom 5 ban cung luyen go 10 ngon tay tren hang phim so tu 1 den 0. Sau 15 phut cham chi, ca nhom deu dat tren 90 diem."
+            },
+            {
+              id: "p2",
+              title: "Chủ đề 2: Ngày hội Sáng tạo Công nghệ",
+              withDiacritics: "Trường em tổ chức ngày hội công nghệ vào lúc 8 giờ sáng ngày 20 tháng 11. Khối lớp 4 có 6 đội thi lắp ráp rô bốt và gõ bàn phím nhanh. Đội số 3 đã hoàn thành bài thi sau 12 phút.",
+              withoutDiacritics: "Truong em to chuc ngay hoi cong nghe vao luc 8 gio sang ngay 20 thang 11. Khoi lop 4 co 6 doi thi lap rap ro bot va go ban phim nhanh. Doi so 3 da hoan thanh bai thi sau 12 phut."
+            }
+          ]
+        }
+      ],
+
+      // Nội dung tổng kết kiến thức cuối bài
+      summaryTakeaways: [
+        "Gõ bàn phím đúng cách bằng 10 ngón tay giúp gõ nhanh hơn, chính xác hơn, tiết kiệm thời gian và tránh mỏi mắt, mỏi cổ, mỏi tay.",
+        "Hai bàn tay luôn đặt xuất phát ở hàng phím cơ sở (A S D F và J K L ;). Hai ngón trỏ đặt ở hai phím có gai F và J.",
+        "Hàng phím số được phân công rõ ràng: Tay trái gõ phím 1 (út), 2 (áp út), 3 (giữa), 4 và 5 (trỏ); Tay phải gõ phím 6 và 7 (trỏ), 8 (giữa), 9 (áp út), 0 (út)."
+      ]
+    };
+
+    /**
+     * ============================================================================
+     * HỆ THỐNG ÂM THANH WEB AUDIO API (CHỈ NHẠC NỀN & SFX, TUYỆT ĐỐI KHÔNG GIỌNG ĐỌC)
+     * ============================================================================
+     */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.bgmEnabled = true;
+        this.sfxEnabled = true;
+        this.isPlayingBgm = false;
+        this.bgmTimer = null;
+        this.noteIndex = 0;
+
+        // Giai điệu nhạc nền pentatonic êm dịu nguyên gốc (tần số Hz)
+        this.melodyNotes = [
+          { f: 523.25, d: 0.35 }, // C5
+          { f: 587.33, d: 0.35 }, // D5
+          { f: 659.25, d: 0.50 }, // E5
+          { f: 783.99, d: 0.40 }, // G5
+          { f: 659.25, d: 0.40 }, // E5
+          { f: 880.00, d: 0.55 }, // A5
+          { f: 783.99, d: 0.65 }, // G5
+          { f: 0,      d: 0.25 }, // Nghỉ
+          { f: 659.25, d: 0.35 }, // E5
+          { f: 783.99, d: 0.35 }, // G5
+          { f: 659.25, d: 0.40 }, // E5
+          { f: 587.33, d: 0.45 }, // D5
+          { f: 523.25, d: 0.70 }, // C5
+          { f: 0,      d: 0.35 }  // Nghỉ
+        ];
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+          this.ctx.resume();
+        }
+      }
+
+      startBgm() {
+        this.initContext();
+        if (!this.ctx || !this.bgmEnabled || this.isPlayingBgm) return;
+        this.isPlayingBgm = true;
+        this.scheduleNextNote();
+      }
+
+      scheduleNextNote() {
+        if (!this.isPlayingBgm || !this.bgmEnabled || !this.ctx) return;
+        const item = this.melodyNotes[this.noteIndex % this.melodyNotes.length];
+        this.noteIndex++;
+
+        if (item.f > 0 && this.ctx.state === "running") {
+          try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(item.f, now);
+
+            const maxVol = GAME_CONFIG.audioConfig.bgmDefaultVolume;
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(maxVol, now + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + item.d);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + item.d + 0.02);
+          } catch (e) {
+            // Bỏ qua nếu trình duyệt chặn tự phát
+          }
+        }
+
+        this.bgmTimer = setTimeout(() => {
+          this.scheduleNextNote();
+        }, (item.d + 0.08) * 1000);
+      }
+
+      stopBgm() {
+        this.isPlayingBgm = false;
+        if (this.bgmTimer) {
+          clearTimeout(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      }
+
+      toggleBgm() {
+        this.bgmEnabled = !this.bgmEnabled;
+        if (this.bgmEnabled) {
+          this.startBgm();
+        } else {
+          this.stopBgm();
+        }
+        return this.bgmEnabled;
+      }
+
+      toggleSfx() {
+        this.sfxEnabled = !this.sfxEnabled;
+        if (this.sfxEnabled) this.playClick();
+        return this.sfxEnabled;
+      }
+
+      playTone(freq, duration = 0.12, type = "triangle", delay = 0, volScale = 1) {
+        if (!this.sfxEnabled) return;
+        this.initContext();
+        if (!this.ctx || this.ctx.state !== "running") return;
+
+        try {
+          const start = this.ctx.currentTime + delay;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, start);
+
+          const vol = GAME_CONFIG.audioConfig.sfxDefaultVolume * volScale;
+          gain.gain.setValueAtTime(0.001, start);
+          gain.gain.linearRampToValueAtTime(vol, start + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(start);
+          osc.stop(start + duration + 0.02);
+        } catch (e) {}
+      }
+
+      playClick() {
+        this.playTone(620, 0.06, "sine", 0, 0.6);
+      }
+
+      playKeyTap() {
+        this.playTone(740, 0.045, "triangle", 0, 0.5);
+      }
+
+      playCorrect() {
+        this.playTone(523.25, 0.10, "triangle", 0, 0.85);
+        this.playTone(659.25, 0.14, "triangle", 0.09, 0.9);
+        this.playTone(783.99, 0.18, "triangle", 0.18, 0.95);
+      }
+
+      playWrong() {
+        // Âm báo nhẹ nhàng khi chưa đúng, không gay gắt
+        this.playTone(310, 0.14, "sine", 0, 0.7);
+        this.playTone(260, 0.18, "sine", 0.12, 0.7);
+      }
+
+      playStageComplete() {
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((n, idx) => {
+          this.playTone(n, 0.18, "triangle", idx * 0.10, 1);
+        });
+      }
+
+      playVictory() {
+        const chord = [523.25, 659.25, 783.99, 987.77, 1046.5];
+        chord.forEach((n, idx) => {
+          this.playTone(n, 0.24, "triangle", idx * 0.11, 1);
+        });
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    // Tạm dừng nhạc nền khi ẩn tab để tránh rò rỉ timer
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        sound.stopBgm();
+      } else if (state.screen !== "welcome" && sound.bgmEnabled) {
+        sound.startBgm();
+      }
+    });
+
+    /**
+     * ============================================================================
+     * TRẠNG THÁI TRÒ CHƠI (GAME STATE)
+     * ============================================================================
+     */
+    const state = {
+      screen: "welcome", // 'welcome' | 'stage1' | 'stage2' | 'stage3' | 'stage4' | 'summary'
+      mode: "practice",  // 'practice' (Luyện tập) | 'challenge' (Thử thách)
+      currentStage: 1,
+      score: 0,
+      stageCompleted: { 1: false, 2: false, 3: false, 4: false },
+      hintStep: { 1: 0, 2: 0, 3: 0, 4: 0 },
+      companionMood: "happy", // 'neutral' | 'happy' | 'thinking' | 'excited'
+      companionMessage: "Chào em! Mình là Mây. Hãy cùng mình khôi phục Phòng thí nghiệm Bàn Phím Sáng Tạo nhé!",
+      feedbackType: "", // 'ok' | 'err' | 'hint' | ''
+      feedbackText: "",
+
+      // Dữ liệu Màn 1
+      s1: {
+        rowSelected: null,
+        bumpsFound: [], // ['F', 'J']
+        selectedBenefits: [] // id các lợi ích đúng đã chọn
+      },
+
+      // Dữ liệu Màn 2
+      s2: {
+        activeNumberKey: "1",
+        coloredKeys: {} // { '1': '#FF7A90', ... }
+      },
+
+      // Dữ liệu Màn 3
+      s3: {
+        seqIndex: 0,
+        typedText: "",
+        completedSeqs: [false, false, false, false],
+        lastErrorChar: null
+      },
+
+      // Dữ liệu Màn 4
+      s4: {
+        passageIndex: 0,
+        useDiacritics: false, // Mặc định chọn không dấu để mọi máy đều gõ mượt ngay, có thể bật có dấu bất cứ lúc nào
+        typedText: "",
+        totalKeystrokes: 0,
+        errorKeystrokes: 0
+      }
+    };
+
+    /**
+     * ============================================================================
+     * HÀM VẼ ĐỒ HỌA SVG NHÂN VẬT MÂY, BÀN PHÍM & ĐÔI BÀN TAY
+     * ============================================================================
+     */
+
+    // 1. Vẽ nhân vật đồng hành Mây (Chibi nhà phát minh với kính bảo hộ)
+    function renderMaySVG(mood = "happy", size = 72) {
+      let mouthPath = "M 42 58 Q 50 65 58 58"; // happy
+      let eyeLeft = `<circle cx="39" cy="48" r="3.6" fill="#2D2A3E"/>`;
+      let eyeRight = `<circle cx="61" cy="48" r="3.6" fill="#2D2A3E"/>`;
+
+      if (mood === "excited") {
+        mouthPath = "M 40 56 Q 50 69 60 56 Z";
+        eyeLeft = `<path d="M 35 48 Q 39 42 43 48" stroke="#2D2A3E" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+        eyeRight = `<path d="M 57 48 Q 61 42 65 48" stroke="#2D2A3E" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+      } else if (mood === "thinking") {
+        mouthPath = "M 44 60 Q 50 57 56 60";
+        eyeLeft = `<circle cx="40" cy="46" r="3.6" fill="#2D2A3E"/>`;
+        eyeRight = `<circle cx="62" cy="46" r="3.6" fill="#2D2A3E"/>`;
+      }
+
+      return `
+        <svg width="${size}" height="${size}" viewBox="0 0 100 100" role="img" aria-label="Nhân vật đồng hành Mây">
+          <!-- Tóc sau -->
+          <circle cx="50" cy="48" r="34" fill="#6049A6"/>
+          <circle cx="24" cy="54" r="12" fill="#6049A6"/>
+          <circle cx="76" cy="54" r="12" fill="#6049A6"/>
+          <!-- Khuôn mặt -->
+          <circle cx="50" cy="52" r="26" fill="#FFE6D5"/>
+          <!-- Má hồng -->
+          <ellipse cx="34" cy="55" rx="5" ry="3" fill="#FF98A8" opacity="0.65"/>
+          <ellipse cx="66" cy="55" rx="5" ry="3" fill="#FF98A8" opacity="0.65"/>
+          <!-- Tóc mái -->
+          <path d="M 24 44 Q 36 26 52 34 Q 66 26 76 44 Q 64 36 50 38 Q 36 36 24 44 Z" fill="#8069C6"/>
+          <!-- Dây kính bảo hộ nhà phát minh -->
+          <rect x="22" y="25" width="56" height="8" rx="4" fill="#FF9850"/>
+          <!-- Kính bảo hộ trên trán -->
+          <circle cx="38" cy="28" r="10" fill="#40B8B3" stroke="#FFF" stroke-width="2.5"/>
+          <circle cx="62" cy="28" r="10" fill="#40B8B3" stroke="#FFF" stroke-width="2.5"/>
+          <circle cx="35" cy="25" r="3" fill="#FFF" opacity="0.8"/>
+          <circle cx="59" cy="25" r="3" fill="#FFF" opacity="0.8"/>
+          <!-- Mắt & Miệng -->
+          ${eyeLeft}
+          ${eyeRight}
+          <path d="${mouthPath}" stroke="#D9534F" stroke-width="3" fill="${mood === 'excited' ? '#FF7A90' : 'none'}" stroke-linecap="round"/>
+          <!-- Cổ áo blouse trắng & nơ cam -->
+          <path d="M 30 76 L 50 88 L 70 76 L 78 96 L 22 96 Z" fill="#FFFFFF" stroke="#D3C6F5" stroke-width="2"/>
+          <circle cx="50" cy="83" r="4.5" fill="#FF9850"/>
+        </svg>
+      `;
+    }
+
+    // 2. Tra cứu ngón tay phụ trách một phím bất kỳ (Số hoặc Hàng cơ sở)
+    function getFingerInfoForChar(char) {
+      if (!char) return null;
+      const upper = char.toUpperCase();
+      if (char === " ") {
+        return { id: "THUMB", name: "Ngón cái (Phím Cách)", hand: "Hai tay", color: "#95A5A6", keyLabel: "SPACE" };
+      }
+      // Tìm trong danh sách ngón tay cấu hình
+      for (const f of GAME_CONFIG.fingers) {
+        if (f.keys.includes(upper) || f.homeKey === upper) {
+          return { ...f, keyLabel: upper };
+        }
+      }
+      // Các phím chữ khác trong Màn 3, 4
+      const mapExtra = {
+        "Q": "L_PINKY", "Z": "L_PINKY",
+        "W": "L_RING",  "X": "L_RING",
+        "E": "L_MIDDLE","C": "L_MIDDLE",
+        "R": "L_INDEX", "T": "L_INDEX", "V": "L_INDEX", "B": "L_INDEX",
+        "Y": "R_INDEX", "U": "R_INDEX", "H": "R_INDEX", "N": "R_INDEX", "M": "R_INDEX",
+        "I": "R_MIDDLE",",": "R_MIDDLE",
+        "O": "R_RING",  ".": "R_RING",
+        "P": "R_PINKY"
+      };
+      const fId = mapExtra[upper];
+      if (fId) {
+        const found = GAME_CONFIG.fingers.find(item => item.id === fId);
+        if (found) return { ...found, keyLabel: upper };
+      }
+      return { id: "R_INDEX", name: "Ngón tay tương ứng", hand: "Hàng phím cơ sở", color: "#8069C6", keyLabel: upper };
+    }
+
+    // 3. Vẽ Bàn phím SVG tương tác đầy đủ 4 hàng phím + Phím Cách
+    function renderInteractiveKeyboardSVG(options = {}) {
+      const {
+        highlightRow = null,      // 'HOME_ROW' | 'NUM_ROW'
+        targetKeys = [],          // Các phím đang cần nháy/gõ ['F', 'J'] hoặc ['4']
+        coloredMap = {},          // { '1': '#FF7A90', ... }
+        showAllNumberColors = false,
+        clickable = false,
+        onKeyClickName = "handleSvgKeyClick"
+      } = options;
+
+      const rows = [
+        {
+          id: "NUM_ROW",
+          y: 12,
+          keys: [
+            { label: "1", x: 18, w: 52 },
+            { label: "2", x: 76, w: 52 },
+            { label: "3", x: 134, w: 52 },
+            { label: "4", x: 192, w: 52 },
+            { label: "5", x: 250, w: 52 },
+            { label: "6", x: 318, w: 52 },
+            { label: "7", x: 376, w: 52 },
+            { label: "8", x: 434, w: 52 },
+            { label: "9", x: 492, w: 52 },
+            { label: "0", x: 550, w: 52 }
+          ]
+        },
+        {
+          id: "TOP_ROW",
+          y: 66,
+          keys: [
+            { label: "Q", x: 30, w: 50 },
+            { label: "W", x: 86, w: 50 },
+            { label: "E", x: 142, w: 50 },
+            { label: "R", x: 198, w: 50 },
+            { label: "T", x: 254, w: 50 },
+            { label: "Y", x: 320, w: 50 },
+            { label: "U", x: 376, w: 50 },
+            { label: "I", x: 432, w: 50 },
+            { label: "O", x: 488, w: 50 },
+            { label: "P", x: 544, w: 50 }
+          ]
+        },
+        {
+          id: "HOME_ROW",
+          y: 120,
+          keys: [
+            { label: "A", x: 42, w: 50, homeFinger: "L_PINKY" },
+            { label: "S", x: 98, w: 50, homeFinger: "L_RING" },
+            { label: "D", x: 154, w: 50, homeFinger: "L_MIDDLE" },
+            { label: "F", x: 210, w: 50, homeFinger: "L_INDEX", bump: true },
+            { label: "G", x: 266, w: 46 },
+            { label: "H", x: 322, w: 46 },
+            { label: "J", x: 374, w: 50, homeFinger: "R_INDEX", bump: true },
+            { label: "K", x: 430, w: 50, homeFinger: "R_MIDDLE" },
+            { label: "L", x: 486, w: 50, homeFinger: "R_RING" },
+            { label: ";", x: 542, w: 50, homeFinger: "R_PINKY" }
+          ]
+        },
+        {
+          id: "BOTTOM_ROW",
+          y: 174,
+          keys: [
+            { label: "Z", x: 64, w: 50 },
+            { label: "X", x: 120, w: 50 },
+            { label: "C", x: 176, w: 50 },
+            { label: "V", x: 232, w: 50 },
+            { label: "B", x: 288, w: 50 },
+            { label: "N", x: 350, w: 50 },
+            { label: "M", x: 406, w: 50 },
+            { label: ",", x: 462, w: 50 },
+            { label: ".", x: 518, w: 50 }
+          ]
+        }
+      ];
+
+      let keysSvg = "";
+
+      // Vạch chia vùng tay trái / tay phải
+      keysSvg += `
+        <line x1="310" y1="8" x2="310" y2="225" stroke="#FF9850" stroke-width="2" stroke-dasharray="5,5" opacity="0.7"/>
+        <text x="155" y="272" fill="#FFD773" font-size="11" font-weight="700" text-anchor="middle">VÙNG BÀN TAY TRÁI</text>
+        <text x="465" y="272" fill="#8CE0B3" font-size="11" font-weight="700" text-anchor="middle">VÙNG BÀN TAY PHẢI</text>
+      `;
+
+      rows.forEach(r => {
+        const isRowHi = highlightRow === r.id;
+        if (isRowHi) {
+          keysSvg += `<rect x="10" y="${r.y - 4}" width="600" height="54" rx="12" fill="rgba(64, 184, 179, 0.22)" stroke="#40B8B3" stroke-width="2"/>`;
+        }
+
+        r.keys.forEach(k => {
+          const isTarget = targetKeys.includes(k.label);
+          let fill = "#FFFDF9";
+          let textFill = "#2D2A3E";
+          let stroke = "#C8BFA8";
+
+          // Nếu có màu tô trong coloredMap
+          if (coloredMap[k.label]) {
+            fill = coloredMap[k.label];
+            textFill = "#FFFFFF";
+            stroke = "#FFFFFF";
+          } else if (showAllNumberColors) {
+            const fInfo = getFingerInfoForChar(k.label);
+            if (fInfo && (r.id === "NUM_ROW" || k.homeFinger)) {
+              fill = fInfo.color;
+              textFill = "#FFFFFF";
+              stroke = "#FFFFFF";
+            }
+          } else if (k.homeFinger && highlightRow === "HOME_ROW") {
+            const fInfo = GAME_CONFIG.fingers.find(f => f.id === k.homeFinger);
+            if (fInfo) {
+              fill = fInfo.color;
+              textFill = "#FFFFFF";
+            }
+          }
+
+          if (isTarget) {
+            stroke = "#FFD773";
+          }
+
+          const clickAttr = clickable ? `onclick="${onKeyClickName}('${k.label}')"` : "";
+          const pulseClass = isTarget ? "key-rect key-target-pulse" : "key-rect";
+
+          keysSvg += `
+            <g class="${pulseClass}" ${clickAttr} role="${clickable ? 'button' : 'presentation'}" tabindex="${clickable ? '0' : '-1'}" aria-label="Phím ${k.label}">
+              <rect x="${k.x}" y="${r.y}" width="${k.w}" height="46" rx="9" fill="${fill}" stroke="${stroke}" stroke-width="${isTarget ? 3.5 : 1.8}"/>
+              <text x="${k.x + k.w / 2}" y="${r.y + 28}" fill="${textFill}" font-size="16" font-weight="800" text-anchor="middle">${k.label}</text>
+              ${k.bump ? `<rect x="${k.x + k.w / 2 - 8}" y="${r.y + 36}" width="16" height="3.5" rx="1.5" fill="${textFill === '#FFFFFF' ? '#FFF' : '#FF7A90'}"/>` : ""}
+            </g>
+          `;
+        });
+      });
+
+      // Phím Cách (Space)
+      const isSpaceTarget = targetKeys.includes(" ") || targetKeys.includes("SPACE");
+      keysSvg += `
+        <g class="${isSpaceTarget ? 'key-rect key-target-pulse' : 'key-rect'}" ${clickable ? `onclick="${onKeyClickName}(' ')"` : ""}>
+          <rect x="175" y="226" width="270" height="34" rx="9" fill="${isSpaceTarget ? '#FFD773' : '#EAE4D7'}" stroke="${isSpaceTarget ? '#FF9850' : '#BFB59E'}" stroke-width="2"/>
+          <text x="310" y="248" fill="#2D2A3E" font-size="13" font-weight="800" text-anchor="middle">PHÍM CÁCH (SPACE)</text>
+        </g>
+      `;
+
+      return `
+        <div class="svg-keyboard-box">
+          <svg viewBox="0 0 620 278" width="100%" height="auto" role="img" aria-label="Bàn phím mô phỏng học tập">
+            ${keysSvg}
+          </svg>
+        </div>
+      `;
+    }
+
+    // 4. Vẽ Đôi bàn tay SVG 10 ngón có mã màu và tô sáng ngón đang hoạt động
+    function renderHandsSVG(activeFingerId = null, interactive = false) {
+      // Tọa độ 10 đầu ngón tay trên SVG 460x170
+      const fingerShapes = [
+        // Tay trái
+        { id: "L_PINKY",  label: "1", name: "Út trái",     x: 26,  y: 52, h: 58, color: "#FF7A90" },
+        { id: "L_RING",   label: "2", name: "Áp út trái",  x: 62,  y: 30, h: 76, color: "#FF9850" },
+        { id: "L_MIDDLE", label: "3", name: "Giữa trái",   x: 98,  y: 18, h: 88, color: "#F4B942" },
+        { id: "L_INDEX",  label: "4,5", name: "Trỏ trái",  x: 134, y: 32, h: 74, color: "#40B8B3" },
+        { id: "THUMB",    label: "Cách", name: "Cái trái", x: 172, y: 74, h: 48, color: "#95A5A6" },
+        // Tay phải
+        { id: "THUMB",    label: "Cách", name: "Cái phải", x: 258, y: 74, h: 48, color: "#95A5A6" },
+        { id: "R_INDEX",  label: "6,7", name: "Trỏ phải",  x: 296, y: 32, h: 74, color: "#5390D9" },
+        { id: "R_MIDDLE", label: "8", name: "Giữa phải",   x: 332, y: 18, h: 88, color: "#8069C6" },
+        { id: "R_RING",   label: "9", name: "Áp út phải",  x: 368, y: 30, h: 76, color: "#C06C84" },
+        { id: "R_PINKY",  label: "0", name: "Út phải",     x: 404, y: 52, h: 58, color: "#46B585" }
+      ];
+
+      let fSvg = "";
+      fingerShapes.forEach(f => {
+        const isActive = activeFingerId === f.id;
+        const clickAttr = (interactive && f.id !== "THUMB") ? `onclick="handleSelectFinger('${f.id}')" style="cursor:pointer"` : "";
+        fSvg += `
+          <g ${clickAttr}>
+            <rect x="${f.x}" y="${isActive ? f.y - 8 : f.y}" width="28" height="${f.h}" rx="14"
+              fill="${f.color}" stroke="${isActive ? '#2D2A3E' : '#FFFFFF'}" stroke-width="${isActive ? 3.5 : 2}"/>
+            <circle cx="${f.x + 14}" cy="${(isActive ? f.y - 8 : f.y) + 16}" r="10" fill="rgba(255,255,255,0.9)"/>
+            <text x="${f.x + 14}" y="${(isActive ? f.y - 8 : f.y) + 20}" font-size="9.5" font-weight="900" fill="#2D2A3E" text-anchor="middle">${f.label}</text>
+          </g>
+        `;
+      });
+
+      return `
+        <svg viewBox="0 0 458 165" width="100%" height="auto" role="img" aria-label="Sơ đồ hai bàn tay 10 ngón">
+          <!-- Lòng bàn tay trái -->
+          <path d="M 24 100 Q 24 152 100 152 Q 178 152 186 105 L 160 95 L 26 95 Z" fill="#FFE2CC" stroke="#E0B89B" stroke-width="2"/>
+          <text x="102" y="135" font-size="13" font-weight="800" fill="#6E473B" text-anchor="middle">BÀN TAY TRÁI</text>
+          <!-- Lòng bàn tay phải -->
+          <path d="M 272 105 Q 280 152 358 152 Q 434 152 434 100 L 432 95 L 298 95 Z" fill="#FFE2CC" stroke="#E0B89B" stroke-width="2"/>
+          <text x="356" y="135" font-size="13" font-weight="800" fill="#6E473B" text-anchor="middle">BÀN TAY PHẢI</text>
+          ${fSvg}
+        </svg>
+      `;
+    }
+
+    /**
+     * ============================================================================
+     * CẬP NHẬT THANH TIẾN ĐỘ & NỀN PHÒNG THÍ NGHIỆM ĐA LỚP
+     * ============================================================================
+     */
+    function updateHeaderUI() {
+      document.getElementById("uiScore").textContent = state.score;
+
+      const pillsContainer = document.getElementById("stageNavPills");
+      if (state.screen === "welcome") {
+        pillsContainer.innerHTML = `<span class="sim-tag">Chế độ: <strong>${state.mode === 'practice' ? 'Luyện tập' : 'Thử thách'}</strong></span>`;
+        return;
+      }
+
+      let html = "";
+      GAME_CONFIG.stages.forEach(st => {
+        const isCurrent = state.screen === `stage${st.id}`;
+        const isDone = state.stageCompleted[st.id];
+        // Cho phép chuyển đến màn đã hoàn thành hoặc màn hiện tại, hoặc màn kế tiếp nếu màn trước đã xong
+        const canAccess = st.id === 1 || isDone || state.stageCompleted[st.id - 1] || isCurrent;
+        html += `
+          <button type="button" class="stage-pill ${isCurrent ? 'active' : ''} ${isDone ? 'done' : ''}"
+            ${canAccess ? `onclick="goToStage(${st.id})"` : "disabled"}
+            title="${st.title}">
+            <span>${isDone ? '✓' : st.id + '/4'}</span>
+            <span>${st.shortName.split(': ')[1]}</span>
+          </button>
+        `;
+      });
+      pillsContainer.innerHTML = html;
+
+      // Thay đổi bối cảnh Phòng thí nghiệm theo từng màn
+      const backdrop = document.getElementById("labBackdrop");
+      const bgThemes = {
+        welcome: "radial-gradient(circle at 80% 20%, #FFE0B2 0%, transparent 50%)",
+        stage1: "radial-gradient(circle at 15% 85%, #DDF7F5 0%, transparent 55%)",
+        stage2: "radial-gradient(circle at 85% 80%, #EFEAFC 0%, transparent 55%)",
+        stage3: "radial-gradient(circle at 50% 15%, #FFF2CC 0%, transparent 55%)",
+        stage4: "radial-gradient(circle at 20% 20%, #E0F7FA 0%, #FFF9ED 70%)",
+        summary: "radial-gradient(circle at 50% 50%, #FFF3C4 0%, #EFEAFC 80%)"
+      };
+      backdrop.style.background = bgThemes[state.screen] || bgThemes.welcome;
+    }
+
+    /**
+     * ============================================================================
+     * RENDER CÁC MÀN HÌNH CHÍNH
+     * ============================================================================
+     */
+    function renderScreen() {
+      updateHeaderUI();
+      const container = document.getElementById("screenContent");
+
+      if (state.screen === "welcome") {
+        renderWelcomeScreen(container);
+      } else if (state.screen === "stage1") {
+        renderStage1(container);
+      } else if (state.screen === "stage2") {
+        renderStage2(container);
+      } else if (state.screen === "stage3") {
+        renderStage3(container);
+      } else if (state.screen === "stage4") {
+        renderStage4(container);
+      } else if (state.screen === "summary") {
+        renderSummaryScreen(container);
+      }
+    }
+
+    // MÀN HÌNH CHÀO MỪNG
+    function renderWelcomeScreen(container) {
+      container.innerHTML = `
+        <div class="welcome-grid">
+          <div class="welcome-info">
+            <div class="book-tag">
+              <span>📘 ${GAME_CONFIG.bookInfo}</span>
+            </div>
+            <h1 class="hero-title">${GAME_CONFIG.gameTitle}</h1>
+            <p class="hero-subtitle">${GAME_CONFIG.lessonTitle} • Khám phá cùng nhà phát minh nhí Mây</p>
+
+            <div class="mission-card">
+              <strong style="color:var(--purple-dark); font-size:1rem;">Nhiệm vụ 4 trạm năng lượng trong Phòng thí nghiệm:</strong>
+              <ul class="mission-list">
+                <li>🎯 <strong>Màn 1:</strong> Tư thế đặt tay & Lợi ích gõ đúng</li>
+                <li>🖐️ <strong>Màn 2:</strong> Tô màu ngón tay & Hàng phím số</li>
+                <li>⚡ <strong>Màn 3:</strong> Gõ chuỗi phím số thần tốc</li>
+                <li>📝 <strong>Màn 4:</strong> Chinh phục đoạn văn nhỏ có số</li>
+              </ul>
+            </div>
+
+            <div class="mode-selector" role="group" aria-label="Chọn chế độ chơi">
+              <span style="font-weight:800; color:var(--purple-dark);">Chọn chế độ:</span>
+              <button type="button" class="mode-btn ${state.mode === 'practice' ? 'active' : ''}" onclick="setGameMode('practice')">
+                🌱 Luyện tập (Hiện gợi ý trực quan)
+              </button>
+              <button type="button" class="mode-btn ${state.mode === 'challenge' ? 'active' : ''}" onclick="setGameMode('challenge')">
+                🚀 Thử thách (Tự khám phá trước)
+              </button>
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:4px;">
+              <button type="button" class="btn btn-primary" style="font-size:1.1rem; padding:12px 28px;" onclick="startGame()">
+                ▶ Bắt đầu khám phá
+              </button>
+              <button type="button" class="btn btn-soft" style="font-size:1.02rem; padding:12px 22px;" onclick="openGuideModal()">
+                📖 Hướng dẫn
+              </button>
+            </div>
+          </div>
+
+          <!-- Tranh minh họa SVG lớn của Phòng thí nghiệm Bàn phím -->
+          <div class="panel-card" style="background:linear-gradient(180deg, #F5F0FF 0%, #FFF9ED 100%); align-items:center; text-align:center; padding:18px;">
+            <span class="sim-tag" style="align-self:flex-end;">Giao diện mô phỏng phục vụ học tập</span>
+            <div style="display:flex; align-items:center; gap:14px; margin:4px 0;">
+              ${renderMaySVG("excited", 92)}
+              <div style="text-align:left; background:#fff; padding:10px 14px; border-radius:14px; border:2px solid #D3C6F5; font-weight:600; font-size:0.94rem;">
+                <strong style="color:var(--purple-dark);">Mây nhắn nhủ:</strong><br/>
+                "Chào bạn nhỏ lớp 4! Hãy giúp mình kết nối 10 ngón tay với hàng phím số từ <strong>1 đến 0</strong> để thắp sáng phòng thí nghiệm nhé!"
+              </div>
+            </div>
+            ${renderInteractiveKeyboardSVG({ showAllNumberColors: true, clickable: false })}
+            <div style="margin-top:6px; width:100%;">
+              ${renderHandsSVG(null, false)}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // KHUNG NHÂN VẬT MÂY & THANH CHÂN TRANG DÙNG CHUNG CHO 4 MÀN
+    function renderCompanionAndHeader(stageObj) {
+      const isDone = state.stageCompleted[stageObj.id];
+      return `
+        <div class="companion-bar">
+          <div class="may-avatar-wrap">
+            ${renderMaySVG(state.companionMood, 70)}
+          </div>
+          <div class="speech-bubble">
+            <div class="speech-header">
+              <span>${stageObj.title}</span>
+              <span class="sim-tag">Giao diện mô phỏng phục vụ học tập</span>
+              ${isDone ? `<span style="background:#DCF7E8; color:#156C42; padding:2px 10px; border-radius:999px; font-size:0.82rem;">★ Đã hoàn thành (+25 điểm)</span>` : ""}
+            </div>
+            <p class="speech-text">${state.companionMessage}</p>
+            ${state.feedbackText ? `<div class="feedback-pill ${state.feedbackType}">${state.feedbackText}</div>` : ""}
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+            <span style="font-size:0.82rem; font-weight:700; color:var(--text-muted);">Tiến độ: Màn ${stageObj.id}/4</span>
+            <button type="button" class="btn btn-soft" onclick="triggerStageHint(${stageObj.id})" title="Xem gợi ý từng bước">
+              💡 Gợi ý (${state.hintStep[stageObj.id]}/2)
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStageFooter(stageId) {
+      const isDone = state.stageCompleted[stageId];
+      const nextLabel = stageId < 4 ? `Tiếp tục Màn ${stageId + 1} ➔` : `Xem Tổng kết & Huy hiệu 🏆`;
+      return `
+        <footer class="stage-footer">
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-soft" onclick="goHome()">🏠 Trang chủ</button>
+            <button type="button" class="btn btn-soft" onclick="resetCurrentStage()">↻ Làm lại màn</button>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:0.9rem; font-weight:700; color:${isDone ? 'var(--success)' : 'var(--text-muted)'};">
+              ${isDone ? "✓ Đã đủ điều kiện qua màn!" : "Hoàn thành các yêu cầu trên màn hình để mở khóa nút Tiếp tục"}
+            </span>
+            <button type="button" class="btn btn-primary" ${isDone ? "" : "disabled"} onclick="goNextFromStage(${stageId})">
+              ${nextLabel}
+            </button>
+          </div>
+        </footer>
+      `;
+    }
+
+    /**
+     * ============================================================================
+     * MÀN 1: TƯ THẾ GÕ & LỢI ÍCH GÕ ĐÚNG CÁCH
+     * ============================================================================
+     */
+    function renderStage1(container) {
+      const st = GAME_CONFIG.stages[0];
+      const task1Done = state.s1.rowSelected === "HOME_ROW";
+      const task2Done = state.s1.bumpsFound.includes("F") && state.s1.bumpsFound.includes("J");
+      const trueBenefitsCount = st.benefits.filter(b => b.isTrue).length;
+      const task3Done = state.s1.selectedBenefits.length === trueBenefitsCount;
+
+      // Trong chế độ luyện tập, gợi ý nhẹ nhàng phím F và J nếu đang ở bước 2
+      const targetKeysS1 = (state.mode === "practice" && task1Done && !task2Done) ? ["F", "J"] : state.s1.bumpsFound;
+
+      container.innerHTML = `
+        ${renderCompanionAndHeader(st)}
+
+        <div class="stage-1-grid">
+          <!-- Cột Trái: Hàng phím cơ sở & 2 phím có gai F, J -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <span class="panel-title">1. Vị trí đặt tay xuất phát & Hai phím có gai</span>
+              <span style="font-size:0.85rem; font-weight:700; color:${task1Done && task2Done ? 'var(--success)' : 'var(--orange-dark)'};">
+                ${task1Done && task2Done ? "✓ Đã hoàn thành Phần A" : "Đang thực hiện"}
+              </span>
+            </div>
+
+            <p style="font-size:0.93rem; font-weight:700;">${st.postureTasks[0].prompt}</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              ${st.postureTasks[0].options.map(opt => {
+                const isSel = state.s1.rowSelected === opt.id;
+                let cls = "benefit-card";
+                if (isSel) cls += opt.correct ? " selected-correct" : " selected-wrong";
+                return `
+                  <button type="button" class="${cls}" onclick="handleS1RowSelect('${opt.id}')">
+                    <span>${opt.label}</span>
+                    <span>${isSel ? (opt.correct ? '✓' : '✕') : ''}</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+
+            <p style="font-size:0.93rem; font-weight:700; margin-top:4px;">
+              ${st.postureTasks[1].prompt}
+              <strong style="color:var(--teal-dark);"> (Đã tìm: ${state.s1.bumpsFound.length}/2 phím: ${state.s1.bumpsFound.join(", ") || "Chưa chọn"})</strong>
+            </p>
+
+            ${renderInteractiveKeyboardSVG({
+              highlightRow: task1Done ? "HOME_ROW" : null,
+              targetKeys: targetKeysS1,
+              coloredMap: {
+                ...(state.s1.bumpsFound.includes("F") ? { "F": "#2BB673" } : {}),
+                ...(state.s1.bumpsFound.includes("J") ? { "J": "#2BB673" } : {})
+              },
+              clickable: true,
+              onKeyClickName: "handleS1KeyClick"
+            })}
+          </div>
+
+          <!-- Cột Phải: Chọn 4 lợi ích của gõ bàn phím đúng cách -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <span class="panel-title">2. Lợi ích của gõ bàn phím đúng cách</span>
+              <span style="font-size:0.85rem; font-weight:700; color:${task3Done ? 'var(--success)' : 'var(--orange-dark)'};">
+                Đã chọn đúng: ${state.s1.selectedBenefits.length}/${trueBenefitsCount}
+              </span>
+            </div>
+
+            <p style="font-size:0.93rem; font-weight:600;">
+              Hãy nháy chọn <strong>4 thẻ nói ĐÚNG lợi ích</strong> của việc đặt tay đúng hàng cơ sở và gõ bằng 10 ngón:
+            </p>
+
+            <div class="benefits-grid">
+              ${st.benefits.map(b => {
+                const isChosen = state.s1.selectedBenefits.includes(b.id);
+                const isWrongClicked = state.s1.lastWrongBenefit === b.id;
+                let cls = "benefit-card";
+                if (isChosen) cls += " selected-correct";
+                else if (isWrongClicked) cls += " selected-wrong";
+                return `
+                  <button type="button" class="${cls}" onclick="handleS1BenefitClick('${b.id}')">
+                    <span>${b.text}</span>
+                    <span>${isChosen ? '✓ Đúng' : (isWrongClicked ? '✕ Xem lại' : 'Chọn')}</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+
+            <!-- Minh họa trạng thái tư thế ngồi & đôi tay -->
+            <div style="margin-top:auto; background:#F4FBF9; border:1.5px solid var(--teal); border-radius:12px; padding:10px; display:flex; align-items:center; gap:12px;">
+              <div style="font-size:0.88rem; font-weight:600; color:var(--text-main);">
+                💡 <strong>Ghi nhớ SGK:</strong> Đặt tay xuất phát tại hàng phím cơ sở giúp em định vị nhanh tất cả các phím xung quanh mà không cần nhìn chằm chằm vào bàn phím.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        ${renderStageFooter(1)}
+      `;
+    }
+
+    function handleS1RowSelect(optionId) {
+      const st = GAME_CONFIG.stages[0];
+      const opt = st.postureTasks[0].options.find(o => o.id === optionId);
+      if (!opt) return;
+
+      state.s1.rowSelected = optionId;
+      if (opt.correct) {
+        sound.playCorrect();
+        state.companionMood = "happy";
+        state.feedbackType = "ok";
+        state.feedbackText = opt.reason;
+      } else {
+        sound.playWrong();
+        state.companionMood = "thinking";
+        state.feedbackType = "err";
+        state.feedbackText = opt.reason;
+      }
+      checkStage1Completion();
+      renderScreen();
+    }
+
+    function handleS1KeyClick(keyLabel) {
+      const st = GAME_CONFIG.stages[0];
+      const task = st.postureTasks[1];
+
+      if (task.targetKeys.includes(keyLabel)) {
+        if (!state.s1.bumpsFound.includes(keyLabel)) {
+          state.s1.bumpsFound.push(keyLabel);
+        }
+        sound.playCorrect();
+        state.companionMood = "happy";
+        state.feedbackType = "ok";
+        state.feedbackText = `Chính xác! Phím ${keyLabel} có gai định vị cho ngón trỏ ${keyLabel === 'F' ? 'trái' : 'phải'}. (${state.s1.bumpsFound.length}/2)`;
+      } else {
+        sound.playWrong();
+        state.companionMood = "thinking";
+        state.feedbackType = "err";
+        state.feedbackText = `Phím "${keyLabel}" không có gai định vị. ${task.wrongMsg}`;
+      }
+      checkStage1Completion();
+      renderScreen();
+    }
+
+    function handleS1BenefitClick(benefitId) {
+      const st = GAME_CONFIG.stages[0];
+      const item = st.benefits.find(b => b.id === benefitId);
+      if (!item) return;
+
+      if (item.isTrue) {
+        state.s1.lastWrongBenefit = null;
+        if (!state.s1.selectedBenefits.includes(benefitId)) {
+          state.s1.selectedBenefits.push(benefitId);
+        }
+        sound.playCorrect();
+        state.companionMood = "happy";
+        state.feedbackType = "ok";
+        state.feedbackText = item.explain;
+      } else {
+        state.s1.lastWrongBenefit = benefitId;
+        sound.playWrong();
+        state.companionMood = "thinking";
+        state.feedbackType = "err";
+        state.feedbackText = item.explain;
+      }
+      checkStage1Completion();
+      renderScreen();
+    }
+
+    function checkStage1Completion() {
+      const st = GAME_CONFIG.stages[0];
+      const task1Done = state.s1.rowSelected === "HOME_ROW";
+      const task2Done = state.s1.bumpsFound.includes("F") && state.s1.bumpsFound.includes("J");
+      const trueCount = st.benefits.filter(b => b.isTrue).length;
+      const task3Done = state.s1.selectedBenefits.length === trueCount;
+
+      if (task1Done && task2Done && task3Done && !state.stageCompleted[1]) {
+        completeStage(1, "Tuyệt vời! Em đã nắm vững tư thế đặt tay ở hàng cơ sở, hai phím có gai F - J và lợi ích của việc gõ phím đúng cách!");
+      }
+    }
+
+    /**
+     * ============================================================================
+     * MÀN 2: NGÓN TAY VÀ HÀNG PHÍM SỐ (TÔ MÀU 10 PHÍM SỐ)
+     * ============================================================================
+     */
+    function renderStage2(container) {
+      const st = GAME_CONFIG.stages[1];
+      const coloredCount = Object.keys(state.s2.coloredKeys).length;
+      const activeKey = state.s2.activeNumberKey;
+      const correctFingerObj = getFingerInfoForChar(activeKey);
+      const hintFingerId = (state.mode === "practice" && correctFingerObj) ? correctFingerObj.id : null;
+
+      container.innerHTML = `
+        ${renderCompanionAndHeader(st)}
+
+        <div class="stage-2-grid">
+          <!-- Cột Trái: Bàn phím SVG & tiến độ tô màu 10 phím số -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <span class="panel-title">1. Bảng màu Hàng phím số (1 đến 0)</span>
+              <span style="font-size:0.9rem; font-weight:800; color:var(--teal-dark);">
+                Đã tô màu đúng: ${coloredCount}/10 phím số
+              </span>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+              <p style="font-size:0.94rem; font-weight:700;">
+                Bước 1: Nhấn một phím số (<code>1</code>–<code>0</code>) trên bàn phím thật hoặc nháy vào phím số bên dưới.
+              </p>
+              <span style="background:var(--yellow); padding:4px 12px; border-radius:999px; font-weight:900; font-size:0.95rem;">
+                Phím đang chọn: Số ${activeKey}
+              </span>
+            </div>
+
+            ${renderInteractiveKeyboardSVG({
+              highlightRow: "NUM_ROW",
+              targetKeys: [activeKey],
+              coloredMap: state.s2.coloredKeys,
+              clickable: true,
+              onKeyClickName: "handleS2KeySelect"
+            })}
+
+            <!-- Các nút chọn nhanh số 1 -> 0 -->
+            <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin-top:4px;">
+              ${st.numberKeysOrder.map(num => {
+                const isDone = Boolean(state.s2.coloredKeys[num]);
+                const isCur = activeKey === num;
+                return `
+                  <button type="button" class="btn ${isCur ? 'btn-primary' : (isDone ? 'btn-teal' : 'btn-soft')}"
+                    style="min-width:46px; padding:6px 10px;"
+                    onclick="handleS2KeySelect('${num}')">
+                    ${num} ${isDone ? '✓' : ''}
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          </div>
+
+          <!-- Cột Phải: Sơ đồ 2 bàn tay SVG & Chọn ngón tay phụ trách -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <span class="panel-title">2. Chọn ngón tay phụ trách phím số "${activeKey}"</span>
+            </div>
+
+            <p style="font-size:0.92rem; font-weight:600;">
+              Bước 2: Nháy chọn đúng ngón tay trên hình bàn tay hoặc nút bên dưới để tô màu cho <strong>phím số ${activeKey}</strong>:
+            </p>
+
+            ${renderHandsSVG(hintFingerId, true)}
+
+            <div class="finger-btn-grid">
+              ${GAME_CONFIG.fingers.map(f => `
+                <button type="button" class="finger-choice-btn ${hintFingerId === f.id ? 'active-finger' : ''}"
+                  onclick="handleSelectFinger('${f.id}')">
+                  <span class="color-dot" style="background:${f.color};"></span>
+                  <span>${f.name} <small style="color:var(--text-muted);">(${f.homeKey})</small></span>
+                </button>
+              `).join("")}
+            </div>
+
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
+              * Ghi chú sư phạm: Hoạt động này giúp em ghi nhớ quy tắc phân công ngón tay cho từng phím số (máy tính kiểm tra thao tác chọn quy tắc và phím gõ).
+            </p>
+          </div>
+        </div>
+
+        ${renderStageFooter(2)}
+      `;
+    }
+
+    function handleS2KeySelect(keyLabel) {
+      const nums = GAME_CONFIG.stages[1].numberKeysOrder;
+      if (!nums.includes(keyLabel)) {
+        sound.playWrong();
+        state.feedbackType = "err";
+        state.feedbackText = `Ở màn này, em hãy chọn các phím trên Hàng phím số từ 1 đến 0 nhé!`;
+        renderScreen();
+        return;
+      }
+      sound.playClick();
+      state.s2.activeNumberKey = keyLabel;
+      state.feedbackType = "";
+      state.feedbackText = `Đã chọn phím số ${keyLabel}. Bây giờ hãy chọn ngón tay phụ trách phím số ${keyLabel}!`;
+      renderScreen();
+    }
+
+    function handleSelectFinger(fingerId) {
+      if (state.screen !== "stage2") return;
+      const activeKey = state.s2.activeNumberKey;
+      const fingerObj = GAME_CONFIG.fingers.find(f => f.id === fingerId);
+      if (!fingerObj) return;
+
+      if (fingerObj.keys.includes(activeKey)) {
+        // Đúng ngón tay
+        state.s2.coloredKeys[activeKey] = fingerObj.color;
+        sound.playCorrect();
+        state.companionMood = "happy";
+        state.feedbackType = "ok";
+        state.feedbackText = `Chính xác! ${fingerObj.name} (xuất phát từ phím ${fingerObj.homeKey}) phụ trách gõ phím số ${activeKey}.`;
+
+        // Tự động chuyển sang phím số tiếp theo chưa được tô màu
+        const order = GAME_CONFIG.stages[1].numberKeysOrder;
+        const nextUncolored = order.find(k => !state.s2.coloredKeys[k]);
+        if (nextUncolored) {
+          state.s2.activeNumberKey = nextUncolored;
+        } else if (!state.stageCompleted[2]) {
+          completeStage(2, "Xuất sắc! Em đã tô màu hoàn chỉnh toàn bộ 10 phím số từ 1 đến 0 theo đúng ngón tay phụ trách!");
+        }
+      } else {
+        sound.playWrong();
+        state.companionMood = "thinking";
+        state.feedbackType = "err";
+        const rightFinger = getFingerInfoForChar(activeKey);
+        state.feedbackText = `Chưa đúng rồi! ${fingerObj.name} dùng để gõ số ${fingerObj.keys.join(", ")}. Hãy quan sát vị trí phím số ${activeKey} thuộc vùng ${rightFinger.hand.toLowerCase()} nhé!`;
+      }
+      renderScreen();
+    }
+
+    /**
+     * ============================================================================
+     * MÀN 3: GÕ HÀNG PHÍM SỐ & PHÍM CƠ BẢN (4 CHUỖI LUYỆN GÕ THẬT)
+     * ============================================================================
+     */
+    function renderStage3(container) {
+      const st = GAME_CONFIG.stages[2];
+      const curSeq = st.sequences[state.s3.seqIndex];
+      const targetStr = curSeq.text;
+      const typed = state.s3.typedText;
+      const nextChar = targetStr[typed.length] || "";
+      const fingerGuide = getFingerInfoForChar(nextChar);
+
+      // Tạo chuỗi hiển thị từng kí tự
+      let charsHtml = "";
+      for (let i = 0; i < targetStr.length; i++) {
+        const ch = targetStr[i];
+        let cls = "t-char";
+        if (i < typed.length) {
+          cls += " done";
+        } else if (i === typed.length) {
+          cls += state.s3.lastErrorChar ? " wrong" : " current";
+        }
+        charsHtml += `<span class="${cls}">${ch === " " ? "␣" : ch}</span>`;
+      }
+
+      const completedCount = state.s3.completedSeqs.filter(Boolean).length;
+
+      container.innerHTML = `
+        ${renderCompanionAndHeader(st)}
+
+        <div class="stage-1-grid">
+          <!-- Cột Trái: Khu vực gõ chuỗi và bàn phím SVG chỉ dẫn trực tiếp -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <span class="panel-title">${curSeq.title}</span>
+              <span style="font-weight:800; color:var(--teal-dark);">Hoàn thành: ${completedCount}/4 chuỗi</span>
+            </div>
+
+            <!-- Thanh chọn 4 chuỗi -->
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              ${st.sequences.map((sq, idx) => `
+                <button type="button" class="btn ${state.s3.seqIndex === idx ? 'btn-purple' : (state.s3.completedSeqs[idx] ? 'btn-teal' : 'btn-soft')}"
+                  style="padding:6px 12px; font-size:0.86rem;"
+                  onclick="selectS3Sequence(${idx})">
+                  Chuỗi ${idx + 1} ${state.s3.completedSeqs[idx] ? '✓' : ''}
+                </button>
+              `).join("")}
+            </div>
+
+            <p style="font-size:0.9rem; color:var(--text-muted); font-weight:600;">${curSeq.note}</p>
+
+            <!-- Màn hình hiển thị chuỗi cần gõ -->
+            <div class="typing-display-box" aria-live="polite">
+              ${charsHtml}
+            </div>
+
+            <!-- Ô nhập nhận bàn phím thật -->
+            <div style="display:flex; gap:10px; align-items:center;">
+              <input type="text" id="s3TypingInput" class="real-typing-input"
+                value="${typed}"
+                placeholder="Nháy vào đây và gõ từng phím theo chuỗi màu vàng phía trên..."
+                autocomplete="off" autocapitalize="off" spellcheck="false"
+                oninput="handleS3Input(event)" />
+            </div>
+
+            <!-- Bàn phím SVG tô sáng phím tiếp theo -->
+            ${renderInteractiveKeyboardSVG({
+              highlightRow: null,
+              targetKeys: nextChar ? [nextChar.toUpperCase()] : [],
+              showAllNumberColors: state.mode === "practice",
+              clickable: true,
+              onKeyClickName: "handleS3VirtualKey"
+            })}
+          </div>
+
+          <!-- Cột Phải: Sơ đồ bàn tay chỉ dẫn ngón tay cần vươn lên -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <span class="panel-title">Chỉ dẫn ngón tay thời gian thực</span>
+            </div>
+
+            <div style="background:#FFF7E8; border:2px solid #F3D19C; border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:6px;">
+              <div style="font-size:0.92rem; font-weight:700;">
+                Kí tự cần gõ tiếp theo:
+                <span style="display:inline-block; background:var(--purple); color:#fff; padding:2px 12px; border-radius:8px; font-size:1.1rem; margin-left:6px;">
+                  ${nextChar ? (nextChar === " " ? "Phím Cách (␣)" : nextChar.toUpperCase()) : "Đã xong chuỗi!"}
+                </span>
+              </div>
+              ${fingerGuide ? `
+                <div style="display:flex; align-items:center; gap:8px; font-weight:800; color:var(--orange-dark); font-size:1rem;">
+                  <span class="color-dot" style="background:${fingerGuide.color};"></span>
+                  <span>Ngón phụ trách: ${fingerGuide.name} (${fingerGuide.hand})</span>
+                </div>
+                <div style="font-size:0.86rem; color:var(--text-muted); font-weight:600;">
+                  ${fingerGuide.homeKey ? `Quy tắc: Vươn từ phím cơ sở [${fingerGuide.homeKey}] lên gõ rồi thu ngón về [${fingerGuide.homeKey}].` : "Dùng ngón cái gõ nhẹ vào Phím Cách."}
+                </div>
+              ` : ""}
+            </div>
+
+            ${renderHandsSVG(fingerGuide ? fingerGuide.id : null, false)}
+
+            <div style="margin-top:auto; font-size:0.86rem; color:var(--text-muted); background:#F5F3FA; padding:10px; border-radius:10px;">
+              ⌨️ <strong>Mẹo nhỏ:</strong> Em có thể gõ trực tiếp trên bàn phím máy tính hoặc nháy chuột vào các phím trên màn hình nếu dùng máy tính bảng.
+            </div>
+          </div>
+        </div>
+
+        ${renderStageFooter(3)}
+      `;
+
+      const inputEl = document.getElementById("s3TypingInput");
+      if (inputEl) {
+        inputEl.focus();
+        inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
+      }
+    }
+
+    function selectS3Sequence(idx) {
+      sound.playClick();
+      state.s3.seqIndex = idx;
+      state.s3.typedText = "";
+      state.s3.lastErrorChar = null;
+      renderScreen();
+    }
+
+    function processS3TypedString(newVal) {
+      const st = GAME_CONFIG.stages[2];
+      const curSeq = st.sequences[state.s3.seqIndex];
+      const target = curSeq.text;
+
+      // Kiểm tra xem chuỗi mới có khớp phần đầu của target không (không phân biệt hoa thường)
+      if (target.toLowerCase().startsWith(newVal.toLowerCase())) {
+        state.s3.typedText = target.slice(0, newVal.length);
+        state.s3.lastErrorChar = null;
+        sound.playKeyTap();
+        state.feedbackType = "ok";
+        state.feedbackText = `Đúng rồi! Tiếp tục giữ tay ở hàng cơ sở nhé (${state.s3.typedText.length}/${target.length}).`;
+
+        // Nếu hoàn thành chuỗi hiện tại
+        if (state.s3.typedText.length === target.length) {
+          state.s3.completedSeqs[state.s3.seqIndex] = true;
+          sound.playCorrect();
+
+          const allDone = state.s3.completedSeqs.every(Boolean);
+          if (allDone && !state.stageCompleted[3]) {
+            completeStage(3, "Tuyệt vời! Em đã hoàn thành cả 4 chuỗi luyện gõ kết hợp hàng phím cơ sở và hàng phím số!");
+          } else {
+            // Chuyển sang chuỗi tiếp theo chưa xong
+            const nextIdx = state.s3.completedSeqs.findIndex(done => !done);
+            if (nextIdx !== -1) {
+              state.feedbackText = `Hoàn thành Chuỗi ${state.s3.seqIndex + 1}! Cùng tiếp tục với Chuỗi ${nextIdx + 1} nhé!`;
+              state.s3.seqIndex = nextIdx;
+              state.s3.typedText = "";
+            }
+          }
+        }
+      } else {
+        // Người chơi gõ sai kí tự tiếp theo
+        const expectedChar = target[state.s3.typedText.length];
+        const fInfo = getFingerInfoForChar(expectedChar);
+        state.s3.lastErrorChar = newVal.slice(-1);
+        sound.playWrong();
+        state.companionMood = "thinking";
+        state.feedbackType = "err";
+        state.feedbackText = `Em vừa gõ nhầm phím "${state.s3.lastErrorChar}". Kí tự cần gõ là "${expectedChar === ' ' ? 'Phím Cách' : expectedChar}" bằng ${fInfo ? fInfo.name : 'ngón tương ứng'}. Hãy thử lại nhé!`;
+      }
+
+      renderScreen();
+    }
+
+    function handleS3Input(e) {
+      const val = e.target.value;
+      processS3TypedString(val);
+    }
+
+    function handleS3VirtualKey(keyLabel) {
+      if (state.screen !== "stage3") return;
+      const charToAdd = keyLabel === "SPACE" ? " " : keyLabel.toLowerCase();
+      processS3TypedString(state.s3.typedText + charToAdd);
+    }
+
+    /**
+     * ============================================================================
+     * MÀN 4: LUYỆN GÕ ĐOẠN VĂN NHỎ CÓ SỐ (40-50 TỪ)
+     * ============================================================================
+     */
+    function renderStage4(container) {
+      const st = GAME_CONFIG.stages[3];
+      const passageObj = st.passages[state.s4.passageIndex];
+      const targetText = state.s4.useDiacritics ? passageObj.withDiacritics : passageObj.withoutDiacritics;
+      const typed = state.s4.typedText;
+      const nextChar = targetText[typed.length] || "";
+      const fingerGuide = getFingerInfoForChar(nextChar);
+
+      // Tính độ chính xác
+      const accuracy = state.s4.totalKeystrokes === 0
+        ? 100
+        : Math.max(0, Math.round(((state.s4.totalKeystrokes - state.s4.errorKeystrokes) / state.s4.totalKeystrokes) * 100));
+
+      let charsHtml = "";
+      for (let i = 0; i < targetText.length; i++) {
+        const ch = targetText[i];
+        let cls = "t-char";
+        if (i < typed.length) {
+          cls += typed[i] === ch ? " done" : " wrong";
+        } else if (i === typed.length) {
+          cls += " current";
+        }
+        charsHtml += `<span class="${cls}">${ch}</span>`;
+      }
+
+      container.innerHTML = `
+        ${renderCompanionAndHeader(st)}
+
+        <div class="stage-workspace">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span class="panel-title">Soạn thảo đoạn văn có chứa chữ và số</span>
+                <!-- Chuyển đổi đoạn văn -->
+                ${st.passages.map((p, idx) => `
+                  <button type="button" class="btn ${state.s4.passageIndex === idx ? 'btn-purple' : 'btn-soft'}"
+                    style="padding:4px 12px; min-height:36px; font-size:0.85rem;"
+                    onclick="selectS4Passage(${idx})">
+                    ${p.title}
+                  </button>
+                `).join("")}
+              </div>
+
+              <!-- Công tắc hỗ trợ bộ gõ tiếng Việt có dấu / không dấu -->
+              <div style="display:flex; gap:6px; align-items:center;">
+                <button type="button" class="btn ${!state.s4.useDiacritics ? 'btn-teal' : 'btn-soft'}"
+                  style="padding:4px 12px; min-height:38px; font-size:0.84rem;"
+                  onclick="toggleS4Diacritics(false)">
+                  ✓ Chế độ gõ không dấu (Mọi bàn phím)
+                </button>
+                <button type="button" class="btn ${state.s4.useDiacritics ? 'btn-teal' : 'btn-soft'}"
+                  style="padding:4px 12px; min-height:38px; font-size:0.84rem;"
+                  onclick="toggleS4Diacritics(true)">
+                  Chế độ gõ có dấu (Cần bật Unikey)
+                </button>
+              </div>
+            </div>
+
+            <!-- Khung văn bản mẫu -->
+            <div class="typing-display-box paragraph-mode" aria-live="polite">
+              ${charsHtml}
+            </div>
+
+            <!-- Ô nhập đoạn văn -->
+            <input type="text" id="s4TypingInput" class="real-typing-input"
+              value="${typed.replace(/"/g, '&quot;')}"
+              placeholder="Nháy chuột vào đây và gõ đoạn văn phía trên (chú ý các con số trên hàng phím số)..."
+              autocomplete="off" autocapitalize="off" spellcheck="false"
+              oninput="handleS4Input(event)" />
+
+            <!-- Hàng thống kê trực quan (Không đếm ngược gây áp lực) -->
+            <div class="stats-row" style="justify-content:space-between;">
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <div class="stat-badge">
+                  <span>📝 Kí tự hoàn thành:</span>
+                  <strong style="color:var(--purple-dark);">${typed.length}/${targetText.length}</strong>
+                </div>
+                <div class="stat-badge">
+                  <span>🎯 Độ chính xác:</span>
+                  <strong style="color:${accuracy >= st.minAccuracy ? 'var(--success)' : 'var(--error)'};">${accuracy}%</strong>
+                  <small style="color:var(--text-muted);">(Yêu cầu ≥ ${st.minAccuracy}%)</small>
+                </div>
+                <div class="stat-badge">
+                  <span>🖐️ Ngón tiếp theo:</span>
+                  <strong style="color:var(--orange-dark);">
+                    ${nextChar ? `${fingerGuide.name} (Phím "${nextChar === ' ' ? 'Cách' : nextChar.toUpperCase()}")` : "Đã hoàn thành đoạn văn!"}
+                  </strong>
+                </div>
+              </div>
+
+              <button type="button" class="btn btn-soft" style="padding:6px 14px; min-height:38px; font-size:0.86rem;" onclick="resetCurrentStage()">
+                ↻ Gõ lại đoạn này
+              </button>
+            </div>
+          </div>
+        </div>
+
+        ${renderStageFooter(4)}
+      `;
+
+      const inputEl = document.getElementById("s4TypingInput");
+      if (inputEl) {
+        inputEl.focus();
+        inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
+      }
+    }
+
+    function selectS4Passage(idx) {
+      sound.playClick();
+      state.s4.passageIndex = idx;
+      state.s4.typedText = "";
+      state.s4.totalKeystrokes = 0;
+      state.s4.errorKeystrokes = 0;
+      renderScreen();
+    }
+
+    function toggleS4Diacritics(useDia) {
+      sound.playClick();
+      state.s4.useDiacritics = useDia;
+      state.s4.typedText = "";
+      state.s4.totalKeystrokes = 0;
+      state.s4.errorKeystrokes = 0;
+      state.feedbackType = "hint";
+      state.feedbackText = useDia
+        ? "Đã bật Chế độ gõ có dấu tiếng Việt (hãy đảm bảo máy tính của em đang bật bộ gõ Unikey/Telex)."
+        : "Đã bật Chế độ gõ không dấu giúp em luyện gõ mượt mà trên mọi bàn phím.";
+      renderScreen();
+    }
+
+    function handleS4Input(e) {
+      const st = GAME_CONFIG.stages[3];
+      const passageObj = st.passages[state.s4.passageIndex];
+      const targetText = state.s4.useDiacritics ? passageObj.withDiacritics : passageObj.withoutDiacritics;
+      const newVal = e.target.value;
+
+      // Nếu người chơi đang gõ thêm kí tự mới
+      if (newVal.length > state.s4.typedText.length) {
+        const addedChar = newVal[newVal.length - 1];
+        const expectedChar = targetText[newVal.length - 1];
+        state.s4.totalKeystrokes++;
+
+        if (addedChar === expectedChar) {
+          sound.playKeyTap();
+          state.feedbackType = "ok";
+          state.feedbackText = "Gõ chính xác! Hãy duy trì nhịp độ đều đặn nhé.";
+        } else {
+          state.s4.errorKeystrokes++;
+          sound.playWrong();
+          const fGuide = getFingerInfoForChar(expectedChar);
+          state.feedbackType = "err";
+          state.feedbackText = `Có lỗi nhỏ ở kí tự "${expectedChar}". Em có thể nhấn Backspace để sửa hoặc tiếp tục gõ cẩn thận bằng ${fGuide ? fGuide.name : 'ngón tương ứng'} nhé!`;
+        }
+      }
+
+      state.s4.typedText = newVal.slice(0, targetText.length);
+
+      // Kiểm tra hoàn thành đoạn văn
+      if (state.s4.typedText.length === targetText.length) {
+        const accuracy = state.s4.totalKeystrokes === 0
+          ? 100
+          : Math.max(0, Math.round(((state.s4.totalKeystrokes - state.s4.errorKeystrokes) / state.s4.totalKeystrokes) * 100));
+
+        // Kiểm tra số kí tự khớp thực tế trên đoạn văn cuối cùng
+        let matchedChars = 0;
+        for (let i = 0; i < targetText.length; i++) {
+          if (state.s4.typedText[i] === targetText[i]) matchedChars++;
+        }
+        const finalTextAccuracy = Math.round((matchedChars / targetText.length) * 100);
+        const effectiveAccuracy = Math.max(accuracy, finalTextAccuracy);
+
+        if (effectiveAccuracy >= st.minAccuracy && finalTextAccuracy >= st.minAccuracy) {
+          if (!state.stageCompleted[4]) {
+            completeStage(4, `Chúc mừng em! Em đã hoàn thành đoạn văn với độ chính xác ${effectiveAccuracy}% (đạt yêu cầu ≥ ${st.minAccuracy}%)!`);
+          }
+        } else {
+          sound.playWrong();
+          state.feedbackType = "err";
+          state.feedbackText = `Em đã gõ hết đoạn văn nhưng độ chính xác hiện tại là ${finalTextAccuracy}% (cần đạt từ ${st.minAccuracy}% trở lên). Hãy nhấn "Gõ lại đoạn này" để thử lại nhé!`;
+        }
+      }
+
+      renderScreen();
+    }
+
+    /**
+     * ============================================================================
+     * MÀN HÌNH TỔNG KẾT & TRAO HUY HIỆU
+     * ============================================================================
+     */
+    function renderSummaryScreen(container) {
+      sound.playVictory();
+      launchConfetti();
+
+      container.innerHTML = `
+        <div class="summary-card">
+          <div style="display:flex; align-items:center; gap:16px; justify-content:center; flex-wrap:wrap;">
+            ${renderMaySVG("excited", 96)}
+            <div style="text-align:left;">
+              <span class="book-tag">🎉 Hoàn thành xuất sắc nhiệm vụ!</span>
+              <h2 style="font-size:2rem; color:var(--purple-dark); font-weight:900; margin-top:6px;">
+                BẢNG THÀNH TÍCH: ${state.score} / 100 ĐIỂM
+              </h2>
+              <p style="font-weight:700; color:var(--orange-dark);">
+                Phòng thí nghiệm Bàn Phím Sáng Tạo đã được thắp sáng rực rỡ nhờ đôi tay khéo léo của em!
+              </p>
+            </div>
+          </div>
+
+          <!-- 4 Huy hiệu đạt được -->
+          <div class="badges-showcase">
+            ${GAME_CONFIG.stages.map(st => {
+              const earned = state.stageCompleted[st.id];
+              return `
+                <div class="badge-item" style="opacity:${earned ? 1 : 0.5};">
+                  <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden="true">
+                    <circle cx="24" cy="24" r="20" fill="${earned ? '#FFD773' : '#E0E0E0'}" stroke="${earned ? '#FF9850' : '#9E9E9E'}" stroke-width="3"/>
+                    <path d="M24 11L27.5 18.2L35.5 19.3L29.7 24.9L31.1 32.9L24 29.1L16.9 32.9L18.3 24.9L12.5 19.3L20.5 18.2L24 11Z" fill="${earned ? '#FF9850' : '#9E9E9E'}"/>
+                  </svg>
+                  <strong style="color:var(--purple-dark); font-size:0.95rem;">${st.badgeName}</strong>
+                  <span style="font-size:0.82rem; font-weight:700; color:${earned ? 'var(--success)' : 'var(--text-muted)'};">
+                    ${earned ? '✓ Đã đạt (+25 điểm)' : 'Chưa mở khóa'}
+                  </span>
+                </div>
+              `;
+            }).join("")}
+          </div>
+
+          <!-- 3 Nhận xét & Ghi nhớ kiến thức trọng tâm Bài 2 -->
+          <div class="takeaways-box">
+            <h3 style="color:var(--teal-dark); font-size:1.08rem; margin-bottom:8px;">
+              📌 Tổng kết kiến thức Bài 2: Gõ bàn phím đúng cách
+            </h3>
+            <ul style="padding-left:20px; display:flex; flex-direction:column; gap:6px; font-weight:600; font-size:0.95rem;">
+              ${GAME_CONFIG.summaryTakeaways.map(item => `<li>${item}</li>`).join("")}
+            </ul>
+          </div>
+
+          <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:6px;">
+            <button type="button" class="btn btn-primary" style="font-size:1.05rem; padding:12px 26px;" onclick="restartWholeGame()">
+              🔄 Chơi lại từ đầu
+            </button>
+            <button type="button" class="btn btn-teal" style="font-size:1.02rem; padding:12px 22px;" onclick="goToStage(1)">
+              🔍 Xem lại các màn đã hoàn thành
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    /**
+     * ============================================================================
+     * ĐIỀU KHIỂN LUỒNG TRÒ CHƠI, TÍNH ĐIỂM & GỢI Ý
+     * ============================================================================
+     */
+    function setGameMode(mode) {
+      sound.playClick();
+      state.mode = mode;
+      renderScreen();
+    }
+
+    function startGame() {
+      sound.playClick();
+      sound.startBgm();
+      goToStage(1);
+    }
+
+    function goToStage(stageNum) {
+      sound.playClick();
+      state.currentStage = stageNum;
+      state.screen = `stage${stageNum}`;
+      const stObj = GAME_CONFIG.stages[stageNum - 1];
+      state.companionMood = "happy";
+      state.companionMessage = stObj.desc;
+      state.feedbackType = "";
+      state.feedbackText = "";
+      renderScreen();
+    }
+
+    function goNextFromStage(stageNum) {
+      sound.playClick();
+      if (stageNum < 4) {
+        goToStage(stageNum + 1);
+      } else {
+        state.screen = "summary";
+        renderScreen();
+      }
+    }
+
+    function goHome() {
+      sound.playClick();
+      state.screen = "welcome";
+      renderScreen();
+    }
+
+    function completeStage(stageNum, message) {
+      if (!state.stageCompleted[stageNum]) {
+        state.stageCompleted[stageNum] = true;
+        state.score += GAME_CONFIG.pointsPerStage;
+      }
+      sound.playStageComplete();
+      launchConfetti();
+      state.companionMood = "excited";
+      state.feedbackType = "ok";
+      state.feedbackText = message;
+    }
+
+    function triggerStageHint(stageNum) {
+      sound.playClick();
+      const stObj = GAME_CONFIG.stages[stageNum - 1];
+      if (!stObj || !stObj.hints) return;
+
+      const curStep = state.hintStep[stageNum] || 0;
+      const nextStep = curStep < stObj.hints.length ? curStep + 1 : 1;
+      state.hintStep[stageNum] = nextStep;
+
+      state.companionMood = "happy";
+      state.feedbackType = "hint";
+      state.feedbackText = stObj.hints[nextStep - 1];
+      renderScreen();
+    }
+
+    function resetCurrentStage() {
+      sound.playClick();
+      const st = state.currentStage;
+      state.feedbackType = "";
+      state.feedbackText = "Đã đặt lại trạng thái màn chơi. Em hãy thực hiện lại từ đầu nhé!";
+      state.companionMood = "happy";
+
+      if (st === 1) {
+        state.s1 = { rowSelected: null, bumpsFound: [], selectedBenefits: [], lastWrongBenefit: null };
+      } else if (st === 2) {
+        state.s2 = { activeNumberKey: "1", coloredKeys: {} };
+      } else if (st === 3) {
+        state.s3 = { seqIndex: 0, typedText: "", completedSeqs: [false, false, false, false], lastErrorChar: null };
+      } else if (st === 4) {
+        state.s4.typedText = "";
+        state.s4.totalKeystrokes = 0;
+        state.s4.errorKeystrokes = 0;
+      }
+      renderScreen();
+    }
+
+    function restartWholeGame() {
+      sound.playClick();
+      state.score = 0;
+      state.stageCompleted = { 1: false, 2: false, 3: false, 4: false };
+      state.hintStep = { 1: 0, 2: 0, 3: 0, 4: 0 };
+      state.s1 = { rowSelected: null, bumpsFound: [], selectedBenefits: [] };
+      state.s2 = { activeNumberKey: "1", coloredKeys: {} };
+      state.s3 = { seqIndex: 0, typedText: "", completedSeqs: [false, false, false, false], lastErrorChar: null };
+      state.s4 = { passageIndex: 0, useDiacritics: false, typedText: "", totalKeystrokes: 0, errorKeystrokes: 0 };
+      goToStage(1);
+    }
+
+    /**
+     * ============================================================================
+     * SỰ KIỆN BÀN PHÍM VẬT LÝ TOÀN CỤC (CHO MÀN 2)
+     * ============================================================================
+     */
+    window.addEventListener("keydown", (e) => {
+      if (state.screen === "stage2") {
+        // Nếu người chơi nhấn phím số 0-9 trên bàn phím thật ở Màn 2
+        if (/^[0-9]$/.test(e.key)) {
+          e.preventDefault();
+          handleS2KeySelect(e.key);
+        }
+      }
+    });
+
+    /**
+     * ============================================================================
+     * HIỆU ỨNG PHÁO GIẤY / NGÔI SAO (CONFETTI ~ 1.8 GIÂY)
+     * ============================================================================
+     */
+    let confettiAnimId = null;
+    function launchConfetti() {
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        return;
+      }
+      const canvas = document.getElementById("confettiCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ["#FF9850", "#40B8B3", "#8069C6", "#FFD773", "#FF7A90"];
+      const particles = Array.from({ length: 55 }, () => ({
+        x: canvas.width / 2 + (Math.random() - 0.5) * 260,
+        y: canvas.height * 0.35,
+        vx: (Math.random() - 0.5) * 9,
+        vy: -Math.random() * 8 - 3,
+        size: Math.random() * 7 + 5,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rot: Math.random() * Math.PI
+      }));
+
+      const startTime = performance.now();
+      if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+
+      function frame(now) {
+        const elapsed = now - startTime;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (elapsed > 1800) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          return;
+        }
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.25;
+          p.rot += 0.08;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+        });
+        confettiAnimId = requestAnimationFrame(frame);
+      }
+      confettiAnimId = requestAnimationFrame(frame);
+    }
+
+    /**
+     * ============================================================================
+     * KHỞI TẠO CÁC NÚT ÂM THANH & MODAL HƯỚNG DẪN
+     * ============================================================================
+     */
+    function openGuideModal() {
+      sound.playClick();
+      document.getElementById("guideModal").classList.add("open");
+    }
+
+    function closeGuideModal() {
+      sound.playClick();
+      document.getElementById("guideModal").classList.remove("open");
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      // Gán thông tin tiêu đề từ GAME_CONFIG
+      document.getElementById("uiHeaderTitle").textContent = GAME_CONFIG.gameTitle;
+
+      // Nút bật/tắt Nhạc nền
+      const btnBgm = document.getElementById("btnToggleBgm");
+      btnBgm.addEventListener("click", () => {
+        const isOn = sound.toggleBgm();
+        btnBgm.classList.toggle("on", isOn);
+        btnBgm.setAttribute("aria-pressed", String(isOn));
+        btnBgm.innerHTML = `<span>♫ Nhạc nền: ${isOn ? "BẬT" : "TẮT"}</span>`;
+      });
+
+      // Nút bật/tắt Hiệu ứng (SFX)
+      const btnSfx = document.getElementById("btnToggleSfx");
+      btnSfx.addEventListener("click", () => {
+        const isOn = sound.toggleSfx();
+        btnSfx.classList.toggle("on", isOn);
+        btnSfx.setAttribute("aria-pressed", String(isOn));
+        btnSfx.innerHTML = `<span>✦ Hiệu ứng: ${isOn ? "BẬT" : "TẮT"}</span>`;
+      });
+
+      // Modal Hướng dẫn
+      document.getElementById("btnCloseGuide").addEventListener("click", closeGuideModal);
+      document.getElementById("btnStartFromGuide").addEventListener("click", () => {
+        closeGuideModal();
+        startGame();
+      });
+
+      renderScreen();
+    });
+  </script>
+</body>
+</html>

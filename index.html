@@ -1,0 +1,2510 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cô Chúc Tin Học | 51 trò chơi tương tác Tin học 3–4–5</title>
+    <meta name="description" content="Thư viện 51 trò chơi tương tác môn Tin học lớp 3, 4, 5 – Kết nối tri thức với cuộc sống.">
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
+    <link rel="preload" as="image" href="assets/images/logo-co-chuc.webp">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Quicksand & Baloo 2 phù hợp học sinh tiểu học -->
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['"Baloo 2"', 'cursive', 'sans-serif'],
+                        body: ['"Quicksand"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            pink: '#FF5E8E',
+                            purple: '#7C4DFF',
+                            teal: '#00C4B4',
+                            yellow: '#FFB800',
+                            orange: '#FF7849',
+                            bg: '#F4F7FE'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #F4F7FE;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(255, 94, 142, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(124, 77, 255, 0.12) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 196, 180, 0.12) 0px, transparent 50%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .font-display {
+            font-family: 'Baloo 2', cursive;
+        }
+
+        /* Hiệu ứng nút 3D nổi bật cho học sinh */
+        .btn-3d-pink {
+            background: linear-gradient(135deg, #FF5E8E 0%, #FF3370 100%);
+            box-shadow: 0 6px 0 #C81D51, 0 10px 20px rgba(255, 94, 142, 0.35);
+            transition: all 0.15s ease;
+        }
+        .btn-3d-pink:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #C81D51, 0 14px 24px rgba(255, 94, 142, 0.45);
+        }
+        .btn-3d-pink:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #C81D51, 0 4px 10px rgba(255, 94, 142, 0.3);
+        }
+
+        .btn-3d-purple {
+            background: linear-gradient(135deg, #8E61FF 0%, #6A35FF 100%);
+            box-shadow: 0 6px 0 #4A18D1, 0 10px 20px rgba(124, 77, 255, 0.35);
+            transition: all 0.15s ease;
+        }
+        .btn-3d-purple:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #4A18D1, 0 14px 24px rgba(124, 77, 255, 0.45);
+        }
+        .btn-3d-purple:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #4A18D1;
+        }
+
+        .btn-3d-teal {
+            background: linear-gradient(135deg, #00D8C6 0%, #00A89A 100%);
+            box-shadow: 0 6px 0 #007A70, 0 10px 20px rgba(0, 196, 180, 0.35);
+            transition: all 0.15s ease;
+        }
+        .btn-3d-teal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #007A70, 0 14px 24px rgba(0, 196, 180, 0.45);
+        }
+        .btn-3d-teal:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #007A70;
+        }
+
+        .btn-3d-yellow {
+            background: linear-gradient(135deg, #FFCC33 0%, #FFA800 100%);
+            box-shadow: 0 6px 0 #CC7A00, 0 10px 20px rgba(255, 184, 0, 0.35);
+            transition: all 0.15s ease;
+        }
+        .btn-3d-yellow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #CC7A00, 0 14px 24px rgba(255, 184, 0, 0.45);
+        }
+        .btn-3d-yellow:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #CC7A00;
+        }
+
+        /* Hiệu ứng thẻ bài học */
+        .game-card {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 3px solid transparent;
+        }
+        .game-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 30px -10px rgba(124, 77, 255, 0.2);
+        }
+        .game-card.grade-3:hover { border-color: #FF5E8E; }
+        .game-card.grade-4:hover { border-color: #7C4DFF; }
+        .game-card.grade-5:hover { border-color: #00C4B4; }
+
+        /* Animation lơ lửng cho icon */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-6px) rotate(4deg); }
+        }
+        .animate-float {
+            animation: floatSlow 3.5s ease-in-out infinite;
+        }
+
+        .brand-image { image-rendering: auto; }
+        button:focus-visible, a:focus-visible { outline: 3px solid #7C4DFF; outline-offset: 3px; }
+        @media (prefers-reduced-motion: reduce) {
+            .game-card:hover, .animate-float { transform: none !important; animation: none !important; }
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #EEF2FF;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C4B5FD;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8B5CF6;
+        }
+
+        /* Hiệu ứng chọn ngẫu nhiên */
+        .highlight-spin {
+            outline: 5px solid #FFB800 !important;
+            transform: scale(1.05) !important;
+            box-shadow: 0 0 35px rgba(255, 184, 0, 0.8) !important;
+            z-index: 20;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-slate-800 selection:bg-pink-500 selection:text-white">
+
+    <!-- Canvas bắn pháo hoa chúc mừng -->
+    <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+    <!-- HEADER THƯƠNG HIỆU -->
+    <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b-4 border-indigo-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Logo chính thức: chỉ xuất hiện một lần trên trang chủ -->
+            <a href="#" onclick="resetAllFilters(); return false;" class="flex items-center gap-3 sm:gap-4 group min-w-0" aria-label="Cô Chúc Tin Học - trở về trang chủ">
+                <img src="assets/images/logo-co-chuc.webp" alt="Logo Cô Chúc Tin Học" width="156" height="126" class="w-24 sm:w-36 h-auto object-contain shrink-0 drop-shadow-sm group-hover:scale-[1.02] transition-transform" decoding="async">
+                <div class="min-w-0">
+                    <div class="font-display font-extrabold text-xl sm:text-2xl text-indigo-800 leading-tight">Thư viện Tin học vui</div>
+                    <p class="text-xs sm:text-sm font-semibold text-slate-500 mt-0.5">51 trò chơi tương tác • Lớp 3, 4, 5</p>
+                    <p class="hidden md:block text-xs font-bold text-purple-600 mt-0.5">cochuctinhoc.io.vn</p>
+                </div>
+            </a>
+
+            <!-- Cụm Tiến Độ Sao & Nút Âm Thanh -->
+            <div class="flex items-center gap-2.5 sm:gap-3">
+<!-- Thống kê hoàn thành -->
+                <div class="flex items-center gap-2.5 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 px-3.5 py-1.5 rounded-2xl shadow-sm" title="Số trò chơi bài học em đã chinh phục">
+                    <div class="text-2xl animate-bounce">⭐</div>
+                    <div>
+                        <div class="text-[11px] font-bold uppercase tracking-wider text-amber-700">Đã chinh phục</div>
+                        <div class="font-display font-extrabold text-lg leading-none text-amber-900">
+                            <span id="completed-count">0</span> / <span id="total-count">51</span> <span class="text-xs font-semibold">bài</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nút đặt lại tiến độ -->
+                <button onclick="openResetModal()" class="p-2.5 rounded-2xl bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-600 border-2 border-slate-200 transition-colors" title="Đặt lại bảng sao">
+                    <i class="fa-solid fa-rotate-right text-lg"></i>
+                </button>
+
+                <!-- Nút bật/tắt âm thanh -->
+                <button id="sound-toggle-btn" onclick="toggleSound()" class="flex items-center gap-2 px-4 py-2.5 rounded-2xl font-bold text-sm bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-2 border-indigo-200 transition-all">
+                    <i id="sound-icon" class="fa-solid fa-volume-high text-lg text-indigo-600"></i>
+                    <span id="sound-text" class="hidden md:inline">Âm thanh: BẬT</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO BANNER RỰC RỠ -->
+    <section class="relative overflow-hidden py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="relative rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-6 sm:p-8 lg:p-10 text-white shadow-xl overflow-hidden">
+                <!-- Họa tiết trang trí nền -->
+                <div class="absolute -top-12 -right-12 w-56 h-56 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+                <div class="absolute -bottom-16 left-1/3 w-72 h-72 bg-teal-300/20 rounded-full blur-2xl pointer-events-none"></div>
+
+                <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <div class="lg:col-span-8 space-y-3.5 text-center lg:text-left">
+                        <div class="inline-flex flex-wrap items-center justify-center lg:justify-start gap-2 px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-sm text-xs sm:text-sm font-bold">
+                            <span>🎮 Học mà chơi - Chơi mà học</span>
+                            <span>•</span>
+                            <span>51 Trò Chơi Tương Tác</span>
+                            <span>•</span>
+                            <span>Khối 3, 4, 5</span>
+                        </div>
+                        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-extrabold leading-tight drop-shadow-sm">
+                            Khám Phá Thế Giới Tin Học Cùng Cô Chúc! 🚀
+                        </h1>
+                        <p class="text-white/95 text-sm sm:text-base max-w-2xl mx-auto lg:mx-0 font-medium">
+                            Chào mừng các em học sinh đến với cổng trò chơi học tập trực tuyến <strong>cochuctinhoc.io.vn</strong>. Hãy chọn khối lớp, vượt qua thử thách trong 51 bài học và tỏa sáng trở thành Kiện Tướng Tin Học nhé!
+                        </p>
+
+                        <!-- Thanh tiến độ tổng thể -->
+                        <div class="pt-1 max-w-2xl mx-auto lg:mx-0">
+                            <div class="flex justify-between text-xs font-bold mb-1.5">
+                                <span id="rank-badge-title">🌱 Tân Binh Nhí (Hãy chinh phục ngôi sao đầu tiên!)</span>
+                                <span id="progress-percent">0% Hoàn thành</span>
+                            </div>
+                            <div class="w-full h-4 bg-black/25 rounded-full overflow-hidden p-0.5 backdrop-blur-sm">
+                                <div id="progress-bar-fill" class="h-full bg-gradient-to-r from-amber-300 via-yellow-400 to-emerald-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cột Phải: Vòng quay chọn bài ngẫu nhiên -->
+                    <div class="lg:col-span-4 flex flex-col items-center justify-center bg-white/15 backdrop-blur-md rounded-2xl p-5 border border-white/25 text-center">
+                        <div class="text-4xl sm:text-5xl mb-2 animate-float">🎲</div>
+                        <h2 class="text-lg sm:text-xl font-bold mb-1">Khởi Động Tiết Học Sôi Nổi!</h2>
+                        <p class="text-xs text-white/85 mb-4">Bấm nút để bốc thăm ngẫu nhiên 1 trò chơi bài học trong khối lớp đang chọn!</p>
+                        <button onclick="pickRandomGame()" class="btn-3d-yellow w-full py-3 px-5 rounded-2xl font-display font-extrabold text-slate-900 text-base sm:text-lg flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Bốc Thăm Trò Chơi!</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BỘ LỌC KHỐI LỚP, CHỦ ĐỀ & TÌM KIẾM -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 space-y-4">
+        
+        <!-- Hàng 1: Chọn Khối Lớp (Tab lớn nổi bật) -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+            <button onclick="selectGrade('all')" id="tab-grade-all" class="grade-tab active flex items-center justify-center gap-3 p-3.5 sm:p-4 rounded-2xl font-display font-extrabold text-base sm:text-lg bg-slate-800 text-white shadow-lg transition-all">
+                <span class="text-2xl">🌈</span>
+                <div class="text-left">
+                    <div class="leading-tight">Tất Cả</div>
+                    <div class="text-xs font-body font-bold opacity-80">51 trò chơi</div>
+                </div>
+            </button>
+
+            <button onclick="selectGrade(3)" id="tab-grade-3" class="grade-tab flex items-center justify-center gap-3 p-3.5 sm:p-4 rounded-2xl font-display font-extrabold text-base sm:text-lg bg-white hover:bg-pink-50 text-pink-600 border-2 border-pink-200 shadow-sm transition-all">
+                <span class="text-2xl">🐣</span>
+                <div class="text-left">
+                    <div class="leading-tight">Tin Học Lớp 3</div>
+                    <div class="text-xs font-body font-bold text-slate-500">16 bài học</div>
+                </div>
+            </button>
+
+            <button onclick="selectGrade(4)" id="tab-grade-4" class="grade-tab flex items-center justify-center gap-3 p-3.5 sm:p-4 rounded-2xl font-display font-extrabold text-base sm:text-lg bg-white hover:bg-purple-50 text-purple-600 border-2 border-purple-200 shadow-sm transition-all">
+                <span class="text-2xl">🦊</span>
+                <div class="text-left">
+                    <div class="leading-tight">Tin Học Lớp 4</div>
+                    <div class="text-xs font-body font-bold text-slate-500">17 bài học</div>
+                </div>
+            </button>
+
+            <button onclick="selectGrade(5)" id="tab-grade-5" class="grade-tab flex items-center justify-center gap-3 p-3.5 sm:p-4 rounded-2xl font-display font-extrabold text-base sm:text-lg bg-white hover:bg-teal-50 text-teal-600 border-2 border-teal-200 shadow-sm transition-all">
+                <span class="text-2xl">🦁</span>
+                <div class="text-left">
+                    <div class="leading-tight">Tin Học Lớp 5</div>
+                    <div class="text-xs font-body font-bold text-slate-500">18 bài học</div>
+                </div>
+            </button>
+        </div>
+
+        <!-- Hàng 2: Thanh tìm kiếm + Lọc Chủ đề + Lọc Trạng thái -->
+        <div class="bg-white p-4 rounded-3xl shadow-sm border-2 border-indigo-50 flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
+            
+            <!-- Ô tìm kiếm -->
+            <div class="relative flex-1">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    oninput="handleSearch(this.value)"
+                    placeholder="Tìm nhanh theo số bài (VD: Bài 1, 12A, 8B...) hoặc tên chủ đề, nội dung..." 
+                    class="w-full pl-11 pr-10 py-3 rounded-2xl bg-slate-50 border-2 border-slate-200 focus:border-purple-500 focus:bg-white focus:outline-none font-semibold text-sm sm:text-base transition-all"
+                >
+                <button id="clear-search-btn" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500 p-1">
+                    <i class="fa-solid fa-circle-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Bộ lọc Chủ đề chương trình Tin học -->
+            <div class="flex flex-wrap sm:flex-nowrap gap-2.5">
+                <select id="topic-select" onchange="handleTopicChange(this.value)" class="flex-1 sm:w-64 px-4 py-3 rounded-2xl bg-indigo-50/70 border-2 border-indigo-100 font-bold text-sm text-indigo-900 focus:outline-none focus:border-indigo-400 cursor-pointer">
+                    <option value="all">📚 Tất cả 6 Chủ đề (A - F)</option>
+                    <option value="A">💻 Chủ đề A: Máy tính và em</option>
+                    <option value="B">🌐 Chủ đề B: Mạng máy tính & Internet</option>
+                    <option value="C">📂 Chủ đề C: Tổ chức, lưu trữ & tìm kiếm</option>
+                    <option value="D">🛡️ Chủ đề D: Đạo đức & văn hóa số</option>
+                    <option value="E">🎨 Chủ đề E: Ứng dụng tin học</option>
+                    <option value="F">🧩 Chủ đề F: Giải quyết vấn đề & Lập trình</option>
+                </select>
+
+                <select id="status-select" onchange="handleStatusChange(this.value)" class="w-full sm:w-48 px-4 py-3 rounded-2xl bg-amber-50/70 border-2 border-amber-200 font-bold text-sm text-amber-900 focus:outline-none focus:border-amber-400 cursor-pointer">
+                    <option value="all">🎯 Mọi trạng thái</option>
+                    <option value="completed">⭐ Đã hoàn thành</option>
+                    <option value="uncompleted">🚀 Chưa hoàn thành</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- DANH SÁCH THẺ TRÒ CHƠI (MAIN CONTENT) -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        
+        <!-- Thanh thông tin kết quả đang hiển thị -->
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-5">
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-purple-500 animate-ping"></span>
+                <h2 id="current-view-title" class="text-xl sm:text-2xl font-bold text-slate-800">
+                    Tất cả trò chơi bài học (51)
+                </h2>
+            </div>
+            <div class="text-xs sm:text-sm font-bold text-slate-500 bg-white px-3.5 py-1.5 rounded-full border border-slate-200 shadow-sm">
+                💡 Mẹo: Bấm <span class="text-purple-600">"Chơi Ngay"</span> để mở bài học hoặc bấm biểu tượng ⭐ để đánh dấu hoàn thành!
+            </div>
+        </div>
+
+        <!-- Grid chứa các thẻ bài học -->
+        <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <!-- Render bằng JavaScript -->
+        </div>
+
+        <!-- Trạng thái không tìm thấy bài học -->
+        <div id="empty-state" class="hidden bg-white rounded-3xl p-12 text-center border-2 border-dashed border-slate-300 max-w-lg mx-auto my-8">
+            <div class="text-6xl mb-4">🔍</div>
+            <h3 class="text-2xl font-bold text-slate-800 mb-2">Không tìm thấy trò chơi nào!</h3>
+            <p class="text-slate-500 mb-6 font-medium">Em hãy thử tìm với từ khóa khác hoặc bấm nút bên dưới để xem toàn bộ 51 trò chơi nhé.</p>
+            <button onclick="resetAllFilters()" class="btn-3d-purple text-white font-display font-bold px-6 py-3 rounded-2xl">
+                Xem Tất Cả 51 Trò Chơi
+            </button>
+        </div>
+
+    </main>
+
+    <!-- FOOTER THÔNG TIN TÁC GIẢ & ĐƠN VỊ CÔNG TÁC TRANG TRỌNG -->
+    <footer class="bg-white border-t border-indigo-100 py-7 px-4 sm:px-6 lg:px-8 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-start justify-between gap-4 text-center md:text-left">
+            <div>
+                <p class="font-display font-extrabold text-base sm:text-lg text-indigo-800">Cô Chúc Tin Học</p>
+                <p class="text-xs sm:text-sm text-slate-500 font-semibold">Thư viện 51 trò chơi tương tác Tin học 3, 4, 5</p>
+            </div>
+            <div class="text-xs sm:text-sm text-slate-500 font-semibold flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+                <span>Tác giả: <strong class="text-slate-700">Đào Thị Chúc</strong></span>
+                <button onclick="openAuthorModal()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold transition-colors" aria-label="Xem hồ sơ tác giả Đào Thị Chúc">
+                    <i class="fa-solid fa-id-card"></i> Hồ sơ tác giả
+                </button>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto mt-4 border-t border-slate-100 pt-3 text-xs text-slate-400 text-center md:text-left">© 2026 cochuctinhoc.io.vn</div>
+    </footer>
+
+    <!-- MODAL THÔNG TIN TÁC GIẢ & LIÊN HỆ (AUTHOR PROFILE MODAL) -->
+    <div id="author-modal" class="fixed inset-0 z-50 hidden bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] overflow-y-auto shadow-2xl border-4 border-purple-200 animate-fade-in">
+            <!-- Header Modal Tác Giả -->
+            <div class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 p-6 text-white text-center relative">
+                <button onclick="closeAuthorModal()" class="absolute top-4 right-4 w-9 h-9 rounded-xl bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+                <img src="assets/images/dao-thi-chuc.webp" alt="Ảnh hồ sơ Cô giáo Đào Thị Chúc" width="112" height="112" class="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded-3xl mx-auto mb-3 shadow-lg border-4 border-amber-300" loading="lazy" decoding="async">
+                <span class="px-3 py-0.5 rounded-full bg-amber-300 text-slate-900 font-extrabold text-xs uppercase tracking-wider">
+                    Tác Giả Cổng Trò Chơi Học Tập
+                </span>
+                <h3 class="font-display font-extrabold text-2xl sm:text-3xl mt-2">
+                    Cô giáo Đào Thị Chúc
+                </h3>
+                <p class="text-white/90 text-xs sm:text-sm font-semibold">
+                    Giáo viên Tin học • Trường PTDTBT Tiểu học Tủa Chùa
+                </p>
+            </div>
+
+            <!-- Nội dung chi tiết -->
+            <div class="p-6 space-y-4 text-sm sm:text-base">
+                <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3">
+                    <div class="flex items-start gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="fa-solid fa-school"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-400 uppercase">Đơn vị công tác</div>
+                            <div class="font-bold text-slate-800">Trường PTDTBT Tiểu học Tủa Chùa</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-400 uppercase">Địa chỉ nhà trường</div>
+                            <div class="font-bold text-slate-800">Thôn Thắng Lợi, xã Tủa Chùa, tỉnh Điện Biên</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-400 uppercase">Hộp thư điện tử (Email)</div>
+                            <div class="font-bold text-indigo-600 break-all">chucdao.thmb.tc@dienbien.edu.vn</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="fa-solid fa-globe"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-400 uppercase">Website học liệu</div>
+                            <div class="font-bold text-slate-800">cochuctinhoc.io.vn (51 Trò chơi Tin học Khối 3, 4, 5)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="copy-toast-modal" class="hidden p-3 rounded-xl bg-emerald-100 text-emerald-800 font-bold text-xs sm:text-sm text-center border border-emerald-300">
+                    🎉 Đã sao chép địa chỉ email: chucdao.thmb.tc@dienbien.edu.vn
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <button onclick="copyAuthorEmail()" class="btn-3d-pink flex-1 py-3 px-4 rounded-2xl text-white font-display font-bold text-sm sm:text-base flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>Sao chép Email Cô Chúc</span>
+                    </button>
+                    <button onclick="closeAuthorModal()" class="py-3 px-5 rounded-2xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-700 text-sm sm:text-base">
+                        Đóng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         MODAL TRÌNH PHÁT TRÒ CHƠI (GAME PLAYER)
+         ========================================== -->
+    <div id="game-modal" class="fixed inset-0 z-40 hidden bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
+        <div id="game-modal-container" class="bg-white w-full max-w-6xl h-[92vh] rounded-3xl shadow-2xl border-4 border-purple-300 flex flex-col overflow-hidden transition-all">
+            
+            <!-- Thanh điều khiển trên cùng của Modal -->
+            <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-purple-950 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                    <img id="modal-game-thumbnail" src="" alt="Ảnh đại diện bài học" class="w-20 sm:w-28 aspect-video rounded-xl object-cover border-2 border-white/20 shadow-lg shrink-0" width="128" height="72" />
+                    <span id="modal-game-icon" class="text-2xl sm:text-3xl bg-white/10 p-2 rounded-xl hidden">🎮</span>
+                    <div class="truncate">
+                        <div class="flex items-center gap-2">
+                            <span id="modal-grade-badge" class="px-2.5 py-0.5 text-xs font-extrabold rounded-full bg-pink-500 text-white">Lớp 3</span>
+                            <span id="modal-lesson-code" class="text-xs font-bold text-amber-300 uppercase">Bài 1</span>
+                        </div>
+                        <h3 id="modal-game-title" class="font-display font-bold text-base sm:text-xl truncate">Tên bài học</h3>
+                    </div>
+                </div>
+
+                <!-- Các nút chức năng trong trình phát -->
+                <div class="flex items-center flex-wrap gap-2">
+                    <!-- Chuyển chế độ File HTML Gốc / Mini-Game Ôn Tập -->
+                    <div class="bg-white/10 p-1 rounded-xl flex items-center text-xs font-bold">
+                        <button id="mode-iframe-btn" onclick="switchModalMode('iframe')" class="px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-code text-purple-600"></i>
+                            <span>Trò Chơi Bài Học</span>
+                        </button>
+                        <button id="mode-quiz-btn" onclick="switchModalMode('quiz')" class="px-3 py-1.5 rounded-lg text-white/80 hover:text-white transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-bolt text-amber-400"></i>
+                            <span>Trắc Nghiệm Nhanh</span>
+                        </button>
+                    </div>
+
+                    <!-- Mở sang Tab mới trực tiếp tới file trong thư mục -->
+                    <a id="modal-external-link" href="#" target="_blank" onclick="playClickSound()" class="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors" title="Mở file HTML gốc trong tab mới">
+                        <i class="fa-solid fa-up-right-from-square"></i>
+                        <span class="hidden md:inline">Mở Tab Mới</span>
+                    </a>
+
+                    <!-- Nút Toàn màn hình -->
+                    <button onclick="toggleFullScreenModal()" class="p-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-sm font-bold transition-colors" title="Phóng to toàn màn hình">
+                        <i id="fullscreen-icon" class="fa-solid fa-expand"></i>
+                    </button>
+
+                    <!-- Nút Đánh dấu hoàn thành -->
+                    <button id="modal-complete-btn" onclick="toggleCurrentGameComplete()" class="px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition-all shadow">
+                        <i class="fa-solid fa-star"></i>
+                        <span id="modal-complete-text">Nhận Sao Hoàn Thành</span>
+                    </button>
+
+                    <!-- Đóng Modal -->
+                    <button onclick="closeGameModal()" class="p-2 px-3 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold transition-colors" title="Đóng cửa sổ">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Vùng nội dung chính của Modal -->
+            <div class="relative flex-1 bg-slate-100 overflow-hidden flex flex-col">
+                
+                <!-- CHẾ ĐỘ 1: IFRAME LOAD FILE TRÒ CHƠI TRONG THƯ MỤC -->
+                <div id="modal-iframe-wrapper" class="w-full h-full flex flex-col relative">
+                    <!-- Thanh hiển thị đường dẫn file giúp giáo viên/học sinh dễ kiểm tra -->
+                    <div class="bg-slate-200/80 px-4 py-1.5 text-xs font-semibold text-slate-600 flex items-center justify-between border-b border-slate-300">
+                        <div class="flex items-center gap-2 truncate">
+                            <i class="fa-regular fa-folder-open text-indigo-600"></i>
+                            <span>Đường dẫn file: <code id="modal-filepath-display" class="bg-white px-2 py-0.5 rounded border border-slate-300 text-pink-600 font-mono">Tin học 3/Tin học 3 - Bài 1.html</code></span>
+                        </div>
+                        <button onclick="reloadIframe()" class="text-indigo-600 hover:underline flex items-center gap-1 shrink-0">
+                            <i class="fa-solid fa-rotate"></i> Tải lại trò chơi
+                        </button>
+                    </div>
+
+                    <iframe id="game-iframe" src="about:blank" class="w-full flex-1 border-0 bg-white"></iframe>
+                </div>
+
+                <!-- CHẾ ĐỘ 2: MINI-GAME TRẮC NGHIỆM TƯƠNG TÁC NHANH NGAY TRÊN TRANG -->
+                <div id="modal-quiz-wrapper" class="hidden w-full h-full overflow-y-auto p-4 sm:p-8 flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+                    <div class="max-w-2xl w-full bg-white rounded-3xl shadow-xl border-4 border-purple-200 p-6 sm:p-8 text-center space-y-6">
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-100 text-purple-700 font-bold text-sm">
+                            <span>⚡ Thử Thách Khởi Động Nhanh</span>
+                        </div>
+
+                        <div id="quiz-question-box" class="space-y-5">
+                            <div class="text-5xl animate-bounce" id="quiz-emoji">🤖</div>
+                            <h4 id="quiz-question-text" class="font-display font-bold text-xl sm:text-2xl text-slate-800">
+                                Câu hỏi ôn tập bài học...
+                            </h4>
+                            <div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                                <!-- Các đáp án render bằng JS -->
+                            </div>
+                            <div id="quiz-feedback" class="hidden p-4 rounded-2xl font-bold text-sm sm:text-base"></div>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                            <button onclick="loadNewQuizQuestion()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-shuffle"></i> Câu hỏi khác
+                            </button>
+                            <a id="quiz-open-file-btn" href="#" target="_blank" class="btn-3d-pink text-white px-5 py-2.5 rounded-xl font-display font-bold text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-play"></i> Mở File Trò Chơi Gốc (.html)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL XÁC NHẬN ĐẶT LẠI TIẾN ĐỘ SAO -->
+    <div id="reset-modal" class="fixed inset-0 z-50 hidden bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 text-center shadow-2xl border-4 border-rose-200 space-y-4">
+            <div class="w-16 h-16 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-3xl mx-auto">
+                ⚠️
+            </div>
+            <h3 class="font-display font-extrabold text-2xl text-slate-800">Đặt lại bảng sao?</h3>
+            <p class="text-slate-600 text-sm sm:text-base font-medium">
+                Toàn bộ số ngôi sao đánh dấu bài học đã hoàn thành sẽ về 0 để em bắt đầu chinh phục lại từ đầu.
+            </p>
+            <div class="flex items-center justify-center gap-3 pt-2">
+                <button onclick="closeResetModal()" class="flex-1 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 font-bold text-slate-700">
+                    Hủy bỏ
+                </button>
+                <button onclick="confirmResetProgress()" class="flex-1 py-3 rounded-2xl bg-rose-500 hover:bg-rose-600 font-bold text-white shadow-lg">
+                    Đồng ý đặt lại
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         JAVASCRIPT HỆ THỐNG DỮ LIỆU & TƯƠNG TÁC
+         ========================================== -->
+    <script>
+        /**
+         * 1. DANH SÁCH ĐẦY ĐỦ 51 TRÒ CHƠI TƯƠNG ỨNG VỚI CẤU TRÚC FILE TRONG GÓI ZIP:
+         * - Tin học 3/ (16 bài: Bài 1 -> Bài 16)
+         * - Tin học 4/ (17 bài: Bài 1 -> Bài 11, Bài 12A, Bài 12B, Bài 13 -> Bài 16)
+         * - Tin học 5/ (18 bài: Bài 1 -> Bài 7, Bài 8A, Bài 8B, Bài 9A, Bài 9B, Bài 10 -> Bài 16)
+         */
+        const GAMES_DATA = [
+    {
+        "id": "g3-b1",
+        "grade": 3,
+        "code": "Bài 1",
+        "title": "Thông tin và quyết định",
+        "topic": "A",
+        "topicName": "Chủ đề A: Máy tính và em",
+        "icon": "💡",
+        "filePath": "Tin học 3/Tin học 3 - Bài 1.html",
+        "desc": "Nhận biết thông tin quanh em và đưa ra quyết định đúng đắn trong cuộc sống.",
+        "quiz": {
+            "q": "Khi nhìn thấy đèn giao thông chuyển sang màu đỏ, em quyết định dừng lại. Đèn màu đỏ là gì?",
+            "options": [
+                "Là thông tin dạng hình ảnh/ánh sáng",
+                "Là quyết định của em",
+                "Là phần mềm máy tính",
+                "Là bàn phím máy tính"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 1.webp"
+    },
+    {
+        "id": "g3-b2",
+        "grade": 3,
+        "code": "Bài 2",
+        "title": "Xử lí thông tin",
+        "topic": "A",
+        "topicName": "Chủ đề A: Máy tính và em",
+        "icon": "🧠",
+        "filePath": "Tin học 3/Tin học 3 - Bài 2.html",
+        "desc": "Khám phá 3 dạng thông tin phổ biến: chữ, hình ảnh, âm thanh và bộ phận xử lí thông tin.",
+        "quiz": {
+            "q": "Con người sử dụng bộ phận nào để suy nghĩ và xử lí thông tin?",
+            "options": [
+                "Bộ não",
+                "Đôi bàn tay",
+                "Đôi mắt",
+                "Đôi tai"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 2.webp"
+    },
+    {
+        "id": "g3-b3",
+        "grade": 3,
+        "code": "Bài 3",
+        "title": "Máy tính và em",
+        "topic": "A",
+        "topicName": "Chủ đề A: Máy tính và em",
+        "icon": "🖥️",
+        "filePath": "Tin học 3/Tin học 3 - Bài 3.html",
+        "desc": "Nhận biết các bộ phận máy tính và chức năng của màn hình, thân máy, bàn phím, chuột.",
+        "quiz": {
+            "q": "Một bộ máy tính để bàn thông thường gồm mấy bộ phận cơ bản?",
+            "options": [
+                "4 bộ phận (Thân máy, Màn hình, Bàn phím, Chuột)",
+                "2 bộ phận",
+                "6 bộ phận",
+                "Chỉ cần màn hình"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 3.webp"
+    },
+    {
+        "id": "g3-b4",
+        "grade": 3,
+        "code": "Bài 4",
+        "title": "Làm việc với máy tính",
+        "topic": "A",
+        "topicName": "Chủ đề A: Máy tính và em",
+        "icon": "🖱️",
+        "filePath": "Tin học 3/Tin học 3 - Bài 4.html",
+        "desc": "Rèn luyện thao tác cầm chuột, nháy chuột, kéo thả chuột và ngồi đúng tư thế an toàn.",
+        "quiz": {
+            "q": "Khoảng cách hợp lí từ mắt em đến màn hình máy tính là bao nhiêu?",
+            "options": [
+                "Từ 50 cm đến 80 cm",
+                "Sát màn hình 10 cm",
+                "Cách xa 3 mét",
+                "Nhắm mắt khi dùng máy"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 4.webp"
+    },
+    {
+        "id": "g3-b5",
+        "grade": 3,
+        "code": "Bài 5",
+        "title": "Sử dụng bàn phím",
+        "topic": "A",
+        "topicName": "Chủ đề A: Máy tính và em",
+        "icon": "⌨️",
+        "filePath": "Tin học 3/Tin học 3 - Bài 5.html",
+        "desc": "Tìm hiểu hàng phím cơ sở, hai phím có gai F - J và cách đặt tay gõ phím chuẩn.",
+        "quiz": {
+            "q": "Trên hàng phím cơ sở, hai phím nào có gai nổi lên để đặt hai ngón trỏ?",
+            "options": [
+                "Phím F và phím J",
+                "Phím A và phím S",
+                "Phím G và phím H",
+                "Phím Q và phím P"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 5.webp"
+    },
+    {
+        "id": "g3-b6",
+        "grade": 3,
+        "code": "Bài 6",
+        "title": "Khám phá thông tin trên Internet",
+        "topic": "B",
+        "topicName": "Chủ đề B: Mạng máy tính và Internet",
+        "icon": "🌐",
+        "filePath": "Tin học 3/Tin học 3 - Bài 6.html",
+        "desc": "Sử dụng trình duyệt web để xem tin tức, giải trí, học tập bổ ích trên Internet.",
+        "quiz": {
+            "q": "Để truy cập và xem các trang web trên Internet, em cần mở phần mềm gì?",
+            "options": [
+                "Trình duyệt web (Chrome, Edge, Cốc Cốc...)",
+                "Phần mềm vẽ Paint",
+                "Máy tính bỏ túi",
+                "Thùng rác Recycle Bin"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 6.webp"
+    },
+    {
+        "id": "g3-b7",
+        "grade": 3,
+        "code": "Bài 7",
+        "title": "Sắp xếp để dễ tìm",
+        "topic": "C",
+        "topicName": "Chủ đề C: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+        "icon": "🗂️",
+        "filePath": "Tin học 3/Tin học 3 - Bài 7.html",
+        "desc": "Hiểu lợi ích của việc phân loại, sắp xếp đồ vật và thông tin một cách khoa học.",
+        "quiz": {
+            "q": "Việc sắp xếp sách vở và đồ dùng học tập gọn gàng theo từng ngăn giúp ích gì cho em?",
+            "options": [
+                "Tìm kiếm đồ vật nhanh chóng và dễ dàng hơn",
+                "Làm mất nhiều thời gian tìm hơn",
+                "Không có tác dụng gì",
+                "Làm cặp sách nặng hơn"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 7.webp"
+    },
+    {
+        "id": "g3-b8",
+        "grade": 3,
+        "code": "Bài 8",
+        "title": "Sơ đồ hình cây. Tổ chức thông tin trong máy tính",
+        "topic": "C",
+        "topicName": "Chủ đề C: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+        "icon": "📁",
+        "filePath": "Tin học 3/Tin học 3 - Bài 8.html",
+        "desc": "Tạo sơ đồ hình cây và nhận biết cách tổ chức thông tin, tệp, thư mục trong máy tính.",
+        "quiz": {
+            "q": "Sơ đồ hình cây giúp em thể hiện điều gì?",
+            "options": [
+                "Quan hệ phân cấp giữa các nhóm thông tin",
+                "Mật khẩu tài khoản",
+                "Tốc độ gõ bàn phím",
+                "Âm lượng loa"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 8.webp"
+    },
+    {
+        "id": "g3-b9",
+        "grade": 3,
+        "code": "Bài 9",
+        "title": "Thực hành với tệp và thư mục trong máy tính",
+        "topic": "C",
+        "topicName": "Chủ đề C: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+        "icon": "🔒",
+        "filePath": "Tin học 3/Tin học 3 - Bài 9.html",
+        "desc": "Thực hành nhận biết và thao tác với tệp, thư mục trong máy tính.",
+        "quiz": {
+            "q": "Khi muốn mở một thư mục trên máy tính, em thường thực hiện thao tác nào?",
+            "options": [
+                "Nháy đúp vào biểu tượng thư mục",
+                "Gõ phím cách ba lần",
+                "Tắt màn hình",
+                "Rút dây nguồn"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 9.webp"
+    },
+    {
+        "id": "g3-b10",
+        "grade": 3,
+        "code": "Bài 10",
+        "title": "Bảo vệ thông tin khi dùng máy tính",
+        "topic": "D",
+        "topicName": "Chủ đề D: Đạo đức, pháp luật và văn hoá trong môi trường số",
+        "icon": "📽️",
+        "filePath": "Tin học 3/Tin học 3 - Bài 10.html",
+        "desc": "Nhận diện thông tin cần bảo vệ và lựa chọn cách sử dụng máy tính an toàn.",
+        "quiz": {
+            "q": "Khi người lạ xin mật khẩu tài khoản của em, em nên làm gì?",
+            "options": [
+                "Không cung cấp và báo người lớn tin cậy",
+                "Gửi mật khẩu ngay",
+                "Đăng mật khẩu lên mạng",
+                "Cho mọi bạn xem"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 10.webp"
+    },
+    {
+        "id": "g3-b11",
+        "grade": 3,
+        "code": "Bài 11",
+        "title": "Bài trình chiếu của em",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "🖼️",
+        "filePath": "Tin học 3/Tin học 3 - Bài 11.html",
+        "desc": "Tạo bài trình chiếu đơn giản, thêm nội dung và hình ảnh phù hợp.",
+        "quiz": {
+            "q": "Để chèn một bức ảnh có sẵn trong máy tính vào trang trình chiếu, em chọn thẻ nào?",
+            "options": [
+                "Thẻ Insert -> Pictures",
+                "Thẻ File -> Exit",
+                "Thẻ View -> Zoom",
+                "Nhấn phím Delete"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 11.webp"
+    },
+    {
+        "id": "g3-b12",
+        "grade": 3,
+        "code": "Bài 12",
+        "title": "Tìm hiểu về thế giới tự nhiên",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "🪐",
+        "filePath": "Tin học 3/Tin học 3 - Bài 12.html",
+        "desc": "Quan sát Trái Đất, Mặt Trăng và các hành tinh trong Hệ Mặt Trời bằng phần mềm mô phỏng.",
+        "quiz": {
+            "q": "Hành tinh nào là ngôi nhà chung của chúng ta trong Hệ Mặt Trời?",
+            "options": [
+                "Trái Đất (Earth)",
+                "Sao Hỏa (Mars)",
+                "Sao Thổ (Saturn)",
+                "Mặt Trời (Sun)"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 12.webp"
+    },
+    {
+        "id": "g3-b13",
+        "grade": 3,
+        "code": "Bài 13",
+        "title": "Luyện tập sử dụng chuột",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "🎯",
+        "filePath": "Tin học 3/Tin học 3 - Bài 13.html",
+        "desc": "Thực hành tổng hợp các thao tác di chuyển, nháy đúp và kéo thả chuột chính xác.",
+        "quiz": {
+            "q": "Thao tác \"Nháy đúp chuột\" nghĩa là em thực hiện như thế nào?",
+            "options": [
+                "Nhấn nhanh 2 lần liên tiếp nút trái chuột",
+                "Nhấn 1 lần nút phải chuột",
+                "Xoay con lăn chuột",
+                "Nhấn giữ cả 2 nút chuột"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 13.webp"
+    },
+    {
+        "id": "g3-b14",
+        "grade": 3,
+        "code": "Bài 14",
+        "title": "Em thực hiện công việc như thế nào?",
+        "topic": "F",
+        "topicName": "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "icon": "📋",
+        "filePath": "Tin học 3/Tin học 3 - Bài 14.html",
+        "desc": "Chia một công việc lớn thành những việc nhỏ hơn và sắp xếp theo thứ tự từng bước.",
+        "quiz": {
+            "q": "Khi đánh răng mỗi sáng, bước nào cần thực hiện trước khi chải răng?",
+            "options": [
+                "Lấy kem đánh răng lên bàn chải",
+                "Cất bàn chải lên giá",
+                "Lau khô miệng",
+                "Đi học ngay"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 14.webp"
+    },
+    {
+        "id": "g3-b15",
+        "grade": 3,
+        "code": "Bài 15",
+        "title": "Công việc được thực hiện theo điều kiện",
+        "topic": "F",
+        "topicName": "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "icon": "🔀",
+        "filePath": "Tin học 3/Tin học 3 - Bài 15.html",
+        "desc": "Làm quen với cấu trúc điều kiện \"Nếu ... thì ...\" gắn với các tình huống hằng ngày.",
+        "quiz": {
+            "q": "Trong câu \"Nếu trời mưa thì em mặc áo mưa\", cụm từ nào chỉ điều kiện?",
+            "options": [
+                "Trời mưa",
+                "Em mặc áo mưa",
+                "Em đi học",
+                "Trời nắng"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 15.webp"
+    },
+    {
+        "id": "g3-b16",
+        "grade": 3,
+        "code": "Bài 16",
+        "title": "Công việc của em và sự trợ giúp của máy tính",
+        "topic": "F",
+        "topicName": "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "icon": "🤖",
+        "filePath": "Tin học 3/Tin học 3 - Bài 16.html",
+        "desc": "Tìm hiểu cách con người hướng dẫn máy tính thực hiện công việc theo từng bước lệnh.",
+        "quiz": {
+            "q": "Để máy tính thực hiện được một nhiệm vụ, con người cần cung cấp gì cho máy tính?",
+            "options": [
+                "Dãy các bước hướng dẫn (chương trình)",
+                "Một cốc nước lọc",
+                "Một quyển vở giấy",
+                "Không cần làm gì cả"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 3 - Bài 16.webp"
+    },
+    {
+        "id": "g4-b1",
+        "grade": 4,
+        "code": "Bài 1",
+        "title": "Phần cứng và phần mềm máy tính",
+        "topic": "A",
+        "topicName": "Chủ đề A: Máy tính và em",
+        "icon": "⚙️",
+        "filePath": "Tin học 4/Tin học 4 - Bài 1.html",
+        "desc": "Phân biệt thiết bị phần cứng chạm tay vào được và các chương trình phần mềm ứng dụng.",
+        "quiz": {
+            "q": "Trong các tên sau đây, đâu là Phần mềm máy tính?",
+            "options": [
+                "Trình duyệt Google Chrome và phần mềm Word",
+                "Bàn phím và Chuột máy tính",
+                "Màn hình máy tính",
+                "Thân máy CPU"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 1.webp"
+    },
+    {
+        "id": "g4-b2",
+        "grade": 4,
+        "code": "Bài 2",
+        "title": "Gõ bàn phím đúng cách",
+        "topic": "A",
+        "topicName": "Chủ đề A: Máy tính và em",
+        "icon": "🙌",
+        "filePath": "Tin học 4/Tin học 4 - Bài 2.html",
+        "desc": "Luyện gõ 10 ngón trên hàng phím trên, hàng phím dưới và hàng phím số hiệu quả.",
+        "quiz": {
+            "q": "Gõ bàn phím đúng cách bằng 10 ngón tay mang lại lợi ích gì?",
+            "options": [
+                "Gõ nhanh hơn, chính xác hơn và không mỏi mắt, mỏi tay",
+                "Làm hỏng bàn phím nhanh hơn",
+                "Gõ chậm hơn dùng 1 ngón",
+                "Không nhìn thấy màn hình"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 2.webp"
+    },
+    {
+        "id": "g4-b3",
+        "grade": 4,
+        "code": "Bài 3",
+        "title": "Thông tin trên trang web",
+        "topic": "B",
+        "topicName": "Chủ đề B: Mạng máy tính và Internet",
+        "icon": "📰",
+        "filePath": "Tin học 4/Tin học 4 - Bài 3.html",
+        "desc": "Nhận biết các loại thông tin trên web, siêu liên kết (Hyperlink) và thông tin không phù hợp.",
+        "quiz": {
+            "q": "Khi di chuyển con trỏ chuột vào một Siêu liên kết trên trang web, con trỏ thường biến thành hình gì?",
+            "options": [
+                "Hình bàn tay có ngón trỏ chỉ vào",
+                "Hình chiếc đồng hồ cát",
+                "Hình mũi tên gãy",
+                "Biến mất hoàn toàn"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 3.webp"
+    },
+    {
+        "id": "g4-b4",
+        "grade": 4,
+        "code": "Bài 4",
+        "title": "Tìm kiếm thông tin trên Internet",
+        "topic": "C",
+        "topicName": "Chủ đề C: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+        "icon": "🔎",
+        "filePath": "Tin học 4/Tin học 4 - Bài 4.html",
+        "desc": "Sử dụng máy tìm kiếm và từ khóa thông minh để tra cứu kiến thức học tập.",
+        "quiz": {
+            "q": "Để tìm hình ảnh hoa sen trên máy tìm kiếm Google, em nên nhập từ khóa nào vào ô tìm kiếm?",
+            "options": [
+                "Hoa sen",
+                "Bài hát thiếu nhi",
+                "Trò chơi đá bóng",
+                "Cách giải toán lớp 4"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 4.webp"
+    },
+    {
+        "id": "g4-b5",
+        "grade": 4,
+        "code": "Bài 5",
+        "title": "Thao tác với tệp và thư mục",
+        "topic": "C",
+        "topicName": "Chủ đề C: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+        "icon": "🗃️",
+        "filePath": "Tin học 4/Tin học 4 - Bài 5.html",
+        "desc": "Thực hành sao chép (Copy), di chuyển (Cut/Paste), đổi tên (Rename) tệp và thư mục.",
+        "quiz": {
+            "q": "Tổ hợp phím tắt nào dùng để Sao chép (Copy) và Dán (Paste) một thư mục hoặc tệp?",
+            "options": [
+                "Ctrl + C và Ctrl + V",
+                "Ctrl + Z và Ctrl + Y",
+                "Alt + F4",
+                "Shift + Delete"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 5.webp"
+    },
+    {
+        "id": "g4-b6",
+        "grade": 4,
+        "code": "Bài 6",
+        "title": "Sử dụng phần mềm khi được phép",
+        "topic": "D",
+        "topicName": "Chủ đề D: Đạo đức, pháp luật và văn hoá trong môi trường số",
+        "icon": "🛡️",
+        "filePath": "Tin học 4/Tin học 4 - Bài 6.html",
+        "desc": "Phân biệt phần mềm miễn phí, phần mềm có bản quyền và tôn trọng quyền tác giả.",
+        "quiz": {
+            "q": "Hành động nào sau đây thể hiện sự tôn trọng bản quyền phần mềm?",
+            "options": [
+                "Chỉ sử dụng phần mềm miễn phí hoặc phần mềm đã mua bản quyền hợp pháp",
+                "Bẻ khóa phần mềm trả phí để dùng lậu",
+                "Sao chép phần mềm có bản quyền đem bán",
+                "Xóa tên tác giả phần mềm"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 6.webp"
+    },
+    {
+        "id": "g4-b7",
+        "grade": 4,
+        "code": "Bài 7",
+        "title": "Tạo bài trình chiếu",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "📝",
+        "filePath": "Tin học 4/Tin học 4 - Bài 7.html",
+        "desc": "Tạo trang chiếu, nhập nội dung, thêm hình ảnh và lưu bài trình chiếu.",
+        "quiz": {
+            "q": "Để tạo một trang chiếu mới trong bài trình chiếu, em có thể chọn lệnh nào?",
+            "options": [
+                "New Slide (Trang chiếu mới)",
+                "Delete File (Xóa tệp)",
+                "Shut Down (Tắt máy)",
+                "Print (In)"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 7.webp"
+    },
+    {
+        "id": "g4-b8",
+        "grade": 4,
+        "code": "Bài 8",
+        "title": "Định dạng văn bản trên trang chiếu",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "✒️",
+        "filePath": "Tin học 4/Tin học 4 - Bài 8.html",
+        "desc": "Định dạng phông chữ, cỡ chữ, màu chữ để trang chiếu dễ đọc.",
+        "quiz": {
+            "q": "Khi muốn chữ trên trang chiếu dễ đọc hơn, em có thể thay đổi điều gì?",
+            "options": [
+                "Phông chữ và cỡ chữ",
+                "Tên ổ đĩa",
+                "Tốc độ chuột",
+                "Độ dài dây nguồn"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 8.webp"
+    },
+    {
+        "id": "g4-b9",
+        "grade": 4,
+        "code": "Bài 9",
+        "title": "Hiệu ứng chuyển trang",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "✨",
+        "filePath": "Tin học 4/Tin học 4 - Bài 9.html",
+        "desc": "Thêm và xem trước hiệu ứng chuyển trang trong bài trình chiếu.",
+        "quiz": {
+            "q": "Trong PowerPoint, thẻ nào dùng để tạo hiệu ứng chuyển tiếp giữa các trang chiếu?",
+            "options": [
+                "Thẻ Transitions",
+                "Thẻ File",
+                "Thẻ View",
+                "Thẻ Help"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 9.webp"
+    },
+    {
+        "id": "g4-b10",
+        "grade": 4,
+        "code": "Bài 10",
+        "title": "Phần mềm soạn thảo văn bản",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "🎬",
+        "filePath": "Tin học 4/Tin học 4 - Bài 10.html",
+        "desc": "Làm quen giao diện phần mềm soạn thảo và các bước nhập, lưu văn bản.",
+        "quiz": {
+            "q": "Phần mềm soạn thảo văn bản chủ yếu dùng để làm gì?",
+            "options": [
+                "Nhập và chỉnh sửa văn bản",
+                "Xóa hệ điều hành",
+                "Lắp ráp màn hình",
+                "Sửa chuột hỏng"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 10.webp"
+    },
+    {
+        "id": "g4-b11",
+        "grade": 4,
+        "code": "Bài 11",
+        "title": "Chỉnh sửa văn bản",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "🏛️",
+        "filePath": "Tin học 4/Tin học 4 - Bài 11.html",
+        "desc": "Chọn, chỉnh sửa, di chuyển, sao chép và hoàn thiện nội dung văn bản.",
+        "quiz": {
+            "q": "Muốn sửa một từ bị gõ sai trong văn bản, em nên làm gì?",
+            "options": [
+                "Chọn vị trí cần sửa và nhập lại từ đúng",
+                "Tắt máy ngay",
+                "Đổi tên cả thư mục",
+                "Ngắt kết nối bàn phím"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 11.webp"
+    },
+    {
+        "id": "g4-b12a",
+        "grade": 4,
+        "code": "Bài 12A",
+        "title": "Thực hành đa phương tiện",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "🎵",
+        "filePath": "Tin học 4/Tin học 4 - Bài 12A.html",
+        "desc": "Sử dụng công cụ phát, tạm dừng và xem lại nội dung đa phương tiện.",
+        "quiz": {
+            "q": "Đâu là dữ liệu Đa phương tiện kết hợp cả hình ảnh chuyển động và âm thanh?",
+            "options": [
+                "Tệp Video hoạt hình học tập",
+                "Một dòng chữ đen trắng",
+                "Một tiếng chuông báo",
+                "Một bức tranh tĩnh"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 12A.webp"
+    },
+    {
+        "id": "g4-b12b",
+        "grade": 4,
+        "code": "Bài 12B",
+        "title": "Phần mềm luyện tập gõ bàn phím",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "⚡",
+        "filePath": "Tin học 4/Tin học 4 - Bài 12B.html",
+        "desc": "Luyện tập gõ phím bằng phần mềm và theo dõi độ chính xác.",
+        "quiz": {
+            "q": "Khi luyện gõ bàn phím 10 ngón, ngón tay cái của em được đặt ở phím nào?",
+            "options": [
+                "Phím Cách (Spacebar)",
+                "Phím Enter",
+                "Phím Shift",
+                "Phím Backspace"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 12B.webp"
+    },
+    {
+        "id": "g4-b13",
+        "grade": 4,
+        "code": "Bài 13",
+        "title": "Chơi với máy tính",
+        "topic": "F",
+        "topicName": "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "icon": "🐱",
+        "filePath": "Tin học 4/Tin học 4 - Bài 13.html",
+        "desc": "Khám phá giao diện lập trình kéo thả trực quan Scratch, sân khấu và nhân vật chú mèo.",
+        "quiz": {
+            "q": "Trong phần mềm lập trình Scratch, biểu tượng dùng để bắt đầu chạy chương trình thường là gì?",
+            "options": [
+                "Lá cờ màu xanh lá cây",
+                "Biểu tượng hình bát giác màu đỏ",
+                "Hình chiếc kính lúp",
+                "Hình quả địa cầu"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 13.webp"
+    },
+    {
+        "id": "g4-b14",
+        "grade": 4,
+        "code": "Bài 14",
+        "title": "Khám phá môi trường lập trình trực quan",
+        "topic": "F",
+        "topicName": "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "icon": "🧱",
+        "filePath": "Tin học 4/Tin học 4 - Bài 14.html",
+        "desc": "Ghép các khối lệnh Chuyển động (Motion), Hiển thị (Looks) và Âm thanh (Sound) trong Scratch.",
+        "quiz": {
+            "q": "Trong Scratch, nhóm lệnh \"Chuyển động\" (Motion) có màu gì?",
+            "options": [
+                "Màu xanh dương",
+                "Màu tím",
+                "Màu vàng cam",
+                "Màu hồng"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 14.webp"
+    },
+    {
+        "id": "g4-b15",
+        "grade": 4,
+        "code": "Bài 15",
+        "title": "Tạo chương trình máy tính để diễn tả ý tưởng",
+        "topic": "F",
+        "topicName": "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "icon": "💬",
+        "filePath": "Tin học 4/Tin học 4 - Bài 15.html",
+        "desc": "Sử dụng các khối lệnh trực quan để thể hiện một ý tưởng.",
+        "quiz": {
+            "q": "Lệnh nào trong nhóm Hiển thị giúp nhân vật hiển thị bóng thoại trên sân khấu Scratch?",
+            "options": [
+                "Lệnh \"nói Xin chào! trong 2 giây\"",
+                "Lệnh \"di chuyển 10 bước\"",
+                "Lệnh \"đợi 1 giây\"",
+                "Lệnh \"xoay 15 độ\""
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 15.webp"
+    },
+    {
+        "id": "g4-b16",
+        "grade": 4,
+        "code": "Bài 16",
+        "title": "Chương trình của em",
+        "topic": "F",
+        "topicName": "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "icon": "🎮",
+        "filePath": "Tin học 4/Tin học 4 - Bài 16.html",
+        "desc": "Hoàn thiện, chạy thử và điều chỉnh chương trình trực quan.",
+        "quiz": {
+            "q": "Để nhân vật di chuyển khi người chơi nhấn phím mũi tên trên bàn phím, em dùng khối lệnh thuộc nhóm nào?",
+            "options": [
+                "Nhóm Sự kiện (Events) - Khi bấm phím...",
+                "Nhóm Âm thanh (Sound)",
+                "Nhóm Bút vẽ (Pen)",
+                "Nhóm Các biến số"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 4 - Bài 16.webp"
+    },
+    {
+        "id": "g5-b1",
+        "grade": 5,
+        "code": "Bài 1",
+        "title": "Em có thể làm gì với máy tính?",
+        "topic": "A",
+        "topicName": "Chủ đề A: Máy tính và em",
+        "icon": "🚀",
+        "filePath": "Tin học 5/Tin học 5 - Bài 1.html",
+        "desc": "Tổng hợp vai trò của máy tính trong học tập, giải trí, sáng tạo sản phẩm số và đời sống.",
+        "quiz": {
+            "q": "Máy tính có thể giúp học sinh tiểu học tạo ra những sản phẩm số nào sau đây?",
+            "options": [
+                "Văn bản, bài trình chiếu, tranh vẽ, chương trình Scratch",
+                "Nấu cơm và giặt quần áo",
+                "Trồng cây xanh trong vườn",
+                "Chữa bệnh trực tiếp không cần bác sĩ"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 1.webp"
+    },
+    {
+        "id": "g5-b2",
+        "grade": 5,
+        "code": "Bài 2",
+        "title": "Tìm kiếm thông tin trên website",
+        "topic": "B",
+        "topicName": "Chủ đề B: Mạng máy tính và Internet",
+        "icon": "🧭",
+        "filePath": "Tin học 5/Tin học 5 - Bài 2.html",
+        "desc": "Kỹ năng tìm thông tin trong một trang web cụ thể bằng danh mục và hộp tìm kiếm nội bộ.",
+        "quiz": {
+            "q": "Khi đang mở một trang web nhiều chữ, tổ hợp phím tắt nào giúp em tìm nhanh một từ ngay trên trang đó?",
+            "options": [
+                "Ctrl + F",
+                "Ctrl + S",
+                "Ctrl + P",
+                "Ctrl + N"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 2.webp"
+    },
+    {
+        "id": "g5-b3",
+        "grade": 5,
+        "code": "Bài 3",
+        "title": "Tìm kiếm thông tin trong giải quyết vấn đề",
+        "topic": "C",
+        "topicName": "Chủ đề C: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+        "icon": "🕵️",
+        "filePath": "Tin học 5/Tin học 5 - Bài 3.html",
+        "desc": "Tìm kiếm, chọn lọc thông tin để đưa ra quyết định và giải quyết tình huống.",
+        "quiz": {
+            "q": "Khi chuẩn bị trang phục cho chuyến dã ngoại ngày mai, thông tin nào là quan trọng và hữu ích nhất?",
+            "options": [
+                "Dự báo thời tiết của ngày mai tại nơi đến",
+                "Thời tiết của tháng trước",
+                "Kết quả trận bóng đá năm ngoái",
+                "Tên các hành tinh xa xôi"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 3.webp"
+    },
+    {
+        "id": "g5-b4",
+        "grade": 5,
+        "code": "Bài 4",
+        "title": "Cây thư mục",
+        "topic": "C",
+        "topicName": "Chủ đề C: Tổ chức lưu trữ, tìm kiếm và trao đổi thông tin",
+        "icon": "🌳",
+        "filePath": "Tin học 5/Tin học 5 - Bài 4.html",
+        "desc": "Tổ chức thông tin theo cây thư mục và truy tìm tệp chính xác.",
+        "quiz": {
+            "q": "Cách đặt tên tệp và thư mục như thế nào giúp em tìm kiếm nhanh nhất trên máy tính?",
+            "options": [
+                "Đặt tên ngắn gọn, rõ ràng, phản ánh đúng nội dung bên trong",
+                "Đặt tên ngẫu nhiên như abc123, xyz",
+                "Đặt tất cả các tệp cùng một tên giống hệt nhau",
+                "Không phân chia thư mục"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 4.webp"
+    },
+    {
+        "id": "g5-b5",
+        "grade": 5,
+        "code": "Bài 5",
+        "title": "Bản quyền nội dung thông tin",
+        "topic": "D",
+        "topicName": "Chủ đề D: Đạo đức, pháp luật và văn hoá trong môi trường số",
+        "icon": "©️",
+        "filePath": "Tin học 5/Tin học 5 - Bài 5.html",
+        "desc": "Tôn trọng bản quyền tác phẩm số, trích dẫn nguồn khi sử dụng hình ảnh, bài viết của người khác.",
+        "quiz": {
+            "q": "Khi em sử dụng một bức ảnh hoặc đoạn văn của tác giả khác vào bài thuyết trình, em cần làm gì?",
+            "options": [
+                "Ghi rõ tên tác giả hoặc nguồn trích dẫn của bức ảnh/đoạn văn đó",
+                "Nhận đó là tác phẩm do chính mình tự làm",
+                "Xóa chữ ký của tác giả trên bức ảnh",
+                "Cấm người khác xem"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 5.webp"
+    },
+    {
+        "id": "g5-b6",
+        "grade": 5,
+        "code": "Bài 6",
+        "title": "Định dạng kí tự và bố trí hình ảnh trong văn bản",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "📄",
+        "filePath": "Tin học 5/Tin học 5 - Bài 6.html",
+        "desc": "Thực hành định dạng kí tự và bố trí hình ảnh trong văn bản.",
+        "quiz": {
+            "q": "Để làm nổi bật một tiêu đề trong văn bản, em có thể dùng cách nào?",
+            "options": [
+                "Định dạng chữ đậm và cỡ chữ phù hợp",
+                "Xóa đoạn văn",
+                "Tắt máy tính",
+                "Đổi vị trí ổ điện"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 6.webp"
+    },
+    {
+        "id": "g5-b7",
+        "grade": 5,
+        "code": "Bài 7",
+        "title": "Thực hành soạn thảo văn bản",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "🖼️",
+        "filePath": "Tin học 5/Tin học 5 - Bài 7.html",
+        "desc": "Thực hành soạn thảo, chỉnh sửa, định dạng và trình bày văn bản.",
+        "quiz": {
+            "q": "Khi soạn thảo văn bản có hình ảnh, em cần chú ý điều gì?",
+            "options": [
+                "Bố trí chữ và hình ảnh rõ ràng, hài hòa",
+                "Chèn thật nhiều hình che hết chữ",
+                "Không bao giờ lưu tệp",
+                "Chỉ dùng một ký tự"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 7.webp"
+    },
+    {
+        "id": "g5-b8a",
+        "grade": 5,
+        "code": "Bài 8A",
+        "title": "Làm quen với phần mềm đồ họa",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "🎨",
+        "filePath": "Tin học 5/Tin học 5 - Bài 8A.html",
+        "desc": "Nhận biết công cụ và thao tác cơ bản của phần mềm đồ họa.",
+        "quiz": {
+            "q": "Trong phần mềm vẽ Paint, để vẽ được hình tròn hoặc hình vuông thật cân đối, em nhấn giữ phím nào khi kéo chuột?",
+            "options": [
+                "Phím Shift",
+                "Phím Space",
+                "Phím Esc",
+                "Phím Tab"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 8A.webp"
+    },
+    {
+        "id": "g5-b8b",
+        "grade": 5,
+        "code": "Bài 8B",
+        "title": "Làm sản phẩm thủ công theo video hướng dẫn",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "✂️",
+        "filePath": "Tin học 5/Tin học 5 - Bài 8B.html",
+        "desc": "Xem, tạm dừng, phát lại video hướng dẫn và thực hiện sản phẩm thủ công.",
+        "quiz": {
+            "q": "Khi làm đồ thủ công theo video nhưng thao tác trong video diễn ra quá nhanh, em nên làm gì?",
+            "options": [
+                "Tạm dừng (Pause), tua lại hoặc chỉnh tốc độ phát chậm hơn (0.5x, 0.75x)",
+                "Tắt máy tính bỏ cuộc",
+                "Tua nhanh gấp đôi (2x)",
+                "Tắt loa máy tính"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 8B.webp"
+    },
+    {
+        "id": "g5-b9a",
+        "grade": 5,
+        "code": "Bài 9A",
+        "title": "Sử dụng phần mềm đồ họa tạo sản phẩm số",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "🖌️",
+        "filePath": "Tin học 5/Tin học 5 - Bài 9A.html",
+        "desc": "Tạo sản phẩm số bằng các công cụ vẽ, tô màu, chỉnh sửa trong phần mềm đồ họa.",
+        "quiz": {
+            "q": "Để vẽ nhiều bông hoa giống hệt nhau mà không phải vẽ lại từ đầu, em dùng thao tác nào?",
+            "options": [
+                "Chọn vùng (Select) -> Sao chép (Copy) -> Dán (Paste)",
+                "Xóa đi vẽ lại từng cánh hoa",
+                "Đổi màu nền liên tục",
+                "Tắt phần mềm mở lại"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 9A.webp"
+    },
+    {
+        "id": "g5-b9b",
+        "grade": 5,
+        "code": "Bài 9B",
+        "title": "Thực hành tạo đồ dùng gia đình theo video hướng dẫn",
+        "topic": "E",
+        "topicName": "Chủ đề E: Ứng dụng tin học",
+        "icon": "🎁",
+        "filePath": "Tin học 5/Tin học 5 - Bài 9B.html",
+        "desc": "Làm đồ dùng gia đình theo các bước trong video hướng dẫn.",
+        "quiz": {
+            "q": "Trước khi bắt đầu làm sản phẩm thủ công theo video, bước đầu tiên em nên thực hiện là gì?",
+            "options": [
+                "Xem lướt toàn bộ video để chuẩn bị đầy đủ dụng cụ và nguyên vật liệu",
+                "Cắt giấy ngay khi chưa biết làm hình gì",
+                "Đóng trình duyệt lại",
+                "Bỏ qua phần chuẩn bị"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 9B.webp"
+    },
+    {
+        "id": "g5-b10",
+        "grade": 5,
+        "code": "Bài 10",
+        "title": "Cấu trúc tuần tự",
+        "topic": "F",
+        "topicName": "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "icon": "📏",
+        "filePath": "Tin học 5/Tin học 5 - Bài 10.html",
+        "desc": "Sắp xếp các khối lệnh để tạo chương trình thực hiện lần lượt theo thứ tự.",
+        "quiz": {
+            "q": "Trong cấu trúc tuần tự, các khối lệnh trong kịch bản Scratch được thực hiện như thế nào?",
+            "options": [
+                "Thực hiện lần lượt từng lệnh theo đúng thứ tự từ trên xuống dưới",
+                "Thực hiện ngẫu nhiên bất kỳ lệnh nào",
+                "Thực hiện từ dưới lên trên",
+                "Bỏ qua các lệnh ở giữa"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 10.webp"
+    },
+    {
+        "id": "g5-b11",
+        "grade": 5,
+        "code": "Bài 11",
+        "title": "Cấu trúc lặp",
+        "topic": "F",
+        "topicName": "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "icon": "🔄",
+        "filePath": "Tin học 5/Tin học 5 - Bài 11.html",
+        "desc": "Nhận biết cấu trúc lặp trong chương trình Scratch.",
+        "quiz": {
+            "q": "Để vẽ một hình vuông có 4 cạnh bằng nhau trong Scratch, em nên dùng khối lệnh lặp bao nhiêu lần?",
+            "options": [
+                "Lặp lại 4 lần (di chuyển và xoay 90 độ)",
+                "Lặp lại 2 lần",
+                "Lặp lại 100 lần",
+                "Không thể dùng vòng lặp"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 11.webp"
+    },
+    {
+        "id": "g5-b12",
+        "grade": 5,
+        "code": "Bài 12",
+        "title": "Thực hành sử dụng lệnh lặp",
+        "topic": "F",
+        "topicName": "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "icon": "🚦",
+        "filePath": "Tin học 5/Tin học 5 - Bài 12.html",
+        "desc": "Thực hành sử dụng lệnh lặp, chạy thử và sửa chương trình.",
+        "quiz": {
+            "q": "Muốn nhân vật thực hiện một hành động nhiều lần trong Scratch, em chọn khối nào?",
+            "options": [
+                "Khối lệnh lặp",
+                "Khối dừng chương trình ngay",
+                "Khối đổi phông nền duy nhất",
+                "Khối xóa nhân vật"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 12.webp"
+    },
+    {
+        "id": "g5-b13",
+        "grade": 5,
+        "code": "Bài 13",
+        "title": "Cấu trúc rẽ nhánh",
+        "topic": "F",
+        "topicName": "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "icon": "🧮",
+        "filePath": "Tin học 5/Tin học 5 - Bài 13.html",
+        "desc": "Sử dụng khối lệnh điều kiện để tạo cấu trúc rẽ nhánh.",
+        "quiz": {
+            "q": "Cấu trúc rẽ nhánh giúp chương trình thực hiện việc gì?",
+            "options": [
+                "Chọn hành động dựa trên điều kiện",
+                "Chỉ chạy một lệnh lặp lại mãi",
+                "Không cần kiểm tra điều kiện",
+                "Luôn xóa mọi biến"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 13.webp"
+    },
+    {
+        "id": "g5-b14",
+        "grade": 5,
+        "code": "Bài 14",
+        "title": "Sử dụng biến trong chương trình",
+        "topic": "F",
+        "topicName": "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "icon": "🗺️",
+        "filePath": "Tin học 5/Tin học 5 - Bài 14.html",
+        "desc": "Tạo và thay đổi biến để lưu trữ giá trị trong chương trình.",
+        "quiz": {
+            "q": "Biến trong chương trình dùng để làm gì?",
+            "options": [
+                "Lưu trữ giá trị có thể thay đổi",
+                "Chỉ thay màu màn hình",
+                "Tắt loa",
+                "Thay bàn phím"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 14.webp"
+    },
+    {
+        "id": "g5-b15",
+        "grade": 5,
+        "code": "Bài 15",
+        "title": "Sử dụng biểu thức trong chương trình",
+        "topic": "F",
+        "topicName": "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "icon": "🐞",
+        "filePath": "Tin học 5/Tin học 5 - Bài 15.html",
+        "desc": "Sử dụng biến, số và phép toán để tạo biểu thức trong chương trình.",
+        "quiz": {
+            "q": "Biểu thức trong chương trình có thể bao gồm những thành phần nào?",
+            "options": [
+                "Số, biến và phép toán",
+                "Chỉ hình nền",
+                "Chỉ tên nhân vật",
+                "Chỉ ảnh máy tính"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 15.webp"
+    },
+    {
+        "id": "g5-b16",
+        "grade": 5,
+        "code": "Bài 16",
+        "title": "Từ kịch bản đến chương trình",
+        "topic": "F",
+        "topicName": "Chủ đề F: Giải quyết vấn đề với sự trợ giúp của máy tính",
+        "icon": "🏆",
+        "filePath": "Tin học 5/Tin học 5 - Bài 16.html",
+        "desc": "Từ kịch bản đến thiết kế, lập trình, kiểm thử và hoàn thiện chương trình.",
+        "quiz": {
+            "q": "Khi chuyển từ kịch bản thành chương trình, em nên làm gì sau khi ghép các khối lệnh?",
+            "options": [
+                "Chạy thử, kiểm tra và sửa lỗi",
+                "Xóa ngay chương trình",
+                "Không bao giờ chạy thử",
+                "Tắt máy không lưu"
+            ],
+            "correct": 0
+        },
+        "thumbnailPath": "Thumbnail CoChucTinHoc/Tin học 5 - Bài 16.webp"
+    }
+];
+
+        // Trạng thái bộ lọc hiện tại
+        let currentGrade = 'all';
+        let currentTopic = 'all';
+        let currentStatus = 'all';
+        let currentSearch = '';
+        let activeGameId = null;
+
+        // Trạng thái hoàn thành lưu trong LocalStorage
+        const STORAGE_KEY = 'cochuctinhoc_completed_games_v1';
+        let completedGames = [];
+
+        // Trạng thái âm thanh Web Audio API
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        /**
+         * 2. HỆ THỐNG ÂM THANH VUI NHỘN BẰNG WEB AUDIO API (OFFLINE 100%)
+         */
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    audioCtx = new AudioContext();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playTone(freq, type = 'sine', duration = 0.12, delay = 0, volume = 0.15) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+
+                gain.gain.setValueAtTime(volume, audioCtx.currentTime + delay);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + duration);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(audioCtx.currentTime + delay);
+                osc.stop(audioCtx.currentTime + delay + duration);
+            } catch (e) {
+                // Bỏ qua nếu trình duyệt chặn autoplay
+            }
+        }
+
+        function playClickSound() {
+            playTone(580, 'triangle', 0.08, 0, 0.15);
+            playTone(820, 'sine', 0.09, 0.04, 0.12);
+        }
+
+        function playTabSound() {
+            playTone(440, 'sine', 0.08, 0, 0.14);
+            playTone(660, 'triangle', 0.12, 0.06, 0.14);
+        }
+
+        function playWinSound() {
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            notes.forEach((n, idx) => {
+                playTone(n, 'triangle', 0.18, idx * 0.09, 0.2);
+            });
+        }
+
+        function playWrongSound() {
+            playTone(280, 'sawtooth', 0.15, 0, 0.12);
+            playTone(210, 'sawtooth', 0.22, 0.12, 0.12);
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            const text = document.getElementById('sound-text');
+            const btn = document.getElementById('sound-toggle-btn');
+
+            if (soundEnabled) {
+                playClickSound();
+                icon.className = 'fa-solid fa-volume-high text-lg text-indigo-600';
+                text.textContent = 'Âm thanh: BẬT';
+                btn.className = 'flex items-center gap-2 px-4 py-2.5 rounded-2xl font-bold text-sm bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-2 border-indigo-200 transition-all';
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-lg text-slate-400';
+                text.textContent = 'Âm thanh: TẮT';
+                btn.className = 'flex items-center gap-2 px-4 py-2.5 rounded-2xl font-bold text-sm bg-slate-100 hover:bg-slate-200 text-slate-500 border-2 border-slate-200 transition-all';
+            }
+        }
+
+        /**
+         * 3. QUẢN LÝ TIẾN ĐỘ HỌC TẬP (LOCALSTORAGE)
+         */
+        function loadProgress() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    completedGames = JSON.parse(saved);
+                }
+            } catch (e) {
+                completedGames = [];
+            }
+            updateProgressUI();
+        }
+
+        function saveProgress() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(completedGames));
+            } catch (e) {}
+            updateProgressUI();
+        }
+
+        function updateProgressUI() {
+            const total = GAMES_DATA.length;
+            const count = completedGames.length;
+            const percent = Math.round((count / total) * 100);
+
+            document.getElementById('completed-count').textContent = count;
+            document.getElementById('total-count').textContent = total;
+            document.getElementById('progress-percent').textContent = `${percent}% Hoàn thành`;
+            document.getElementById('progress-bar-fill').style.width = `${percent}%`;
+
+            // Cập nhật danh hiệu thi đua của học sinh
+            const rankEl = document.getElementById('rank-badge-title');
+            if (count === 0) {
+                rankEl.textContent = '🌱 Danh hiệu: Tân Binh Nhí (Hãy chinh phục ngôi sao đầu tiên!)';
+            } else if (count < 15) {
+                rankEl.textContent = '🧭 Danh hiệu: Khám Phá Số Đầy Năng Lượng';
+            } else if (count < 35) {
+                rankEl.textContent = '🛡️ Danh hiệu: Chiến Binh Công Nghệ Xuất Sắc';
+            } else if (count < 51) {
+                rankEl.textContent = '👑 Danh hiệu: Ngôi Sao Tin Học Tiểu Học Tủa Chùa';
+            } else {
+                rankEl.textContent = '🏆 Danh hiệu: Kiện Tướng Tin Học Tủa Chùa (Hoàn thành 51/51 bài)!';
+            }
+        }
+
+        function toggleCompleteGame(gameId, event) {
+            if (event) event.stopPropagation();
+            const index = completedGames.indexOf(gameId);
+            if (index === -1) {
+                completedGames.push(gameId);
+                playWinSound();
+                launchConfetti(35);
+            } else {
+                completedGames.splice(index, 1);
+                playClickSound();
+            }
+            saveProgress();
+            renderGames();
+            updateModalCompleteButton();
+        }
+
+        /**
+         * 4. RENDER DANH SÁCH THẺ TRÒ CHƠI
+         */
+        function getFilteredGames() {
+            return GAMES_DATA.filter(game => {
+                const matchGrade = currentGrade === 'all' || game.grade === Number(currentGrade);
+                const matchTopic = currentTopic === 'all' || game.topic === currentTopic;
+                const isDone = completedGames.includes(game.id);
+                const matchStatus = currentStatus === 'all' || 
+                                    (currentStatus === 'completed' && isDone) || 
+                                    (currentStatus === 'uncompleted' && !isDone);
+                
+                const q = currentSearch.trim().toLowerCase();
+                const matchSearch = !q || 
+                    game.code.toLowerCase().includes(q) ||
+                    game.title.toLowerCase().includes(q) ||
+                    game.topicName.toLowerCase().includes(q) ||
+                    game.desc.toLowerCase().includes(q) ||
+                    `lớp ${game.grade}`.includes(q);
+
+                return matchGrade && matchTopic && matchStatus && matchSearch;
+            });
+        }
+
+        function renderGames() {
+            const grid = document.getElementById('games-grid');
+            const emptyState = document.getElementById('empty-state');
+            const viewTitle = document.getElementById('current-view-title');
+            const filtered = getFilteredGames();
+
+            // Cập nhật tiêu đề danh sách
+            let gradeLabel = 'Tất cả trò chơi bài học';
+            if (currentGrade === 3) gradeLabel = '🐣 Trò chơi Tin học Lớp 3';
+            if (currentGrade === 4) gradeLabel = '🦊 Trò chơi Tin học Lớp 4';
+            if (currentGrade === 5) gradeLabel = '🦁 Trò chơi Tin học Lớp 5';
+            viewTitle.textContent = `${gradeLabel} (${filtered.length} bài)`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            grid.innerHTML = filtered.map(game => {
+                const isCompleted = completedGames.includes(game.id);
+
+                // Cấu hình màu sắc theo Khối lớp
+                let badgeTheme = '';
+                let btnClass = '';
+                let cardBorderClass = '';
+                let folderBadge = '';
+
+                if (game.grade === 3) {
+                    badgeTheme = 'bg-pink-100 text-pink-700 border-pink-200';
+                    btnClass = 'btn-3d-pink';
+                    cardBorderClass = 'grade-3';
+                    folderBadge = '🐣 Lớp 3';
+                } else if (game.grade === 4) {
+                    badgeTheme = 'bg-purple-100 text-purple-700 border-purple-200';
+                    btnClass = 'btn-3d-purple';
+                    cardBorderClass = 'grade-4';
+                    folderBadge = '🦊 Lớp 4';
+                } else {
+                    badgeTheme = 'bg-teal-100 text-teal-700 border-teal-200';
+                    btnClass = 'btn-3d-teal';
+                    cardBorderClass = 'grade-5';
+                    folderBadge = '🦁 Lớp 5';
+                }
+
+                return `
+                <article id="card-${game.id}" class="game-card ${cardBorderClass} bg-white rounded-3xl p-5 shadow-md flex flex-col justify-between relative overflow-hidden group">
+                    <!-- Dải ruy-băng hoàn thành -->
+                    ${isCompleted ? `
+                        <div class="absolute top-0 right-0 bg-amber-400 text-slate-900 text-[11px] font-extrabold px-3 py-1 rounded-bl-2xl shadow-sm flex items-center gap-1 z-10">
+                            <i class="fa-solid fa-star text-white drop-shadow"></i> ĐÃ HOÀN THÀNH
+                        </div>
+                    ` : ''}
+
+                    <div>
+                        <!-- Hàng trên: Nhãn Lớp + Bài số + Nút tích Sao -->
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="px-2.5 py-1 rounded-xl text-xs font-extrabold border ${badgeTheme}">
+                                    ${folderBadge}
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl text-xs font-extrabold bg-slate-800 text-white">
+                                    ${game.code}
+                                </span>
+                            </div>
+
+                            <button 
+                                onclick="toggleCompleteGame('${game.id}', event)" 
+                                class="w-9 h-9 rounded-xl flex items-center justify-center border-2 transition-all ${isCompleted ? 'bg-amber-100 border-amber-300 text-amber-500 scale-110' : 'bg-slate-50 border-slate-200 text-slate-300 hover:text-amber-400 hover:border-amber-200'}"
+                                title="${isCompleted ? 'Bỏ đánh dấu hoàn thành' : 'Đánh dấu đã hoàn thành bài học này'}"
+                            >
+                                <i class="fa-solid fa-star text-lg"></i>
+                            </button>
+                        </div>
+
+                        <!-- Thumbnail chính xác của bài học, sử dụng WebP để tải nhanh -->
+                        <div class="relative aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-sky-100 via-fuchsia-50 to-amber-100 border-2 border-white ring-1 ring-slate-100 shadow-sm mt-3 mb-4">
+                            <img src="${encodeURI(game.thumbnailPath)}"
+                                 alt="Thumbnail Tin học ${game.grade} - ${game.code}: ${game.title}"
+                                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.035]"
+                                 loading="lazy" decoding="async" width="1280" height="720"
+                                 onerror="this.onerror=null;this.style.display='none';this.parentElement.classList.add('thumbnail-missing');" />
+                        </div>
+
+                        <!-- Biểu tượng & Tên bài học -->
+                        <div class="flex items-start gap-3.5 my-3">
+                            <div class="w-14 h-14 rounded-2xl bg-slate-50 border-2 border-slate-100 flex items-center justify-center text-3xl shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-transform shadow-inner">
+                                ${game.icon}
+                            </div>
+                            <div>
+                                <div class="text-[11px] font-bold text-indigo-600 uppercase tracking-wide line-clamp-1">
+                                    Chủ đề ${game.topic}
+                                </div>
+                                <h3 class="font-display font-bold text-lg text-slate-800 leading-snug group-hover:text-purple-600 transition-colors line-clamp-2">
+                                    ${game.title}
+                                </h3>
+                            </div>
+                        </div>
+
+                        <!-- Mô tả ngắn -->
+                        <p class="text-xs sm:text-sm text-slate-500 font-medium line-clamp-2 mb-4">
+                            ${game.desc}
+                        </p>
+                    </div>
+
+                    <!-- Phần chân thẻ: Đường dẫn file & Nút Chơi Ngay -->
+                    <div class="pt-3 border-t border-slate-100 space-y-2.5">
+                        <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono truncate" title="Đường dẫn tệp bài học">
+                            <span><i class="fa-regular fa-file-code mr-1"></i>${game.filePath}</span>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button 
+                                onclick="openGameModal('${game.id}')" 
+                                class="${btnClass} flex-1 py-2.5 px-4 rounded-2xl text-white font-display font-bold text-base flex items-center justify-center gap-2"
+                            >
+                                <i class="fa-solid fa-circle-play"></i>
+                                <span>Chơi Ngay</span>
+                            </button>
+
+                            <a 
+                                href="${encodeURI(game.filePath)}" 
+                                target="_blank"
+                                onclick="playClickSound()"
+                                class="p-2.5 px-3.5 rounded-2xl bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 font-bold text-sm border-2 border-slate-200 transition-colors"
+                                title="Mở trực tiếp file '${game.filePath}' trong tab mới"
+                            >
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                `;
+            }).join('');
+        }
+
+        /**
+         * 5. BỘ LỌC & TÌM KIẾM
+         */
+        function selectGrade(grade) {
+            playTabSound();
+            currentGrade = grade;
+
+            // Cập nhật trạng thái active cho 4 nút Khối lớp
+            const grades = ['all', 3, 4, 5];
+            grades.forEach(g => {
+                const btn = document.getElementById(`tab-grade-${g}`);
+                if (String(g) === String(grade)) {
+                    if (g === 'all') {
+                        btn.className = 'grade-tab active flex items-center justify-center gap-3 p-3.5 sm:p-4 rounded-2xl font-display font-extrabold text-base sm:text-lg bg-slate-800 text-white shadow-lg scale-[1.02] transition-all';
+                    } else if (g === 3) {
+                        btn.className = 'grade-tab active flex items-center justify-center gap-3 p-3.5 sm:p-4 rounded-2xl font-display font-extrabold text-base sm:text-lg bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg scale-[1.02] transition-all';
+                    } else if (g === 4) {
+                        btn.className = 'grade-tab active flex items-center justify-center gap-3 p-3.5 sm:p-4 rounded-2xl font-display font-extrabold text-base sm:text-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg scale-[1.02] transition-all';
+                    } else if (g === 5) {
+                        btn.className = 'grade-tab active flex items-center justify-center gap-3 p-3.5 sm:p-4 rounded-2xl font-display font-extrabold text-base sm:text-lg bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-lg scale-[1.02] transition-all';
+                    }
+                    // Đổi màu dòng phụ bên trong nút đang chọn
+                    const sub = btn.querySelector('.text-slate-500');
+                    if (sub) sub.className = 'text-xs font-body font-bold text-white/90';
+                } else {
+                    if (g === 'all') {
+                        btn.className = 'grade-tab flex items-center justify-center gap-3 p-3.5 sm:p-4 rounded-2xl font-display font-extrabold text-base sm:text-lg bg-white hover:bg-slate-100 text-slate-700 border-2 border-slate-200 shadow-sm transition-all';
+                    } else if (g === 3) {
+                        btn.className = 'grade-tab flex items-center justify-center gap-3 p-3.5 sm:p-4 rounded-2xl font-display font-extrabold text-base sm:text-lg bg-white hover:bg-pink-50 text-pink-600 border-2 border-pink-200 shadow-sm transition-all';
+                    } else if (g === 4) {
+                        btn.className = 'grade-tab flex items-center justify-center gap-3 p-3.5 sm:p-4 rounded-2xl font-display font-extrabold text-base sm:text-lg bg-white hover:bg-purple-50 text-purple-600 border-2 border-purple-200 shadow-sm transition-all';
+                    } else if (g === 5) {
+                        btn.className = 'grade-tab flex items-center justify-center gap-3 p-3.5 sm:p-4 rounded-2xl font-display font-extrabold text-base sm:text-lg bg-white hover:bg-teal-50 text-teal-600 border-2 border-teal-200 shadow-sm transition-all';
+                    }
+                }
+            });
+
+            renderGames();
+        }
+
+        function handleTopicChange(topic) {
+            playClickSound();
+            currentTopic = topic;
+            renderGames();
+        }
+
+        function handleStatusChange(status) {
+            playClickSound();
+            currentStatus = status;
+            renderGames();
+        }
+
+        function handleSearch(val) {
+            currentSearch = val;
+            const clearBtn = document.getElementById('clear-search-btn');
+            if (val.trim().length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+            renderGames();
+        }
+
+        function clearSearch() {
+            playClickSound();
+            document.getElementById('search-input').value = '';
+            handleSearch('');
+        }
+
+        function resetAllFilters() {
+            currentTopic = 'all';
+            currentStatus = 'all';
+            currentSearch = '';
+            document.getElementById('topic-select').value = 'all';
+            document.getElementById('status-select').value = 'all';
+            document.getElementById('search-input').value = '';
+            document.getElementById('clear-search-btn').classList.add('hidden');
+            selectGrade('all');
+        }
+
+        /**
+         * 6. TÍNH NĂNG BỐC THĂM NGẪU NHIÊN 1 TRÒ CHƠI TRÊN LỚP
+         */
+        let isSpinning = false;
+        function pickRandomGame() {
+            if (isSpinning) return;
+            const filtered = getFilteredGames();
+            if (filtered.length === 0) {
+                resetAllFilters();
+                return;
+            }
+
+            isSpinning = true;
+            let steps = 0;
+            const totalSteps = 12;
+            let lastCard = null;
+
+            const interval = setInterval(() => {
+                if (lastCard) lastCard.classList.remove('highlight-spin');
+                const randomItem = filtered[Math.floor(Math.random() * filtered.length)];
+                const cardEl = document.getElementById(`card-${randomItem.id}`);
+                if (cardEl) {
+                    cardEl.classList.add('highlight-spin');
+                    lastCard = cardEl;
+                }
+                playTone(400 + steps * 35, 'sine', 0.06, 0, 0.12);
+                steps++;
+
+                if (steps >= totalSteps) {
+                    clearInterval(interval);
+                    isSpinning = false;
+                    playWinSound();
+                    if (lastCard) {
+                        lastCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    setTimeout(() => {
+                        if (lastCard) lastCard.classList.remove('highlight-spin');
+                        openGameModal(randomItem.id);
+                    }, 700);
+                }
+            }, 90);
+        }
+
+        /**
+         * 7. MODAL TRÌNH PHÁT TRÒ CHƠI & MINI-GAME DỰ PHÒNG
+         */
+        function openGameModal(gameId) {
+            playClickSound();
+            const game = GAMES_DATA.find(g => g.id === gameId);
+            if (!game) return;
+            activeGameId = gameId;
+
+            document.getElementById('modal-game-icon').textContent = game.icon;
+            const modalThumb = document.getElementById('modal-game-thumbnail');
+            modalThumb.src = encodeURI(game.thumbnailPath);
+            modalThumb.alt = `Thumbnail Tin học ${game.grade} - ${game.code}: ${game.title}`;
+            modalThumb.onerror = () => { modalThumb.style.display = 'none'; document.getElementById('modal-game-icon').classList.remove('hidden'); };
+            modalThumb.style.display = '';
+            document.getElementById('modal-lesson-code').textContent = `${game.code} • Chủ đề ${game.topic}`;
+            document.getElementById('modal-game-title').textContent = game.title;
+
+            const gradeBadge = document.getElementById('modal-grade-badge');
+            gradeBadge.textContent = `Tin Học Lớp ${game.grade}`;
+            if (game.grade === 3) {
+                gradeBadge.className = 'px-2.5 py-0.5 text-xs font-extrabold rounded-full bg-pink-500 text-white';
+            } else if (game.grade === 4) {
+                gradeBadge.className = 'px-2.5 py-0.5 text-xs font-extrabold rounded-full bg-purple-500 text-white';
+            } else {
+                gradeBadge.className = 'px-2.5 py-0.5 text-xs font-extrabold rounded-full bg-teal-500 text-white';
+            }
+
+            // Đường dẫn tương đối chuẩn xác tới file trong gói zip
+            const encodedPath = encodeURI(game.filePath);
+            document.getElementById('modal-filepath-display').textContent = game.filePath;
+            document.getElementById('modal-external-link').href = encodedPath;
+            document.getElementById('quiz-open-file-btn').href = encodedPath;
+
+            // Load file vào iframe
+            const iframe = document.getElementById('game-iframe');
+            iframe.src = encodedPath;
+
+            // Chuẩn bị sẵn câu hỏi trắc nghiệm nhanh của bài học
+            renderModalQuiz(game);
+            updateModalCompleteButton();
+
+            // Mặc định mở tab Iframe
+            switchModalMode('iframe');
+
+            document.getElementById('game-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function reloadIframe() {
+            playClickSound();
+            const game = GAMES_DATA.find(g => g.id === activeGameId);
+            if (!game) return;
+            const iframe = document.getElementById('game-iframe');
+            iframe.src = encodeURI(game.filePath);
+        }
+
+        function switchModalMode(mode) {
+            playTabSound();
+            const iframeWrapper = document.getElementById('modal-iframe-wrapper');
+            const quizWrapper = document.getElementById('modal-quiz-wrapper');
+            const btnIframe = document.getElementById('mode-iframe-btn');
+            const btnQuiz = document.getElementById('mode-quiz-btn');
+
+            if (mode === 'iframe') {
+                iframeWrapper.classList.remove('hidden');
+                quizWrapper.classList.add('hidden');
+                btnIframe.className = 'px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow transition-all flex items-center gap-1.5';
+                btnQuiz.className = 'px-3 py-1.5 rounded-lg text-white/80 hover:text-white transition-all flex items-center gap-1.5';
+            } else {
+                iframeWrapper.classList.add('hidden');
+                quizWrapper.classList.remove('hidden');
+                btnQuiz.className = 'px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow transition-all flex items-center gap-1.5';
+                btnIframe.className = 'px-3 py-1.5 rounded-lg text-white/80 hover:text-white transition-all flex items-center gap-1.5';
+            }
+        }
+
+        function renderModalQuiz(game) {
+            document.getElementById('quiz-emoji').textContent = game.icon;
+            document.getElementById('quiz-question-text').textContent = `[Lớp ${game.grade} - ${game.code}] ${game.quiz.q}`;
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.add('hidden');
+
+            // Trộn thứ tự các phương án trả lời
+            const indexedOptions = game.quiz.options.map((text, idx) => ({
+                text,
+                isCorrect: idx === game.quiz.correct
+            }));
+            indexedOptions.sort(() => Math.random() - 0.5);
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = indexedOptions.map((opt, i) => {
+                const letter = ['A', 'B', 'C', 'D'][i];
+                return `
+                    <button 
+                        onclick="checkQuizAnswer(this, ${opt.isCorrect})" 
+                        class="quiz-opt-btn p-4 rounded-2xl border-2 border-slate-200 hover:border-purple-400 bg-slate-50 hover:bg-purple-50 font-bold text-slate-700 flex items-center gap-3 transition-all text-sm sm:text-base"
+                    >
+                        <span class="w-8 h-8 rounded-xl bg-white border border-slate-300 flex items-center justify-center font-display font-extrabold text-purple-600 shrink-0">${letter}</span>
+                        <span>${opt.text}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function checkQuizAnswer(btnEl, isCorrect) {
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.remove('hidden');
+
+            const allBtns = document.querySelectorAll('.quiz-opt-btn');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                playWinSound();
+                launchConfetti(40);
+                btnEl.className = 'quiz-opt-btn p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-100 font-bold text-emerald-900 flex items-center gap-3 transition-all text-sm sm:text-base';
+                feedback.className = 'p-4 rounded-2xl font-bold text-sm sm:text-base bg-emerald-100 text-emerald-800 border-2 border-emerald-300';
+                feedback.innerHTML = '🎉 Tuyệt vời! Em đã trả lời hoàn toàn chính xác và nhận được 1 Ngôi Sao Hoàn Thành!';
+
+                if (activeGameId && !completedGames.includes(activeGameId)) {
+                    completedGames.push(activeGameId);
+                    saveProgress();
+                    renderGames();
+                    updateModalCompleteButton();
+                }
+            } else {
+                playWrongSound();
+                btnEl.className = 'quiz-opt-btn p-4 rounded-2xl border-2 border-rose-500 bg-rose-100 font-bold text-rose-900 flex items-center gap-3 transition-all text-sm sm:text-base';
+                feedback.className = 'p-4 rounded-2xl font-bold text-sm sm:text-base bg-rose-100 text-rose-800 border-2 border-rose-300';
+                feedback.innerHTML = '💪 Chưa chính xác rồi! Em hãy bấm nút "Câu hỏi khác" để thử lại nhé!';
+            }
+        }
+
+        function loadNewQuizQuestion() {
+            playClickSound();
+            const game = GAMES_DATA.find(g => g.id === activeGameId);
+            if (game) renderModalQuiz(game);
+        }
+
+        function updateModalCompleteButton() {
+            if (!activeGameId) return;
+            const isDone = completedGames.includes(activeGameId);
+            const btn = document.getElementById('modal-complete-btn');
+            const text = document.getElementById('modal-complete-text');
+
+            if (isDone) {
+                btn.className = 'px-3.5 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition-all shadow';
+                text.textContent = 'Đã Nhận Sao ⭐';
+            } else {
+                btn.className = 'px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold text-xs sm:text-sm flex items-center gap-1.5 transition-all shadow';
+                text.textContent = 'Nhận Sao Hoàn Thành';
+            }
+        }
+
+        function toggleCurrentGameComplete() {
+            if (!activeGameId) return;
+            toggleCompleteGame(activeGameId);
+        }
+
+        function toggleFullScreenModal() {
+            playClickSound();
+            const container = document.getElementById('game-modal-container');
+            const icon = document.getElementById('fullscreen-icon');
+
+            if (!document.fullscreenElement) {
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                    icon.className = 'fa-solid fa-compress';
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                    icon.className = 'fa-solid fa-expand';
+                }
+            }
+        }
+
+        function closeGameModal() {
+            playClickSound();
+            if (document.fullscreenElement && document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+            document.getElementById('game-iframe').src = 'about:blank';
+            document.getElementById('game-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+            activeGameId = null;
+        }
+
+        /**
+         * 8. MODAL XÁC NHẬN ĐẶT LẠI TIẾN ĐỘ
+         */
+        function openResetModal() {
+            playClickSound();
+            document.getElementById('reset-modal').classList.remove('hidden');
+        }
+
+        function closeResetModal() {
+            playClickSound();
+            document.getElementById('reset-modal').classList.add('hidden');
+        }
+
+        function confirmResetProgress() {
+            playWinSound();
+            completedGames = [];
+            saveProgress();
+            renderGames();
+            closeResetModal();
+        }
+
+        /**
+         * 8B. MODAL HỒ SƠ TÁC GIẢ & SAO CHÉP EMAIL
+         */
+        function openAuthorModal() {
+            playClickSound();
+            document.getElementById('author-modal').classList.remove('hidden');
+        }
+
+        function closeAuthorModal() {
+            playClickSound();
+            document.getElementById('author-modal').classList.add('hidden');
+        }
+
+        function copyAuthorEmail() {
+            playWinSound();
+            const email = 'chucdao.thmb.tc@dienbien.edu.vn';
+            const tempInput = document.createElement('textarea');
+            tempInput.value = email;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand('copy');
+            } catch (e) {}
+            document.body.removeChild(tempInput);
+
+            const toastHero = document.getElementById('copy-toast-hero');
+            const toastModal = document.getElementById('copy-toast-modal');
+            if (toastHero) {
+                toastHero.classList.remove('hidden');
+                setTimeout(() => toastHero.classList.add('hidden'), 3000);
+            }
+            if (toastModal) {
+                toastModal.classList.remove('hidden');
+                setTimeout(() => toastModal.classList.add('hidden'), 3000);
+            }
+        }
+
+        /**
+         * 9. HIỆU ỨNG MƯA PHÁO HOA CHÚC MỪNG (CANVAS CONFETTI)
+         */
+        const confettiCanvas = document.getElementById('confetti-canvas');
+        const confettiCtx = confettiCanvas.getContext('2d');
+        let confettiParticles = [];
+        let confettiAnimId = null;
+
+        function resizeConfettiCanvas() {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeConfettiCanvas);
+        resizeConfettiCanvas();
+
+        function launchConfetti(count = 50) {
+            const colors = ['#FF5E8E', '#7C4DFF', '#00C4B4', '#FFB800', '#38BDF8', '#4ADE80'];
+            for (let i = 0; i < count; i++) {
+                confettiParticles.push({
+                    x: window.innerWidth / 2 + (Math.random() - 0.5) * 250,
+                    y: window.innerHeight / 2,
+                    vx: (Math.random() - 0.5) * 14,
+                    vy: -Math.random() * 14 - 4,
+                    size: Math.random() * 8 + 6,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    rotation: Math.random() * 360,
+                    vr: (Math.random() - 0.5) * 12,
+                    alpha: 1
+                });
+            }
+            if (!confettiAnimId) {
+                animateConfetti();
+            }
+        }
+
+        function animateConfetti() {
+            confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            confettiParticles.forEach((p, idx) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.38; // trọng lực
+                p.rotation += p.vr;
+                p.alpha -= 0.012;
+
+                confettiCtx.save();
+                confettiCtx.globalAlpha = Math.max(0, p.alpha);
+                confettiCtx.translate(p.x, p.y);
+                confettiCtx.rotate((p.rotation * Math.PI) / 180);
+                confettiCtx.fillStyle = p.color;
+                confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                confettiCtx.restore();
+
+                if (p.alpha <= 0 || p.y > confettiCanvas.height + 20) {
+                    confettiParticles.splice(idx, 1);
+                }
+            });
+
+            if (confettiParticles.length > 0) {
+                confettiAnimId = requestAnimationFrame(animateConfetti);
+            } else {
+                confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                confettiAnimId = null;
+            }
+        }
+
+        // Đóng modal khi nhấn phím Escape
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (!document.getElementById('game-modal').classList.contains('hidden')) {
+                    closeGameModal();
+                }
+                if (!document.getElementById('reset-modal').classList.contains('hidden')) {
+                    closeResetModal();
+                }
+                if (!document.getElementById('author-modal').classList.contains('hidden')) {
+                    closeAuthorModal();
+                }
+            }
+        });
+
+        // Khởi tạo trang web khi tải xong
+        window.onload = function () {
+            loadProgress();
+            renderGames();
+        };
+    </script>
+</body>
+</html>

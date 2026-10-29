@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nhà Thám Hiểm Origami</title>
+<style>
+:root { --c-bg: #F8F7FF; --c-primary: #58429B; --c-sec: #4ABDAA; --c-acc: #F2BE4A; --c-pink: #F6B6C8; --c-text: #333333; }
+body { margin:0; font-family: 'Segoe UI', sans-serif; background: var(--c-bg); color: var(--c-text); user-select: none; }
+* { box-sizing: border-box; }
+.hidden { display: none !important; }
+#app { max-width: 1000px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; background: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; }
+header { background: var(--c-primary); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index:10; }
+.btn { padding: 12px 20px; border-radius: 24px; border: none; font-weight: bold; font-size:1em; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,0.15); transition: 0.1s; }
+.btn:active { transform: translateY(4px); box-shadow: none; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: 0 4px 0 rgba(0,0,0,0.15); }
+.btn-acc { background: var(--c-acc); color: var(--c-text); }
+.btn-sec { background: var(--c-sec); color: white; }
+.btn-pink { background: var(--c-pink); color: var(--c-text); }
+.btn-primary { background: var(--c-primary); color: white; }
+.screen { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; }
+#mascot-area { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px; }
+.bubble { background: var(--c-bg); border: 2px solid var(--c-sec); padding: 15px; border-radius: 15px; flex: 1; font-size: 1.1em; position: relative; }
+.bubble::before { content:''; position:absolute; left:-10px; top:20px; border: 10px solid transparent; border-right-color: var(--c-sec); border-left:0; border-top:0; margin-top:-5px; }
+.level-area { flex: 1; border: 2px dashed #ccc; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; background:#fafafa; }
+.controls { display: flex; justify-content: center; gap: 15px; padding: 20px; background: white; border-top: 1px solid #ddd; z-index:10; }
+.vid-list { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+.vid-card { border: 3px solid #ddd; border-radius: 16px; padding: 15px; cursor: pointer; text-align: center; width: 180px; background: white; transition: 0.2s; }
+.vid-card:hover { border-color: var(--c-sec); transform: translateY(-5px); }
+.vid-card svg { width: 120px; height: 120px; }
+#player { width: 400px; height: 250px; background: #eee; border: 4px solid var(--c-primary); border-radius: 16px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+#player-controls { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+.sort-grid { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; max-width: 800px; }
+.sort-item { width: 120px; height: 120px; border: 3px solid var(--c-primary); border-radius: 16px; background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; position: relative; }
+.sort-item.selected { border-color: var(--c-acc); box-shadow: 0 0 15px var(--c-acc); transform: scale(1.1); z-index: 2; }
+.step-list { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 700px; }
+.step-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 20px; border-radius: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 2px solid transparent; }
+.step-actions { display: flex; gap: 10px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div style="font-size: 1.2em;"><strong>Nhà Thám Hiểm Origami</strong> | Bài 8B</div>
+    <div style="display:flex; gap:10px;">
+       <button class="btn btn-acc" onclick="toggleBGM()" id="btn-bgm">🎵 Nhạc: Bật</button>
+       <button class="btn btn-acc" onclick="toggleSFX()" id="btn-sfx">🔊 SFX: Bật</button>
+    </div>
+  </header>
+
+  <div id="screen-welcome" class="screen">
+     <h1 style="text-align:center; color: var(--c-primary); font-size: 2.5em; margin-top: 10vh;">NHÀ THÁM HIỂM ORIGAMI</h1>
+     <div style="text-align:center; margin: 30px 0;">
+        <svg width="250" height="250" viewBox="0 0 200 200">
+           <polygon points="20,120 180,120 140,180 60,180" fill="var(--c-sec)"/>
+           <polygon points="100,20 100,120 160,120" fill="var(--c-acc)"/>
+           <polygon points="100,20 100,120 40,120" fill="var(--c-pink)"/>
+        </svg>
+     </div>
+     <p style="text-align:center; font-size: 1.5em; color: var(--c-text); max-width: 600px; margin: 0 auto;">Cùng Pixel học cách làm sản phẩm thủ công qua video hướng dẫn nhé!</p>
+     <div style="display:flex; justify-content:center; margin-top:40px;">
+        <button class="btn btn-sec" style="font-size: 1.8em; padding: 15px 40px;" onclick="startGame()">▶ BẮT ĐẦU</button>
+     </div>
+  </div>
+
+  <div id="screen-game" class="screen hidden">
+     <div style="display:flex; justify-content:space-between; margin-bottom: 15px; font-weight:bold; font-size: 1.2em; color: var(--c-primary);">
+        <span id="level-title">Màn 1/4</span>
+        <span id="score-display">Điểm: 0</span>
+     </div>
+     <div id="mascot-area">
+        <svg id="mascot" width="100" height="100" viewBox="0 0 100 100">
+           <rect x="15" y="15" width="70" height="70" rx="20" fill="var(--c-primary)"/>
+           <circle cx="35" cy="45" r="8" fill="white"/>
+           <circle cx="65" cy="45" r="8" fill="white"/>
+           <path d="M 40 70 Q 50 80 60 70" stroke="white" stroke-width="5" stroke-linecap="round" fill="none"/>
+           <rect x="40" y="5" width="20" height="15" fill="var(--c-sec)" rx="5"/>
+        </svg>
+        <div class="bubble" id="dialog-text">Hướng dẫn của màn chơi...</div>
+     </div>
+
+     <div id="level-1" class="level-area hidden">
+         <div class="vid-list" id="l1-vids"></div>
+     </div>
+
+     <div id="level-2" class="level-area hidden">
+         <div id="player">
+             <div id="player-frame" style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;"></div>
+             <div style="position:absolute; bottom:10px; right:15px; background:rgba(0,0,0,0.6); color:white; padding:4px 8px; border-radius:8px; font-size:14px; font-family:monospace;">00:<span id="p-time">00</span></div>
+         </div>
+         <div id="player-controls">
+             <button class="btn btn-sec" onclick="l2Prev()">⏮ Lùi</button>
+             <button class="btn btn-primary" onclick="l2PlayPause()" id="l2-play-btn" style="width: 140px;">▶ Phát</button>
+             <button class="btn btn-sec" onclick="l2Next()">⏭ Tới</button>
+         </div>
+     </div>
+
+     <div id="level-3" class="level-area hidden">
+         <p style="text-align:center; font-style:italic; font-size: 1.1em; color: #666; margin-top:0;">Nháy chuột vào 2 hình để đổi chỗ cho nhau</p>
+         <div class="sort-grid" id="l3-grid"></div>
+     </div>
+
+     <div id="level-4" class="level-area hidden">
+         <div class="step-list" id="l4-list"></div>
+     </div>
+
+     <div class="controls">
+        <button class="btn btn-acc" onclick="showHint()">💡 Gợi ý</button>
+        <button class="btn btn-pink" onclick="retryLevel()">🔄 Làm lại</button>
+        <button class="btn btn-primary" id="btn-next" onclick="nextLevel()" disabled>Tiếp tục ⏭</button>
+     </div>
+  </div>
+
+  <div id="screen-result" class="screen hidden">
+     <h1 style="text-align:center; color: var(--c-primary); font-size: 3em; margin-top: 10vh;">TỔNG KẾT</h1>
+     <h2 style="text-align:center; font-size: 2.5em; color: var(--c-sec);" id="final-score">Điểm của em: 100/100</h2>
+     <div style="text-align:center; margin: 30px; font-size: 1.5em; line-height: 1.6;">
+        <p>🌟 Chúc mừng em đã hoàn thành xuất sắc!</p>
+        <p>Em đã biết cách tìm, xem và thực hành theo video hướng dẫn.</p>
+     </div>
+     <div style="text-align:center; margin-top: 20px;">
+         <button class="btn btn-sec" style="font-size: 1.5em; padding: 15px 40px;" onclick="location.reload()">🔄 Chơi lại từ đầu</button>
+     </div>
+  </div>
+</div>
+
+<script>
+const GAME_CONFIG = {
+   levels: [
+     { id: 1, title: "TÌM VIDEO PHÙ HỢP", instruction: "Em hãy giúp Pixel tìm và nháy chuột chọn đúng video: <b>Hướng dẫn gấp con chó</b> nhé!", hint: "Tìm thẻ video có hình con chó và tiêu đề tương ứng.", 
+       data: [
+         { id: 'v1', title: 'Gấp con ếch', svg: '<polygon points="60,30 90,90 30,90" fill="#4ABDAA"/>', correct: false },
+         { id: 'v2', title: 'Gấp con chó', svg: '<polygon points="30,30 90,30 60,90" fill="#F2BE4A"/><polygon points="30,30 20,60 40,60" fill="#d0a070"/><polygon points="90,30 100,60 80,60" fill="#d0a070"/>', correct: true },
+         { id: 'v3', title: 'Gấp thuyền', svg: '<polygon points="30,70 90,70 70,100 50,100" fill="#58429B"/><polygon points="60,30 60,70 90,70" fill="#F6B6C8"/>', correct: false }
+       ]
+     },
+     { id: 2, title: "ĐIỀU KHIỂN PHÁT", instruction: "Hãy dùng nút điều khiển video để chuyển đến <b>Bước 5 (Gấp mũi)</b> và bấm <b>Dừng (Pause)</b> để thực hành.", hint: "Bấm nút 'Tới' hoặc 'Phát' đến khi thấy khung hình vẽ mũi (số 05), rồi bấm Dừng.", 
+       frames: [
+         '<rect x="20" y="20" width="60" height="60" fill="#fff" stroke="#333" stroke-width="2"/>',
+         '<polygon points="20,20 80,20 50,50" fill="#fff" stroke="#333" stroke-width="2"/>',
+         '<polygon points="20,20 80,20 50,80" fill="#F2BE4A"/><path d="M20,20 L10,50 L30,40 Z" fill="#d0a070"/>',
+         '<polygon points="20,20 80,20 50,80" fill="#F2BE4A"/><path d="M20,20 L10,50 L30,40 Z" fill="#d0a070"/><path d="M80,20 L90,50 L70,40 Z" fill="#d0a070"/>',
+         '<polygon points="20,20 80,20 50,80" fill="#F2BE4A"/><path d="M20,20 L10,50 L30,40 Z" fill="#d0a070"/><path d="M80,20 L90,50 L70,40 Z" fill="#d0a070"/><polygon points="40,80 60,80 50,70" fill="#333"/>',
+         '<polygon points="20,20 80,20 50,80" fill="#F2BE4A"/><path d="M20,20 L10,50 L30,40 Z" fill="#d0a070"/><path d="M80,20 L90,50 L70,40 Z" fill="#d0a070"/><polygon points="40,80 60,80 50,70" fill="#333"/><circle cx="40" cy="40" r="4" fill="#333"/><circle cx="60" cy="40" r="4" fill="#333"/>'
+       ], targetFrame: 4
+     },
+     { id: 3, title: "SẮP XẾP QUY TRÌNH", instruction: "Sắp xếp lại 6 bước gấp con chó cho đúng thứ tự. Nháy chuột vào 2 hình để đổi chỗ.", hint: "Nhớ lại 6 khung hình ở màn trước: Giấy vuông -> Tam giác -> Tai trái -> Tai phải -> Mũi -> Mắt.", 
+       steps: [0, 1, 2, 3, 4, 5]
+     },
+     { id: 4, title: "LÀM THEO VÀ TỰ ĐÁNH GIÁ", instruction: "Em hãy tự lấy giấy và thực hành gấp nhé! Có thể bấm <b>Xem lại</b> hoặc <b>Trợ giúp</b>. Xong bước nào, bấm <b>Đã làm</b>.", hint: "Hãy tự giác thực hành và đánh dấu trung thực nhé!", 
+       steps: ["Chuẩn bị giấy vuông", "Gấp chéo thành hình tam giác", "Gấp góc làm tai trái", "Gấp góc làm tai phải", "Gấp mũi", "Vẽ mắt và trang trí"]
+     }
+   ]
+};
+
+let currentLevel = 0; let score = 0; let levelCompleted = [false, false, false, false];
+let audioCtx = null; let bgmOsc = null, bgmGain = null; let bgmEnabled = true; let sfxEnabled = true;
+
+function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if(audioCtx.state === 'suspended') audioCtx.resume(); }
+function playTone(freq, type, duration, vol) { if(!sfxEnabled || !audioCtx) return; const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime); gain.gain.setValueAtTime(vol, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration); osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + duration); }
+function playSFX(type) { initAudio(); if(type==='correct'){ playTone(600,'sine',0.1,0.5); setTimeout(()=>playTone(800,'sine',0.2,0.5),100); } else if(type==='wrong'){ playTone(300,'sawtooth',0.3,0.3); } else if(type==='click'){ playTone(400,'sine',0.1,0.2); } else if(type==='win'){ playTone(500,'sine',0.1,0.5); setTimeout(()=>playTone(650,'sine',0.1,0.5),150); setTimeout(()=>playTone(800,'sine',0.3,0.5),300); } }
+function startBGM() { if(!bgmEnabled || !audioCtx) return; if(bgmOsc) return; bgmOsc = audioCtx.createOscillator(); bgmGain = audioCtx.createGain(); bgmOsc.type = 'triangle'; bgmOsc.frequency.setValueAtTime(220, audioCtx.currentTime); bgmGain.gain.setValueAtTime(0.05, audioCtx.currentTime); let notes = [261.63, 329.63, 392.00, 523.25]; let i = 0; bgmOsc.timer = setInterval(()=>{ if(!bgmOsc) return; bgmOsc.frequency.setValueAtTime(notes[i%notes.length], audioCtx.currentTime); i++; }, 600); bgmOsc.connect(bgmGain); bgmGain.connect(audioCtx.destination); bgmOsc.start(); }
+function stopBGM() { if(bgmOsc) { clearInterval(bgmOsc.timer); bgmOsc.stop(); bgmOsc.disconnect(); bgmOsc = null; } }
+function toggleBGM() { initAudio(); bgmEnabled = !bgmEnabled; document.getElementById('btn-bgm').innerText = bgmEnabled ? "🎵 Nhạc: Bật" : "🎵 Nhạc: Tắt"; if(bgmEnabled) startBGM(); else stopBGM(); }
+function toggleSFX() { sfxEnabled = !sfxEnabled; document.getElementById('btn-sfx').innerText = sfxEnabled ? "🔊 SFX: Bật" : "🔊 SFX: Tắt"; }
+
+function $(id) { return document.getElementById(id); }
+function setDialog(text) { $('dialog-text').innerHTML = text; }
+function startGame() { initAudio(); playSFX('click'); startBGM(); $('screen-welcome').classList.add('hidden'); $('screen-game').classList.remove('hidden'); loadLevel(0); }
+
+function loadLevel(idx) { currentLevel = idx; const config = GAME_CONFIG.levels[idx]; $('level-title').innerText = `Màn ${idx+1}/4: ${config.title}`; setDialog(config.instruction); document.querySelectorAll('.level-area').forEach(el => el.classList.add('hidden')); $(`level-${idx+1}`).classList.remove('hidden'); let btnNext = $('btn-next'); btnNext.disabled = !levelCompleted[idx]; if(idx===0) setupLevel1(); else if(idx===1) setupLevel2(); else if(idx===2) setupLevel3(); else if(idx===3) setupLevel4(); }
+function completeLevel() { if(!levelCompleted[currentLevel]) { levelCompleted[currentLevel] = true; score += 25; $('score-display').innerText = `Điểm: ${score}`; playSFX('win'); setDialog("Tuyệt vời! Em làm đúng rồi. Hãy bấm Tiếp tục nhé."); $('btn-next').disabled = false; } }
+function nextLevel() { playSFX('click'); if(currentLevel < 3) loadLevel(currentLevel + 1); else { $('screen-game').classList.add('hidden'); $('screen-result').classList.remove('hidden'); $('final-score').innerText = `Điểm của em: ${score}/100`; playSFX('win'); stopBGM(); } }
+function retryLevel() { playSFX('click'); if(levelCompleted[currentLevel]) { levelCompleted[currentLevel] = false; if(score>=25) score-=25; $('score-display').innerText = `Điểm: ${score}`; } loadLevel(currentLevel); }
+function showHint() { playSFX('click'); setDialog("💡 Gợi ý: " + GAME_CONFIG.levels[currentLevel].hint); }
+
+// L1
+function setupLevel1() { const c = GAME_CONFIG.levels[0]; let h = ''; c.data.forEach(item => { h += `<div class="vid-card" onclick="l1Check('${item.id}')"><svg viewBox="0 0 100 100">${item.svg}</svg><div style="font-weight:bold; margin-top:10px; font-size:1.1em;">${item.title}</div></div>`; }); $('l1-vids').innerHTML = h; }
+function l1Check(id) { if(levelCompleted[currentLevel]) return; const c = GAME_CONFIG.levels[0]; let item = c.data.find(x => x.id === id); if(item.correct) { completeLevel(); } else { playSFX('wrong'); setDialog("Chưa đúng rồi, đây là video " + item.title + ". Em tìm lại nhé!"); } }
+
+// L2
+let l2Frame = 0; let l2Timer = null; let l2Playing = false;
+function setupLevel2() { l2Frame = 0; l2Playing = false; stopL2Timer(); renderL2(); }
+function renderL2() { const c = GAME_CONFIG.levels[1]; $('player-frame').innerHTML = `<svg viewBox="0 0 100 100" style="width:200px; height:200px;">${c.frames[l2Frame]}</svg>`; $('p-time').innerText = "0" + (l2Frame+1); $('l2-play-btn').innerText = l2Playing ? "⏸ Dừng" : "▶ Phát"; checkL2Win(); }
+function stopL2Timer() { if(l2Timer) clearInterval(l2Timer); l2Timer=null; }
+function l2PlayPause() { playSFX('click'); if(levelCompleted[currentLevel]) return; l2Playing = !l2Playing; if(l2Playing) { l2Timer = setInterval(()=>{ l2Frame = (l2Frame+1) % GAME_CONFIG.levels[1].frames.length; renderL2(); }, 1200); } else { stopL2Timer(); renderL2(); } }
+function l2Next() { playSFX('click'); if(levelCompleted[currentLevel]) return; l2Playing = false; stopL2Timer(); l2Frame = Math.min(l2Frame+1, GAME_CONFIG.levels[1].frames.length-1); renderL2(); }
+function l2Prev() { playSFX('click'); if(levelCompleted[currentLevel]) return; l2Playing = false; stopL2Timer(); l2Frame = Math.max(l2Frame-1, 0); renderL2(); }
+function checkL2Win() { if(!l2Playing && l2Frame === GAME_CONFIG.levels[1].targetFrame && !levelCompleted[currentLevel]) { setTimeout(completeLevel, 200); } }
+
+// L3
+let l3Order = []; let l3Selected = -1;
+function setupLevel3() { l3Order = [3, 0, 5, 1, 4, 2]; l3Selected = -1; renderL3(); }
+function renderL3() { let h = ''; const frames = GAME_CONFIG.levels[1].frames; l3Order.forEach((fIdx, i) => { h += `<div class="sort-item ${l3Selected===i?'selected':''}" onclick="l3Click(${i})"><svg viewBox="0 0 100 100" style="width:80%; height:80%;">${frames[fIdx]}</svg><div style="position:absolute; top:5px; left:8px; font-weight:bold; font-size:1.2em; color:var(--c-primary);">${i+1}</div></div>`; }); $('l3-grid').innerHTML = h; checkL3Win(); }
+function l3Click(i) { playSFX('click'); if(levelCompleted[currentLevel]) return; if(l3Selected === -1) l3Selected = i; else { if(l3Selected !== i) { let temp = l3Order[l3Selected]; l3Order[l3Selected] = l3Order[i]; l3Order[i] = temp; } l3Selected = -1; } renderL3(); }
+function checkL3Win() { let win = l3Order.every((val, i) => val === i); if(win && !levelCompleted[currentLevel]) completeLevel(); }
+
+// L4
+let l4Status = [];
+function setupLevel4() { const c = GAME_CONFIG.levels[3]; l4Status = Array(c.steps.length).fill(false); renderL4(); }
+function renderL4() { const c = GAME_CONFIG.levels[3]; let h = ''; c.steps.forEach((step, i) => { h += `<div class="step-item" style="${l4Status[i]?'background:#d4edda; border-color:#c3e6cb;':''}"><div style="flex:1"><strong style="color:var(--c-primary);">Bước ${i+1}:</strong> ${step} ${l4Status[i]?'✅':''}</div><div class="step-actions"><button class="btn btn-acc" onclick="l4Help('Xem lại', ${i})">Xem lại</button><button class="btn btn-pink" onclick="l4Help('Trợ giúp', ${i})">Trợ giúp</button><button class="btn btn-sec" onclick="l4Mark(${i})" ${l4Status[i]?'disabled':''}>Đã làm</button></div></div>`; }); $('l4-list').innerHTML = h; if(l4Status.every(x=>x) && !levelCompleted[currentLevel]) completeLevel(); }
+function l4Mark(i) { playSFX('click'); l4Status[i] = true; renderL4(); }
+function l4Help(type, i) { playSFX('click'); if(type === 'Xem lại') setDialog(`Đó là bước ${i+1}. Em có thể làm lại màn 2 để xem hình ảnh rõ hơn!`); else setDialog(`💡 Em có thể nhờ người lớn hướng dẫn hoặc xem lại video ở màn 2 để hoàn thành Bước ${i+1}.`); }
+
+window.addEventListener('blur', stopBGM);
+window.addEventListener('focus', () => { if(bgmEnabled && !$('screen-welcome').classList.contains('active') && !$('screen-result').classList.contains('active')) startBGM(); });
+</script>
+</body>
+</html>

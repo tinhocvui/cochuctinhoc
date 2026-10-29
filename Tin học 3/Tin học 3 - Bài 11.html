@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NHÀ THIẾT KẾ TRÌNH CHIẾU - Tin học 3 Bài 11</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+    
+    :root {
+      --bg-cream: #FFF8E9;
+      --green-primary: #53B77A;
+      --coral-accent: #EF7469;
+      --lavender-accent: #7766B7;
+      --yellow-bright: #FFC65C;
+      --text-dark: #2C3E50;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: var(--bg-cream);
+      color: var(--text-dark);
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F1F1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #C7C7C7;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #A8A8A8;
+    }
+
+    /* Animations & Soft Shadows */
+    .soft-shadow {
+      box-shadow: 0 10px 25px -5px rgba(83, 183, 122, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .btn-bounce {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn-bounce:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+    .btn-bounce:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .pulse-subtle {
+      animation: pulseSubtle 2s infinite ease-in-out;
+    }
+    @keyframes pulseSubtle {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    .glow-active {
+      animation: glowBorder 1.5s infinite alternate;
+    }
+    @keyframes glowBorder {
+      from { border-color: var(--coral-accent); box-shadow: 0 0 10px rgba(239, 116, 105, 0.4); }
+      to { border-color: var(--yellow-bright); box-shadow: 0 0 20px rgba(255, 198, 92, 0.8); }
+    }
+
+    .speech-bubble {
+      position: relative;
+      background: #FFFFFF;
+      border-radius: 18px;
+      border: 3px solid #E2E8F0;
+    }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      left: -14px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 8px 14px 8px 0;
+      border-style: solid;
+      border-color: transparent #FFFFFF transparent transparent;
+    }
+
+    /* Slide View Animations */
+    .slide-enter {
+      animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slideInRight {
+      from { transform: translateX(50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Confetti Canvas */
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+  <!-- Confetti Layer -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- TOP GAME BAR -->
+  <header class="bg-white/90 backdrop-blur border-b-4 border-emerald-400 sticky top-0 z-40 px-4 py-2.5 shadow-sm">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <!-- Title & Lesson Info -->
+      <div class="flex items-center gap-3">
+        <div class="bg-emerald-500 text-white font-extrabold px-3 py-1 rounded-xl text-sm tracking-wide shadow-sm flex items-center gap-1.5">
+          <span>🖥️</span> TIN HỌC 3
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-black text-slate-800 tracking-tight leading-tight">NHÀ THIẾT KẾ TRÌNH CHIẾU</h1>
+          <p class="text-xs text-slate-500 font-semibold hidden sm:block">Bài 11: Bài trình chiếu của em</p>
+        </div>
+      </div>
+
+      <!-- Stage & Score Stats -->
+      <div class="flex items-center gap-3 bg-amber-50/80 px-3 py-1.5 rounded-2xl border-2 border-amber-200">
+        <div class="flex items-center gap-1 text-xs sm:text-sm font-bold text-amber-900">
+          <span class="text-amber-500">📍</span>
+          <span>Tiến độ:</span>
+          <span id="stageProgressText" class="text-emerald-600 font-black">Màn 1/4</span>
+        </div>
+        <div class="h-4 w-0.5 bg-amber-200"></div>
+        <div class="flex items-center gap-1 text-xs sm:text-sm font-bold text-amber-900">
+          <span class="text-yellow-500">⭐</span>
+          <span>Điểm:</span>
+          <span id="scoreText" class="text-amber-600 font-black text-base">0/100</span>
+        </div>
+      </div>
+
+      <!-- Controls & Navigation -->
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <button id="bgmToggleBtn" onclick="gameApp.toggleBGM()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 border border-slate-300 transition" title="Bật/Tắt Nhạc nền">
+          <span id="bgmIcon">🎵</span> <span class="hidden md:inline">Nhạc</span>
+        </button>
+        <button id="sfxToggleBtn" onclick="gameApp.toggleSFX()" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 border border-slate-300 transition" title="Bật/Tắt Hiệu ứng âm thanh">
+          <span id="sfxIcon">🔊</span> <span class="hidden md:inline">Âm thanh</span>
+        </button>
+        
+        <button id="hintBtn" onclick="gameApp.showHint()" class="p-2 px-3 rounded-xl bg-amber-400 hover:bg-amber-500 text-amber-950 font-extrabold text-xs flex items-center gap-1 shadow-sm btn-bounce hidden">
+          💡 Gợi ý
+        </button>
+        <button id="resetStageBtn" onclick="gameApp.resetCurrentStage()" class="p-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs flex items-center gap-1 hidden" title="Làm lại màn này">
+          🔄 <span class="hidden md:inline">Làm lại</span>
+        </button>
+        <button id="homeBtn" onclick="gameApp.showWelcome()" class="p-2 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-xs flex items-center gap-1 border border-rose-300 transition" title="Trang chủ">
+          🏠
+        </button>
+        <button id="nextStageBtn" onclick="gameApp.nextStage()" disabled class="p-2 px-4 rounded-xl bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-600 text-white font-extrabold text-xs sm:text-sm flex items-center gap-1.5 shadow-md btn-bounce transition hidden">
+          <span>Tiếp tục</span> ➔
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-5 flex flex-col justify-center">
+
+    <!-- SCREEN 0: WELCOME & MODE SELECT -->
+    <section id="screenWelcome" class="bg-white rounded-3xl p-6 sm:p-10 border-4 border-emerald-300 soft-shadow text-center max-w-3xl mx-auto my-auto relative overflow-hidden">
+      <div class="absolute -top-12 -right-12 w-40 h-40 bg-amber-100 rounded-full blur-2xl opacity-60"></div>
+      <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-purple-100 rounded-full blur-2xl opacity-60"></div>
+
+      <!-- Mascot Welcome Banner -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8">
+        <div class="w-36 h-36 flex-shrink-0 animate-bounce" style="animation-duration: 2.5s;">
+          <div id="mascotWelcomeSvg"></div>
+        </div>
+        <div class="text-left max-w-md">
+          <span class="bg-emerald-100 text-emerald-800 font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider border border-emerald-300">
+            Trò chơi Học tập Tin học 3
+          </span>
+          <h2 class="text-2xl sm:text-4xl font-black text-slate-800 mt-2 leading-tight">NHÀ THIẾT KẾ TRÌNH CHIẾU</h2>
+          <p class="text-slate-600 font-medium text-sm sm:text-base mt-2">
+            Cùng Rô-bốt Bíp khám phá phần mềm trình chiếu, tạo slide đẹp mắt và lưu sản phẩm đầu tay của em nhé!
+          </p>
+        </div>
+      </div>
+
+      <!-- Mode Selector -->
+      <div class="bg-amber-50/80 border-2 border-amber-200 rounded-2xl p-4 mb-8 max-w-lg mx-auto">
+        <h3 class="font-extrabold text-slate-800 text-sm mb-3">CHỌN CHẾ ĐỘ CHƠI:</h3>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="cursor-pointer border-2 border-emerald-400 bg-white hover:bg-emerald-50 rounded-xl p-3 flex items-center gap-2 font-extrabold text-emerald-900 transition">
+            <input type="radio" name="gameMode" value="practice" checked class="w-4 h-4 accent-emerald-600">
+            <div class="text-left">
+              <div class="text-xs sm:text-sm">🌱 Luyện tập</div>
+              <div class="text-[10px] font-normal text-slate-500">Hiển thị gợi ý ngay</div>
+            </div>
+          </label>
+          <label class="cursor-pointer border-2 border-purple-300 bg-white hover:bg-purple-50 rounded-xl p-3 flex items-center gap-2 font-extrabold text-purple-900 transition">
+            <input type="radio" name="gameMode" value="challenge" class="w-4 h-4 accent-purple-600">
+            <div class="text-left">
+              <div class="text-xs sm:text-sm">⚡ Thử thách</div>
+              <div class="text-[10px] font-normal text-slate-500">Tự suy luận trả lời</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap justify-center gap-4">
+        <button onclick="gameApp.showGuideModal()" class="px-6 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold text-base border-2 border-slate-300 btn-bounce flex items-center gap-2">
+          📖 Hướng dẫn
+        </button>
+        <button onclick="gameApp.startGame()" class="px-8 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg shadow-lg btn-bounce flex items-center gap-2">
+          🚀 BẮT ĐẦU NGAY
+        </button>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE GAME AREA CONTAINER -->
+    <section id="gameArea" class="hidden flex-1 flex flex-col gap-4">
+
+      <!-- MASCOT INSTRUCTION BANNER -->
+      <div class="bg-white rounded-2xl p-4 border-2 border-slate-200 soft-shadow flex items-center gap-4">
+        <!-- SVG Mascot Avatar -->
+        <div class="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 relative">
+          <div id="mascotStageSvg"></div>
+        </div>
+        <!-- Speech Bubble Text -->
+        <div class="speech-bubble p-3 sm:p-4 flex-1">
+          <p id="mascotMessage" class="text-xs sm:text-base font-bold text-slate-800 leading-snug">
+            Xin chào! Hãy cùng Bíp hoàn thành nhiệm vụ màn này nhé!
+          </p>
+          <div id="mascotFeedback" class="text-xs sm:text-sm font-extrabold text-emerald-600 mt-1 hidden"></div>
+        </div>
+      </div>
+
+      <!-- STAGE PLAYGROUND -->
+      <div id="stageContainer" class="flex-1 bg-white rounded-3xl p-4 sm:p-6 border-2 border-slate-200 soft-shadow min-h-[420px] flex flex-col justify-between">
+        <!-- Dynamic Stage Content Injected Here -->
+      </div>
+    </section>
+
+    <!-- SCREEN FINAL: SUMMARY & BADGES -->
+    <section id="screenSummary" class="hidden bg-white rounded-3xl p-6 sm:p-10 border-4 border-emerald-400 soft-shadow text-center max-w-4xl mx-auto my-auto relative overflow-hidden">
+      <div class="w-28 h-28 mx-auto mb-3">
+        <div id="mascotFinalSvg"></div>
+      </div>
+
+      <span class="bg-amber-100 text-amber-800 font-black text-xs px-4 py-1.5 rounded-full uppercase tracking-wider border border-amber-300">
+        🎉 CHÚC MỪNG HOÀN THÀNH XUẤT SẮC!
+      </span>
+
+      <h2 class="text-3xl sm:text-4xl font-black text-slate-800 mt-3">DANH HIỆU: NHÀ THIẾT KẾ TÀI NĂNG</h2>
+      <p class="text-slate-600 font-semibold text-sm sm:text-base mt-1">
+        Em đã đạt tổng số điểm tuyệt đối: <span class="text-emerald-600 text-xl font-black">100 / 100 điểm</span>!
+      </p>
+
+      <!-- Earned Badges -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+        <div class="bg-amber-50/80 border-2 border-amber-200 rounded-2xl p-4 flex flex-col items-center">
+          <div class="text-4xl mb-1">🥇</div>
+          <h4 class="font-extrabold text-slate-800 text-sm">Nhận Diện Thành Thạo</h4>
+          <p class="text-[11px] text-slate-500 mt-1">Hiểu rõ các vùng làm việc của phần mềm trình chiếu</p>
+        </div>
+        <div class="bg-emerald-50/80 border-2 border-emerald-200 rounded-2xl p-4 flex flex-col items-center">
+          <div class="text-4xl mb-1">🎨</div>
+          <h4 class="font-extrabold text-slate-800 text-sm">Trình Bày Đẹp Mắt</h4>
+          <p class="text-[11px] text-slate-500 mt-1">Tạo tiêu đề, chọn mẫu và chèn hình ảnh hoa mai hài hòa</p>
+        </div>
+        <div class="bg-purple-50/80 border-2 border-purple-200 rounded-2xl p-4 flex flex-col items-center">
+          <div class="text-4xl mb-1">💾</div>
+          <h4 class="font-extrabold text-slate-800 text-sm">Lưu Trữ Chuẩn Xác</h4>
+          <p class="text-[11px] text-slate-500 mt-1">Biết trình chiếu và lưu bài vào đúng thư mục máy tính</p>
+        </div>
+      </div>
+
+      <!-- SGK Review Points -->
+      <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 text-left mb-6">
+        <h4 class="font-black text-slate-800 text-xs sm:text-sm uppercase tracking-wide text-emerald-700 mb-2">
+          📚 KIẾN THỨC EM ĐÃ NẮM VỮNG (SGK TIN HỌC 3 - BÀI 11):
+        </h4>
+        <ul class="text-xs sm:text-sm text-slate-700 space-y-1.5 font-semibold list-disc pl-5">
+          <li>Phần mềm trình chiếu giúp em tạo các trang chiếu sinh động kết hợp cả chữ và hình ảnh.</li>
+          <li>Bài trình chiếu có thể gồm nhiều trang, trang đầu tiên thường là <b>Trang tiêu đề</b>.</li>
+          <li>Em có thể chèn ảnh, thêm trang chiếu mới, xem trình chiếu và lưu bài vào đúng thư mục.</li>
+        </ul>
+      </div>
+
+      <!-- Final Actions -->
+      <div class="flex flex-wrap justify-center gap-4">
+        <button onclick="gameApp.downloadSummaryFile()" class="px-6 py-3.5 rounded-2xl bg-amber-400 hover:bg-amber-500 text-amber-950 font-extrabold text-sm border-2 border-amber-500 btn-bounce flex items-center gap-2">
+          📄 Tải Tóm Tắt Sản Phẩm (.html)
+        </button>
+        <button onclick="gameApp.restartGame()" class="px-8 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-base shadow-lg btn-bounce flex items-center gap-2">
+          🔄 Chơi Lại Từ Đầu
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: INSTRUCTIONS -->
+  <div id="guideModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl p-6 max-w-lg w-full border-4 border-emerald-400 shadow-2xl relative animate-bounce" style="animation-duration: 0.3s;">
+      <button onclick="gameApp.hideGuideModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-black text-xl">✕</button>
+      
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-2xl">📖</span>
+        <h3 class="text-xl font-black text-slate-800">HƯỚNG DẪN CHƠI</h3>
+      </div>
+
+      <div class="space-y-3 text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
+        <div class="flex gap-2">
+          <span class="font-bold text-emerald-600">1.</span>
+          <p>Trò chơi gồm <b>4 Màn</b> tương ứng với các thao tác thiết kế bài trình chiếu.</p>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-bold text-emerald-600">2.</span>
+          <p>Mỗi màn chơi hoàn thành đúng sẽ mang về cho em <b>25 điểm</b> (Tổng cộng 100 điểm).</p>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-bold text-emerald-600">3.</span>
+          <p>Đọc kỹ chỉ dẫn của <b>Rô-bốt Bíp</b> trên màn hình. Nhấn nút <b>💡 Gợi ý</b> nếu em gặp khó khăn.</p>
+        </div>
+        <div class="flex gap-2">
+          <span class="font-bold text-emerald-600">4.</span>
+          <p>Sau khi xong mỗi màn, hãy bấm nút <b>"Tiếp tục"</b> ở góc trên bên phải để qua màn tiếp theo!</p>
+        </div>
+      </div>
+
+      <button onclick="gameApp.hideGuideModal()" class="w-full mt-6 py-3 rounded-2xl bg-emerald-500 text-white font-extrabold text-sm btn-bounce">
+        Đã Hiểu, Bắt Đầu Thôi!
+      </button>
+    </div>
+  </div>
+
+  <!-- SLIDESHOW SIMULATION MODAL (STAGE 4) -->
+  <div id="slideshowModal" class="fixed inset-0 bg-black z-50 flex flex-col items-center justify-between p-4 hidden">
+    <div class="w-full flex justify-between items-center text-white px-4">
+      <span class="text-sm font-bold opacity-80">🖥️ Đang Trình Chiếu (Mô Phỏng Slide Show)</span>
+      <button onclick="gameApp.exitSlideshow()" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-1.5 rounded-xl font-extrabold text-xs">
+        ✕ Thoát Trình Chiếu (ESC)
+      </button>
+    </div>
+
+    <!-- Fullscreen Slide Display -->
+    <div id="slideshowContent" class="w-full max-w-4xl aspect-video bg-white rounded-2xl p-8 flex flex-col justify-center items-center text-center shadow-2xl relative slide-enter">
+      <!-- Slide Content Injected Dynamically -->
+    </div>
+
+    <div class="flex items-center gap-4 text-white pb-2">
+      <button onclick="gameApp.prevSlideShowPage()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-xs">
+        ◀ Trang Trước
+      </button>
+      <span id="slideShowPageNum" class="font-extrabold text-sm">Trang 1 / 2</span>
+      <button onclick="gameApp.nextSlideShowPage()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-xs">
+        Trang Sau ▶
+      </button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-white/60 border-t border-slate-200 py-2 px-4 text-center text-[11px] text-slate-500 font-semibold">
+    Sản phẩm học tập Tin học 3 • Mô phỏng phần mềm trình chiếu phục vụ học tập • Tiêu chuẩn V5
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    /**
+     * GAME CONFIGURATION OBJECT (GAME_CONFIG)
+     * All learning data, questions, instructions, and static assets.
+     */
+    const GAME_CONFIG = {
+      title: "NHÀ THIẾT KẾ TRÌNH CHIẾU",
+      grade: "TIN HỌC 3 - BÀI 11",
+      maxScore: 100,
+      scorePerStage: 25,
+      stages: [
+        {
+          id: 1,
+          name: "Màn 1: Tìm vùng làm việc",
+          instruction: "Em hãy nháy chọn đúng vùng làm việc trên giao diện trình chiếu theo yêu cầu của Rô-bốt Bíp nhé!",
+          tasks: [
+            { id: "toolbar", name: "Thanh công cụ", hint: "Thanh công cụ nằm ở TRÊN CÙNG, chứa các nút lệnh như Trang đầu, Chèn..." },
+            { id: "thumbnails", name: "Khung hình thu nhỏ", hint: "Khung hình thu nhỏ nằm ở CỘT BÊN TRÁI, hiển thị hình thu nhỏ các trang." },
+            { id: "editor", name: "Vùng soạn thảo", hint: "Vùng soạn thảo là TRANG TRẮNG CHÍNH GIỮA, nơi em nhập nội dung." },
+            { id: "slideshow_btn", name: "Nút trình chiếu", hint: "Nút trình chiếu nằm ở GÓC DƯỚI BÊN PHẢI (hình cái ly/màn chiếu)." }
+          ]
+        },
+        {
+          id: 2,
+          name: "Màn 2: Tạo trang giới thiệu",
+          instruction: "Em hãy chọn mẫu 'Trang tiêu đề', sau đó nhập đúng Tiêu đề 'Hoa mai' và Tên tác giả 'Nhóm 1 - Lớp 3A'!",
+          requiredTitle: "Hoa mai",
+          requiredAuthor: "Nhóm 1 - Lớp 3A"
+        },
+        {
+          id: 3,
+          name: "Màn 3: Thêm ảnh và trang chiếu",
+          instruction: "Em hãy chèn hình Hoa Mai Vàng vào Trang 1, điều chỉnh vị trí, sau đó bấm '+ Thêm trang mới' và nhập nội dung cho Trang 2!",
+          page2Text: "Hoa mai có màu vàng tươi, nở rộ vào dịp Tết"
+        },
+        {
+          id: 4,
+          name: "Màn 4: Trình chiếu và lưu bài",
+          instruction: "Hãy bấm 'Trình chiếu (F5)' để kiểm tra bài làm, sau đó bấm 'Lưu bài' vào thư mục 'Bài tập Tin học' với tên tệp 'Hoa_mai.pptx'!",
+          targetFolder: "Bài tập Tin học",
+          targetFileName: "Hoa_mai.pptx"
+        }
+      ]
+    };
+
+    /**
+     * SOUND SYSTEM (Web Audio API Synthesizer)
+     * Independent BGM & SFX without external audio files.
+     */
+    class SoundSystem {
+      constructor() {
+        this.ctx = null;
+        this.bgmGain = null;
+        this.sfxGain = null;
+        this.bgmEnabled = true;
+        this.sfxEnabled = true;
+        this.isPlayingBgm = false;
+        this.bgmInterval = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+          this.bgmGain = this.ctx.createGain();
+          this.sfxGain = this.ctx.createGain();
+          this.bgmGain.gain.value = 0.12; // Gentle low BGM volume (12%)
+          this.sfxGain.gain.value = 0.35;
+          this.bgmGain.connect(this.ctx.destination);
+          this.sfxGain.connect(this.ctx.destination);
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playTone(freq, duration, type = 'sine', gainNode = this.sfxGain) {
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+          gain.gain.setValueAtTime(gainNode.gain.value, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + duration);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      playClick() {
+        if (!this.sfxEnabled) return;
+        this.init();
+        this.playTone(520, 0.06, 'triangle');
+      }
+
+      playCorrect() {
+        if (!this.sfxEnabled) return;
+        this.init();
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, 0.12, 'sine'), idx * 70);
+        });
+      }
+
+      playWrong() {
+        if (!this.sfxEnabled) return;
+        this.init();
+        this.playTone(280, 0.15, 'sawtooth');
+        setTimeout(() => this.playTone(220, 0.2, 'sawtooth'), 100);
+      }
+
+      playFanfare() {
+        if (!this.sfxEnabled) return;
+        this.init();
+        const melody = [523.25, 659.25, 783.99, 1046.50, 880, 1046.50];
+        melody.forEach((freq, idx) => {
+          setTimeout(() => this.playTone(freq, 0.18, 'triangle'), idx * 110);
+        });
+      }
+
+      startBGM() {
+        if (!this.bgmEnabled || this.isPlayingBgm) return;
+        this.init();
+        this.isPlayingBgm = true;
+        const bgmNotes = [261.63, 329.63, 392.00, 329.63, 349.23, 392.00, 440.00, 392.00, 293.66, 349.23, 392.00, 349.23, 261.63, 329.63, 392.00, 261.63];
+        let idx = 0;
+        this.bgmInterval = setInterval(() => {
+          if (!this.bgmEnabled || !this.isPlayingBgm) return;
+          this.playTone(bgmNotes[idx % bgmNotes.length], 0.25, 'sine', this.bgmGain);
+          idx++;
+        }, 340);
+      }
+
+      stopBGM() {
+        this.isPlayingBgm = false;
+        if (this.bgmInterval) {
+          clearInterval(this.bgmInterval);
+          this.bgmInterval = null;
+        }
+      }
+
+      toggleBGM() {
+        this.bgmEnabled = !this.bgmEnabled;
+        if (!this.bgmEnabled) this.stopBGM();
+        else if (window.gameStarted) this.startBGM();
+        return this.bgmEnabled;
+      }
+
+      toggleSFX() {
+        this.sfxEnabled = !this.sfxEnabled;
+        return this.sfxEnabled;
+      }
+    }
+
+    const soundSys = new SoundSystem();
+
+    /**
+     * SVG VECTOR ASSET GENERATORS
+     */
+    function renderBipMascot(expression = 'happy') {
+      let mouthPath = "M 35 62 Q 50 74 65 62"; // happy
+      let eyeLeft = `<circle cx="38" cy="42" r="6" fill="#1E293B"/><circle cx="40" cy="40" r="2" fill="#FFFFFF"/>`;
+      let eyeRight = `<circle cx="62" cy="42" r="6" fill="#1E293B"/><circle cx="64" cy="40" r="2" fill="#FFFFFF"/>`;
+      let extraAccents = `<circle cx="50" cy="18" r="5" fill="#FFC65C" class="pulse-subtle"/>`;
+
+      if (expression === 'thinking') {
+        mouthPath = "M 38 65 Q 50 60 62 65";
+        eyeLeft = `<circle cx="38" cy="40" r="5" fill="#1E293B"/><line x1="32" y1="33" x2="44" y2="36" stroke="#1E293B" stroke-width="2.5"/>`;
+        eyeRight = `<circle cx="62" cy="40" r="5" fill="#1E293B"/><line x1="56" y1="36" x2="68" y2="33" stroke="#1E293B" stroke-width="2.5"/>`;
+        extraAccents += `<path d="M 75 20 Q 82 15 88 22" stroke="#EF7469" stroke-width="3" fill="none"/>`;
+      } else if (expression === 'excited') {
+        mouthPath = "M 35 58 Q 50 80 65 58 Z"; // wide smile
+        eyeLeft = `<polygon points="38,36 41,43 48,43 42,47 44,54 38,50 32,54 34,47 28,43 35,43" fill="#FFC65C"/>`;
+        eyeRight = `<polygon points="62,36 65,43 72,43 66,47 68,54 62,50 56,54 58,47 52,43 59,43" fill="#FFC65C"/>`;
+      }
+
+      return `
+        <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-md">
+          <!-- Antenna -->
+          <line x1="50" y1="28" x2="50" y2="15" stroke="#7766B7" stroke-width="4" stroke-linecap="round"/>
+          ${extraAccents}
+          <!-- Robot Head Body -->
+          <rect x="15" y="25" width="70" height="55" rx="18" fill="#7766B7"/>
+          <!-- Screen Face -->
+          <rect x="22" y="31" width="56" height="43" rx="12" fill="#E0F2FE"/>
+          <!-- Eyes -->
+          ${eyeLeft}
+          ${eyeRight}
+          <!-- Cheeks -->
+          <circle cx="28" cy="52" r="4" fill="#F472B6" opacity="0.6"/>
+          <circle cx="72" cy="52" r="4" fill="#F472B6" opacity="0.6"/>
+          <!-- Mouth -->
+          <path d="${mouthPath}" fill="${expression==='excited'?'#EF7469':'none'}" stroke="#EF7469" stroke-width="3.5" stroke-linecap="round"/>
+        </svg>
+      `;
+    }
+
+    function renderApricotBlossomSVG() {
+      return `
+        <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow">
+          <!-- Green Stem & Leaves -->
+          <path d="M 50 65 Q 40 85 25 90" stroke="#53B77A" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M 50 65 Q 60 85 75 90" stroke="#53B77A" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M 32 80 Q 20 75 25 65 Q 35 70 32 80 Z" fill="#53B77A"/>
+          <path d="M 68 80 Q 80 75 75 65 Q 65 70 68 80 Z" fill="#53B77A"/>
+          <!-- 5 Petals -->
+          <g fill="#FFC65C" stroke="#F59E0B" stroke-width="1.5">
+            <ellipse cx="50" cy="30" rx="12" ry="18"/>
+            <ellipse cx="50" cy="30" rx="12" ry="18" transform="rotate(72 50 50)"/>
+            <ellipse cx="50" cy="30" rx="12" ry="18" transform="rotate(144 50 50)"/>
+            <ellipse cx="50" cy="30" rx="12" ry="18" transform="rotate(216 50 50)"/>
+            <ellipse cx="50" cy="30" rx="12" ry="18" transform="rotate(288 50 50)"/>
+          </g>
+          <!-- Center Stamen -->
+          <circle cx="50" cy="50" r="9" fill="#EF7469"/>
+          <circle cx="50" cy="50" r="5" fill="#D97706"/>
+        </svg>
+      `;
+    }
+
+    /**
+     * MAIN GAME APPLICATION STATE & CONTROLLER
+     */
+    class PresentationGameApp {
+      constructor() {
+        this.currentStageIndex = 0;
+        this.score = 0;
+        this.gameMode = 'practice'; // practice or challenge
+        this.stageCompleted = [false, false, false, false];
+
+        // Stage 1 State
+        this.stage1TaskIndex = 0;
+
+        // Stage 2 State
+        this.stage2SelectedTemplate = null;
+        this.stage2Title = '';
+        this.stage2Author = '';
+
+        // Stage 3 State
+        this.stage3ImageAdded = false;
+        this.stage3ImagePos = 'center'; // center or right
+        this.stage3Slide2Added = false;
+        this.stage3Slide2Text = '';
+        this.activeSlideTab = 1;
+
+        // Stage 4 State
+        this.stage4ShowViewed = false;
+        this.stage4CurrentSlide = 1;
+        this.stage4FolderSelected = false;
+        this.stage4FileName = '';
+        this.stage4Saved = false;
+      }
+
+      init() {
+        this.updateMascots('happy');
+        this.renderStageProgress();
+      }
+
+      updateMascots(expression = 'happy') {
+        const mascotSvg = renderBipMascot(expression);
+        document.getElementById('mascotWelcomeSvg').innerHTML = mascotSvg;
+        document.getElementById('mascotStageSvg').innerHTML = mascotSvg;
+        document.getElementById('mascotFinalSvg').innerHTML = mascotSvg;
+      }
+
+      setMascotMessage(text, feedbackText = '', isError = false) {
+        document.getElementById('mascotMessage').innerText = text;
+        const fbEl = document.getElementById('mascotFeedback');
+        if (feedbackText) {
+          fbEl.innerText = feedbackText;
+          fbEl.className = `text-xs sm:text-sm font-extrabold mt-1 ${isError ? 'text-rose-500' : 'text-emerald-600'}`;
+          fbEl.classList.remove('hidden');
+        } else {
+          fbEl.classList.add('hidden');
+        }
+      }
+
+      startGame() {
+        soundSys.playClick();
+        window.gameStarted = true;
+        const modeRadios = document.getElementsByName('gameMode');
+        for (let r of modeRadios) {
+          if (r.checked) this.gameMode = r.value;
+        }
+
+        soundSys.startBGM();
+        document.getElementById('screenWelcome').classList.add('hidden');
+        document.getElementById('gameArea').classList.remove('hidden');
+        document.getElementById('hintBtn').classList.remove('hidden');
+        document.getElementById('resetStageBtn').classList.remove('hidden');
+        document.getElementById('nextStageBtn').classList.remove('hidden');
+
+        this.loadStage(0);
+      }
+
+      showWelcome() {
+        soundSys.playClick();
+        document.getElementById('screenWelcome').classList.remove('hidden');
+        document.getElementById('gameArea').classList.add('hidden');
+        document.getElementById('screenSummary').classList.add('hidden');
+        document.getElementById('hintBtn').classList.add('hidden');
+        document.getElementById('resetStageBtn').classList.add('hidden');
+        document.getElementById('nextStageBtn').classList.add('hidden');
+      }
+
+      loadStage(index) {
+        this.currentStageIndex = index;
+        this.renderStageProgress();
+        this.updateNextButtonState();
+
+        if (this.gameMode === 'practice') {
+          // Automatic initial hint message in Practice Mode
+          this.setMascotMessage(GAME_CONFIG.stages[index].instruction);
+        } else {
+          this.setMascotMessage(`Màn ${index + 1}: Hãy đọc yêu cầu và tự hoàn thành bài tập nhé!`);
+        }
+
+        const container = document.getElementById('stageContainer');
+        container.innerHTML = '';
+
+        if (index === 0) this.renderStage1(container);
+        else if (index === 1) this.renderStage2(container);
+        else if (index === 2) this.renderStage3(container);
+        else if (index === 3) this.renderStage4(container);
+      }
+
+      renderStageProgress() {
+        document.getElementById('stageProgressText').innerText = `Màn ${this.currentStageIndex + 1}/4`;
+        document.getElementById('scoreText').innerText = `${this.score}/100`;
+      }
+
+      updateNextButtonState() {
+        const nextBtn = document.getElementById('nextStageBtn');
+        if (this.stageCompleted[this.currentStageIndex]) {
+          nextBtn.disabled = false;
+          nextBtn.classList.add('pulse-subtle');
+        } else {
+          nextBtn.disabled = true;
+          nextBtn.classList.remove('pulse-subtle');
+        }
+      }
+
+      completeCurrentStage() {
+        if (!this.stageCompleted[this.currentStageIndex]) {
+          this.stageCompleted[this.currentStageIndex] = true;
+          this.score += GAME_CONFIG.scorePerStage;
+          this.renderStageProgress();
+          this.updateNextButtonState();
+          soundSys.playCorrect();
+          this.updateMascots('excited');
+          triggerConfetti();
+
+          if (this.currentStageIndex === 3) {
+            setTimeout(() => this.showFinalSummary(), 1500);
+          }
+        }
+      }
+
+      nextStage() {
+        soundSys.playClick();
+        if (this.currentStageIndex < 3) {
+          this.loadStage(this.currentStageIndex + 1);
+        } else {
+          this.showFinalSummary();
+        }
+      }
+
+      resetCurrentStage() {
+        soundSys.playClick();
+        if (this.currentStageIndex === 0) {
+          this.stage1TaskIndex = 0;
+        } else if (this.currentStageIndex === 1) {
+          this.stage2SelectedTemplate = null;
+          this.stage2Title = '';
+          this.stage2Author = '';
+        } else if (this.currentStageIndex === 2) {
+          this.stage3ImageAdded = false;
+          this.stage3Slide2Added = false;
+          this.stage3Slide2Text = '';
+          this.activeSlideTab = 1;
+        } else if (this.currentStageIndex === 3) {
+          this.stage4ShowViewed = false;
+          this.stage4FolderSelected = false;
+          this.stage4FileName = '';
+          this.stage4Saved = false;
+        }
+        this.loadStage(this.currentStageIndex);
+      }
+
+      showHint() {
+        soundSys.playClick();
+        this.updateMascots('thinking');
+        const stage = GAME_CONFIG.stages[this.currentStageIndex];
+
+        if (this.currentStageIndex === 0) {
+          const task = stage.tasks[this.stage1TaskIndex];
+          this.setMascotMessage(`GỢI Ý MÀN 1: ${task.hint}`);
+        } else if (this.currentStageIndex === 1) {
+          this.setMascotMessage("GỢI Ý MÀN 2: Hãy chọn mẫu 'Trang tiêu đề', gõ Tiêu đề 'Hoa mai' và Tên tác giả 'Nhóm 1 - Lớp 3A'. Em có thể bấm nút 'Nhập nhanh'!");
+        } else if (this.currentStageIndex === 2) {
+          this.setMascotMessage("GỢI Ý MÀN 3: Bấm 'Chèn Hoa Mai Vàng', sau đó bấm '+ Thêm trang mới', nháy vào Trang 2 và gõ câu miêu tả màu vàng tươi của hoa mai!");
+        } else if (this.currentStageIndex === 3) {
+          this.setMascotMessage("GỢI Ý MÀN 4: Nháy nút 'Trình chiếu (F5)' ở góc trên để xem slide, sau đó nháy nút 'Lưu bài', chọn thư mục 'Bài tập Tin học' và nháy 'Lưu'!");
+        }
+      }
+
+      // ==========================================
+      // STAGE 1: TÌM VÙNG LÀM VIỆC
+      // ==========================================
+      renderStage1(container) {
+        const tasks = GAME_CONFIG.stages[0].tasks;
+        const currentTask = tasks[this.stage1TaskIndex] || tasks[0];
+
+        if (this.stage1TaskIndex < tasks.length) {
+          this.setMascotMessage(`Nhiệm vụ (${this.stage1TaskIndex + 1}/4): Em hãy nháy chuột vào [${currentTask.name}] trên giao diện trình chiếu giả lập!`);
+        }
+
+        container.innerHTML = `
+          <div class="flex-1 flex flex-col justify-between h-full border-2 border-slate-300 rounded-2xl overflow-hidden bg-slate-100 relative">
+            
+            <!-- TOOLBAR ZONE -->
+            <div id="zone_toolbar" onclick="gameApp.handleStage1Click('toolbar')" 
+                 class="bg-slate-200 border-b-2 border-slate-300 p-2 cursor-pointer transition hover:bg-emerald-100 relative ${this.stage1TaskIndex===0?'glow-active':''}">
+              <div class="flex items-center justify-between text-xs font-bold text-slate-700 mb-1">
+                <div class="flex items-center gap-3">
+                  <span class="bg-rose-500 text-white px-2 py-0.5 rounded text-[10px]">Tệp</span>
+                  <span class="text-emerald-700 font-extrabold border-b-2 border-emerald-600">Trang đầu</span>
+                  <span>Chèn</span>
+                  <span>Thiết kế</span>
+                  <span>Trình chiếu</span>
+                </div>
+                <span class="text-[10px] text-slate-500 bg-white px-2 py-0.5 rounded border">1. THANH CÔNG CỤ</span>
+              </div>
+              <div class="flex gap-2 bg-white p-1.5 rounded border border-slate-300 text-[11px]">
+                <button class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded font-bold">➕ Trang mới</button>
+                <button class="px-2 py-1 bg-slate-100 rounded text-slate-600">🖼️ Chèn ảnh</button>
+                <button class="px-2 py-1 bg-slate-100 rounded text-slate-600">🎨 Mẫu thiết kế</button>
+              </div>
+            </div>
+
+            <!-- MIDDLE SECTION: THUMBNAILS & EDITOR -->
+            <div class="flex-1 flex min-h-[260px]">
+              
+              <!-- THUMBNAILS ZONE (LEFT SIDEBAR) -->
+              <div id="zone_thumbnails" onclick="gameApp.handleStage1Click('thumbnails')" 
+                   class="w-1/4 min-w-[110px] bg-slate-200 border-r-2 border-slate-300 p-2 cursor-pointer transition hover:bg-emerald-100 relative flex flex-col gap-2 ${this.stage1TaskIndex===1?'glow-active':''}">
+                <span class="text-[10px] font-extrabold text-slate-500 bg-white px-1.5 py-0.5 rounded border w-max">2. KHUNG THU NHỎ</span>
+                <div class="bg-white rounded border-2 border-emerald-500 p-1 aspect-video shadow-sm flex flex-col justify-center items-center">
+                  <span class="text-[10px] font-bold text-slate-400">Trang 1</span>
+                  <div class="w-8 h-1 bg-slate-300 rounded my-0.5"></div>
+                  <div class="w-12 h-1 bg-slate-200 rounded"></div>
+                </div>
+              </div>
+
+              <!-- SLIDE EDITOR ZONE (CENTER) -->
+              <div id="zone_editor" onclick="gameApp.handleStage1Click('editor')" 
+                   class="flex-1 bg-slate-300 p-4 cursor-pointer transition hover:bg-emerald-50 flex items-center justify-center relative ${this.stage1TaskIndex===2?'glow-active':''}">
+                <span class="absolute top-2 left-2 text-[10px] font-extrabold text-slate-500 bg-white px-2 py-0.5 rounded border z-10">3. VÙNG SOẠN THẢO</span>
+                
+                <div class="w-full max-w-md aspect-video bg-white rounded-lg shadow-md border border-slate-300 p-4 flex flex-col items-center justify-center text-center">
+                  <div class="border-2 border-dashed border-slate-300 rounded-lg p-3 w-3/4 mb-2">
+                    <p class="text-xs font-bold text-slate-400">Nhấp để thêm tiêu đề</p>
+                  </div>
+                  <div class="border-2 border-dashed border-slate-200 rounded-lg p-2 w-1/2">
+                    <p class="text-[10px] text-slate-300">Nhấp để thêm phụ đề</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- BOTTOM STATUS BAR & SLIDESHOW ZONE -->
+            <div class="bg-slate-200 border-t border-slate-300 px-3 py-1.5 flex justify-between items-center text-xs font-bold text-slate-600">
+              <span>Trang 1 / 1</span>
+              
+              <!-- SLIDESHOW BUTTON ZONE -->
+              <div id="zone_slideshow_btn" onclick="gameApp.handleStage1Click('slideshow_btn')" 
+                   class="bg-amber-300 hover:bg-amber-400 text-amber-950 px-3 py-1 rounded-lg border border-amber-400 cursor-pointer transition flex items-center gap-1.5 ${this.stage1TaskIndex===3?'glow-active':''}">
+                <span>📺</span>
+                <span class="text-xs font-extrabold">4. Nút Trình Chiếu</span>
+              </div>
+            </div>
+
+          </div>
+        `;
+      }
+
+      handleStage1Click(zoneId) {
+        soundSys.playClick();
+        const tasks = GAME_CONFIG.stages[0].tasks;
+        const targetTask = tasks[this.stage1TaskIndex];
+
+        if (zoneId === targetTask.id) {
+          soundSys.playCorrect();
+          this.stage1TaskIndex++;
+
+          if (this.stage1TaskIndex >= tasks.length) {
+            this.setMascotMessage("HOÀN THÀNH MÀN 1!", "Chính xác! Em đã nhận biết đủ 4 vùng làm việc chính trên màn hình trình chiếu!");
+            this.completeCurrentStage();
+            this.renderStage1(document.getElementById('stageContainer'));
+          } else {
+            this.updateMascots('happy');
+            this.renderStage1(document.getElementById('stageContainer'));
+          }
+        } else {
+          soundSys.playWrong();
+          this.updateMascots('thinking');
+          this.setMascotMessage(`Chưa đúng rồi! Em hãy tìm đúng [${targetTask.name}] nhé!`, targetTask.hint, true);
+        }
+      }
+
+      // ==========================================
+      // STAGE 2: TẠO TRANG GIỚI THIỆU
+      // ==========================================
+      renderStage2(container) {
+        container.innerHTML = `
+          <div class="flex-1 flex flex-col md:flex-row gap-4 h-full">
+            
+            <!-- LEFT CONTROL PANEL -->
+            <div class="w-full md:w-5/12 bg-amber-50/60 border-2 border-amber-200 rounded-2xl p-4 flex flex-col justify-between gap-3">
+              <div>
+                <h4 class="font-extrabold text-xs text-amber-900 uppercase tracking-wider mb-2">1. CẤU HÌNH TRANG TIÊU ĐỀ:</h4>
+                
+                <!-- Layout Selection -->
+                <div class="mb-3">
+                  <label class="text-xs font-bold text-slate-700 block mb-1">A. Chọn mẫu bố cục trang:</label>
+                  <div class="grid grid-cols-2 gap-2">
+                    <button onclick="gameApp.selectStage2Template('title')" class="p-2 border-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition ${this.stage2SelectedTemplate==='title'?'border-emerald-500 bg-emerald-100 text-emerald-900':'border-slate-300 bg-white hover:bg-slate-50'}">
+                      <span>📄</span> Trang Tiêu Đề
+                    </button>
+
+                    <button onclick="gameApp.selectStage2Template('blank')" class="p-2 border-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition ${this.stage2SelectedTemplate==='blank'?'border-rose-400 bg-rose-50 text-rose-900':'border-slate-300 bg-white hover:bg-slate-50'}">
+                      <span>⬜</span> Trang Trắng
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Input Fields -->
+                <div class="space-y-2">
+                  <div>
+                    <div class="flex justify-between items-center mb-0.5">
+                      <label class="text-xs font-bold text-slate-700">B. Tiêu đề bài trình chiếu:</label>
+                      <button onclick="gameApp.quickFillStage2Title()" class="text-[10px] text-emerald-700 font-extrabold hover:underline">⚡ Nhập nhanh</button>
+                    </div>
+                    <input type="text" id="stage2TitleInput" value="${this.stage2Title}" oninput="gameApp.updateStage2Title(this.value)" placeholder="Gõ tiêu đề (Ví dụ: Hoa mai)" 
+                           class="w-full p-2 text-xs border-2 border-slate-300 rounded-xl focus:border-emerald-500 outline-none font-bold">
+                  </div>
+
+                  <div>
+                    <div class="flex justify-between items-center mb-0.5">
+                      <label class="text-xs font-bold text-slate-700">C. Tên người / nhóm trình bày:</label>
+                      <button onclick="gameApp.quickFillStage2Author()" class="text-[10px] text-emerald-700 font-extrabold hover:underline">⚡ Nhập nhanh</button>
+                    </div>
+                    <input type="text" id="stage2AuthorInput" value="${this.stage2Author}" oninput="gameApp.updateStage2Author(this.value)" placeholder="Gõ nhóm (Ví dụ: Nhóm 1 - Lớp 3A)" 
+                           class="w-full p-2 text-xs border-2 border-slate-300 rounded-xl focus:border-emerald-500 outline-none font-bold">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Validate Button -->
+              <button onclick="gameApp.validateStage2()" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs shadow-sm btn-bounce">
+                ✔️ Hoàn Thành Trang Tiêu Đề
+              </button>
+            </div>
+
+            <!-- RIGHT LIVE PREVIEW -->
+            <div class="flex-1 bg-slate-200 border-2 border-slate-300 rounded-2xl p-4 flex flex-col justify-center items-center relative min-h-[240px]">
+              <span class="absolute top-2 left-3 text-[10px] font-black text-slate-500 bg-white px-2 py-0.5 rounded border">BẢN XEM TRƯỚC TRỰC TIẾP</span>
+              
+              <div id="stage2CanvasPreview" class="w-full max-w-md aspect-video bg-white rounded-xl shadow-lg border-4 border-amber-300 p-6 flex flex-col justify-center items-center text-center relative overflow-hidden transition-all">
+                <!-- Floral SVG Corner Ornaments -->
+                <div class="absolute top-1 left-1 w-8 h-8 opacity-40">${renderApricotBlossomSVG()}</div>
+                <div class="absolute bottom-1 right-1 w-8 h-8 opacity-40">${renderApricotBlossomSVG()}</div>
+
+                <div class="w-full mb-3">
+                  <h3 id="previewTitle" class="text-lg sm:text-2xl font-black text-amber-600 tracking-wide break-words">
+                    ${this.stage2Title || '[ Tiêu đề bài trình chiếu ]'}
+                  </h3>
+                  <div class="w-24 h-1 bg-amber-400 mx-auto mt-1 rounded-full"></div>
+                </div>
+
+                <div>
+                  <p id="previewAuthor" class="text-xs sm:text-sm font-bold text-slate-600 break-words">
+                    ${this.stage2Author || '[ Tên tác giả / Nhóm thực hiện ]'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        `;
+      }
+
+      selectStage2Template(tpl) {
+        soundSys.playClick();
+        this.stage2SelectedTemplate = tpl;
+        this.renderStage2(document.getElementById('stageContainer'));
+        if (tpl !== 'title') {
+          soundSys.playWrong();
+          this.setMascotMessage("Trang tiêu đề cần bố cục 'Trang Tiêu Đề' để có khung tiêu đề và phụ đề rõ ràng nhất!", "", true);
+        }
+      }
+
+      quickFillStage2Title() {
+        soundSys.playClick();
+        this.stage2Title = "Hoa mai";
+        document.getElementById('stage2TitleInput').value = this.stage2Title;
+        document.getElementById('previewTitle').innerText = this.stage2Title;
+      }
+
+      quickFillStage2Author() {
+        soundSys.playClick();
+        this.stage2Author = "Nhóm 1 - Lớp 3A";
+        document.getElementById('stage2AuthorInput').value = this.stage2Author;
+        document.getElementById('previewAuthor').innerText = this.stage2Author;
+      }
+
+      updateStage2Title(val) {
+        this.stage2Title = val;
+        document.getElementById('previewTitle').innerText = val || '[ Tiêu đề bài trình chiếu ]';
+      }
+
+      updateStage2Author(val) {
+        this.stage2Author = val;
+        document.getElementById('previewAuthor').innerText = val || '[ Tên tác giả / Nhóm thực hiện ]';
+      }
+
+      validateStage2() {
+        soundSys.playClick();
+        if (this.stage2SelectedTemplate !== 'title') {
+          soundSys.playWrong();
+          this.setMascotMessage("Em hãy bấm chọn mẫu 'Trang Tiêu Đề' trước nhé!", "", true);
+          return;
+        }
+
+        const titleOk = this.stage2Title.trim().toLowerCase() === "hoa mai";
+        const authorOk = this.stage2Author.trim().toLowerCase().includes("nhóm 1") || this.stage2Author.trim().length > 3;
+
+        if (titleOk && authorOk) {
+          this.setMascotMessage("XUẤT SẮC!", "Em đã tạo được trang tiêu đề tuyệt đẹp cho bài trình chiếu Hoa Mai!");
+          this.completeCurrentStage();
+        } else {
+          soundSys.playWrong();
+          this.setMascotMessage("Chưa đúng nội dung!", "Vui lòng nhập Tiêu đề là 'Hoa mai' và Tên nhóm là 'Nhóm 1 - Lớp 3A' nhé!", true);
+        }
+      }
+
+      // ==========================================
+      // STAGE 3: THÊM ẢNH VÀ TRANG
+      // ==========================================
+      renderStage3(container) {
+        container.innerHTML = `
+          <div class="flex-1 flex flex-col gap-3 h-full">
+            
+            <!-- TOP RIBBON TOOLBAR -->
+            <div class="bg-slate-100 border-2 border-slate-300 rounded-xl p-2 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <button onclick="gameApp.addStage3Slide2()" class="px-3 py-1.5 rounded-lg ${this.stage3Slide2Added?'bg-slate-300 text-slate-600':'bg-emerald-500 hover:bg-emerald-600 text-white'} font-extrabold text-xs flex items-center gap-1 btn-bounce">
+                  <span>➕</span> Thêm Trang Mới
+                </button>
+                <button onclick="gameApp.addStage3Image()" class="px-3 py-1.5 rounded-lg ${this.stage3ImageAdded?'bg-amber-200 text-amber-900 border border-amber-400':'bg-amber-400 hover:bg-amber-500 text-amber-950'} font-extrabold text-xs flex items-center gap-1 btn-bounce">
+                  <span>🖼️</span> Chèn Hoa Mai Vàng (SVG)
+                </button>
+              </div>
+
+              <div class="text-xs font-extrabold text-slate-600">
+                Đang xem: <span class="text-emerald-600 font-black">Trang ${this.activeSlideTab}</span>
+              </div>
+            </div>
+
+            <!-- MAIN WORKSPACE: THUMBNAILS + CANVAS -->
+            <div class="flex-1 flex gap-3 min-h-[280px]">
+              
+              <!-- LEFT THUMBNAILS LIST -->
+              <div class="w-1/4 min-w-[120px] bg-slate-200 border-2 border-slate-300 rounded-xl p-2 flex flex-col gap-2">
+                <span class="text-[10px] font-black text-slate-500 uppercase">Danh sách trang:</span>
+                
+                <!-- Thumbnail 1 -->
+                <div onclick="gameApp.switchStage3Tab(1)" class="cursor-pointer bg-white rounded-lg p-2 border-2 ${this.activeSlideTab===1?'border-emerald-500 ring-2 ring-emerald-200':'border-slate-300'} transition hover:border-emerald-400">
+                  <div class="text-[10px] font-bold text-slate-500 mb-1">Trang 1: Tiêu đề</div>
+                  <div class="aspect-video bg-amber-50 rounded border flex flex-col justify-center items-center p-1 text-center">
+                    <span class="text-[9px] font-black text-amber-700">Hoa mai</span>
+                    ${this.stage3ImageAdded?'<div class="w-4 h-4 mt-0.5">'+renderApricotBlossomSVG()+'</div>':''}
+                  </div>
+                </div>
+
+                <!-- Thumbnail 2 (Dynamic) -->
+                ${this.stage3Slide2Added ? `
+                  <div onclick="gameApp.switchStage3Tab(2)" class="cursor-pointer bg-white rounded-lg p-2 border-2 ${this.activeSlideTab===2?'border-emerald-500 ring-2 ring-emerald-200':'border-slate-300'} transition hover:border-emerald-400 slide-enter">
+                    <div class="text-[10px] font-bold text-slate-500 mb-1">Trang 2: Nội dung</div>
+                    <div class="aspect-video bg-slate-50 rounded border flex items-center justify-center p-1 text-center">
+                      <span class="text-[8px] font-semibold text-slate-600 line-clamp-2">${this.stage3Slide2Text || 'Nội dung trang 2...'}</span>
+                    </div>
+                  </div>
+                ` : `
+                  <div class="border-2 border-dashed border-slate-300 rounded-lg p-3 text-center text-slate-400 text-[10px] font-bold">
+                    [ Chưa có Trang 2 ]
+                  </div>
+                `}
+              </div>
+
+              <!-- RIGHT EDITOR CANVAS -->
+              <div class="flex-1 bg-slate-300 rounded-xl p-4 flex flex-col items-center justify-center relative">
+                
+                ${this.activeSlideTab === 1 ? `
+                  <!-- CANVAS SLIDE 1 -->
+                  <div class="w-full max-w-md aspect-video bg-white rounded-xl shadow-md border-2 border-slate-300 p-6 flex flex-col justify-between items-center text-center relative overflow-hidden">
+                    <div class="w-full">
+                      <h3 class="text-xl font-black text-amber-600">Hoa mai</h3>
+                      <p class="text-xs font-bold text-slate-500 mt-1">Nhóm 1 - Lớp 3A</p>
+                    </div>
+
+                    <!-- Inserted Image Area -->
+                    <div class="flex-1 flex items-center justify-center my-2">
+                      ${this.stage3ImageAdded ? `
+                        <div class="w-20 h-20 bg-amber-50 p-2 rounded-2xl border-2 border-amber-300 shadow-sm animate-bounce" style="animation-duration:3s">
+                          ${renderApricotBlossomSVG()}
+                        </div>
+                      ` : `
+                        <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-xs font-bold text-slate-400">
+                          (Bấm 'Chèn Hoa Mai Vàng' trên thanh công cụ)
+                        </div>
+                      `}
+                    </div>
+                  </div>
+                ` : `
+                  <!-- CANVAS SLIDE 2 -->
+                  <div class="w-full max-w-md aspect-video bg-white rounded-xl shadow-md border-2 border-slate-300 p-5 flex flex-col justify-between relative slide-enter">
+                    <h4 class="text-sm font-black text-emerald-700 border-b pb-1">Đặc điểm hoa mai</h4>
+                    
+                    <div class="flex-1 my-2">
+                      <label class="text-[11px] font-bold text-slate-600 block mb-1">Gõ nội dung câu giới thiệu về hoa mai:</label>
+                      <textarea id="stage3TextInput" oninput="gameApp.updateStage3Text(this.value)" rows="3" 
+                                placeholder="Gõ: Hoa mai có màu vàng tươi, nở rộ vào dịp Tết" 
+                                class="w-full p-2 text-xs border-2 border-slate-300 rounded-xl outline-none focus:border-emerald-500 font-bold leading-relaxed">${this.stage3Slide2Text}</textarea>
+                    </div>
+
+                    <button onclick="gameApp.quickFillStage3Text()" class="text-[11px] text-emerald-700 font-extrabold hover:underline text-right">
+                      ⚡ Nhập nhanh câu trả lời
+                    </button>
+                  </div>
+                `}
+
+              </div>
+
+            </div>
+
+            <!-- VALIDATE ACTION -->
+            <div class="flex justify-end">
+              <button onclick="gameApp.validateStage3()" class="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs shadow-sm btn-bounce">
+                ✔️ Hoàn Thành Thêm Ảnh & Trang
+              </button>
+            </div>
+
+          </div>
+        `;
+      }
+
+      addStage3Image() {
+        soundSys.playClick();
+        this.stage3ImageAdded = true;
+        this.renderStage3(document.getElementById('stageContainer'));
+        soundSys.playCorrect();
+      }
+
+      addStage3Slide2() {
+        soundSys.playClick();
+        this.stage3Slide2Added = true;
+        this.activeSlideTab = 2;
+        this.renderStage3(document.getElementById('stageContainer'));
+        soundSys.playCorrect();
+      }
+
+      switchStage3Tab(tabNum) {
+        soundSys.playClick();
+        this.activeSlideTab = tabNum;
+        this.renderStage3(document.getElementById('stageContainer'));
+      }
+
+      updateStage3Text(val) {
+        this.stage3Slide2Text = val;
+      }
+
+      quickFillStage3Text() {
+        soundSys.playClick();
+        this.stage3Slide2Text = GAME_CONFIG.stages[2].page2Text;
+        document.getElementById('stage3TextInput').value = this.stage3Slide2Text;
+      }
+
+      validateStage3() {
+        soundSys.playClick();
+        if (!this.stage3ImageAdded) {
+          soundSys.playWrong();
+          this.setMascotMessage("Em chưa chèn hình Hoa mai vào Trang 1!", "", true);
+          return;
+        }
+        if (!this.stage3Slide2Added) {
+          soundSys.playWrong();
+          this.setMascotMessage("Em chưa bấm '+ Thêm Trang Mới' để tạo Trang 2!", "", true);
+          return;
+        }
+
+        const textOk = this.stage3Slide2Text.trim().toLowerCase().includes("vàng tươi") || this.stage3Slide2Text.trim().length > 10;
+        if (textOk) {
+          this.setMascotMessage("GIỎI LẮM!", "Bài trình chiếu của em đã có 2 trang sinh động kết hợp cả chữ và hình ảnh!");
+          this.completeCurrentStage();
+        } else {
+          soundSys.playWrong();
+          this.setMascotMessage("Hãy nhập câu miêu tả màu vàng tươi của hoa mai ở Trang 2 nhé!", "", true);
+        }
+      }
+
+      // ==========================================
+      // STAGE 4: TRÌNH CHIẾU VÀ LƯU
+      // ==========================================
+      renderStage4(container) {
+        container.innerHTML = `
+          <div class="flex-1 flex flex-col justify-between gap-3 h-full">
+            
+            <!-- TOP STEPS BAR -->
+            <div class="grid grid-cols-2 gap-3">
+              <div class="p-3 rounded-2xl border-2 ${this.stage4ShowViewed?'border-emerald-500 bg-emerald-50':'border-amber-300 bg-amber-50'} flex items-center justify-between">
+                <div>
+                  <h4 class="font-black text-xs text-slate-800">BƯỚC 1: TRÌNH CHIẾU</h4>
+                  <p class="text-[11px] text-slate-500">Xem bài chiếu ở chế độ toàn màn hình</p>
+                </div>
+                <button onclick="gameApp.startSlideShowModal()" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-500 text-amber-950 font-extrabold text-xs shadow-sm btn-bounce">
+                  📺 Trình Chiếu (F5)
+                </button>
+              </div>
+
+              <div class="p-3 rounded-2xl border-2 ${this.stage4Saved?'border-emerald-500 bg-emerald-50':'border-slate-300 bg-slate-50'} flex items-center justify-between">
+                <div>
+                  <h4 class="font-black text-xs text-slate-800">BƯỚC 2: LƯU BÀI TỆP</h4>
+                  <p class="text-[11px] text-slate-500">Lưu sản phẩm vào đúng thư mục máy tính</p>
+                </div>
+                <button onclick="gameApp.openSaveModal()" ${!this.stage4ShowViewed?'disabled':''} class="px-4 py-2 rounded-xl bg-emerald-500 disabled:opacity-40 hover:bg-emerald-600 text-white font-extrabold text-xs shadow-sm btn-bounce">
+                  💾 Lưu Bài
+                </button>
+              </div>
+            </div>
+
+            <!-- VIRTUAL FILE EXPLORER SIMULATION -->
+            <div id="saveDialogArea" class="flex-1 bg-slate-200 border-2 border-slate-300 rounded-2xl p-4 flex flex-col justify-center items-center relative min-h-[220px]">
+              
+              ${this.stage4Saved ? `
+                <div class="bg-white rounded-2xl p-6 border-4 border-emerald-400 shadow-md text-center max-w-md slide-enter">
+                  <div class="text-4xl mb-2">🎉</div>
+                  <h3 class="text-lg font-black text-emerald-800">ĐÃ LƯU BÀI THÀNH CÔNG!</h3>
+                  <p class="text-xs text-slate-600 font-bold mt-1">
+                    Tệp: <span class="text-emerald-700">Hoa_mai.pptx</span><br>
+                    Thư mục: <span class="text-emerald-700">Bài tập Tin học</span>
+                  </p>
+                </div>
+              ` : `
+                <!-- Save Modal Window Simulation -->
+                <div class="w-full max-w-lg bg-white rounded-2xl border-2 border-slate-400 shadow-xl overflow-hidden">
+                  <div class="bg-slate-700 text-white px-3 py-1.5 text-xs font-bold flex justify-between items-center">
+                    <span>💾 Hộp thoại Lưu Bài Trình Chiếu</span>
+                    <span>PowerPoint Simulation</span>
+                  </div>
+
+                  <div class="p-4 space-y-3">
+                    <!-- Folder Selection -->
+                    <div>
+                      <label class="text-xs font-bold text-slate-700 block mb-1">1. Chọn thư mục lưu bài:</label>
+                      <div class="flex gap-2">
+                        <button onclick="gameApp.selectFolder('Bài tập Tin học')" class="flex-1 p-2 border-2 rounded-xl text-xs font-bold flex items-center gap-2 transition ${this.stage4FolderSelected?'border-emerald-500 bg-emerald-100 text-emerald-900':'border-slate-300 bg-slate-50 hover:bg-slate-100'}">
+                          <span class="text-amber-500 text-base">📁</span> Bài tập Tin học
+                        </button>
+                        <button onclick="gameApp.selectFolder('Giải trí')" class="flex-1 p-2 border-2 rounded-xl text-xs font-bold flex items-center gap-2 transition border-slate-300 bg-slate-50 opacity-60">
+                          <span class="text-amber-500 text-base">📁</span> Giải trí
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- File Name Input -->
+                    <div>
+                      <div class="flex justify-between items-center mb-0.5">
+                        <label class="text-xs font-bold text-slate-700">2. Đặt tên tệp bài trình chiếu:</label>
+                        <button onclick="gameApp.quickFillFileName()" class="text-[10px] text-emerald-700 font-extrabold hover:underline">⚡ Nhập tên mẫu</button>
+                      </div>
+                      <input type="text" id="stage4FileNameInput" value="${this.stage4FileName}" oninput="gameApp.updateFileName(this.value)" placeholder="Hoa_mai.pptx" 
+                             class="w-full p-2 text-xs border-2 border-slate-300 rounded-xl outline-none focus:border-emerald-500 font-bold">
+                    </div>
+
+                    <!-- Action Save -->
+                    <button onclick="gameApp.confirmSave()" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs shadow-md btn-bounce">
+                      💾 Xác Nhận Lưu Tệp
+                    </button>
+                  </div>
+                </div>
+              `}
+
+            </div>
+
+          </div>
+        `;
+      }
+
+      startSlideShowModal() {
+        soundSys.playClick();
+        this.stage4CurrentSlide = 1;
+        this.renderSlideShowPage();
+        document.getElementById('slideshowModal').classList.remove('hidden');
+      }
+
+      renderSlideShowPage() {
+        const content = document.getElementById('slideshowContent');
+        document.getElementById('slideShowPageNum').innerText = `Trang ${this.stage4CurrentSlide} / 2`;
+
+        if (this.stage4CurrentSlide === 1) {
+          content.innerHTML = `
+            <div class="w-32 h-32 mx-auto mb-4">${renderApricotBlossomSVG()}</div>
+            <h2 class="text-3xl sm:text-5xl font-black text-amber-500 tracking-wide mb-2">Hoa mai</h2>
+            <p class="text-lg font-bold text-slate-600">Trình bày: Nhóm 1 - Lớp 3A</p>
+          `;
+        } else {
+          content.innerHTML = `
+            <h3 class="text-2xl font-black text-emerald-700 mb-6">ĐẶC ĐIỂM HOA MAI VÀNG</h3>
+            <p class="text-xl sm:text-2xl font-extrabold text-slate-800 leading-relaxed max-w-xl mx-auto">
+              "Hoa mai có màu vàng tươi, nở rộ vào dịp Tết"
+            </p>
+            <div class="w-20 h-20 mx-auto mt-6 opacity-80">${renderApricotBlossomSVG()}</div>
+          `;
+        }
+      }
+
+      nextSlideShowPage() {
+        soundSys.playClick();
+        if (this.stage4CurrentSlide < 2) {
+          this.stage4CurrentSlide++;
+          this.renderSlideShowPage();
+        }
+      }
+
+      prevSlideShowPage() {
+        soundSys.playClick();
+        if (this.stage4CurrentSlide > 1) {
+          this.stage4CurrentSlide--;
+          this.renderSlideShowPage();
+        }
+      }
+
+      exitSlideshow() {
+        soundSys.playClick();
+        document.getElementById('slideshowModal').classList.add('hidden');
+        this.stage4ShowViewed = true;
+        this.setMascotMessage("Tuyệt vời! Bây giờ em hãy chọn thư mục 'Bài tập Tin học' và nhấn 'Lưu' nhé!");
+        this.renderStage4(document.getElementById('stageContainer'));
+      }
+
+      selectFolder(folderName) {
+        soundSys.playClick();
+        if (folderName === 'Bài tập Tin học') {
+          this.stage4FolderSelected = true;
+          this.renderStage4(document.getElementById('stageContainer'));
+        } else {
+          soundSys.playWrong();
+          this.setMascotMessage("Nên lưu vào thư mục 'Bài tập Tin học' để dễ quản lý sản phẩm học tập nhé!", "", true);
+        }
+      }
+
+      quickFillFileName() {
+        soundSys.playClick();
+        this.stage4FileName = "Hoa_mai.pptx";
+        document.getElementById('stage4FileNameInput').value = this.stage4FileName;
+      }
+
+      updateFileName(val) {
+        this.stage4FileName = val;
+      }
+
+      confirmSave() {
+        soundSys.playClick();
+        if (!this.stage4FolderSelected) {
+          soundSys.playWrong();
+          this.setMascotMessage("Em chưa bấm chọn thư mục 'Bài tập Tin học'!", "", true);
+          return;
+        }
+
+        const nameOk = this.stage4FileName.trim().toLowerCase().includes("hoa_mai") || this.stage4FileName.trim().length > 3;
+        if (nameOk) {
+          this.stage4Saved = true;
+          this.setMascotMessage("HOÀN THÀNH XUẤT SẮC MÀN 4!", "Em đã biết cách trình chiếu và lưu bài trình chiếu vào thư mục thích hợp!");
+          this.completeCurrentStage();
+          this.renderStage4(document.getElementById('stageContainer'));
+        } else {
+          soundSys.playWrong();
+          this.setMascotMessage("Hãy đặt tên tệp là 'Hoa_mai.pptx' nhé!", "", true);
+        }
+      }
+
+      showFinalSummary() {
+        soundSys.playFanfare();
+        document.getElementById('gameArea').classList.add('hidden');
+        document.getElementById('screenSummary').classList.remove('hidden');
+        document.getElementById('hintBtn').classList.add('hidden');
+        document.getElementById('resetStageBtn').classList.add('hidden');
+        document.getElementById('nextStageBtn').classList.add('hidden');
+        triggerConfetti();
+      }
+
+      downloadSummaryFile() {
+        soundSys.playClick();
+        const htmlContent = `
+          <!DOCTYPE html>
+          <html lang="vi">
+          <head>
+            <meta charset="UTF-8">
+            <title>Sản phẩm Bài trình chiếu Hoa mai - Tin học 3</title>
+            <style>
+              body { font-family: sans-serif; background: #FFF8E9; color: #2C3E50; padding: 40px; text-align: center; }
+              .card { background: white; border-radius: 20px; padding: 30px; border: 4px solid #53B77A; max-width: 600px; margin: 0 auto; shadow: 0 10px 20px rgba(0,0,0,0.1); }
+              h1 { color: #D97706; }
+              .badge { background: #E0F2FE; color: #0369A1; font-weight: bold; padding: 6px 16px; border-radius: 20px; display: inline-block; }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <span class="badge">SẢN PHẨM HỌC TẬP TIN HỌC 3</span>
+              <h1>BÀI TRÌNH CHIẾU: HOA MAI</h1>
+              <p><b>Tác giả:</b> Nhóm 1 - Lớp 3A</p>
+              <hr style="border: 1px stroke #E2E8F0; margin: 20px 0;">
+              <h3>Nội dung trang 2:</h3>
+              <p style="font-size: 18px; color: #047857;">"Hoa mai có màu vàng tươi, nở rộ vào dịp Tết"</p>
+              <p style="font-size: 12px; color: #94A3B8; margin-top: 30px;">Đã hoàn thành xuất sắc trò chơi Nhà Thiết Kế Trình Chiếu (100/100 điểm)</p>
+            </div>
+          </body>
+          </html>
+        `;
+
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Hoa_Mai_Trinh_Chieu_TinHoc3.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      restartGame() {
+        soundSys.playClick();
+        this.currentStageIndex = 0;
+        this.score = 0;
+        this.stageCompleted = [false, false, false, false];
+        this.stage1TaskIndex = 0;
+        this.stage2SelectedTemplate = null;
+        this.stage2Title = '';
+        this.stage2Author = '';
+        this.stage3ImageAdded = false;
+        this.stage3Slide2Added = false;
+        this.stage3Slide2Text = '';
+        this.activeSlideTab = 1;
+        this.stage4ShowViewed = false;
+        this.stage4FolderSelected = false;
+        this.stage4FileName = '';
+        this.stage4Saved = false;
+
+        this.showWelcome();
+      }
+
+      showGuideModal() {
+        soundSys.playClick();
+        document.getElementById('guideModal').classList.remove('hidden');
+      }
+
+      hideGuideModal() {
+        soundSys.playClick();
+        document.getElementById('guideModal').classList.add('hidden');
+      }
+
+      toggleBGM() {
+        const active = soundSys.toggleBGM();
+        document.getElementById('bgmIcon').innerText = active ? '🎵' : '🔇';
+      }
+
+      toggleSFX() {
+        const active = soundSys.toggleSFX();
+        document.getElementById('sfxIcon').innerText = active ? '🔊' : '🔈';
+      }
+    }
+
+    // Initialize Game Instance
+    const gameApp = new PresentationGameApp();
+
+    window.onload = () => {
+      gameApp.init();
+    };
+
+    /**
+     * CONFETTI CELEBRATION EFFECT (CANVAS)
+     */
+    function triggerConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#53B77A', '#EF7469', '#FFC65C', '#7766B7', '#3B82F6'];
+
+      for (let i = 0; i < 70; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 0.7) * 14,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          vRot: (Math.random() - 0.5) * 10
+        });
+      }
+
+      let startTime = performance.now();
+      function animateConfetti(now) {
+        const elapsed = now - startTime;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.25; // gravity
+          p.rotation += p.vRot;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+        });
+
+        if (elapsed < 1800) {
+          requestAnimationFrame(animateConfetti);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      requestAnimationFrame(animateConfetti);
+    }
+  </script>
+</body>
+</html>

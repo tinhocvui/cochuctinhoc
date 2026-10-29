@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vòng Lặp Thần Kì - Tin Học 5</title>
+    <style>
+        /* === RESET & BIẾN CƠ BẢN === */
+        :root {
+            --c-bg: #F8F7FF;
+            --c-primary: #58429B;
+            --c-secondary: #4ABDAA;
+            --c-accent: #F2BE4A;
+            --c-pink: #F6B6C8;
+            --c-text: #333333;
+            --c-white: #FFFFFF;
+            --shadow: 0 8px 16px rgba(88, 66, 155, 0.15);
+            --shadow-hover: 0 12px 24px rgba(88, 66, 155, 0.25);
+            --radius: 24px;
+            --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body {
+            font-family: var(--font);
+            background-color: #e0e5ec;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            color: var(--c-text);
+        }
+
+        /* === KHUNG TRÒ CHƠI (Tỉ lệ 16:9) === */
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 1280px;
+            max-height: 720px;
+            background: linear-gradient(135deg, var(--c-bg), #ffffff);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-aspect-ratio: 16/9) {
+            #game-container { width: calc(100vh * 16 / 9); }
+        }
+        @media (max-aspect-ratio: 16/9) {
+            #game-container { height: calc(100vw * 9 / 16); }
+        }
+
+        /* === UI CHUNG === */
+        .screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        .screen.active { display: flex; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* HEADER (Thanh trạng thái) */
+        #header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--c-white);
+            padding: 10px 20px;
+            border-radius: 999px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            z-index: 10;
+            margin-bottom: 20px;
+        }
+        .score-board { font-size: 1.2rem; font-weight: bold; color: var(--c-primary); display: flex; align-items: center; gap: 10px; }
+        .score-board span.badge { background: var(--c-accent); padding: 5px 15px; border-radius: 999px; color: #fff;}
+        .controls { display: flex; gap: 10px; }
+        
+        button {
+            border: none; outline: none; cursor: pointer;
+            font-family: inherit; font-size: 1rem; font-weight: bold;
+            border-radius: 999px; transition: all 0.2s;
+            display: inline-flex; justify-content: center; align-items: center;
+        }
+        button:active { transform: scale(0.95); }
+        
+        .btn-icon { width: 44px; height: 44px; background: var(--c-pink); color: white; border-radius: 50%; }
+        .btn-icon.muted { background: #ccc; }
+        
+        .btn-primary { background: var(--c-primary); color: white; padding: 12px 24px; box-shadow: var(--shadow); }
+        .btn-primary:hover { background: #4a3680; box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; transform: none; }
+        
+        .btn-secondary { background: var(--c-secondary); color: white; padding: 10px 20px; }
+        .btn-secondary:hover { filter: brightness(1.1); }
+
+        /* KHU VỰC NỘI DUNG MÀN CHƠI */
+        .level-content {
+            flex: 1;
+            display: flex;
+            gap: 20px;
+            position: relative;
+        }
+        
+        .work-area {
+            flex: 3; background: white; border-radius: var(--radius);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05); padding: 20px;
+            display: flex; flex-direction: column; position: relative;
+        }
+        
+        /* NHÂN VẬT & GIAO TIẾP */
+        .character-area {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+            position: relative;
+        }
+        .bubble {
+            background: var(--c-white); padding: 15px; border-radius: 20px;
+            box-shadow: var(--shadow); border: 2px solid var(--c-pink);
+            margin-bottom: 20px; text-align: center; position: relative;
+            font-weight: bold; color: var(--c-primary);
+            width: 100%; font-size: 0.95rem;
+        }
+        .bubble::after {
+            content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+            border-width: 10px 10px 0; border-style: solid;
+            border-color: var(--c-white) transparent transparent transparent; z-index: 2;
+        }
+        .bubble::before {
+            content: ''; position: absolute; bottom: -13px; left: 50%; transform: translateX(-50%);
+            border-width: 12px 12px 0; border-style: solid;
+            border-color: var(--c-pink) transparent transparent transparent; z-index: 1;
+        }
+        #pixel-svg { width: 150px; height: 150px; transition: transform 0.3s; }
+        #pixel-svg:hover { transform: scale(1.05); }
+
+        /* === STYLES CHO TỪNG MÀN CHƠI === */
+        .level-title { font-size: 1.5rem; color: var(--c-primary); margin-bottom: 10px; text-align: center;}
+        .level-desc { font-size: 1rem; color: #555; text-align: center; margin-bottom: 20px;}
+        
+        /* Màn 1: Nút bấm */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; flex: 1; align-items: center;}
+        .card-opt { 
+            background: var(--c-bg); border: 3px solid transparent; border-radius: 20px;
+            padding: 30px 20px; text-align: center; cursor: pointer; transition: all 0.2s;
+            font-size: 1.2rem; font-weight: bold; color: var(--c-primary); box-shadow: var(--shadow);
+        }
+        .card-opt:hover { transform: translateY(-5px); border-color: var(--c-pink); }
+        .card-opt.selected { background: var(--c-secondary); color: white; border-color: var(--c-secondary); }
+        .card-opt.wrong-anim { animation: shake 0.4s; background: #ffcccc; color: #cc0000;}
+        
+        @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+
+        /* Màn 2: Nối (Click - Click) */
+        .match-container { display: flex; justify-content: space-between; gap: 40px; width: 100%; padding: 0 40px;}
+        .match-col { display: flex; flex-direction: column; gap: 20px; flex: 1;}
+        .match-item {
+            padding: 15px; background: white; border: 3px solid var(--c-accent);
+            border-radius: 15px; text-align: center; cursor: pointer; font-weight: bold;
+            transition: all 0.2s;
+        }
+        .match-item.block-style { background: var(--c-accent); color: white; }
+        .match-item.selected { border-color: var(--c-primary); transform: scale(1.05); box-shadow: 0 0 15px rgba(88,66,155,0.5);}
+        .match-item.matched { background: var(--c-secondary); border-color: var(--c-secondary); color: white; opacity: 0.8; cursor: default; transform: none;}
+
+        /* Màn 3: Dựng vòng lặp */
+        .builder-area { display: flex; flex-direction: column; gap: 20px; align-items: center; }
+        .source-blocks { display: flex; gap: 10px; }
+        .drag-block { background: var(--c-primary); color: white; padding: 10px 15px; border-radius: 10px; cursor: pointer;}
+        .drag-block.used { opacity: 0.5; pointer-events: none;}
+        .loop-container-ui { 
+            border: 4px solid var(--c-accent); border-radius: 10px; padding: 10px; width: 300px;
+            min-height: 150px; background: #fff9e6; position: relative;
+        }
+        .loop-container-ui::before { content: 'Lặp lại 3 lần'; position: absolute; top: -15px; left: 10px; background: var(--c-accent); color: white; padding: 2px 10px; border-radius: 5px; font-weight: bold; font-size: 0.8rem;}
+        .drop-slot { height: 40px; border: 2px dashed #ccc; border-radius: 5px; margin: 5px 0; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: #888;}
+        .drop-slot.filled { border-style: solid; border-color: var(--c-secondary); background: var(--c-secondary); color: white; font-weight: bold;}
+        
+        .stage-area { width: 100%; height: 120px; background: #e6f7ff; border-radius: 10px; margin-top: 10px; position: relative; overflow: hidden; display: flex; align-items: center;}
+        #stage-char { width: 50px; height: 50px; background: var(--c-primary); border-radius: 50%; position: absolute; left: 10px; transition: left 0.5s, background-color 0.5s; display: flex; justify-content: center; align-items: center; color: white;}
+
+        /* Màn 4: Điều kiện dừng */
+        .choice-area { display: flex; gap: 20px; justify-content: center; margin-bottom: 20px;}
+        .choice-btn { padding: 15px 30px; font-size: 1.1rem; border: 3px solid var(--c-primary); border-radius: 20px; background: white; cursor: pointer; font-weight: bold; color: var(--c-primary);}
+        .choice-btn:hover { background: var(--c-bg); }
+        .choice-btn.active { background: var(--c-primary); color: white; }
+        
+        .road-stage { width: 100%; height: 100px; background: #eee; border-radius: 10px; position: relative; display: flex; align-items: center; margin-top: 20px;}
+        .finish-line { position: absolute; right: 40px; width: 10px; height: 100%; background: repeating-linear-gradient(45deg, #000, #000 10px, #fff 10px, #fff 20px); }
+        #robot-runner { width: 60px; height: 60px; position: absolute; left: 10px; transition: left 0.3s linear; }
+
+        /* MÀN CHÀO MỪNG & KẾT THÚC */
+        .center-screen { justify-content: center; align-items: center; text-align: center; background: linear-gradient(135deg, var(--c-bg), var(--c-pink)); }
+        .title-main { font-size: 3.5rem; color: var(--c-primary); text-shadow: 2px 2px 0px white; margin-bottom: 10px; }
+        .subtitle { font-size: 1.5rem; color: var(--c-text); margin-bottom: 30px; }
+        .result-box { background: white; padding: 40px; border-radius: var(--radius); box-shadow: var(--shadow); width: 80%; max-width: 600px; }
+        .star-container { font-size: 4rem; color: var(--c-accent); margin-bottom: 20px;}
+        
+        /* Hiệu ứng Win */
+        .confetti { position: absolute; width: 10px; height: 10px; background: var(--c-accent); border-radius: 50%; z-index: 100; animation: fall 2s linear forwards;}
+        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+
+        /* Khung chứa các nút điều khiển màn dưới cùng */
+        .level-footer { display: flex; justify-content: space-between; margin-top: 15px; }
+        
+        /* Modal Gợi ý */
+        #hint-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 50; display: none; justify-content: center; align-items: center;}
+        .hint-content { background: white; padding: 30px; border-radius: 20px; max-width: 400px; text-align: center;}
+        
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    
+    <!-- UI HEADER CHUNG (Sẽ ẩn ở màn Intro/Outro) -->
+    <div id="header" style="display: none;">
+        <div class="score-board">
+            <span>Tiến độ: <span id="progress-text">1/4</span></span> |
+            <span>Điểm: <span id="score-text" class="badge">0</span></span>
+        </div>
+        <div class="controls">
+            <button class="btn-icon" id="btn-sfx" title="Bật/Tắt Hiệu ứng" aria-label="Toggle SFX">🎵</button>
+            <button class="btn-icon" id="btn-bgm" title="Bật/Tắt Nhạc nền" aria-label="Toggle BGM">🎶</button>
+            <button class="btn-icon" style="background:#ddd; color:#333;" onclick="goHome()" title="Trang chủ">🏠</button>
+        </div>
+    </div>
+
+    <!-- MÀN CHÀO MỪNG -->
+    <div id="screen-intro" class="screen center-screen active">
+        <!-- SVG Pixel Lớn -->
+        <svg width="200" height="200" viewBox="0 0 200 200" style="margin-bottom: 20px;">
+            <rect x="40" y="50" width="120" height="100" rx="15" fill="#58429B" />
+            <rect x="50" y="60" width="100" height="80" rx="5" fill="#F8F7FF" />
+            <!-- Mắt -->
+            <circle cx="80" cy="100" r="10" fill="#4ABDAA" />
+            <circle cx="120" cy="100" r="10" fill="#4ABDAA" />
+            <!-- Anten -->
+            <rect x="95" y="20" width="10" height="30" fill="#F2BE4A" />
+            <circle cx="100" cy="15" r="8" fill="#F6B6C8" />
+        </svg>
+        <h2 class="subtitle">Tin học 5 - Bài 11</h2>
+        <h1 class="title-main">VÒNG LẶP THẦN KÌ</h1>
+        <p style="margin-bottom: 30px; font-size: 1.2rem;">Khám phá bí mật của việc tự động hóa công việc lặp đi lặp lại!</p>
+        <div style="display: flex; gap: 20px;">
+            <button class="btn-primary" style="font-size: 1.2rem; padding: 15px 40px;" onclick="startGame()">BẮT ĐẦU</button>
+        </div>
+    </div>
+
+    <!-- MÀN CHƠI CHUNG TEMPLATE -->
+    <div id="screen-game" class="screen">
+        <h2 id="level-title" class="level-title">Tên Màn Chơi</h2>
+        <p id="level-desc" class="level-desc">Mô tả nhiệm vụ ở đây</p>
+        
+        <div class="level-content">
+            <!-- Vùng thao tác -->
+            <div id="work-area" class="work-area">
+                <!-- Nội dung màn chơi được render bằng JS vào đây -->
+            </div>
+            
+            <!-- Vùng nhân vật hỗ trợ -->
+            <div class="character-area">
+                <div class="bubble" id="pixel-dialog">Chào bạn! Hãy giúp mình hoàn thành nhiệm vụ nhé.</div>
+                <svg id="pixel-svg" viewBox="0 0 200 200">
+                    <g id="pixel-body">
+                        <!-- Chân/Đế -->
+                        <path d="M 80 160 L 120 160 L 130 190 L 70 190 Z" fill="#ccc" />
+                        <!-- Cổ -->
+                        <rect x="90" y="140" width="20" height="20" fill="#666" />
+                        <!-- Đầu -->
+                        <rect x="30" y="40" width="140" height="100" rx="15" fill="#58429B" />
+                        <!-- Màn hình -->
+                        <rect x="45" y="55" width="110" height="70" rx="5" fill="#F8F7FF" />
+                        <!-- Anten -->
+                        <rect x="95" y="10" width="10" height="30" fill="#F2BE4A" />
+                        <circle cx="100" cy="10" r="10" fill="#F6B6C8" id="anten-bulb" />
+                    </g>
+                    <g id="pixel-face">
+                        <!-- Mắt mặc định -->
+                        <circle cx="75" cy="90" r="10" fill="#4ABDAA" class="eye" />
+                        <circle cx="125" cy="90" r="10" fill="#4ABDAA" class="eye" />
+                    </g>
+                </svg>
+            </div>
+        </div>
+
+        <div class="level-footer">
+            <button class="btn-secondary" onclick="showHint()">💡 Gợi ý</button>
+            <div style="display:flex; gap: 10px;">
+                <button class="btn-secondary" style="background:#e74c3c;" onclick="resetCurrentLevel()">🔄 Làm lại</button>
+                <button id="btn-check" class="btn-primary" onclick="checkLevel()">Kiểm tra</button>
+                <button id="btn-next" class="btn-primary" style="display:none; background: var(--c-secondary);" onclick="nextLevel()">Tiếp tục ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MÀN KẾT THÚC -->
+    <div id="screen-outro" class="screen center-screen">
+        <div class="result-box">
+            <div class="star-container">🌟🌟🌟</div>
+            <h1 class="title-main" style="font-size: 2.5rem; margin-bottom: 20px;">CHÚC MỪNG!</h1>
+            <p style="font-size: 1.5rem; margin-bottom: 10px;">Bạn đã hoàn thành xuất sắc!</p>
+            <p style="font-size: 1.2rem; font-weight: bold; color: var(--c-primary); margin-bottom: 30px;">Tổng điểm: <span id="final-score">100</span>/100</p>
+            
+            <div style="background: var(--c-bg); padding: 15px; border-radius: 15px; text-align: left; margin-bottom: 30px; font-size: 1rem; color: #444;">
+                <p><strong>Ôn tập nhanh:</strong></p>
+                <ul style="padding-left: 20px; margin-top: 10px; line-height: 1.6;">
+                    <li><strong>Lặp có số lần:</strong> Biết trước số lần thực hiện (Repeat n).</li>
+                    <li><strong>Lặp liên tục:</strong> Chạy mãi đến khi bị dừng (Forever).</li>
+                    <li><strong>Lặp có điều kiện:</strong> Dừng lại khi thoả mãn một điều kiện (Repeat until).</li>
+                </ul>
+            </div>
+
+            <button class="btn-primary" onclick="window.location.reload()">CHƠI LẠI TỪ ĐẦU</button>
+        </div>
+    </div>
+
+    <!-- Modal Gợi ý -->
+    <div id="hint-modal" onclick="this.style.display='none'">
+        <div class="hint-content" onclick="event.stopPropagation()">
+            <h3 style="color:var(--c-primary); margin-bottom: 15px;">💡 Gợi ý</h3>
+            <p id="hint-text" style="line-height: 1.5; margin-bottom: 20px;"></p>
+            <button class="btn-primary" onclick="document.getElementById('hint-modal').style.display='none'">Đã hiểu</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+/**
+ * ==========================================
+ * CẤU HÌNH TRÒ CHƠI (GAME_CONFIG)
+ * Giáo viên có thể tùy chỉnh nội dung tại đây
+ * ==========================================
+ */
+const GAME_CONFIG = {
+    pointsPerLevel: 25,
+    levels: [
+        {
+            id: 1,
+            title: "Màn 1: Nhận diện Vòng lặp",
+            desc: "Chọn những hành động nào có thể sử dụng cấu trúc lặp để rút gọn lệnh?",
+            hint: "Những hành động được lặp đi lặp lại nhiều lần liên tiếp mới cần dùng vòng lặp nhé.",
+            options: [
+                { id: 'opt1', text: "Vỗ tay 10 lần", isLoop: true },
+                { id: 'opt2', text: "Bước đi 1 bước", isLoop: false },
+                { id: 'opt3', text: "Nói 'Xin chào' liên tục", isLoop: true }
+            ],
+            successMsg: "Chính xác! Lặp lại giúp máy tính không phải viết cùng một lệnh nhiều lần.",
+            failMsg: "Chưa đúng. 'Bước đi 1 bước' chỉ làm 1 lần, không cần lặp. Hãy chọn lại."
+        },
+        {
+            id: 2,
+            title: "Màn 2: Phân loại Lệnh lặp",
+            desc: "Nháy chuột để ghép khối lệnh Scratch (trái) với chức năng tương ứng (phải).",
+            hint: "Khối có vòng tròn mũi tên là lặp mãi mãi. Khối có ô nhập số là lặp theo số lần.",
+            blocks: [
+                { id: 'b1', text: "Repeat 10", matchId: 'd1' },
+                { id: 'b2', text: "Forever", matchId: 'd2' },
+                { id: 'b3', text: "Repeat until <>", matchId: 'd3' }
+            ],
+            descs: [
+                { id: 'd2', text: "Lặp liên tục không dừng" },
+                { id: 'd3', text: "Lặp đến khi thỏa mãn điều kiện" },
+                { id: 'd1', text: "Lặp với số lần biết trước" }
+            ],
+            successMsg: "Tuyệt vời! Bạn đã phân biệt được 3 loại vòng lặp cơ bản.",
+            failMsg: "Có cặp ghép chưa đúng. Hãy thử ghép lại nhé."
+        },
+        {
+            id: 3,
+            title: "Màn 3: Vũ điệu Lặp 3 lần",
+            desc: "Nháy chọn theo thứ tự các lệnh: [Di chuyển], [Đổi trang phục], [Đợi] vào vòng lặp rồi nhấn Chạy.",
+            hint: "Cần sắp xếp đúng thứ tự: Di chuyển -> Đổi trang phục -> Đợi 1s.",
+            cmds: [
+                { id: 'c1', text: "Di chuyển 10 bước" },
+                { id: 'c2', text: "Thay đổi trang phục" },
+                { id: 'c3', text: "Đợi 1 giây" }
+            ],
+            correctOrder: ['c1', 'c2', 'c3'],
+            successMsg: "Hoàn hảo! Nhân vật đã thực hiện đúng chuỗi hành động 3 lần.",
+            failMsg: "Thứ tự lệnh chưa đúng hoặc chưa chạy thử. Hãy sắp xếp lại nhé."
+        },
+        {
+            id: 4,
+            title: "Màn 4: Điều khiển Điểm dừng",
+            desc: "Rô-bốt cần đi đến vạch đích an toàn (không đâm tường). Chọn vòng lặp phù hợp.",
+            hint: "Vì khoảng cách đến đích có thể thay đổi, hãy dùng lệnh lặp kiểm tra vạch đích chạm (Repeat until).",
+            options: [
+                { id: 'btn_rep3', text: "Lặp 3 lần" },
+                { id: 'btn_repUntil', text: "Lặp đến khi chạm vạch" }
+            ],
+            correct: 'btn_repUntil',
+            successMsg: "Rất thông minh! Lặp có điều kiện giúp rô-bốt dừng chính xác tại đích.",
+            failMsg: "Lặp 3 lần là chưa đủ hoặc bị quá lố. Rô-bốt cần lặp cho đến khi phát hiện vạch đích."
+        }
+    ]
+};
+
+/**
+ * ==========================================
+ * WEB AUDIO API (Hệ thống Âm thanh gốc)
+ * TUYỆT ĐỐI KHÔNG DÙNG TTS
+ * ==========================================
+ */
+let audioCtx;
+let bgmOscillator;
+let bgmGain;
+let isBgmPlaying = false;
+
+const AUDIO = {
+    bgmMuted: false,
+    sfxMuted: false,
+    
+    init: function() {
+        if (!audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+            
+            // Setup BGM Gain
+            bgmGain = audioCtx.createGain();
+            bgmGain.gain.value = 0.05; // Âm lượng nhỏ êm dịu
+            bgmGain.connect(audioCtx.destination);
+        }
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+    },
+
+    playSFX: function(type) {
+        if (this.sfxMuted || !audioCtx) return;
+        const t = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === 'click') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, t);
+            osc.frequency.exponentialRampToValueAtTime(800, t + 0.1);
+            gain.gain.setValueAtTime(0.1, t);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+            osc.start(t); osc.stop(t + 0.1);
+        } 
+        else if (type === 'correct') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(400, t);
+            osc.frequency.setValueAtTime(600, t + 0.1);
+            osc.frequency.setValueAtTime(800, t + 0.2);
+            gain.gain.setValueAtTime(0.1, t);
+            gain.gain.linearRampToValueAtTime(0, t + 0.3);
+            osc.start(t); osc.stop(t + 0.3);
+        }
+        else if (type === 'wrong') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, t);
+            osc.frequency.linearRampToValueAtTime(100, t + 0.3);
+            gain.gain.setValueAtTime(0.1, t);
+            gain.gain.linearRampToValueAtTime(0, t + 0.3);
+            osc.start(t); osc.stop(t + 0.3);
+        }
+        else if (type === 'win') {
+            // Hợp âm chiến thắng đơn giản
+            [400, 500, 600, 800].forEach((freq, i) => {
+                const o = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                o.type = 'sine';
+                o.connect(g); g.connect(audioCtx.destination);
+                o.frequency.value = freq;
+                g.gain.setValueAtTime(0, t + i*0.1);
+                g.gain.linearRampToValueAtTime(0.1, t + i*0.1 + 0.05);
+                g.gain.linearRampToValueAtTime(0, t + i*0.1 + 0.5);
+                o.start(t + i*0.1); o.stop(t + i*0.1 + 0.5);
+            });
+        }
+    },
+
+    toggleBGM: function() {
+        this.bgmMuted = !this.bgmMuted;
+        const btn = document.getElementById('btn-bgm');
+        if (this.bgmMuted) {
+            btn.classList.add('muted');
+            if(bgmGain) bgmGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+        } else {
+            btn.classList.remove('muted');
+            this.init();
+            if(bgmGain) bgmGain.gain.linearRampToValueAtTime(0.05, audioCtx.currentTime + 0.5);
+            if(!isBgmPlaying) this.startBGMSequence();
+        }
+    },
+
+    toggleSFX: function() {
+        this.sfxMuted = !this.sfxMuted;
+        const btn = document.getElementById('btn-sfx');
+        if(this.sfxMuted) btn.classList.add('muted');
+        else btn.classList.remove('muted');
+    },
+
+    // Sequencer nhạc nền đơn giản
+    startBGMSequence: function() {
+        if (!audioCtx) return;
+        isBgmPlaying = true;
+        const notes = [261.63, 329.63, 392.00, 329.63]; // C E G E
+        let noteIndex = 0;
+        
+        function playNextNote() {
+            if(!isBgmPlaying || AUDIO.bgmMuted) {
+                setTimeout(playNextNote, 500); // Đợi check lại
+                return;
+            }
+            if(!bgmGain) return;
+            
+            const t = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.value = notes[noteIndex];
+            osc.connect(bgmGain);
+            
+            osc.start(t);
+            osc.stop(t + 0.4);
+            
+            noteIndex = (noteIndex + 1) % notes.length;
+            setTimeout(playNextNote, 500); // 120BPM
+        }
+        playNextNote();
+    }
+};
+
+// Gắn sự kiện nút âm thanh
+document.getElementById('btn-bgm').addEventListener('click', () => AUDIO.toggleBGM());
+document.getElementById('btn-sfx').addEventListener('click', () => { AUDIO.toggleSFX(); AUDIO.playSFX('click'); });
+
+
+/**
+ * ==========================================
+ * STATE & LOGIC ĐIỀU KHIỂN CHUNG
+ * ==========================================
+ */
+let STATE = {
+    currentLevel: 0,
+    score: 0,
+    levelData: null // Biến lưu trạng thái riêng của từng màn
+};
+
+function startGame() {
+    AUDIO.init();
+    if(!isBgmPlaying && !AUDIO.bgmMuted) AUDIO.startBGMSequence();
+    AUDIO.playSFX('click');
+    
+    STATE.currentLevel = 0;
+    STATE.score = 0;
+    updateScoreBoard();
+    
+    document.getElementById('screen-intro').classList.remove('active');
+    document.getElementById('screen-game').classList.add('active');
+    document.getElementById('header').style.display = 'flex';
+    
+    loadLevel(STATE.currentLevel);
+}
+
+function updateScoreBoard() {
+    document.getElementById('progress-text').innerText = `${STATE.currentLevel + 1}/4`;
+    document.getElementById('score-text').innerText = STATE.score;
+}
+
+function updatePixel(emotion, text) {
+    const dialog = document.getElementById('pixel-dialog');
+    dialog.innerText = text;
+    dialog.style.animation = 'none';
+    dialog.offsetHeight; /* trigger reflow */
+    dialog.style.animation = 'fadeIn 0.3s ease';
+
+    const face = document.getElementById('pixel-face');
+    if (emotion === 'happy') {
+        face.innerHTML = `
+            <path d="M 65 90 Q 75 80 85 90" stroke="#4ABDAA" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path d="M 115 90 Q 125 80 135 90" stroke="#4ABDAA" stroke-width="4" fill="none" stroke-linecap="round"/>
+        `;
+    } else if (emotion === 'sad') {
+        face.innerHTML = `
+            <path d="M 65 85 L 85 95" stroke="#4ABDAA" stroke-width="4" stroke-linecap="round"/>
+            <path d="M 115 95 L 135 85" stroke="#4ABDAA" stroke-width="4" stroke-linecap="round"/>
+        `;
+    } else {
+        face.innerHTML = `
+            <circle cx="75" cy="90" r="10" fill="#4ABDAA" />
+            <circle cx="125" cy="90" r="10" fill="#4ABDAA" />
+        `;
+    }
+}
+
+function showHint() {
+    AUDIO.playSFX('click');
+    const config = GAME_CONFIG.levels[STATE.currentLevel];
+    document.getElementById('hint-text').innerText = config.hint;
+    document.getElementById('hint-modal').style.display = 'flex';
+}
+
+function goHome() {
+    AUDIO.playSFX('click');
+    document.getElementById('screen-game').classList.remove('active');
+    document.getElementById('screen-outro').classList.remove('active');
+    document.getElementById('header').style.display = 'none';
+    document.getElementById('screen-intro').classList.add('active');
+}
+
+/**
+ * ==========================================
+ * LOAD LOGIC TỪNG MÀN CHƠI
+ * ==========================================
+ */
+function loadLevel(index) {
+    const config = GAME_CONFIG.levels[index];
+    document.getElementById('level-title').innerText = config.title;
+    document.getElementById('level-desc').innerText = config.desc;
+    
+    // Reset UI
+    document.getElementById('btn-check').style.display = 'inline-flex';
+    document.getElementById('btn-check').disabled = false;
+    document.getElementById('btn-next').style.display = 'none';
+    const workArea = document.getElementById('work-area');
+    workArea.innerHTML = '';
+    
+    updatePixel('normal', "Cùng bắt đầu nhiệm vụ nào!");
+
+    // RENDER THEO MÀN
+    if (index === 0) renderLevel1(config, workArea);
+    else if (index === 1) renderLevel2(config, workArea);
+    else if (index === 2) renderLevel3(config, workArea);
+    else if (index === 3) renderLevel4(config, workArea);
+}
+
+function resetCurrentLevel() {
+    AUDIO.playSFX('click');
+    loadLevel(STATE.currentLevel);
+}
+
+function nextLevel() {
+    AUDIO.playSFX('click');
+    STATE.currentLevel++;
+    if (STATE.currentLevel < GAME_CONFIG.levels.length) {
+        updateScoreBoard();
+        loadLevel(STATE.currentLevel);
+    } else {
+        // Hoàn thành game
+        AUDIO.playSFX('win');
+        document.getElementById('screen-game').classList.remove('active');
+        document.getElementById('header').style.display = 'none';
+        document.getElementById('screen-outro').classList.add('active');
+        document.getElementById('final-score').innerText = STATE.score;
+        createConfetti();
+    }
+}
+
+function checkLevel() {
+    AUDIO.playSFX('click');
+    const index = STATE.currentLevel;
+    let isCorrect = false;
+
+    if (index === 0) isCorrect = checkLevel1();
+    else if (index === 1) isCorrect = checkLevel2();
+    else if (index === 2) isCorrect = checkLevel3();
+    else if (index === 3) isCorrect = checkLevel4();
+
+    const config = GAME_CONFIG.levels[index];
+
+    if (isCorrect) {
+        AUDIO.playSFX('correct');
+        updatePixel('happy', config.successMsg);
+        document.getElementById('btn-check').style.display = 'none';
+        document.getElementById('btn-next').style.display = 'inline-flex';
+        STATE.score += GAME_CONFIG.pointsPerLevel;
+        updateScoreBoard();
+    } else {
+        AUDIO.playSFX('wrong');
+        updatePixel('sad', config.failMsg);
+    }
+}
+
+/**
+ * ==========================================
+ * CHI TIẾT MÀN 1: NHẬN DIỆN
+ * ==========================================
+ */
+function renderLevel1(config, container) {
+    STATE.levelData = { selected: [] };
+    const grid = document.createElement('div');
+    grid.className = 'grid-3';
+    
+    config.options.forEach(opt => {
+        const div = document.createElement('div');
+        div.className = 'card-opt';
+        div.id = opt.id;
+        div.innerText = opt.text;
+        div.onclick = () => {
+            AUDIO.playSFX('click');
+            div.classList.toggle('selected');
+            if (div.classList.contains('selected')) STATE.levelData.selected.push(opt.id);
+            else STATE.levelData.selected = STATE.levelData.selected.filter(id => id !== opt.id);
+        };
+        grid.appendChild(div);
+    });
+    container.appendChild(grid);
+}
+
+function checkLevel1() {
+    const config = GAME_CONFIG.levels[0];
+    const correctIds = config.options.filter(o => o.isLoop).map(o => o.id);
+    const selected = STATE.levelData.selected;
+    
+    // Check đúng sai
+    let isPass = selected.length === correctIds.length && correctIds.every(id => selected.includes(id));
+    
+    if (!isPass) {
+        // Animation sai
+        config.options.forEach(opt => {
+            const el = document.getElementById(opt.id);
+            if (selected.includes(opt.id) && !correctIds.includes(opt.id)) {
+                el.classList.add('wrong-anim');
+                setTimeout(() => el.classList.remove('wrong-anim'), 400);
+            }
+        });
+    } else {
+        // Vô hiệu hóa click khi đúng
+        config.options.forEach(opt => {
+            document.getElementById(opt.id).style.pointerEvents = 'none';
+        });
+    }
+    return isPass;
+}
+
+/**
+ * ==========================================
+ * CHI TIẾT MÀN 2: NỐI (CLICK-CLICK)
+ * ==========================================
+ */
+function renderLevel2(config, container) {
+    STATE.levelData = { selectedBlock: null, selectedDesc: null, matches: [] };
+    
+    const wrap = document.createElement('div');
+    wrap.className = 'match-container';
+    
+    const colLeft = document.createElement('div'); colLeft.className = 'match-col';
+    const colRight = document.createElement('div'); colRight.className = 'match-col';
+
+    const handleSelect = (type, id, el) => {
+        AUDIO.playSFX('click');
+        if (el.classList.contains('matched')) return;
+        
+        // Reset visual cùng cột
+        Array.from(el.parentElement.children).forEach(c => {
+            if(!c.classList.contains('matched')) c.classList.remove('selected')
+        });
+        el.classList.add('selected');
+
+        if (type === 'block') STATE.levelData.selectedBlock = id;
+        else STATE.levelData.selectedDesc = id;
+
+        // Check nối
+        if (STATE.levelData.selectedBlock && STATE.levelData.selectedDesc) {
+            const blockConfig = config.blocks.find(b => b.id === STATE.levelData.selectedBlock);
+            if (blockConfig.matchId === STATE.levelData.selectedDesc) {
+                // Nối đúng
+                AUDIO.playSFX('correct');
+                const bEl = document.getElementById(STATE.levelData.selectedBlock);
+                const dEl = document.getElementById(STATE.levelData.selectedDesc);
+                bEl.classList.add('matched'); bEl.classList.remove('selected');
+                dEl.classList.add('matched'); dEl.classList.remove('selected');
+                STATE.levelData.matches.push(blockConfig.id);
+            } else {
+                // Nối sai
+                AUDIO.playSFX('wrong');
+                const bEl = document.getElementById(STATE.levelData.selectedBlock);
+                const dEl = document.getElementById(STATE.levelData.selectedDesc);
+                bEl.classList.remove('selected'); dEl.classList.remove('selected');
+                bEl.style.animation = 'shake 0.4s'; dEl.style.animation = 'shake 0.4s';
+                setTimeout(() => { bEl.style.animation=''; dEl.style.animation=''; }, 400);
+            }
+            STATE.levelData.selectedBlock = null;
+            STATE.levelData.selectedDesc = null;
+        }
+    };
+
+    config.blocks.forEach(b => {
+        const el = document.createElement('div');
+        el.className = 'match-item block-style'; el.id = b.id; el.innerText = b.text;
+        el.onclick = () => handleSelect('block', b.id, el);
+        colLeft.appendChild(el);
+    });
+
+    config.descs.forEach(d => {
+        const el = document.createElement('div');
+        el.className = 'match-item'; el.id = d.id; el.innerText = d.text;
+        el.onclick = () => handleSelect('desc', d.id, el);
+        colRight.appendChild(el);
+    });
+
+    wrap.appendChild(colLeft);
+    wrap.appendChild(colRight);
+    container.appendChild(wrap);
+}
+
+function checkLevel2() {
+    const config = GAME_CONFIG.levels[1];
+    return STATE.levelData.matches.length === config.blocks.length;
+}
+
+/**
+ * ==========================================
+ * CHI TIẾT MÀN 3: XẾP LỆNH & CHẠY THỬ
+ * ==========================================
+ */
+function renderLevel3(config, container) {
+    STATE.levelData = { seq: [], hasRun: false };
+    
+    const wrap = document.createElement('div');
+    wrap.className = 'builder-area';
+
+    // Các khối nguồn
+    const sourceDiv = document.createElement('div');
+    sourceDiv.className = 'source-blocks';
+    config.cmds.forEach(cmd => {
+        const el = document.createElement('div');
+        el.className = 'drag-block'; el.id = cmd.id; el.innerText = cmd.text;
+        el.onclick = () => {
+            if(STATE.levelData.seq.length < 3 && !el.classList.contains('used')) {
+                AUDIO.playSFX('click');
+                STATE.levelData.seq.push(cmd.id);
+                el.classList.add('used');
+                updateLoopUI();
+            }
+        };
+        sourceDiv.appendChild(el);
+    });
+
+    // Khu vực chứa vòng lặp
+    const loopDiv = document.createElement('div');
+    loopDiv.className = 'loop-container-ui';
+    loopDiv.id = 'loop-ui';
+    for(let i=0; i<3; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'drop-slot'; slot.innerText = 'Nháy chọn lệnh để nạp...';
+        loopDiv.appendChild(slot);
+    }
+
+    // Nút chạy & Stage
+    const btnRun = document.createElement('button');
+    btnRun.className = 'btn-secondary'; btnRun.innerText = '▶️ CHẠY THỬ';
+    btnRun.onclick = runLevel3Animation;
+
+    const stage = document.createElement('div');
+    stage.className = 'stage-area';
+    stage.innerHTML = `<div id="stage-char">🕺</div>`;
+
+    wrap.appendChild(sourceDiv);
+    wrap.appendChild(loopDiv);
+    wrap.appendChild(btnRun);
+    wrap.appendChild(stage);
+    container.appendChild(wrap);
+
+    function updateLoopUI() {
+        const slots = document.getElementById('loop-ui').children;
+        for(let i=0; i<3; i++) {
+            if(STATE.levelData.seq[i]) {
+                const cmd = config.cmds.find(c => c.id === STATE.levelData.seq[i]);
+                slots[i].innerText = cmd.text;
+                slots[i].classList.add('filled');
+            } else {
+                slots[i].innerText = 'Nháy chọn lệnh để nạp...';
+                slots[i].classList.remove('filled');
+            }
+        }
+    }
+}
+
+function runLevel3Animation() {
+    if(STATE.levelData.seq.length !== 3) {
+        updatePixel('sad', "Bạn phải xếp đủ 3 lệnh vào vòng lặp mới chạy được!");
+        return;
+    }
+    AUDIO.playSFX('click');
+    const char = document.getElementById('stage-char');
+    const colors = ['var(--c-primary)', 'var(--c-secondary)', 'var(--c-accent)'];
+    
+    // Trình diễn lặp 3 lần đơn giản
+    let loopCount = 0;
+    document.getElementById('btn-check').disabled = true; // Disable check while running
+
+    function step() {
+        if(loopCount >= 3) {
+            STATE.levelData.hasRun = true;
+            document.getElementById('btn-check').disabled = false;
+            updatePixel('happy', "Chạy xong! Hãy nhấn Kiểm tra xem kết quả nhé.");
+            return;
+        }
+        
+        // Mô phỏng: Move -> Change Color -> Wait
+        char.style.left = (10 + (loopCount+1)*50) + 'px';
+        char.style.backgroundColor = colors[loopCount];
+        AUDIO.playSFX('click'); // Tiếng bước
+        
+        loopCount++;
+        setTimeout(step, 1000); // Wait 1s mô phỏng
+    }
+    
+    // Reset pos
+    char.style.left = '10px';
+    char.style.backgroundColor = 'var(--c-primary)';
+    setTimeout(step, 500);
+}
+
+function checkLevel3() {
+    const config = GAME_CONFIG.levels[2];
+    if(!STATE.levelData.hasRun) return false;
+    // Kiểm tra đúng thứ tự
+    for(let i=0; i<3; i++) {
+        if(STATE.levelData.seq[i] !== config.correctOrder[i]) return false;
+    }
+    return true;
+}
+
+/**
+ * ==========================================
+ * CHI TIẾT MÀN 4: ĐIỀU KIỆN DỪNG
+ * ==========================================
+ */
+function renderLevel4(config, container) {
+    STATE.levelData = { choice: null };
+    
+    const wrap = document.createElement('div');
+    wrap.style.width = '100%';
+    wrap.style.textAlign = 'center';
+
+    const btnArea = document.createElement('div');
+    btnArea.className = 'choice-area';
+
+    config.options.forEach(opt => {
+        const btn = document.createElement('div');
+        btn.className = 'choice-btn'; btn.id = opt.id; btn.innerText = opt.text;
+        btn.onclick = () => {
+            AUDIO.playSFX('click');
+            document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            STATE.levelData.choice = opt.id;
+            runLevel4Animation(opt.id);
+        };
+        btnArea.appendChild(btn);
+    });
+
+    const stage = document.createElement('div');
+    stage.className = 'road-stage';
+    stage.innerHTML = `
+        <div class="finish-line"></div>
+        <div id="robot-runner">🤖</div>
+    `;
+
+    wrap.appendChild(btnArea);
+    wrap.appendChild(stage);
+    container.appendChild(wrap);
+}
+
+function runLevel4Animation(choiceId) {
+    const robot = document.getElementById('robot-runner');
+    robot.style.transition = 'none';
+    robot.style.left = '10px';
+    robot.offsetHeight; // reflow
+
+    if (choiceId === 'btn_rep3') {
+        // Lặp 3 lần -> đi được 3 đoạn rồi dừng (chưa tới đích)
+        robot.style.transition = 'left 1s linear';
+        robot.style.left = '150px'; 
+    } else {
+        // Lặp đến khi chạm vạch -> đi đến sát vạch
+        robot.style.transition = 'left 2s linear';
+        robot.style.left = 'calc(100% - 100px)';
+    }
+}
+
+function checkLevel4() {
+    return STATE.levelData.choice === GAME_CONFIG.levels[3].correct;
+}
+
+/**
+ * ==========================================
+ * UTILS & HIỆU ỨNG
+ * ==========================================
+ */
+function createConfetti() {
+    const container = document.getElementById('screen-outro');
+    for(let i=0; i<50; i++) {
+        const conf = document.createElement('div');
+        conf.className = 'confetti';
+        conf.style.left = Math.random() * 100 + 'vw';
+        conf.style.backgroundColor = ['#58429B', '#4ABDAA', '#F2BE4A', '#F6B6C8'][Math.floor(Math.random()*4)];
+        conf.style.animationDuration = (Math.random() * 2 + 1) + 's';
+        container.appendChild(conf);
+    }
+}
+
+</script>
+</body>
+</html>

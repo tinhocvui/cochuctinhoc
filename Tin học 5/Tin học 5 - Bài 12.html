@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vũ Điệu Và Đường Bay Của Mèo - Tin Học 5 Bài 12</title>
+    <style>
+        /* Modern V5 Style Palette & Theme Variables */
+        :root {
+            --bg-cream: #FAF7F2;
+            --pastel-pink: #F8C8DC;
+            --pastel-mint: #B2EBF2;
+            --pastel-lavender: #E1BEE7;
+            --pastel-peach: #FFE0B2;
+            --primary-purple: #58429B;
+            --primary-teal: #00897B;
+            --accent-yellow: #FFD54F;
+            --accent-orange: #FF8A65;
+            --scratch-motion: #4C97FF;
+            --scratch-looks: #9966FF;
+            --scratch-control: #FFAB19;
+            --scratch-sensing: #5CB1D6;
+            --text-main: #2C3E50;
+            --card-shadow: 0 8px 24px rgba(88, 66, 155, 0.12);
+            --btn-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, Roboto, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-cream);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 1100px;
+            height: 95vh;
+            max-height: 780px;
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #EDE7F6;
+        }
+
+        /* Header Bar */
+        header {
+            background: linear-gradient(135deg, var(--pastel-lavender), var(--pastel-pink));
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .game-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--primary-purple);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .audio-btn, .mode-btn, .nav-btn {
+            background: #FFFFFF;
+            border: 2px solid var(--primary-purple);
+            color: var(--primary-purple);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: var(--btn-shadow);
+        }
+
+        .audio-btn.off {
+            background: #FFCDD2;
+            border-color: #E53935;
+            color: #C62828;
+        }
+
+        .audio-btn:hover, .mode-btn:hover, .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 4px 12px;
+            border-radius: 12px;
+        }
+
+        .progress-track {
+            width: 100px;
+            height: 10px;
+            background: #E0E0E0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--primary-teal);
+            transition: width 0.3s ease;
+        }
+
+        /* Screen Layouts */
+        .screen {
+            display: none;
+            flex: 1;
+            padding: 20px;
+            flex-direction: column;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Welcome Screen */
+        #welcome-screen {
+            background: radial-gradient(circle at center, #FFF, var(--pastel-peach));
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 20px;
+        }
+
+        .hero-banner {
+            width: 220px;
+            height: 180px;
+        }
+
+        .welcome-title {
+            font-size: 2.2rem;
+            color: var(--primary-purple);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #555;
+            max-width: 600px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-purple), #7E57C2);
+            color: #FFF;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(88, 66, 155, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(88, 66, 155, 0.4);
+        }
+
+        .btn-secondary {
+            background: #FFF;
+            color: var(--primary-purple);
+            border: 2px solid var(--primary-purple);
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        /* Main Workspace Layout */
+        .workspace {
+            display: grid;
+            grid-template-columns: 280px 1fr 340px;
+            gap: 16px;
+            flex: 1;
+            height: 100%;
+        }
+
+        @media (max-width: 900px) {
+            .workspace {
+                grid-template-columns: 1fr;
+                overflow-y: auto;
+            }
+        }
+
+        .panel {
+            background: #FAFAFA;
+            border: 2px solid #E0E0E0;
+            border-radius: var(--radius-md);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .panel-title {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--primary-purple);
+            border-bottom: 2px solid #EEE;
+            padding-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Block Palette */
+        .block-palette {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+        }
+
+        .scratch-block {
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.88rem;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .scratch-block:active {
+            cursor: grabbing;
+        }
+
+        .block-motion { background-color: var(--scratch-motion); }
+        .block-looks { background-color: var(--scratch-looks); }
+        .block-control { background-color: var(--scratch-control); }
+        .block-sensing { background-color: var(--scratch-sensing); }
+
+        /* Coding Area */
+        .coding-area {
+            background: #FFFFFF;
+            border: 2px dashed #BDBDBD;
+            border-radius: var(--radius-md);
+            padding: 12px;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+        }
+
+        .coding-area.drag-over {
+            background: #F0F4C3;
+            border-color: #AFB42B;
+        }
+
+        /* Container Block (Loop Block Wrapper) */
+        .loop-wrapper-block {
+            background-color: var(--scratch-control);
+            border-radius: 8px;
+            padding: 8px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .loop-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        .loop-inner-zone {
+            background: rgba(255, 255, 255, 0.25);
+            border: 2px dashed rgba(255, 255, 255, 0.8);
+            border-radius: 6px;
+            min-height: 50px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        /* Stage Area */
+        .stage-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stage-canvas-box {
+            width: 100%;
+            height: 230px;
+            background: linear-gradient(to bottom, #E0F7FA, #FFF);
+            border: 2px solid #00ACC1;
+            border-radius: var(--radius-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Assistant Pixel Display */
+        .assistant-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #F3E5F5;
+            border-radius: var(--radius-md);
+            padding: 10px;
+            border: 1px solid var(--pastel-lavender);
+        }
+
+        .assistant-avatar {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+        }
+
+        .speech-bubble {
+            background: #FFF;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            line-height: 1.3;
+            position: relative;
+            border: 1px solid #E0E0E0;
+            flex: 1;
+        }
+
+        /* Control Buttons */
+        .stage-controls {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-run {
+            background: #43A047;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-stop {
+            background: #E53935;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #FFF;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Input style inside Scratch blocks */
+        .block-input {
+            width: 40px;
+            text-align: center;
+            border-radius: 4px;
+            border: none;
+            padding: 2px 4px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .feedback-banner {
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback-success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border: 1px solid #A5D6A7;
+            display: block;
+        }
+
+        .feedback-error {
+            background: #FFEBEE;
+            color: #C62828;
+            border: 1px solid #EF9A9A;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <!-- Top Navigation Header -->
+    <header>
+        <div class="game-title">
+            <svg width="28" height="28" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="#FFE0B2"/>
+                <path d="M 25 35 L 35 15 L 45 30 Z" fill="#FF8A65"/>
+                <path d="M 75 35 L 65 15 L 55 30 Z" fill="#FF8A65"/>
+                <circle cx="50" cy="55" r="25" fill="#FFF"/>
+                <circle cx="40" cy="50" r="4" fill="#333"/>
+                <circle cx="60" cy="50" r="4" fill="#333"/>
+                <polygon points="50,57 46,62 54,62" fill="#FF8A65"/>
+            </svg>
+            VŨ ĐIỆU VÀ ĐƯỜNG BAY CỦA MÈO
+        </div>
+
+        <div class="header-controls">
+            <div class="progress-bar-container">
+                <span style="font-size: 0.8rem; font-weight: bold; color: var(--primary-purple);">Màn <span id="current-stage-num">1</span>/4</span>
+                <div class="progress-track">
+                    <div class="progress-fill" id="stage-progress"></div>
+                </div>
+            </div>
+
+            <div style="font-weight: bold; color: var(--primary-purple); font-size: 0.9rem;">
+                Điểm: <span id="score-display" style="color: #D81B60;">0</span>/100
+            </div>
+
+            <button class="mode-btn" id="mode-toggle-btn" onclick="toggleGameMode()">Chế độ: Luyện tập</button>
+            <button class="audio-btn" id="bgm-btn" onclick="toggleBGM()">🎵 Nhạc nền: Bật</button>
+            <button class="audio-btn" id="sfx-btn" onclick="toggleSFX()">🔔 Âm hiệu: Bật</button>
+        </div>
+    </header>
+
+    <!-- Welcome Screen -->
+    <div class="screen active" id="welcome-screen">
+        <div class="hero-banner">
+            <svg viewBox="0 0 200 160" width="100%" height="100%">
+                <rect x="10" y="20" width="180" height="120" rx="15" fill="#B2EBF2"/>
+                <!-- Scratch Parakeet Mascot -->
+                <path d="M 60 100 Q 40 60 70 40 Q 110 30 120 70 Q 130 110 90 110 Z" fill="#43A047"/>
+                <path d="M 120 70 Q 150 60 140 90 Z" fill="#FFB300"/> <!-- Wing -->
+                <circle cx="95" cy="55" r="6" fill="#FFF"/>
+                <circle cx="97" cy="55" r="3" fill="#000"/>
+                <polygon points="110,60 125,65 110,72" fill="#FF8A65"/> <!-- Beak -->
+                <!-- Magic Coding Loops Symbol -->
+                <path d="M 140 30 A 20 20 0 1 1 120 50" fill="none" stroke="#FFAB19" stroke-width="6" stroke-linecap="round"/>
+                <polygon points="120,40 120,60 135,50" fill="#FFAB19"/>
+            </svg>
+        </div>
+        <h1 class="welcome-title">VŨ ĐIỆU VÀ ĐƯỜNG BAY CỦA MÈO & VẸT</h1>
+        <p class="subtitle">Tin học 5 - Bài 12: Thực hành sử dụng lệnh lặp<br>Mô phỏng lắp ghép khối lệnh Scratch và điều khiển nhân vật biểu diễn sân khấu!</p>
+        
+        <div style="display: flex; gap: 16px;">
+            <button class="btn-primary" onclick="startGame()">Bắt Đầu Ngay</button>
+            <button class="btn-secondary" onclick="openInstructions()">Hướng Dẫn</button>
+        </div>
+    </div>
+
+    <!-- Main Game Screen -->
+    <div class="screen" id="game-screen">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h2 id="stage-title" style="font-size: 1.1rem; color: var(--primary-purple);">Màn 1: Chương trình Vẹt Di Chuyển</h2>
+            <div style="display: flex; gap: 8px;">
+                <button class="nav-btn" onclick="showHint()">💡 Gợi ý</button>
+                <button class="nav-btn" onclick="resetCurrentStage()">🔄 Làm lại</button>
+            </div>
+        </div>
+
+        <div class="workspace">
+            <!-- Left Panel: Scratch Blocks -->
+            <div class="panel">
+                <div class="panel-title">Khối Lệnh Scratch</div>
+                <div class="block-palette" id="block-palette">
+                    <!-- Blocks injected dynamically by JS -->
+                </div>
+            </div>
+
+            <!-- Middle Panel: Coding Workspace -->
+            <div class="panel">
+                <div class="panel-title">
+                    Khu Vực Lập Trình (Thả khối vào đây)
+                    <button class="nav-btn" style="padding: 2px 8px; font-size: 0.75rem;" onclick="clearWorkspace()">Xóa hết</button>
+                </div>
+                <div class="coding-area" id="coding-area" ondragover="allowDrop(event)" ondrop="handleDrop(event)">
+                    <!-- Dropped blocks go here -->
+                </div>
+                <div id="stage-feedback" class="feedback-banner"></div>
+            </div>
+
+            <!-- Right Panel: Stage Simulation & Assistant -->
+            <div class="panel">
+                <div class="panel-title">Sân Khấu & Điều Khiển</div>
+                
+                <div class="stage-container">
+                    <div class="stage-canvas-box" id="stage-canvas-box">
+                        <svg id="stage-svg" width="100%" height="100%" viewBox="0 0 300 230">
+                            <!-- Background elements -->
+                            <rect width="300" height="230" fill="#E0F7FA"/>
+                            <line x1="0" y1="180" x2="300" y2="180" stroke="#81C784" stroke-width="4"/>
+                            
+                            <!-- Character Parakeet/Cat Sprite -->
+                            <g id="actor-sprite" transform="translate(50, 100)">
+                                <!-- Parakeet Body -->
+                                <path id="bird-body" d="M 0 20 Q -20 -20 10 -40 Q 50 -30 60 10 Q 70 50 30 50 Z" fill="#43A047"/>
+                                <!-- Wing Costume 1/2 -->
+                                <path id="bird-wing" d="M 20 10 Q 50 0 40 30 Z" fill="#FFB300"/>
+                                <circle cx="35" cy="-15" r="5" fill="#FFF"/>
+                                <circle cx="37" cy="-15" r="2.5" fill="#000"/>
+                                <polygon points="50,-10 65,-5 50,0" fill="#FF8A65"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <div class="stage-controls">
+                        <button class="btn-run" onclick="runProgram()">▶ CHẠY LỆNH</button>
+                        <button class="btn-stop" id="stop-btn" onclick="stopProgram()">⏹ DỪNG</button>
+                    </div>
+                </div>
+
+                <!-- Assistant Pixel -->
+                <div class="assistant-box">
+                    <svg class="assistant-avatar" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="#E1BEE7"/>
+                        <circle cx="35" cy="45" r="6" fill="#333"/>
+                        <circle cx="65" cy="45" r="6" fill="#333"/>
+                        <path d="M 40 65 Q 50 75 60 65" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+                        <polygon points="50,10 35,25 65,25" fill="#AB47BC"/>
+                    </svg>
+                    <div class="speech-bubble" id="assistant-bubble">
+                        Xin chào! Tớ là Pixel. Hãy kéo thả khối lệnh chuẩn theo SGK để điều khiển Vẹt nhảy múa nhé!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary / Congratulations Screen -->
+    <div class="screen" id="summary-screen" style="text-align: center; justify-content: center; align-items: center; gap: 16px;">
+        <svg width="120" height="120" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="45" fill="#FFD54F"/>
+            <polygon points="50,15 61,38 85,38 66,54 73,78 50,62 27,78 34,54 15,38 39,38" fill="#FFF"/>
+        </svg>
+        <h1 style="color: var(--primary-purple); font-size: 2rem;">XUẤT SẮC! HOÀN THÀNH BÀI HỌC</h1>
+        <p style="font-size: 1.1rem; color: #444;">Bạn đã làm chủ kiến thức lệnh lặp trong Scratch Bài 12!</p>
+
+        <div style="background: #F3E5F5; padding: 16px 24px; border-radius: 12px; max-width: 500px; text-align: left;" id="summary-details">
+            <!-- Dynamically injected stats -->
+        </div>
+
+        <button class="btn-primary" onclick="restartWholeGame()">Chơi Lại Từ Đầu</button>
+    </div>
+
+    <!-- Instructions Modal -->
+    <div class="modal-overlay" id="instructions-modal">
+        <div class="modal-card">
+            <h2 style="color: var(--primary-purple);">HƯỚNG DẪN CHƠI</h2>
+            <div style="text-align: left; font-size: 0.9rem; line-height: 1.5; color: #444; display: flex; flex-direction: column; gap: 8px;">
+                <p><b>Màn 1:</b> Kéo các khối lệnh di chuyển, đổi trang phục, đợi và chạm cạnh bật lại vào khu vực lập trình đúng thứ tự.</p>
+                <p><b>Màn 2:</b> Bọc chuỗi khối lệnh vào khối 'Lặp 10 lần' để nhân vật thực hiện hành động đúng 10 vòng.</p>
+                <p><b>Màn 3:</b> Sử dụng khối 'Lặp liên tục' (forever) cho nhân vật bay múa liên tục và bấm nút STOP để dừng an toàn.</p>
+                <p><b>Màn 4:</b> Đặt điều kiện lặp cho đến khi nháy chuột. Nháy chuột trực tiếp lên sân khấu để hoàn thành!</p>
+            </div>
+            <button class="btn-primary" onclick="closeInstructions()">Đã Hiểu</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ==========================================================================
+   GAME_CONFIG - Content, Logic & SGK Specifications
+   ========================================================================== */
+const GAME_CONFIG = {
+    title: "VŨ ĐIỆU VÀ ĐƯỜNG BAY CỦA MÈO",
+    maxScorePerStage: 25,
+    stages: [
+        {
+            id: 1,
+            title: "MÀN 1: CHƯƠNG TRÌNH VẸT DI CHUYỂN",
+            instruction: "Hãy ghép chuỗi khối lệnh gồm: di chuyển 10 bước -> đổi trang phục kế tiếp -> đợi 1 giây -> nếu chạm cạnh thì bật lại.",
+            assistantMessage: "Màn 1: Em hãy kéo đúng 4 khối lệnh theo thứ tự chuẩn từ trái sang khu vực lập trình nhé!",
+            availableBlocks: [
+                { id: "move", text: "di chuyển 10 bước", type: "motion", code: "MOVE_10" },
+                { id: "next_costume", text: "đổi trang phục kế tiếp", type: "looks", code: "NEXT_COSTUME" },
+                { id: "wait", text: "đợi 1 giây", type: "control", code: "WAIT_1" },
+                { id: "bounce", text: "nếu chạm cạnh, bật lại", type: "motion", code: "BOUNCE" }
+            ],
+            correctSequence: ["MOVE_10", "NEXT_COSTUME", "WAIT_1", "BOUNCE"],
+            hints: [
+                "Bước 1: Chọn khối 'di chuyển 10 bước' đầu tiên.",
+                "Bước 2: Ghép tiếp 'đổi trang phục kế tiếp', 'đợi 1 giây' và 'nếu chạm cạnh, bật lại'."
+            ]
+        },
+        {
+            id: 2,
+            title: "MÀN 2: LẶP 10 LẦN",
+            instruction: "Bọc chuỗi hành động trong khối 'Lặp 10 lần' (repeat 10) để nhân vật diễn hoạt 10 vòng.",
+            assistantMessage: "Màn 2: Dùng khối Lặp 10 lần bọc ngoài chuỗi chuyển động nhé!",
+            availableBlocks: [
+                { id: "repeat_10", text: "lặp 10 lần", type: "control", isWrapper: true, code: "REPEAT_10" },
+                { id: "move", text: "di chuyển 10 bước", type: "motion", code: "MOVE_10" },
+                { id: "next_costume", text: "đổi trang phục kế tiếp", type: "looks", code: "NEXT_COSTUME" },
+                { id: "wait", text: "đợi 0.2 giây", type: "control", code: "WAIT_02" }
+            ],
+            correctSequenceWrapper: {
+                wrapper: "REPEAT_10",
+                inner: ["MOVE_10", "NEXT_COSTUME", "WAIT_02"]
+            },
+            hints: [
+                "Kéo khối 'lặp 10 lần' vào trước.",
+                "Thả các khối di chuyển, đổi trang phục, đợi 0.2 giây vào BÊN TRONG lòng khối lặp."
+            ]
+        },
+        {
+            id: 3,
+            title: "MÀN 3: LẶP LIÊN TỤC & NÚT STOP",
+            instruction: "Sử dụng khối 'Lặp liên tục' (forever) cho Vẹt bay liên kết, sau đó bấm nút STOP để dừng an toàn.",
+            assistantMessage: "Màn 3: Dùng khối 'Lặp liên tục'. Khi Vẹt đang bay, nhấn nút STOP màu đỏ để hoàn thành!",
+            availableBlocks: [
+                { id: "forever", text: "lặp liên tục", type: "control", isWrapper: true, code: "FOREVER" },
+                { id: "move", text: "di chuyển 15 bước", type: "motion", code: "MOVE_15" },
+                { id: "next_costume", text: "đổi trang phục kế tiếp", type: "looks", code: "NEXT_COSTUME" },
+                { id: "bounce", text: "nếu chạm cạnh, bật lại", type: "motion", code: "BOUNCE" }
+            ],
+            correctSequenceWrapper: {
+                wrapper: "FOREVER",
+                inner: ["MOVE_15", "NEXT_COSTUME", "BOUNCE"]
+            },
+            hints: [
+                "Đặt khối 'lặp liên tục' ở ngoài cùng.",
+                "Sau khi bấm CHẠY LỆNH, quan sát Vẹt bay và bấm nút DỪNG (STOP)!"
+            ]
+        },
+        {
+            id: 4,
+            title: "MÀN 4: LẶP ĐẾN KHI NHÁY CHUỘT",
+            instruction: "Ghép khối 'Lặp lại cho đến khi con trỏ chuột được nháy'. Nháy chuột vào vùng sân khấu để kích hoạt dừng!",
+            assistantMessage: "Màn 4: Ghép khối lặp cho đến khi nháy chuột. Chạy lệnh rồi nháy vào sân khấu!",
+            availableBlocks: [
+                { id: "repeat_until", text: "lặp lại cho đến khi [nháy chuột]", type: "control", isWrapper: true, code: "REPEAT_UNTIL_MOUSE" },
+                { id: "move", text: "di chuyển 12 bước", type: "motion", code: "MOVE_12" },
+                { id: "next_costume", text: "đổi trang phục kế tiếp", type: "looks", code: "NEXT_COSTUME" }
+            ],
+            correctSequenceWrapper: {
+                wrapper: "REPEAT_UNTIL_MOUSE",
+                inner: ["MOVE_12", "NEXT_COSTUME"]
+            },
+            hints: [
+                "Sử dụng khối 'lặp lại cho đến khi [nháy chuột]'.",
+                "Sau khi bấm CHẠY LỆNH, di chuột và nháy vào ô sân khấu bên phải."
+            ]
+        }
+    ]
+};
+
+/* ==========================================================================
+   Web Audio API - Synthesized Music & Sound Effects (No External Files)
+   ========================================================================== */
+class SoundEngine {
+    constructor() {
+        this.ctx = null;
+        this.bgmGain = null;
+        this.sfxGain = null;
+        this.bgmEnabled = true;
+        this.sfxEnabled = true;
+        this.isPlayingBGM = false;
+        this.bgmTimer = null;
+    }
+
+    init() {
+        if (!this.ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioCtx();
+
+            this.bgmGain = this.ctx.createGain();
+            this.bgmGain.gain.value = 0.12; // 12% low volume BGM
+            this.bgmGain.connect(this.ctx.destination);
+
+            this.sfxGain = this.ctx.createGain();
+            this.sfxGain.gain.value = 0.3;
+            this.sfxGain.connect(this.ctx.destination);
+        }
+        if (this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+    }
+
+    playTone(freq, duration, type = 'sine', isSFX = true) {
+        if (!this.ctx) return;
+        if (isSFX && !this.sfxEnabled) return;
+
+        try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+
+            gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+
+            osc.connect(gain);
+            gain.connect(isSFX ? this.sfxGain : this.bgmGain);
+
+            osc.start();
+            osc.stop(this.ctx.currentTime + duration);
+        } catch(e) { console.error(e); }
+    }
+
+    playSuccessSFX() {
+        if (!this.sfxEnabled) return;
+        this.init();
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+            setTimeout(() => this.playTone(freq, 0.15, 'triangle', true), idx * 80);
+        });
+    }
+
+    playErrorSFX() {
+        if (!this.sfxEnabled) return;
+        this.init();
+        this.playTone(220, 0.2, 'sawtooth', true);
+        setTimeout(() => this.playTone(180, 0.3, 'sawtooth', true), 150);
+    }
+
+    playClickSFX() {
+        if (!this.sfxEnabled) return;
+        this.init();
+        this.playTone(440, 0.05, 'sine', true);
+    }
+
+    startBGM() {
+        if (!this.bgmEnabled || this.isPlayingBGM) return;
+        this.init();
+        this.isPlayingBGM = true;
+
+        const bgmNotes = [261.63, 329.63, 392.00, 329.63, 349.23, 440.00, 392.00, 293.66];
+        let noteIdx = 0;
+
+        const playLoop = () => {
+            if (!this.isPlayingBGM || !this.bgmEnabled) return;
+            this.playTone(bgmNotes[noteIdx], 0.4, 'sine', false);
+            noteIdx = (noteIdx + 1) % bgmNotes.length;
+            this.bgmTimer = setTimeout(playLoop, 500);
+        };
+        playLoop();
+    }
+
+    stopBGM() {
+        this.isPlayingBGM = false;
+        if (this.bgmTimer) clearTimeout(this.bgmTimer);
+    }
+}
+
+const audioEngine = new SoundEngine();
+
+/* ==========================================================================
+   State Management & Main Game Controller
+   ========================================================================== */
+let gameState = {
+    currentStageIdx: 0,
+    score: 0,
+    completedStages: [false, false, false, false],
+    isChallengeMode: false,
+    currentHintStep: 0,
+    isRunningAnimation: false,
+    animationInterval: null,
+    actorPos: { x: 50, y: 100, dir: 1, costume: 1 }
+};
+
+// Start Game from Welcome Screen
+function startGame() {
+    audioEngine.init();
+    audioEngine.startBGM();
+    audioEngine.playClickSFX();
+
+    document.getElementById('welcome-screen').classList.remove('active');
+    document.getElementById('game-screen').classList.add('active');
+
+    loadStage(0);
+}
+
+function toggleGameMode() {
+    audioEngine.playClickSFX();
+    gameState.isChallengeMode = !gameState.isChallengeMode;
+    const btn = document.getElementById('mode-toggle-btn');
+    btn.innerText = gameState.isChallengeMode ? "Chế độ: Thử thách" : "Chế độ: Luyện tập";
+}
+
+function toggleBGM() {
+    audioEngine.bgmEnabled = !audioEngine.bgmEnabled;
+    const btn = document.getElementById('bgm-btn');
+    if (audioEngine.bgmEnabled) {
+        btn.innerText = "🎵 Nhạc nền: Bật";
+        btn.classList.remove('off');
+        audioEngine.startBGM();
+    } else {
+        btn.innerText = "🎵 Nhạc nền: Tắt";
+        btn.classList.add('off');
+        audioEngine.stopBGM();
+    }
+}
+
+function toggleSFX() {
+    audioEngine.sfxEnabled = !audioEngine.sfxEnabled;
+    const btn = document.getElementById('sfx-btn');
+    if (audioEngine.sfxEnabled) {
+        btn.innerText = "🔔 Âm hiệu: Bật";
+        btn.classList.remove('off');
+    } else {
+        btn.innerText = "🔔 Âm hiệu: Tắt";
+        btn.classList.add('off');
+    }
+}
+
+/* ==========================================================================
+   Stage Loader & UI Renderers
+   ========================================================================== */
+function loadStage(stageIdx) {
+    gameState.currentStageIdx = stageIdx;
+    gameState.currentHintStep = 0;
+    stopProgram();
+
+    const stage = GAME_CONFIG.stages[stageIdx];
+    
+    // Update Header
+    document.getElementById('current-stage-num').innerText = stage.id;
+    document.getElementById('stage-progress').style.width = `${((stageIdx + 1) / 4) * 100}%`;
+    document.getElementById('stage-title').innerText = stage.title;
+
+    // Update Assistant Bubble
+    document.getElementById('assistant-bubble').innerText = stage.assistantMessage;
+
+    // Clear feedback
+    const fb = document.getElementById('stage-feedback');
+    fb.className = 'feedback-banner';
+    fb.style.display = 'none';
+
+    // Populate Block Palette
+    const palette = document.getElementById('block-palette');
+    palette.innerHTML = '';
+
+    stage.availableBlocks.forEach(blk => {
+        const blkEl = createBlockUI(blk);
+        palette.appendChild(blkEl);
+    });
+
+    // Clear Workspace
+    clearWorkspace();
+    resetActorSprite();
+}
+
+function createBlockUI(blk) {
+    const div = document.createElement('div');
+    div.className = `scratch-block block-${blk.type}`;
+    div.draggable = true;
+    div.dataset.code = blk.code;
+    div.dataset.isWrapper = blk.isWrapper ? "true" : "false";
+
+    if (blk.isWrapper) {
+        div.className = 'loop-wrapper-block';
+        div.innerHTML = `
+            <div class="loop-header">🔄 ${blk.text}</div>
+            <div class="loop-inner-zone" ondragover="allowDrop(event)" ondrop="handleDrop(event, this)"></div>
+        `;
+    } else {
+        div.innerHTML = `<span>🧩 ${blk.text}</span>`;
+    }
+
+    div.ondragstart = (e) => {
+        e.dataTransfer.setData('text/plain', JSON.stringify(blk));
+    };
+
+    return div;
+}
+
+/* ==========================================================================
+   Drag and Drop Handlers
+   ========================================================================== */
+function allowDrop(ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+}
+
+function handleDrop(ev, targetZone = null) {
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    const dataRaw = ev.dataTransfer.getData('text/plain');
+    if (!dataRaw) return;
+
+    const blk = JSON.parse(dataRaw);
+    audioEngine.playClickSFX();
+
+    const dropTarget = targetZone || document.getElementById('coding-area');
+    const newBlkUI = createBlockUI(blk);
+
+    // Make removable on double-click
+    newBlkUI.ondblclick = () => {
+        newBlkUI.remove();
+        audioEngine.playClickSFX();
+    };
+
+    dropTarget.appendChild(newBlkUI);
+}
+
+function clearWorkspace() {
+    document.getElementById('coding-area').innerHTML = '';
+}
+
+/* ==========================================================================
+   Verification & Simulation Execution
+   ========================================================================== */
+function runProgram() {
+    audioEngine.playClickSFX();
+    const stage = GAME_CONFIG.stages[gameState.currentStageIdx];
+    const codingArea = document.getElementById('coding-area');
+
+    if (stage.id === 1) {
+        // Validate flat sequence
+        const blocks = Array.from(codingArea.children);
+        const userCodes = blocks.map(b => b.dataset.code);
+
+        if (JSON.stringify(userCodes) === JSON.stringify(stage.correctSequence)) {
+            showFeedback("Chính xác! Chuỗi lệnh di chuyển hợp lệ.", true);
+            animateParakeetSequence(10, () => completeStage(stage.id));
+        } else {
+            showFeedback("Thứ tự khối lệnh chưa đúng theo SGK. Hãy kiểm tra lại!", false);
+            audioEngine.playErrorSFX();
+        }
+    } else if (stage.id === 2 || stage.id === 3 || stage.id === 4) {
+        // Validate wrapper sequence
+        const wrapper = codingArea.querySelector('.loop-wrapper-block');
+        if (!wrapper) {
+            showFeedback("Cần sử dụng khối Lặp bọc các lệnh di chuyển!", false);
+            audioEngine.playErrorSFX();
+            return;
+        }
+
+        const innerZone = wrapper.querySelector('.loop-inner-zone');
+        const innerBlocks = Array.from(innerZone.children);
+        const innerCodes = innerBlocks.map(b => b.dataset.code);
+
+        const targetInner = stage.correctSequenceWrapper.inner;
+
+        if (JSON.stringify(innerCodes) === JSON.stringify(targetInner)) {
+            showFeedback("Hoàn hảo! Bắt đầu chạy vòng lặp...", true);
+            
+            if (stage.id === 2) {
+                animateParakeetSequence(10, () => completeStage(2));
+            } else if (stage.id === 3) {
+                // Infinite loop until stop pressed
+                gameState.isRunningAnimation = true;
+                animateInfiniteLoop();
+                document.getElementById('assistant-bubble').innerText = "Vẹt đang bay liên tục! Hãy bấm nút DỪNG (STOP) màu đỏ để hoàn thành nhiệm vụ.";
+            } else if (stage.id === 4) {
+                // Repeat until click on stage
+                gameState.isRunningAnimation = true;
+                animateInfiniteLoop();
+                document.getElementById('assistant-bubble').innerText = "Vẹt đang bay! Hãy NHÁY CHUỘT thẳng vào khung sân khấu để dừng!";
+                
+                const stageBox = document.getElementById('stage-canvas-box');
+                stageBox.onclick = () => {
+                    if (gameState.isRunningAnimation && gameState.currentStageIdx === 3) {
+                        stopProgram();
+                        completeStage(4);
+                        stageBox.onclick = null;
+                    }
+                };
+            }
+        } else {
+            showFeedback("Các khối bên trong khối Lặp chưa đúng. Hãy thử lại!", false);
+            audioEngine.playErrorSFX();
+        }
+    }
+}
+
+function stopProgram() {
+    audioEngine.playClickSFX();
+    if (gameState.animationInterval) {
+        clearInterval(gameState.animationInterval);
+        gameState.animationInterval = null;
+    }
+    gameState.isRunningAnimation = false;
+
+    // Special Stage 3 completion condition check
+    if (gameState.currentStageIdx === 2 && !gameState.completedStages[2]) {
+        completeStage(3);
+    }
+}
+
+function showFeedback(msg, isSuccess) {
+    const fb = document.getElementById('stage-feedback');
+    fb.innerText = msg;
+    fb.className = `feedback-banner ${isSuccess ? 'feedback-success' : 'feedback-error'}`;
+    fb.style.display = 'block';
+}
+
+/* ==========================================================================
+   Animation Engine (SVG Manipulation)
+   ========================================================================== */
+function resetActorSprite() {
+    gameState.actorPos = { x: 50, y: 100, dir: 1, costume: 1 };
+    updateSpriteTransform();
+}
+
+function updateSpriteTransform() {
+    const sprite = document.getElementById('actor-sprite');
+    if (!sprite) return;
+    const scaleX = gameState.actorPos.dir;
+    sprite.setAttribute('transform', `translate(${gameState.actorPos.x}, ${gameState.actorPos.y}) scale(${scaleX}, 1)`);
+
+    // Costume wing change
+    const wing = document.getElementById('bird-wing');
+    if (wing) {
+        wing.setAttribute('d', gameState.actorPos.costume === 1 ? "M 20 10 Q 50 0 40 30 Z" : "M 20 10 Q 50 40 40 10 Z");
+    }
+}
+
+function animateParakeetSequence(cyclesLeft, onComplete) {
+    gameState.isRunningAnimation = true;
+    let stepCount = 0;
+
+    gameState.animationInterval = setInterval(() => {
+        if (!gameState.isRunningAnimation) return;
+
+        // Move step
+        gameState.actorPos.x += 12 * gameState.actorPos.dir;
+        
+        // Bounce condition
+        if (gameState.actorPos.x > 220) {
+            gameState.actorPos.dir = -1;
+        } else if (gameState.actorPos.x < 30) {
+            gameState.actorPos.dir = 1;
+        }
+
+        // Costume change
+        gameState.actorPos.costume = gameState.actorPos.costume === 1 ? 2 : 1;
+        updateSpriteTransform();
+
+        stepCount++;
+        if (cyclesLeft && stepCount >= cyclesLeft) {
+            clearInterval(gameState.animationInterval);
+            gameState.isRunningAnimation = false;
+            if (onComplete) onComplete();
+        }
+    }, 200);
+}
+
+function animateInfiniteLoop() {
+    animateParakeetSequence(null, null);
+}
+
+/* ==========================================================================
+   Progress & Rewards Management
+   ========================================================================== */
+function completeStage(stageId) {
+    if (gameState.completedStages[stageId - 1]) return;
+
+    gameState.completedStages[stageId - 1] = true;
+    gameState.score += GAME_CONFIG.maxScorePerStage;
+    document.getElementById('score-display').innerText = gameState.score;
+
+    audioEngine.playSuccessSFX();
+    showFeedback(`🎉 Xuất sắc! Bạn đã hoàn thành Màn ${stageId} và cộng +25 điểm!`, true);
+
+    setTimeout(() => {
+        if (stageId < 4) {
+            loadStage(stageId); // Advance to next stage
+        } else {
+            showFinalSummary();
+        }
+    }, 1800);
+}
+
+function showHint() {
+    audioEngine.playClickSFX();
+    const stage = GAME_CONFIG.stages[gameState.currentStageIdx];
+    const hintMsg = stage.hints[gameState.currentHintStep % stage.hints.length];
+    gameState.currentHintStep++;
+
+    document.getElementById('assistant-bubble').innerText = `💡 Gợi ý: ${hintMsg}`;
+}
+
+function resetCurrentStage() {
+    audioEngine.playClickSFX();
+    loadStage(gameState.currentStageIdx);
+}
+
+function showFinalSummary() {
+    document.getElementById('game-screen').classList.remove('active');
+    document.getElementById('summary-screen').classList.add('active');
+
+    const details = document.getElementById('summary-details');
+    details.innerHTML = `
+        <h3 style="color: var(--primary-purple); margin-bottom: 8px;">BẢNG THÀNH TÍCH</h3>
+        <p><b>Tổng điểm:</b> ${gameState.score} / 100 điểm</p>
+        <p><b>Danh hiệu:</b> ${gameState.score === 100 ? '🏆 Bậc Thầy Lập Trình Scratch Tí Hon' : '⭐ Dũng Sĩ Lập Trình'}</p>
+        <p><b>Nhận xét:</b> Em đã hiểu và vận dụng thành thạo các cấu trúc lệnh Lặp (lặp số lần, lặp liên tục, lặp theo điều kiện) đúng mục tiêu bài học SGK Tin học 5!</p>
+    `;
+}
+
+function restartWholeGame() {
+    audioEngine.playClickSFX();
+    gameState.score = 0;
+    gameState.completedStages = [false, false, false, false];
+    document.getElementById('score-display').innerText = '0';
+
+    document.getElementById('summary-screen').classList.remove('active');
+    document.getElementById('game-screen').classList.add('active');
+    loadStage(0);
+}
+
+function openInstructions() {
+    audioEngine.playClickSFX();
+    document.getElementById('instructions-modal').classList.add('active');
+}
+
+function closeInstructions() {
+    audioEngine.playClickSFX();
+    document.getElementById('instructions-modal').classList.remove('active');
+}
+</script>
+</body>
+</html>

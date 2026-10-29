@@ -1,0 +1,3197 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biệt Đội Lắp Ráp Máy Tính | Tin học 3 - Bài 3: Máy tính và em</title>
+  <style>
+    :root {
+      --bg-sky: #E9FAFF;
+      --bg-card: #FFFFFF;
+      --border-soft: #BDE7FF;
+      --text-main: #2B3B5C;
+      --text-muted: #566A94;
+      --mint: #5AD2BE;
+      --mint-dark: #36A895;
+      --yellow: #FFE082;
+      --yellow-dark: #E5B638;
+      --peach: #FF8598;
+      --peach-dark: #E05368;
+      --blue: #7CC8FF;
+      --blue-dark: #419CE0;
+      --purple: #C5A8FF;
+      --purple-dark: #946EE0;
+      --success-bg: #E6FBF5;
+      --success-border: #5AD2BE;
+      --warn-bg: #FFF5F6;
+      --warn-border: #FF8598;
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+      --shadow-card: 0 10px 26px rgba(52, 70, 106, 0.08), 0 4px 0 #CBEBFF;
+      --font-main: 'Segoe UI', 'Nunito', 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: linear-gradient(180deg, #E2F7FF 0%, #F2FCFF 60%, #FFFDF5 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    /* Background Decorative Clouds & Stars */
+    .bg-decor {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .floating-cloud {
+      position: absolute;
+      opacity: 0.75;
+      animation: floatCloud 22s ease-in-out infinite alternate;
+    }
+
+    .floating-cloud.c1 { top: 6%; left: 3%; width: 140px; animation-duration: 24s; }
+    .floating-cloud.c2 { top: 12%; right: 4%; width: 170px; animation-duration: 28s; animation-delay: -5s; }
+    .floating-cloud.c3 { bottom: 8%; left: 6%; width: 130px; animation-duration: 26s; animation-delay: -10s; }
+    .floating-cloud.c4 { bottom: 14%; right: 5%; width: 120px; animation-duration: 20s; }
+
+    @keyframes floatCloud {
+      0% { transform: translateY(0px) translateX(0px); }
+      100% { transform: translateY(-10px) translateX(18px); }
+    }
+
+    /* Main Wrapper */
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 12px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 100vh;
+    }
+
+    /* Top Header Navigation Bar */
+    .top-bar {
+      background: var(--bg-card);
+      border: 3px solid var(--border-soft);
+      border-radius: 24px;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #7CC8FF, #5AD2BE);
+      color: #fff;
+      font-weight: 800;
+      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      box-shadow: 0 3px 0 rgba(54, 168, 149, 0.35);
+      letter-spacing: 0.3px;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    /* Candy Progress Bar */
+    .progress-cluster {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+      justify-content: center;
+      min-width: 280px;
+    }
+
+    .candy-steps {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #F0F9FF;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 2px solid #D5EFFF;
+    }
+
+    .candy-step {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: #FFFFFF;
+      border: 2px solid transparent;
+      transition: all 0.25s ease;
+    }
+
+    .candy-step.active {
+      background: var(--yellow);
+      color: #4A3700;
+      border-color: var(--yellow-dark);
+      transform: scale(1.04);
+      box-shadow: 0 3px 0 var(--yellow-dark);
+    }
+
+    .candy-step.done {
+      background: var(--mint);
+      color: #FFFFFF;
+      border-color: var(--mint-dark);
+    }
+
+    .score-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #FFF8E1;
+      border: 3px solid #FFD54F;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 16px;
+      color: #7A5200;
+      box-shadow: 0 3px 0 #F2C037;
+    }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* 3D Candy Buttons */
+    .btn-candy {
+      appearance: none;
+      border: none;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--text-main);
+      background: #F0F9FF;
+      border: 2px solid #B5E2FF;
+      border-bottom-width: 5px;
+      border-radius: 16px;
+      padding: 8px 14px;
+      min-height: 44px;
+      min-width: 44px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: transform 0.12s ease, filter 0.15s ease, background-color 0.15s ease;
+    }
+
+    .btn-candy:hover:not(:disabled) {
+      filter: brightness(1.03);
+      transform: translateY(-1px);
+    }
+
+    .btn-candy:active:not(:disabled) {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    .btn-candy:focus-visible {
+      outline: 3px solid #FF8598;
+      outline-offset: 2px;
+    }
+
+    .btn-candy:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(0.35);
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #64DFCC 0%, #46C4B0 100%);
+      color: #FFFFFF;
+      border-color: #2E9B89;
+      font-size: 17px;
+      padding: 12px 24px;
+      border-radius: 20px;
+    }
+
+    .btn-peach {
+      background: linear-gradient(180deg, #FF96A7 0%, #FD7288 100%);
+      color: #FFFFFF;
+      border-color: #D94B61;
+    }
+
+    .btn-yellow {
+      background: linear-gradient(180deg, #FFE596 0%, #FFD25A 100%);
+      color: #4E3800;
+      border-color: #DDA420;
+    }
+
+    .btn-blue {
+      background: linear-gradient(180deg, #99D5FF 0%, #6EBEFF 100%);
+      color: #16325C;
+      border-color: #3D92D9;
+    }
+
+    .btn-toggle.off {
+      background: #F3F5F8;
+      color: #7989A4;
+      border-color: #CBD4E1;
+    }
+
+    /* Screen Container */
+    .screen {
+      display: none;
+      flex: 1;
+      animation: fadeSlideIn 0.32s ease-out;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Welcome Cover Screen */
+    .welcome-card {
+      background: var(--bg-card);
+      border: 4px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 26px 30px;
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 28px;
+      align-items: center;
+      flex: 1;
+    }
+
+    .welcome-art-box {
+      background: linear-gradient(180deg, #E8F8FF 0%, #FFF9E6 100%);
+      border: 3px solid #CBEBFF;
+      border-radius: 24px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 390px;
+    }
+
+    .sim-label-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #E2F4FF;
+      color: #29527A;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1.5px solid #B3DFFF;
+      margin-bottom: 8px;
+    }
+
+    .welcome-info {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .lesson-tag {
+      display: inline-flex;
+      align-self: flex-start;
+      background: #FFF0F3;
+      color: #C83E55;
+      border: 2px solid #FFC2CD;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .game-hero-title {
+      font-size: clamp(26px, 3.2vw, 38px);
+      font-weight: 900;
+      color: #233862;
+      line-height: 1.18;
+      letter-spacing: -0.3px;
+    }
+
+    .game-hero-sub {
+      font-size: 16.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .candy-badges-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .info-chip {
+      background: #F4FBFF;
+      border: 2px solid #C5E8FF;
+      border-radius: 14px;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #2D4A77;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .objectives-box {
+      background: #F9FEFF;
+      border: 2.5px dashed #9ED9FF;
+      border-radius: 20px;
+      padding: 14px 18px;
+    }
+
+    .objectives-box h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #1F5B8C;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .objectives-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .objectives-list li::before {
+      content: "★ ";
+      color: #F59E0B;
+      font-weight: 900;
+    }
+
+    .welcome-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    /* Stage Workspace Layout (Left visual, Right controls) */
+    .stage-workspace {
+      display: grid;
+      grid-template-columns: 1.18fr 1fr;
+      gap: 18px;
+      flex: 1;
+      align-items: stretch;
+    }
+
+    .visual-panel, .control-panel {
+      background: var(--bg-card);
+      border: 3.5px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .stage-pill-title {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 900;
+      color: #203A66;
+    }
+
+    .stage-pill-num {
+      background: var(--peach);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+    }
+
+    .svg-stage-container {
+      flex: 1;
+      background: linear-gradient(180deg, #EBF9FF 0%, #F9FEFF 65%, #FFF9E8 100%);
+      border: 2.5px solid #CDEEFF;
+      border-radius: 22px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      min-height: 360px;
+      overflow: hidden;
+    }
+
+    .svg-stage-container svg {
+      width: 100%;
+      max-height: 370px;
+      height: auto;
+      overflow: visible;
+    }
+
+    /* Robot Mascot & Speech Bubble */
+    .mascot-bar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #F2FAFF;
+      border: 2.5px solid #BFE6FF;
+      border-radius: 22px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .mascot-bar.state-correct {
+      background: var(--success-bg);
+      border-color: var(--success-border);
+    }
+
+    .mascot-bar.state-wrong {
+      background: var(--warn-bg);
+      border-color: var(--warn-border);
+    }
+
+    .mascot-avatar {
+      width: 78px;
+      height: 78px;
+      flex-shrink: 0;
+      background: #FFFFFF;
+      border-radius: 20px;
+      border: 2px solid #CDEBFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+
+    .speech-bubble {
+      flex: 1;
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .speech-tag {
+      display: inline-block;
+      font-size: 12.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      background: #D9F0FF;
+      color: #1F5B8C;
+    }
+
+    .state-correct .speech-tag {
+      background: #BFF3E6;
+      color: #0F6957;
+    }
+
+    .state-wrong .speech-tag {
+      background: #FFD6DD;
+      color: #A82339;
+    }
+
+    /* Interactive Cards & Grids */
+    .task-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .instruction-banner {
+      background: #FFFDF2;
+      border: 2px solid #FFE082;
+      border-radius: 16px;
+      padding: 10px 14px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #5C4300;
+    }
+
+    /* Stage 1 Tray Grid */
+    .parts-tray {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .part-card {
+      background: #FFFFFF;
+      border: 3px solid #BFE4FF;
+      border-bottom-width: 6px;
+      border-radius: 20px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: grab;
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+      position: relative;
+      touch-action: none;
+    }
+
+    .part-card:hover:not(.placed) {
+      transform: translateY(-3px);
+      border-color: #6CC2FF;
+      box-shadow: 0 8px 16px rgba(65, 156, 224, 0.14);
+    }
+
+    .part-card.selected {
+      border-color: #FF8598;
+      background: #FFF5F7;
+      box-shadow: 0 0 0 4px rgba(255, 133, 152, 0.25);
+      transform: scale(1.03);
+    }
+
+    .part-card.placed {
+      background: #EAFAF6;
+      border-color: #84DFCE;
+      opacity: 0.65;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .part-card svg {
+      width: 86px;
+      height: 68px;
+    }
+
+    .part-name {
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--text-main);
+    }
+
+    .part-status {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    /* Dropzone silhouettes inside Stage 1 SVG */
+    .drop-slot {
+      cursor: pointer;
+      transition: filter 0.2s ease, transform 0.2s ease;
+    }
+
+    .drop-slot:hover, .drop-slot.highlight-target {
+      filter: drop-shadow(0 0 8px #5AD2BE);
+    }
+
+    /* Stage 2 Matching Columns */
+    .match-columns {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .match-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .match-col-header {
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-align: center;
+      padding-bottom: 2px;
+    }
+
+    .match-btn {
+      background: #FFFFFF;
+      border: 2.5px solid #BFE4FF;
+      border-bottom-width: 5px;
+      border-radius: 16px;
+      padding: 10px 12px;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: left;
+      transition: all 0.15s ease;
+    }
+
+    .match-btn:hover:not(.matched) {
+      border-color: #6CC2FF;
+      background: #F7FCFF;
+    }
+
+    .match-btn.selected {
+      border-color: #FF8598;
+      background: #FFF2F5;
+      box-shadow: 0 0 0 3px rgba(255, 133, 152, 0.25);
+    }
+
+    .match-btn.matched {
+      background: #E6FBF5;
+      border-color: #5AD2BE;
+      color: #126152;
+      cursor: default;
+    }
+
+    .match-mini-icon {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+    }
+
+    /* Stage 3 & Stage 4 Scenario Cards & Options */
+    .scenario-progress-dots {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .step-dot {
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: #EDF7FF;
+      border: 2px solid #C4E5FF;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .step-dot.active {
+      background: var(--yellow);
+      border-color: var(--yellow-dark);
+      color: #523B00;
+    }
+
+    .step-dot.completed {
+      background: var(--mint);
+      border-color: var(--mint-dark);
+      color: #FFFFFF;
+    }
+
+    .question-card {
+      background: #F6FCFF;
+      border: 2.5px solid #C5E8FF;
+      border-radius: 20px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .question-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #1E3A68;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-btn {
+      background: #FFFFFF;
+      border: 2.5px solid #BFE4FF;
+      border-bottom-width: 5px;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-family: inherit;
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.15s ease;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: #F2FAFF;
+      border-color: #6CC2FF;
+      transform: translateY(-1px);
+    }
+
+    .option-btn.correct-choice {
+      background: #E6FBF5;
+      border-color: #46C4B0;
+      color: #0D5C4D;
+    }
+
+    .option-btn.wrong-choice {
+      background: #FFF0F3;
+      border-color: #FF8598;
+      animation: gentleShake 0.36s ease;
+    }
+
+    /* Stage 4 Safe / Unsafe Action Stamp Buttons */
+    .safety-stamps-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .stamp-card {
+      border-radius: 22px;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 900;
+      font-size: 18px;
+      border: 3px solid transparent;
+      border-bottom-width: 6px;
+      transition: transform 0.15s ease, filter 0.15s ease;
+      touch-action: none;
+    }
+
+    .stamp-card.stamp-should {
+      background: linear-gradient(180deg, #E8FDF8 0%, #C6F7EA 100%);
+      border-color: #3BB89F;
+      color: #0E6251;
+    }
+
+    .stamp-card.stamp-shouldnt {
+      background: linear-gradient(180deg, #FFF0F2 0%, #FFD6DD 100%);
+      border-color: #E35D73;
+      color: #8F1D30;
+    }
+
+    .stamp-card:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.02);
+    }
+
+    .stamp-card.active-stamp {
+      box-shadow: 0 0 0 4px rgba(90, 210, 190, 0.35);
+      transform: scale(1.03);
+    }
+
+    /* Footer Bar inside Right Panel */
+    .panel-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 2px dashed #D8F0FF;
+    }
+
+    /* Summary Victory Screen */
+    .summary-card {
+      background: var(--bg-card);
+      border: 4px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .summary-badge-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .summary-score-big {
+      font-size: 36px;
+      font-weight: 900;
+      color: #D97706;
+      background: #FFFBEB;
+      border: 3px solid #FCD34D;
+      padding: 8px 28px;
+      border-radius: 999px;
+      box-shadow: 0 4px 0 #F59E0B;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .review-item {
+      background: #F6FCFF;
+      border: 2.5px solid #C5E8FF;
+      border-radius: 20px;
+      padding: 14px 16px;
+    }
+
+    .review-item h4 {
+      font-size: 16px;
+      font-weight: 800;
+      color: #1D4E89;
+      margin-bottom: 6px;
+    }
+
+    .review-item p {
+      font-size: 14.5px;
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    /* Modal Dialog (Help / Guide) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(35, 56, 98, 0.45);
+      backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border: 4px solid #9ED9FF;
+      border-radius: 28px;
+      max-width: 640px;
+      width: 100%;
+      padding: 24px 28px;
+      box-shadow: 0 20px 40px rgba(27, 46, 82, 0.25);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Animations & Keyframes */
+    @keyframes gentleShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.7); opacity: 0; }
+      70% { transform: scale(1.06); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { filter: drop-shadow(0 0 3px rgba(90, 210, 190, 0.4)); }
+      50% { filter: drop-shadow(0 0 12px rgba(90, 210, 190, 0.95)); }
+    }
+
+    @keyframes spinGear {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .anim-pop {
+      animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    .anim-glow {
+      animation: pulseGlow 2s infinite ease-in-out;
+    }
+
+    .spin-origin {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: spinGear 4s linear infinite;
+    }
+
+    /* Drag Ghost Element */
+    #drag-ghost {
+      position: fixed;
+      pointer-events: none;
+      z-index: 999;
+      display: none;
+      transform: translate(-50%, -50%) scale(1.08);
+      background: #FFFFFF;
+      border: 3px solid #5AD2BE;
+      border-radius: 18px;
+      padding: 8px 12px;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+    }
+
+    /* Confetti Canvas */
+    #confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 90;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 1024px) {
+      .welcome-card, .stage-workspace {
+        grid-template-columns: 1fr;
+      }
+      .svg-stage-container {
+        min-height: 290px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .top-bar {
+        padding: 10px 12px;
+      }
+      .candy-step span.step-label {
+        display: none;
+      }
+      .match-columns {
+        grid-template-columns: 1fr;
+      }
+      .safety-stamps-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Respect Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Decorative Pastel Background SVG Clouds -->
+  <div class="bg-decor" aria-hidden="true">
+    <svg class="floating-cloud c1" viewBox="0 0 160 90">
+      <path d="M35,70 Q15,70 15,52 Q15,36 32,34 Q40,14 64,14 Q90,14 98,32 Q115,28 128,40 Q145,42 145,56 Q145,70 125,70 Z" fill="#FFFFFF" />
+    </svg>
+    <svg class="floating-cloud c2" viewBox="0 0 160 90">
+      <path d="M35,70 Q15,70 15,52 Q15,36 32,34 Q40,14 64,14 Q90,14 98,32 Q115,28 128,40 Q145,42 145,56 Q145,70 125,70 Z" fill="#FFFFFF" />
+      <circle cx="135" cy="22" r="6" fill="#FFE082" />
+    </svg>
+    <svg class="floating-cloud c3" viewBox="0 0 160 90">
+      <path d="M35,70 Q15,70 15,52 Q15,36 32,34 Q40,14 64,14 Q90,14 98,32 Q115,28 128,40 Q145,42 145,56 Q145,70 125,70 Z" fill="#FFFFFF" />
+    </svg>
+    <svg class="floating-cloud c4" viewBox="0 0 160 90">
+      <path d="M35,70 Q15,70 15,52 Q15,36 32,34 Q40,14 64,14 Q90,14 98,32 Q115,28 128,40 Q145,42 145,56 Q145,70 125,70 Z" fill="#FFFFFF" />
+    </svg>
+  </div>
+
+  <!-- Confetti Overlay -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Drag Ghost Element -->
+  <div id="drag-ghost" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <!-- TOP HEADER BAR -->
+    <header class="top-bar">
+      <div class="brand-group">
+        <span class="brand-badge">TIN HỌC 3 • BÀI 3</span>
+        <span class="brand-title">Biệt Đội Lắp Ráp Máy Tính</span>
+      </div>
+
+      <div class="progress-cluster" aria-label="Tiến độ bài học">
+        <div class="candy-steps" id="header-steps">
+          <div class="candy-step" data-step="1"><span>1.</span><span class="step-label">Lắp ráp</span></div>
+          <div class="candy-step" data-step="2"><span>2.</span><span class="step-label">Chức năng</span></div>
+          <div class="candy-step" data-step="3"><span>3.</span><span class="step-label">Khám phá</span></div>
+          <div class="candy-step" data-step="4"><span>4.</span><span class="step-label">An toàn</span></div>
+        </div>
+        <div class="score-pill" aria-live="polite">
+          <span>⭐ Điểm:</span>
+          <span id="score-display">0 / 100</span>
+        </div>
+      </div>
+
+      <div class="top-controls">
+        <button type="button" class="btn-candy btn-toggle" id="btn-bgm" aria-pressed="true" title="Bật hoặc tắt nhạc nền">
+          🎵 Nhạc nền: BẬT
+        </button>
+        <button type="button" class="btn-candy btn-toggle" id="btn-sfx" aria-pressed="true" title="Bật hoặc tắt hiệu ứng âm thanh">
+          🔊 Hiệu ứng: BẬT
+        </button>
+        <button type="button" class="btn-candy btn-yellow" id="btn-help" title="Xem hướng dẫn cách chơi">
+          ❓ Hướng dẫn
+        </button>
+        <button type="button" class="btn-candy btn-blue" id="btn-home" title="Trở về màn hình chào mừng">
+          🏠 Trang chủ
+        </button>
+      </div>
+    </header>
+
+    <!-- ==========================================
+         SCREEN 0: WELCOME COVER SCREEN
+         ========================================== -->
+    <section class="screen active" id="screen-welcome" aria-labelledby="hero-title">
+      <div class="welcome-card">
+        <div class="welcome-art-box">
+          <span class="sim-label-pill">✨ Giao diện mô phỏng phục vụ học tập – Xưởng STEM Nhí</span>
+          <!-- Custom Cover SVG Artwork: Complete Desktop + Laptop + Tablet + Chibi Robot Bíp -->
+          <svg viewBox="0 0 560 360" role="img" aria-label="Tranh minh họa Rô-bốt Bíp bên bộ máy tính để bàn gồm màn hình, thân máy, bàn phím, chuột">
+            <defs>
+              <linearGradient id="deskGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#FFE4B5"/>
+                <stop offset="100%" stop-color="#F3C68F"/>
+              </linearGradient>
+              <linearGradient id="screenSky" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#89D4FF"/>
+                <stop offset="100%" stop-color="#C2F5E9"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Soft STEM Room Window & Stars -->
+            <rect x="25" y="18" width="510" height="240" rx="26" fill="#FFFFFF" opacity="0.65"/>
+            <circle cx="80" cy="60" r="18" fill="#FFE082" opacity="0.7"/>
+            <path d="M470,45 L475,58 L489,58 L478,66 L482,79 L470,71 L458,79 L462,66 L451,58 L465,58 Z" fill="#FFE082"/>
+
+            <!-- Desk Surface 3/4 View -->
+            <polygon points="40,245 520,245 545,320 15,320" fill="url(#deskGrad)" stroke="#D9A36A" stroke-width="4" stroke-linejoin="round"/>
+            <rect x="15" y="316" width="530" height="16" rx="6" fill="#D9A36A"/>
+
+            <!-- System Unit (Thân máy) on Right -->
+            <g transform="translate(385, 110)">
+              <rect x="0" y="0" width="90" height="148" rx="14" fill="#637B9E" stroke="#34466A" stroke-width="4"/>
+              <rect x="10" y="12" width="70" height="124" rx="10" fill="#829AB8"/>
+              <rect x="20" y="24" width="50" height="14" rx="5" fill="#34466A"/>
+              <rect x="20" y="46" width="50" height="8" rx="4" fill="#4A6082"/>
+              <circle cx="45" cy="82" r="14" fill="#5AD2BE" stroke="#FFFFFF" stroke-width="3"/>
+              <path d="M45,74 L45,83" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="32" cy="114" r="5" fill="#76FF03"/>
+              <circle cx="48" cy="114" r="5" fill="#FFE082"/>
+              <text x="45" y="143" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="800">THÂN MÁY</text>
+            </g>
+
+            <!-- Monitor (Màn hình) Center -->
+            <g transform="translate(160, 88)">
+              <!-- Stand -->
+              <rect x="85" y="130" width="30" height="28" rx="4" fill="#7B93B2" stroke="#34466A" stroke-width="3.5"/>
+              <ellipse cx="100" cy="160" rx="48" ry="10" fill="#9BB1CC" stroke="#34466A" stroke-width="3.5"/>
+              <!-- Frame -->
+              <rect x="0" y="0" width="200" height="135" rx="18" fill="#4F678C" stroke="#34466A" stroke-width="4"/>
+              <rect x="10" y="10" width="180" height="106" rx="10" fill="url(#screenSky)"/>
+              <!-- Cute Screen Content -->
+              <circle cx="50" cy="44" r="16" fill="#FFE082"/>
+              <path d="M15,116 Q60,75 110,116 Z" fill="#5AD2BE"/>
+              <path d="M80,116 Q135,68 185,116 Z" fill="#41B8A2"/>
+              <!-- Friendly Monitor Eyes -->
+              <circle cx="85" cy="58" r="5" fill="#2B3B5C"/>
+              <circle cx="115" cy="58" r="5" fill="#2B3B5C"/>
+              <path d="M93,68 Q100,75 107,68" fill="none" stroke="#2B3B5C" stroke-width="3" stroke-linecap="round"/>
+              <text x="100" y="129" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="800">MÀN HÌNH</text>
+            </g>
+
+            <!-- Keyboard (Bàn phím) Front Center -->
+            <g transform="translate(145, 258)">
+              <polygon points="12,0 208,0 222,44 0,44" fill="#FFFFFF" stroke="#34466A" stroke-width="3.5" stroke-linejoin="round"/>
+              <!-- Keys row 1 -->
+              <g fill="#9ED9FF">
+                <rect x="20" y="7" width="18" height="9" rx="2"/>
+                <rect x="43" y="7" width="18" height="9" rx="2"/>
+                <rect x="66" y="7" width="18" height="9" rx="2"/>
+                <rect x="89" y="7" width="18" height="9" rx="2"/>
+                <rect x="112" y="7" width="18" height="9" rx="2"/>
+                <rect x="135" y="7" width="18" height="9" rx="2"/>
+                <rect x="158" y="7" width="18" height="9" rx="2"/>
+                <rect x="181" y="7" width="18" height="9" rx="2"/>
+              </g>
+              <!-- Keys row 2 -->
+              <g fill="#FFE082">
+                <rect x="18" y="20" width="22" height="9" rx="2"/>
+                <rect x="45" y="20" width="20" height="9" rx="2"/>
+                <rect x="70" y="20" width="20" height="9" rx="2"/>
+                <rect x="95" y="20" width="20" height="9" rx="2"/>
+                <rect x="120" y="20" width="20" height="9" rx="2"/>
+                <rect x="145" y="20" width="20" height="9" rx="2"/>
+                <rect x="170" y="20" width="32" height="9" rx="2"/>
+              </g>
+              <!-- Spacebar row -->
+              <rect x="58" y="32" width="104" height="8" rx="3" fill="#FD8193"/>
+            </g>
+
+            <!-- Mouse (Chuột) Front Right -->
+            <g transform="translate(385, 263)">
+              <ellipse cx="32" cy="22" rx="36" ry="20" fill="#75DCCA" opacity="0.35"/>
+              <rect x="14" y="2" width="36" height="40" rx="18" fill="#FFFFFF" stroke="#34466A" stroke-width="3.5"/>
+              <line x1="32" y1="2" x2="32" y2="18" stroke="#34466A" stroke-width="3"/>
+              <line x1="14" y1="18" x2="50" y2="18" stroke="#34466A" stroke-width="2.5"/>
+              <rect x="29" y="6" width="6" height="9" rx="3" fill="#FD8193"/>
+            </g>
+
+            <!-- Chibi Robot "Bíp" Mascot on Left -->
+            <g transform="translate(35, 118)">
+              <!-- Antenna -->
+              <line x1="55" y1="15" x2="55" y2="0" stroke="#34466A" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="55" cy="0" r="8" fill="#FD8193" stroke="#34466A" stroke-width="3"/>
+              <!-- Head -->
+              <rect x="15" y="15" width="80" height="64" rx="22" fill="#FFFFFF" stroke="#34466A" stroke-width="4"/>
+              <rect x="24" y="25" width="62" height="44" rx="14" fill="#2B3B5C"/>
+              <!-- Glowing Happy Eyes & Smile -->
+              <path d="M35,44 Q41,36 47,44" fill="none" stroke="#5AD2BE" stroke-width="4" stroke-linecap="round"/>
+              <path d="M63,44 Q69,36 75,44" fill="none" stroke="#5AD2BE" stroke-width="4" stroke-linecap="round"/>
+              <path d="M46,56 Q55,64 64,56" fill="none" stroke="#FFE082" stroke-width="3.5" stroke-linecap="round"/>
+              <!-- Ears -->
+              <rect x="6" y="36" width="9" height="22" rx="4" fill="#75DCCA" stroke="#34466A" stroke-width="3"/>
+              <rect x="95" y="36" width="9" height="22" rx="4" fill="#75DCCA" stroke="#34466A" stroke-width="3"/>
+              <!-- Body -->
+              <rect x="23" y="82" width="64" height="54" rx="18" fill="#9ED9FF" stroke="#34466A" stroke-width="4"/>
+              <circle cx="55" cy="109" r="14" fill="#FFE082" stroke="#34466A" stroke-width="3"/>
+              <!-- Waving Arm -->
+              <path d="M23,96 Q2,82 8,62" fill="none" stroke="#34466A" stroke-width="6" stroke-linecap="round"/>
+              <path d="M87,96 Q106,105 104,120" fill="none" stroke="#34466A" stroke-width="6" stroke-linecap="round"/>
+              <!-- Speech Bubble on Art -->
+              <g transform="translate(5, -46)">
+                <rect x="0" y="0" width="128" height="34" rx="12" fill="#FFF8E1" stroke="#FFB300" stroke-width="2.5"/>
+                <text x="64" y="22" text-anchor="middle" fill="#5C4300" font-size="13" font-weight="800">Chào kỹ sư nhí! 👋</text>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <div class="welcome-info">
+          <span class="lesson-tag">Sách Kết nối tri thức với cuộc sống • Trang 13–17</span>
+          <h1 class="game-hero-title" id="hero-title">BIỆT ĐỘI LẮP RÁP MÁY TÍNH</h1>
+          <p class="game-hero-sub">Cùng rô-bốt <strong>Bíp</strong> khám phá xưởng công nghệ STEM, lắp ráp máy tính để bàn và rèn luyện thói quen sử dụng máy tính an toàn!</p>
+
+          <div class="candy-badges-row">
+            <div class="info-chip">🎮 4 Màn tương tác thật</div>
+            <div class="info-chip">🏆 100 Điểm tối đa</div>
+            <div class="info-chip">🛡️ Không giới hạn lần thử</div>
+          </div>
+
+          <div class="objectives-box">
+            <h3>🎯 Sau bài học này em sẽ:</h3>
+            <ul class="objectives-list">
+              <li>Nhận biết được các bộ phận cơ bản của máy tính để bàn: <strong>Màn hình, Thân máy, Bàn phím, Chuột</strong>.</li>
+              <li>Nêu được sơ lược chức năng của từng bộ phận cơ bản.</li>
+              <li>Nhận biết được máy tính xách tay, máy tính bảng, điện thoại thông minh.</li>
+              <li>Thực hiện đúng quy tắc an toàn về điện khi sử dụng máy tính.</li>
+            </ul>
+          </div>
+
+          <div class="welcome-actions">
+            <button type="button" class="btn-candy btn-primary" id="btn-start-game">
+              🚀 BẮT ĐẦU CHƠI NGAY
+            </button>
+            <button type="button" class="btn-candy btn-yellow" id="btn-welcome-help">
+              📖 CÁCH CHƠI
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SCREEN 1..4: ACTIVE STAGE WORKSPACE
+         ========================================== -->
+    <section class="screen" id="screen-stage" aria-live="polite">
+      <div class="stage-workspace">
+        <!-- LEFT PANEL: DYNAMIC INTERACTIVE SVG ILLUSTRATION -->
+        <div class="visual-panel">
+          <div class="panel-header">
+            <div class="stage-pill-title">
+              <span class="stage-pill-num" id="stage-num-badge">MÀN 1/4</span>
+              <span id="stage-title-text">XƯỞNG LẮP RÁP MÁY TÍNH</span>
+            </div>
+            <span class="sim-label-pill">🖥️ Giao diện mô phỏng phục vụ học tập</span>
+          </div>
+
+          <div class="svg-stage-container" id="svg-scene-mount">
+            <!-- Dynamically rendered per stage -->
+          </div>
+        </div>
+
+        <!-- RIGHT PANEL: ROBOT BÍP, INSTRUCTIONS & CONTROLS -->
+        <div class="control-panel">
+          <div>
+            <!-- Mascot Robot Bíp with 3 Expressions & Speech Bubble -->
+            <div class="mascot-bar" id="mascot-container" role="status" aria-live="polite">
+              <div class="mascot-avatar" id="mascot-svg-holder">
+                <!-- Robot Bíp SVG injected by JS -->
+              </div>
+              <div class="speech-bubble">
+                <span class="speech-tag" id="mascot-tag">RÔ-BỐT BÍP HƯỚNG DẪN</span>
+                <div id="mascot-message">Chào em! Hãy kéo hoặc chạm chọn từng bộ phận máy tính để đặt vào đúng vị trí trên bàn nhé!</div>
+              </div>
+            </div>
+
+            <!-- Interactive Task Area -->
+            <div class="task-box" id="stage-task-mount">
+              <!-- Dynamically rendered controls per stage -->
+            </div>
+          </div>
+
+          <!-- Stage Navigation Footer -->
+          <div class="panel-footer">
+            <button type="button" class="btn-candy btn-yellow" id="btn-reset-stage">
+              🔄 Làm lại màn này
+            </button>
+            <button type="button" class="btn-candy btn-primary" id="btn-next-stage" disabled>
+              Tiếp tục màn sau ➡️
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         SCREEN 5: VICTORY & KNOWLEDGE SUMMARY
+         ========================================== -->
+    <section class="screen" id="screen-summary" aria-labelledby="summary-heading">
+      <div class="summary-card">
+        <div class="summary-badge-wrap">
+          <svg width="160" height="120" viewBox="0 0 180 130" aria-hidden="true">
+            <!-- 3 Golden Stars & Trophy Badge -->
+            <polygon points="40,55 46,68 60,70 50,80 52,94 40,87 28,94 30,80 20,70 34,68" fill="#FFD54F" stroke="#F59E0B" stroke-width="3"/>
+            <polygon points="140,55 146,68 160,70 150,80 152,94 140,87 128,94 130,80 120,70 134,68" fill="#FFD54F" stroke="#F59E0B" stroke-width="3"/>
+            <polygon points="90,20 99,40 120,43 105,58 108,79 90,69 72,79 75,58 60,43 81,40" fill="#FFE082" stroke="#F59E0B" stroke-width="4"/>
+            <rect x="45" y="92" width="90" height="28" rx="14" fill="#5AD2BE" stroke="#2E9B89" stroke-width="3"/>
+            <text x="90" y="111" text-anchor="middle" fill="#FFFFFF" font-size="14" font-weight="900">XUẤT SẮC!</text>
+          </svg>
+          <h2 id="summary-heading" style="font-size: 30px; font-weight: 900; color: #1E3A68;">
+            CHÚC MỪNG KỸ SƯ NHÍ BIỆT ĐỘI MÁY TÍNH!
+          </h2>
+          <p style="font-weight: 700; color: var(--text-muted);">
+            Em đã hoàn thành xuất sắc cả 4 màn thử thách của Bài 3: Máy tính và em!
+          </p>
+          <div class="summary-score-big" id="final-score-text">100 / 100 ĐIỂM</div>
+        </div>
+
+        <div class="summary-grid">
+          <div class="review-item">
+            <h4>🖥️ 1. Bốn bộ phận cơ bản</h4>
+            <p>Máy tính để bàn có 4 bộ phận cơ bản: <strong>Màn hình, Thân máy, Bàn phím</strong> và <strong>Chuột</strong>.</p>
+          </div>
+          <div class="review-item">
+            <h4>⚙️ 2. Chức năng từng bộ phận</h4>
+            <p><strong>Màn hình</strong> hiển thị thông tin; <strong>Thân máy</strong> xử lí thông tin; <strong>Bàn phím</strong> nhập chữ, số; <strong>Chuột</strong> điều khiển con trỏ.</p>
+          </div>
+          <div class="review-item">
+            <h4>💻 3. Các loại máy tính khác</h4>
+            <p><strong>Máy tính xách tay</strong> gấp gọn được, có vùng cảm ứng. <strong>Máy tính bảng</strong> và <strong>điện thoại thông minh</strong> dùng màn hình cảm ứng và bàn phím ảo.</p>
+          </div>
+          <div class="review-item">
+            <h4>⚡ 4. Quy tắc an toàn điện</h4>
+            <p>Không chạm dây điện hở, không để nước cạnh máy tính, dùng khăn khô lau bụi và luôn nhờ người lớn hỗ trợ nguồn điện.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 6px;">
+          <button type="button" class="btn-candy btn-primary" id="btn-play-again">
+            🔁 CHƠI LẠI TỪ ĐẦU
+          </button>
+          <button type="button" class="btn-candy btn-blue" id="btn-summary-home">
+            🏠 VỀ TRANG CHỦ
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- HELP MODAL -->
+  <div class="modal-backdrop" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <h2 id="modal-title" style="font-size: 22px; font-weight: 900; color: #1E3A68;">
+        📖 Hướng dẫn tham gia Biệt Đội Lắp Ráp Máy Tính
+      </h2>
+      <div style="display: flex; flex-direction: column; gap: 10px; font-size: 15.5px; font-weight: 600;">
+        <p><strong>🌟 Màn 1 – Xưởng lắp ráp:</strong> Em có thể <em>kéo thả</em> linh kiện vào bóng mờ trên bàn HOẶC <em>chạm chọn linh kiện</em> ở khay bên phải rồi <em>chạm vào vị trí</em> tương ứng trên bàn.</p>
+        <p><strong>🌟 Màn 2 – Ai làm việc gì?:</strong> Chạm chọn một bộ phận máy tính rồi chạm vào thẻ chức năng đúng của bộ phận đó để xem máy tính hoạt động.</p>
+        <p><strong>🌟 Màn 3 – Nhà khám phá máy tính:</strong> Quan sát hình minh họa máy tính xách tay, máy tính bảng, điện thoại thông minh và chọn đặc điểm đúng.</p>
+        <p><strong>🌟 Màn 4 – Bảo vệ phòng máy:</strong> Quan sát từng bức tranh tình huống rồi chọn hoặc kéo nhãn <strong>NÊN LÀM ✅</strong> hoặc <strong>KHÔNG NÊN ⚠️</strong> vào bức tranh.</p>
+        <p><strong>💡 Lưu ý:</strong> Khi chọn chưa đúng, Rô-bốt Bíp sẽ gợi ý để em thử lại không giới hạn số lần!</p>
+      </div>
+      <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+        <button type="button" class="btn-candy btn-primary" id="btn-close-help">Đã hiểu! Tiếp tục thôi 👍</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ============================================================================
+       1. GAME_CONFIG – CẤU HÌNH NỘI DUNG SƯ PHẠM (DỄ DÀNG CHỈNH SỬA CHO GIÁO VIÊN)
+       ============================================================================ */
+    const GAME_CONFIG = {
+      title: "BIỆT ĐỘI LẮP RÁP MÁY TÍNH",
+      pointsPerStage: 25,
+      stages: {
+        stage1: {
+          title: "MÀN 1: XƯỞNG LẮP RÁP MÁY TÍNH",
+          instruction: "Em hãy kéo linh kiện đặt vào đúng bóng mờ trên bàn (hoặc chạm chọn linh kiện rồi chạm vào vị trí trên bàn).",
+          welcomeMsg: "Chào kỹ sư nhí! Trên bàn đang có 4 vị trí trống. Em hãy lắp đủ Màn hình, Thân máy, Bàn phím và Chuột lên bàn nhé!",
+          completeMsg: "Tuyệt vời! Em đã lắp hoàn chỉnh 4 bộ phận cơ bản của máy tính để bàn và nhận được 25 điểm!",
+          parts: [
+            {
+              id: "monitor",
+              name: "Màn hình",
+              slotLabel: "Vị trí Màn hình",
+              correctMsg: "Đúng rồi! Màn hình có dạng như chiếc ti vi, đặt ngay chính giữa bàn để em dễ quan sát.",
+              wrongHint: "Chưa đúng vị trí rồi! Gợi ý: Bộ phận này trông giống chiếc ti vi hay tấm bảng nhỏ, hãy tìm bóng mờ tương ứng nhé."
+            },
+            {
+              id: "tower",
+              name: "Thân máy",
+              slotLabel: "Vị trí Thân máy",
+              correctMsg: "Chính xác! Thân máy là hộp chữ nhật đứng chứa nhiều chi tiết tinh vi bên trong.",
+              wrongHint: "Hãy thử lại nhé! Gợi ý: Thân máy có dạng hình hộp đứng cao nằm ở phía bên phải mặt bàn."
+            },
+            {
+              id: "keyboard",
+              name: "Bàn phím",
+              slotLabel: "Vị trí Bàn phím",
+              correctMsg: "Giỏi lắm! Bàn phím có nhiều phím bấm chữ và số, đặt ở phía trước màn hình để hai tay gõ phím.",
+              wrongHint: "Vị trí này chưa khớp! Gợi ý: Bàn phím có dạng hình chữ nhật dài với nhiều phím nhỏ nằm ngay phía trước màn hình."
+            },
+            {
+              id: "mouse",
+              name: "Chuột",
+              slotLabel: "Vị trí Chuột",
+              correctMsg: "Chuẩn luôn! Chuột máy tính nhỏ gọn vừa lòng bàn tay, đặt cạnh bàn phím để điều khiển.",
+              wrongHint: "Chưa đúng chỗ rồi! Gợi ý: Chuột máy tính nhỏ gọn có dáng bầu tròn nằm ở góc phải cạnh bàn phím."
+            }
+          ]
+        },
+
+        stage2: {
+          title: "MÀN 2: AI LÀM VIỆC GÌ?",
+          instruction: "Chạm chọn một bộ phận ở cột trái, sau đó chạm chọn chức năng tương ứng ở cột phải để kích hoạt máy tính!",
+          welcomeMsg: "Bộ máy tính đã lắp xong! Bây giờ em hãy ghép từng bộ phận với chức năng đúng của nó để xem điều kì diệu trên máy tính nhé!",
+          completeMsg: "Xuất sắc! Cả 4 bộ phận đều đã hoạt động nhịp nhàng. Em nhận thêm 25 điểm!",
+          pairs: [
+            {
+              id: "monitor",
+              deviceName: "Màn hình",
+              functionText: "Hiển thị thông tin (hình ảnh, chữ viết, kết quả làm việc)",
+              correctMsg: "Đúng rồi! Màn hình là nơi hiển thị kết quả hoạt động của máy tính dưới dạng hình ảnh và chữ viết.",
+              wrongHint: "Gợi ý: Hãy nhớ xem bộ phận nào sáng lên để cho chúng ta nhìn thấy hình ảnh và dòng chữ nhé!"
+            },
+            {
+              id: "tower",
+              deviceName: "Thân máy",
+              functionText: "Xử lí thông tin và điều khiển hoạt động của máy tính",
+              correctMsg: "Chính xác! Thân máy giống như 'bộ não' giúp xử lí thông tin và điều khiển máy tính.",
+              wrongHint: "Gợi ý: Bộ phận hình hộp nào chứa bộ xử lí bên trong giống như 'bộ não' của máy tính nhỉ?"
+            },
+            {
+              id: "keyboard",
+              deviceName: "Bàn phím",
+              functionText: "Nhập chữ và số để gửi tín hiệu vào máy tính",
+              correctMsg: "Tuyệt vời! Bàn phím có nhiều phím giúp em gõ chữ và số đưa thông tin vào máy tính.",
+              wrongHint: "Gợi ý: Khi muốn gõ các chữ cái A, B, C hay các con số 1, 2, 3 thì em bấm vào bộ phận nào?"
+            },
+            {
+              id: "mouse",
+              deviceName: "Chuột",
+              functionText: "Điều khiển con trỏ trên màn hình giúp chọn nhanh chóng",
+              correctMsg: "Chuẩn xác! Di chuyển chuột giúp em điều khiển mũi tên con trỏ trên màn hình thật thuận tiện.",
+              wrongHint: "Gợi ý: Bộ phận nhỏ gọn nào nằm trong lòng bàn tay giúp di chuyển mũi tên con trỏ trên màn hình?"
+            }
+          ]
+        },
+
+        stage3: {
+          title: "MÀN 3: NHÀ KHÁM PHÁ MÁY TÍNH",
+          instruction: "Quan sát kĩ hình vẽ chiếc máy tính ở khung bên trái, sau đó chọn câu trả lời đúng nhất.",
+          welcomeMsg: "Ngoài máy tính để bàn, còn có nhiều loại máy tính thú vị khác. Em hãy quan sát từng thiết bị và khám phá đặc điểm của chúng nhé!",
+          completeMsg: "Giỏi quá! Em đã phân biệt được máy tính xách tay, máy tính bảng và điện thoại thông minh! (+25 điểm)",
+          missions: [
+            {
+              id: "laptop",
+              tabLabel: "1. Máy tính xách tay",
+              deviceName: "Máy tính xách tay",
+              question: "Quan sát hình bên trái, đâu là đặc điểm đúng của Máy tính xách tay?",
+              options: [
+                {
+                  text: "Có màn hình và bàn phím gắn liền với nhau, có thể gấp gọn và dùng vùng cảm ứng để điều khiển con trỏ.",
+                  isCorrect: true
+                },
+                {
+                  text: "Có thân máy hình hộp lớn tách rời khỏi màn hình và không thể mang đi dễ dàng.",
+                  isCorrect: false,
+                  hint: "Hãy nhìn kĩ khớp gập ở giữa nhé! Máy tính xách tay gọn nhẹ, màn hình và bàn phím được gắn liền với nhau."
+                },
+                {
+                  text: "Không có bàn phím thật mà chỉ là một tấm màn hình phẳng nhỏ bỏ vừa túi áo.",
+                  isCorrect: false,
+                  hint: "Nhìn phần nửa dưới của máy kìa! Máy tính xách tay vẫn có các phím bấm vật lí và vùng cảm ứng chuột đấy."
+                }
+              ],
+              correctMsg: "Đúng rồi! Máy tính xách tay có màn hình và bàn phím gắn liền, gấp gọn được và có vùng cảm ứng thay thế chuột rời."
+            },
+            {
+              id: "tablet",
+              tabLabel: "2. Máy tính bảng",
+              deviceName: "Máy tính bảng",
+              question: "Khi sử dụng Máy tính bảng (như hình minh họa), em điều khiển và nhập chữ bằng cách nào?",
+              options: [
+                {
+                  text: "Chạm ngón tay trực tiếp lên màn hình cảm ứng và sử dụng bàn phím ảo hiện trên màn hình khi cần nhập chữ.",
+                  isCorrect: true
+                },
+                {
+                  text: "Phải luôn cắm thêm một thùng thân máy lớn và bàn phím cơ mới bật lên được.",
+                  isCorrect: false,
+                  hint: "Quan sát hình vẽ nhé! Máy tính bảng có màn hình gắn liền với thân, không cần thùng máy rời đâu."
+                },
+                {
+                  text: "Gập đôi màn hình lại như quyển vở vì nó có bàn phím cứng cố định ở nửa dưới.",
+                  isCorrect: false,
+                  hint: "Đó là đặc điểm của máy tính xách tay mất rồi! Máy tính bảng là một tấm màn hình cảm ứng phẳng."
+                }
+              ],
+              correctMsg: "Chính xác! Máy tính bảng dùng màn hình cảm ứng; khi cần gõ chữ, bàn phím ảo sẽ hiện ngay trên màn hình."
+            },
+            {
+              id: "smartphone",
+              tabLabel: "3. Điện thoại thông minh",
+              deviceName: "Điện thoại thông minh",
+              question: "Vì sao Điện thoại thông minh cũng được coi là một loại máy tính nhỏ gọn?",
+              options: [
+                {
+                  text: "Vì máy có màn hình cảm ứng, bàn phím ảo, vừa gọi điện vừa xử lí thông tin, học tập và tìm kiếm như máy tính.",
+                  isCorrect: true
+                },
+                {
+                  text: "Vì điện thoại thông minh có kích thước to bằng chiếc ti vi đặt cố định trên bàn học.",
+                  isCorrect: false,
+                  hint: "Hãy nhìn bàn tay đang cầm thiết bị nhé! Điện thoại thông minh có kích thước nhỏ gọn vừa tầm tay."
+                },
+                {
+                  text: "Vì điện thoại thông minh chỉ dùng để trang trí chứ không hiển thị hay xử lí thông tin được.",
+                  isCorrect: false,
+                  hint: "Thử lại nhé! Điện thoại thông minh có thể hiển thị hình ảnh, nhập chữ qua bàn phím ảo và xử lí thông tin rất nhanh."
+                }
+              ],
+              correctMsg: "Chuẩn luôn! Điện thoại thông minh nhỏ gọn trong lòng bàn tay, có màn hình cảm ứng và bàn phím ảo rất tiện lợi."
+            }
+          ]
+        },
+
+        stage4: {
+          title: "MÀN 4: BẢO VỆ PHÒNG MÁY AN TOÀN",
+          instruction: "Em hãy quan sát tranh tình huống bên trái, sau đó bấm chọn (hoặc kéo thả) thẻ NÊN LÀM ✅ hoặc KHÔNG NÊN ⚠️.",
+          welcomeMsg: "An toàn về điện là điều quan trọng nhất khi dùng máy tính! Em hãy kiểm tra 4 tình huống trong phòng máy và đưa ra quyết định đúng nhé!",
+          completeMsg: "Hoan hô! Em đã nắm vững các quy tắc an toàn điện và bảo vệ máy tính. Em nhận 25 điểm cuối cùng!",
+          scenarios: [
+            {
+              id: "frayed_wire",
+              tabLabel: "Tình huống 1",
+              title: "Tình huống 1: Phát hiện dây điện bị hở vỏ bọc",
+              desc: "Hành động: Tự ý đưa tay chạm vào chỗ dây điện bị hở hoặc tự cắm phích điện máy tính.",
+              correctChoice: "SHOULD_NOT",
+              correctMsg: "Đúng rồi! KHÔNG NÊN tự chạm vào dây điện hở vì rất nguy hiểm. Em cần tránh xa và báo ngay cho người lớn!",
+              wrongHint: "Cẩn thận nhé! Dây điện bị hở có tia điện rất nguy hiểm. Em có nên tự tay chạm vào không?"
+            },
+            {
+              id: "dry_cloth",
+              tabLabel: "Tình huống 2",
+              title: "Tình huống 2: Vệ sinh máy tính đúng cách",
+              desc: "Hành động: Dùng khăn khô và mềm để lau nhẹ bụi bẩn trên màn hình và bàn phím khi máy đã tắt.",
+              correctChoice: "SHOULD",
+              correctMsg: "Chính xác! NÊN dùng khăn khô, mềm lau nhẹ nhàng để giữ máy tính sạch bụi mà vẫn an toàn về điện.",
+              wrongHint: "Hãy suy nghĩ lại nhé! Khi máy đã tắt, dùng khăn khô và mềm lau bụi nhẹ nhàng là thói quen tốt bảo vệ máy đấy."
+            },
+            {
+              id: "water_cup",
+              tabLabel: "Tình huống 3",
+              title: "Tình huống 3: Đồ uống trên bàn máy tính",
+              desc: "Hành động: Đặt cốc nước đầy hoặc đồ ăn lỏng ngay sát bàn phím máy tính đang hoạt động.",
+              correctChoice: "SHOULD_NOT",
+              correctMsg: "Tuyệt vời! KHÔNG NÊN để nước cạnh bàn phím vì nếu nước đổ vào sẽ làm hỏng máy và gây chập điện nguy hiểm.",
+              wrongHint: "Nhìn cốc nước đang nghiêng sát bàn phím kìa! Nếu nước đổ vào thiết bị điện thì sẽ gây chập điện đấy!"
+            },
+            {
+              id: "ask_adult",
+              tabLabel: "Tình huống 4",
+              title: "Tình huống 4: Thao tác với nguồn điện",
+              desc: "Hành động: Luôn nhờ thầy cô hoặc bố mẹ hỗ trợ kiểm tra và cắm nguồn điện trước khi sử dụng máy tính.",
+              correctChoice: "SHOULD",
+              correctMsg: "Giỏi lắm! NÊN nhờ người lớn hỗ trợ các thao tác liên quan đến ổ cắm và nguồn điện để đảm bảo an toàn tuyệt đối.",
+              wrongHint: "Gợi ý: Học sinh tiểu học luôn cần nhờ người lớn giúp đỡ khi cắm điện. Đây là việc rất NÊN LÀM nhé!"
+            }
+          ]
+        }
+      }
+    };
+
+    /* ============================================================================
+       2. HỆ THỐNG ÂM THANH WEB AUDIO API (NGOẠI TUYẾN 100%, KHÔNG GIỌNG NÓI)
+       ============================================================================ */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.bgmEnabled = true;
+        this.sfxEnabled = true;
+        this.bgmPlaying = false;
+        this.bgmTimer = null;
+        this.noteIndex = 0;
+        // Cheerful pentatonic music-box melody (C5, D5, E5, G5, A5, C6)
+        this.melody = [
+          { f: 523.25, d: 0.22 }, { f: 659.25, d: 0.22 }, { f: 783.99, d: 0.22 }, { f: 659.25, d: 0.22 },
+          { f: 880.00, d: 0.30 }, { f: 783.99, d: 0.30 }, { f: 659.25, d: 0.22 }, { f: 587.33, d: 0.22 },
+          { f: 523.25, d: 0.22 }, { f: 587.33, d: 0.22 }, { f: 659.25, d: 0.22 }, { f: 783.99, d: 0.22 },
+          { f: 659.25, d: 0.35 }, { f: 587.33, d: 0.35 }, { f: 523.25, d: 0.45 }, { f: 0, d: 0.25 }
+        ];
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+          this.ctx.resume().catch(() => {});
+        }
+      }
+
+      playTone(freq, duration, type = "sine", volume = 0.08, delay = 0) {
+        if (!this.ctx || freq <= 0) return;
+        try {
+          const now = this.ctx.currentTime + delay;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, now);
+
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.linearRampToValueAtTime(volume, now + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + duration + 0.03);
+        } catch (e) {
+          // Fallback safely if audio fails
+        }
+      }
+
+      startBGM() {
+        this.stopBGM();
+        if (!this.bgmEnabled || document.hidden) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        this.bgmPlaying = true;
+        const step = () => {
+          if (!this.bgmPlaying || !this.bgmEnabled || document.hidden) return;
+          const note = this.melody[this.noteIndex % this.melody.length];
+          this.noteIndex++;
+          if (note.f > 0) {
+            this.playTone(note.f, note.d, "triangle", 0.028, 0);
+          }
+          this.bgmTimer = setTimeout(step, 380);
+        };
+        step();
+      }
+
+      stopBGM() {
+        this.bgmPlaying = false;
+        if (this.bgmTimer) {
+          clearTimeout(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      }
+
+      playClick() {
+        if (!this.sfxEnabled) return;
+        this.initContext();
+        this.playTone(720, 0.07, "sine", 0.07, 0);
+      }
+
+      playCorrect() {
+        if (!this.sfxEnabled) return;
+        this.initContext();
+        this.playTone(587.33, 0.14, "triangle", 0.11, 0);     // D5
+        this.playTone(880.00, 0.26, "triangle", 0.12, 0.12);  // A5
+      }
+
+      playWrong() {
+        if (!this.sfxEnabled) return;
+        this.initContext();
+        // Gentle polite nudge
+        this.playTone(330.0, 0.14, "sine", 0.08, 0);
+        this.playTone(277.18, 0.22, "sine", 0.08, 0.14);
+      }
+
+      playStageClear() {
+        if (!this.sfxEnabled) return;
+        this.initContext();
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((n, idx) => {
+          this.playTone(n, 0.22, "triangle", 0.11, idx * 0.11);
+        });
+      }
+
+      playVictory() {
+        if (!this.sfxEnabled) return;
+        this.initContext();
+        const fanfare = [523.25, 659.25, 783.99, 659.25, 783.99, 1046.5];
+        fanfare.forEach((n, idx) => {
+          this.playTone(n, 0.25, "triangle", 0.12, idx * 0.13);
+        });
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    // Pause audio cleanly if tab is hidden
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        sound.stopBGM();
+      } else if (sound.bgmEnabled && appState.hasStarted) {
+        sound.startBGM();
+      }
+    });
+
+    /* ============================================================================
+       3. ĐỒ HỌA VECTOR SVG CHO LINH VẬT RÔ-BỐT BÍP & CÁC THIẾT BỊ TIN HỌC
+       ============================================================================ */
+    function getRobotBipSVG(mood = "welcome") {
+      // mood: 'welcome' | 'encourage' | 'celebrate'
+      let eyesMarkup = "";
+      let mouthMarkup = "";
+      let antennaColor = "#5AD2BE";
+      let badgeColor = "#FFE082";
+
+      if (mood === "celebrate") {
+        antennaColor = "#FFD54F";
+        badgeColor = "#5AD2BE";
+        eyesMarkup = `
+          <path d="M27,40 Q34,31 41,40" fill="none" stroke="#5AD2BE" stroke-width="4" stroke-linecap="round"/>
+          <path d="M55,40 Q62,31 69,40" fill="none" stroke="#5AD2BE" stroke-width="4" stroke-linecap="round"/>
+          <polygon points="18,22 20,27 25,27 21,30 22,35 18,32 14,35 15,30 11,27 16,27" fill="#FFE082"/>
+        `;
+        mouthMarkup = `<path d="M37,49 Q48,60 59,49 Z" fill="#FF8598"/>`;
+      } else if (mood === "encourage") {
+        antennaColor = "#FF8598";
+        badgeColor = "#FFAB91";
+        eyesMarkup = `
+          <circle cx="34" cy="40" r="5.5" fill="#7CC8FF"/>
+          <circle cx="62" cy="40" r="5.5" fill="#7CC8FF"/>
+          <line x1="27" y1="31" x2="39" y2="33" stroke="#FFE082" stroke-width="3" stroke-linecap="round"/>
+          <line x1="69" y1="31" x2="57" y2="33" stroke="#FFE082" stroke-width="3" stroke-linecap="round"/>
+        `;
+        mouthMarkup = `<path d="M40,54 Q48,49 56,54" fill="none" stroke="#FFE082" stroke-width="3.5" stroke-linecap="round"/>`;
+      } else {
+        // default happy welcome
+        eyesMarkup = `
+          <circle cx="34" cy="40" r="5.5" fill="#5AD2BE"/>
+          <circle cx="62" cy="40" r="5.5" fill="#5AD2BE"/>
+          <circle cx="32" cy="38" r="2" fill="#FFFFFF"/>
+          <circle cx="60" cy="38" r="2" fill="#FFFFFF"/>
+        `;
+        mouthMarkup = `<path d="M39,50 Q48,58 57,50" fill="none" stroke="#FFE082" stroke-width="3.5" stroke-linecap="round"/>`;
+      }
+
+      return `
+        <svg viewBox="0 0 96 96" width="100%" height="100%" aria-hidden="true">
+          <line x1="48" y1="16" x2="48" y2="5" stroke="#34466A" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="48" cy="5" r="6" fill="${antennaColor}" stroke="#34466A" stroke-width="2.5"/>
+          <rect x="14" y="16" width="68" height="52" rx="18" fill="#FFFFFF" stroke="#34466A" stroke-width="3.5"/>
+          <rect x="21" y="23" width="54" height="38" rx="12" fill="#2B3B5C"/>
+          ${eyesMarkup}
+          ${mouthMarkup}
+          <rect x="7" y="33" width="7" height="18" rx="3.5" fill="#75DCCA" stroke="#34466A" stroke-width="2.5"/>
+          <rect x="82" y="33" width="7" height="18" rx="3.5" fill="#75DCCA" stroke="#34466A" stroke-width="2.5"/>
+          <rect x="24" y="70" width="48" height="22" rx="10" fill="#9ED9FF" stroke="#34466A" stroke-width="3.5"/>
+          <circle cx="48" cy="81" r="6" fill="${badgeColor}" stroke="#34466A" stroke-width="2.5"/>
+        </svg>
+      `;
+    }
+
+    function getPartIconSVG(partId) {
+      switch (partId) {
+        case "monitor":
+          return `
+            <svg viewBox="0 0 110 86" aria-hidden="true">
+              <rect x="44" y="58" width="22" height="16" fill="#7B93B2" stroke="#34466A" stroke-width="3"/>
+              <ellipse cx="55" cy="76" rx="28" ry="6" fill="#9BB1CC" stroke="#34466A" stroke-width="3"/>
+              <rect x="12" y="8" width="86" height="54" rx="10" fill="#4F678C" stroke="#34466A" stroke-width="3.5"/>
+              <rect x="18" y="14" width="74" height="42" rx="6" fill="#9ED9FF"/>
+              <circle cx="35" cy="28" r="7" fill="#FFE082"/>
+              <path d="M20,56 Q42,36 65,56 Z" fill="#5AD2BE"/>
+              <path d="M48,56 Q72,34 90,56 Z" fill="#3BB89F"/>
+            </svg>
+          `;
+        case "tower":
+          return `
+            <svg viewBox="0 0 110 86" aria-hidden="true">
+              <rect x="30" y="6" width="50" height="74" rx="9" fill="#637B9E" stroke="#34466A" stroke-width="3.5"/>
+              <rect x="36" y="12" width="38" height="62" rx="6" fill="#829AB8"/>
+              <rect x="41" y="18" width="28" height="8" rx="3" fill="#34466A"/>
+              <rect x="41" y="30" width="28" height="5" rx="2.5" fill="#4A6082"/>
+              <circle cx="55" cy="49" r="9" fill="#5AD2BE" stroke="#FFFFFF" stroke-width="2.5"/>
+              <circle cx="47" cy="65" r="3" fill="#76FF03"/>
+              <circle cx="57" cy="65" r="3" fill="#FFE082"/>
+            </svg>
+          `;
+        case "keyboard":
+          return `
+            <svg viewBox="0 0 110 86" aria-hidden="true">
+              <polygon points="12,24 98,24 105,64 5,64" fill="#FFFFFF" stroke="#34466A" stroke-width="3.5" stroke-linejoin="round"/>
+              <g fill="#9ED9FF">
+                <rect x="18" y="30" width="12" height="7" rx="2"/>
+                <rect x="34" y="30" width="12" height="7" rx="2"/>
+                <rect x="50" y="30" width="12" height="7" rx="2"/>
+                <rect x="66" y="30" width="12" height="7" rx="2"/>
+                <rect x="82" y="30" width="12" height="7" rx="2"/>
+              </g>
+              <g fill="#FFE082">
+                <rect x="16" y="41" width="15" height="7" rx="2"/>
+                <rect x="35" y="41" width="15" height="7" rx="2"/>
+                <rect x="54" y="41" width="15" height="7" rx="2"/>
+                <rect x="73" y="41" width="22" height="7" rx="2"/>
+              </g>
+              <rect x="32" y="52" width="46" height="7" rx="3" fill="#FD8193"/>
+            </svg>
+          `;
+        case "mouse":
+          return `
+            <svg viewBox="0 0 110 86" aria-hidden="true">
+              <ellipse cx="55" cy="50" rx="34" ry="22" fill="#75DCCA" opacity="0.35"/>
+              <rect x="35" y="14" width="40" height="56" rx="20" fill="#FFFFFF" stroke="#34466A" stroke-width="3.5"/>
+              <line x1="55" y1="14" x2="55" y2="36" stroke="#34466A" stroke-width="3"/>
+              <line x1="35" y1="36" x2="75" y2="36" stroke="#34466A" stroke-width="2.5"/>
+              <rect x="51.5" y="20" width="7" height="12" rx="3.5" fill="#FD8193"/>
+            </svg>
+          `;
+        default:
+          return "";
+      }
+    }
+
+    /* ============================================================================
+       4. QUẢN LÝ TRẠNG THÁI TRÒ CHƠI (STATE MACHINE)
+       ============================================================================ */
+    const appState = {
+      hasStarted: false,
+      currentScreen: "welcome", // 'welcome' | 'stage' | 'summary'
+      currentStage: 1,          // 1..4
+      stageCompleted: { 1: false, 2: false, 3: false, 4: false },
+      stageScores: { 1: 0, 2: 0, 3: 0, 4: 0 },
+
+      // Stage 1 specific state
+      s1Placed: { monitor: false, tower: false, keyboard: false, mouse: false },
+      s1SelectedPart: null,
+      s1TrayOrder: [],
+
+      // Stage 2 specific state
+      s2Matched: { monitor: false, tower: false, keyboard: false, mouse: false },
+      s2SelectedDevice: null,
+      s2SelectedFunc: null,
+      s2FuncOrder: [],
+
+      // Stage 3 specific state
+      s3CurrentIdx: 0,
+      s3Solved: [false, false, false],
+
+      // Stage 4 specific state
+      s4CurrentIdx: 0,
+      s4Solved: [false, false, false, false],
+      s4SelectedStamp: null
+    };
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function getTotalScore() {
+      return Object.values(appState.stageScores).reduce((a, b) => a + b, 0);
+    }
+
+    function updateHeaderUI() {
+      document.getElementById("score-display").textContent = `${getTotalScore()} / 100`;
+      const stepEls = document.querySelectorAll("#header-steps .candy-step");
+      stepEls.forEach((el) => {
+        const st = Number(el.getAttribute("data-step"));
+        el.classList.remove("active", "done");
+        if (appState.stageCompleted[st]) {
+          el.classList.add("done");
+        }
+        if (appState.currentScreen === "stage" && appState.currentStage === st) {
+          el.classList.add("active");
+        }
+      });
+    }
+
+    function setMascotFeedback(mood, tagText, messageText) {
+      const container = document.getElementById("mascot-container");
+      const holder = document.getElementById("mascot-svg-holder");
+      const tagEl = document.getElementById("mascot-tag");
+      const msgEl = document.getElementById("mascot-message");
+
+      container.classList.remove("state-correct", "state-wrong");
+      if (mood === "celebrate") container.classList.add("state-correct");
+      if (mood === "encourage") container.classList.add("state-wrong");
+
+      holder.innerHTML = getRobotBipSVG(mood);
+      tagEl.textContent = tagText;
+      msgEl.textContent = messageText;
+    }
+
+    function showScreen(screenName) {
+      stopConfetti();
+      appState.currentScreen = screenName;
+      document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+      if (screenName === "welcome") {
+        document.getElementById("screen-welcome").classList.add("active");
+      } else if (screenName === "stage") {
+        document.getElementById("screen-stage").classList.add("active");
+      } else if (screenName === "summary") {
+        document.getElementById("screen-summary").classList.add("active");
+        document.getElementById("final-score-text").textContent = `${getTotalScore()} / 100 ĐIỂM`;
+        sound.playVictory();
+        startConfetti();
+      }
+      updateHeaderUI();
+    }
+
+    function loadStage(stageNum, resetCurrent = false) {
+      appState.currentStage = stageNum;
+      showScreen("stage");
+
+      const nextBtn = document.getElementById("btn-next-stage");
+      nextBtn.textContent = stageNum < 4 ? "Tiếp tục màn sau ➡️" : "Xem tổng kết & Huy hiệu 🏆";
+
+      if (stageNum === 1) {
+        if (resetCurrent || appState.s1TrayOrder.length === 0) {
+          appState.s1Placed = { monitor: false, tower: false, keyboard: false, mouse: false };
+          appState.s1SelectedPart = null;
+          appState.s1TrayOrder = shuffleArray(GAME_CONFIG.stages.stage1.parts);
+          if (resetCurrent) {
+            appState.stageCompleted[1] = false;
+            appState.stageScores[1] = 0;
+          }
+        }
+        renderStage1();
+      } else if (stageNum === 2) {
+        if (resetCurrent || appState.s2FuncOrder.length === 0) {
+          appState.s2Matched = { monitor: false, tower: false, keyboard: false, mouse: false };
+          appState.s2SelectedDevice = null;
+          appState.s2SelectedFunc = null;
+          appState.s2FuncOrder = shuffleArray(GAME_CONFIG.stages.stage2.pairs);
+          if (resetCurrent) {
+            appState.stageCompleted[2] = false;
+            appState.stageScores[2] = 0;
+          }
+        }
+        renderStage2();
+      } else if (stageNum === 3) {
+        if (resetCurrent) {
+          appState.s3CurrentIdx = 0;
+          appState.s3Solved = [false, false, false];
+          appState.stageCompleted[3] = false;
+          appState.stageScores[3] = 0;
+        }
+        renderStage3();
+      } else if (stageNum === 4) {
+        if (resetCurrent) {
+          appState.s4CurrentIdx = 0;
+          appState.s4Solved = [false, false, false, false];
+          appState.s4SelectedStamp = null;
+          appState.stageCompleted[4] = false;
+          appState.stageScores[4] = 0;
+        }
+        renderStage4();
+      }
+
+      nextBtn.disabled = !appState.stageCompleted[stageNum];
+      updateHeaderUI();
+    }
+
+    function markStageComplete(stageNum, message) {
+      if (!appState.stageCompleted[stageNum]) {
+        appState.stageCompleted[stageNum] = true;
+        appState.stageScores[stageNum] = GAME_CONFIG.pointsPerStage;
+        sound.playStageClear();
+      }
+      document.getElementById("btn-next-stage").disabled = false;
+      setMascotFeedback("celebrate", "HOÀN THÀNH MÀN CHƠI! 🎉", message);
+      updateHeaderUI();
+    }
+
+    /* ============================================================================
+       5. MÀN 1: XƯỞNG LẮP RÁP MÁY TÍNH (KÉO THẢ & CHỌN-ĐẶT TRỰC QUAN)
+       ============================================================================ */
+    function renderStage1() {
+      const cfg = GAME_CONFIG.stages.stage1;
+      document.getElementById("stage-num-badge").textContent = "MÀN 1/4";
+      document.getElementById("stage-title-text").textContent = cfg.title;
+
+      if (!appState.stageCompleted[1]) {
+        setMascotFeedback("welcome", "RÔ-BỐT BÍP HƯỚNG DẪN", cfg.welcomeMsg);
+      }
+
+      renderStage1Scene();
+      renderStage1Controls();
+    }
+
+    function renderStage1Scene() {
+      const p = appState.s1Placed;
+      const sel = appState.s1SelectedPart;
+      const highlightClass = sel ? "highlight-target" : "";
+
+      const sceneMount = document.getElementById("svg-scene-mount");
+      sceneMount.innerHTML = `
+        <svg viewBox="0 0 580 360" id="s1-desk-svg" role="img" aria-label="Bàn lắp ráp máy tính với 4 vị trí đặt linh kiện">
+          <!-- Room Background Wall & Decorative STEM Board -->
+          <rect x="20" y="15" width="540" height="230" rx="22" fill="#FFFFFF" opacity="0.7"/>
+          <rect x="45" y="30" width="120" height="65" rx="12" fill="#E3F5FF" stroke="#B3DFFF" stroke-width="2.5"/>
+          <text x="105" y="55" text-anchor="middle" fill="#1E4D7B" font-size="12" font-weight="800">XƯỞNG LẮP RÁP</text>
+          <text x="105" y="75" text-anchor="middle" fill="#3B76AD" font-size="11" font-weight="700">4 Bộ phận cơ bản</text>
+
+          <!-- Desk 3/4 Perspective -->
+          <polygon points="45,235 535,235 565,330 15,330" fill="#FFE0B2" stroke="#D9A36A" stroke-width="4" stroke-linejoin="round"/>
+          <rect x="15" y="325" width="550" height="16" rx="6" fill="#D9A36A"/>
+
+          <!-- SLOT 1: MONITOR (Màn hình) -->
+          <g class="drop-slot ${!p.monitor ? highlightClass : ''}" data-slot="monitor" transform="translate(155, 72)">
+            ${!p.monitor ? `
+              <!-- Silhouette Dropzone -->
+              <rect x="0" y="0" width="205" height="132" rx="18" fill="#E3F4FF" stroke="#4A9EE0" stroke-width="3.5" stroke-dasharray="8 6"/>
+              <rect x="87" y="132" width="30" height="26" fill="#E3F4FF" stroke="#4A9EE0" stroke-width="3" stroke-dasharray="6 4"/>
+              <ellipse cx="102" cy="160" rx="48" ry="10" fill="#E3F4FF" stroke="#4A9EE0" stroke-width="3" stroke-dasharray="6 4"/>
+              <text x="102" y="64" text-anchor="middle" fill="#1F5B8C" font-size="15" font-weight="800">1. Vị trí Màn hình</text>
+              <text x="102" y="86" text-anchor="middle" fill="#467AA6" font-size="12.5" font-weight="700">(Thả hoặc chạm vào đây)</text>
+            ` : `
+              <!-- Placed Full Color Monitor -->
+              <g class="anim-pop anim-glow">
+                <rect x="87" y="130" width="30" height="28" rx="4" fill="#7B93B2" stroke="#34466A" stroke-width="3.5"/>
+                <ellipse cx="102" cy="160" rx="48" ry="10" fill="#9BB1CC" stroke="#34466A" stroke-width="3.5"/>
+                <rect x="0" y="0" width="205" height="135" rx="18" fill="#4F678C" stroke="#34466A" stroke-width="4"/>
+                <rect x="10" y="10" width="185" height="106" rx="10" fill="#A0E2FF"/>
+                <circle cx="48" cy="42" r="15" fill="#FFE082"/>
+                <path d="M14,116 Q65,70 115,116 Z" fill="#5AD2BE"/>
+                <path d="M85,116 Q140,65 191,116 Z" fill="#3BB89F"/>
+                <text x="102" y="129" text-anchor="middle" fill="#FFFFFF" font-size="11.5" font-weight="800">MÀN HÌNH ✓</text>
+              </g>
+            `}
+          </g>
+
+          <!-- SLOT 2: SYSTEM UNIT (Thân máy) -->
+          <g class="drop-slot ${!p.tower ? highlightClass : ''}" data-slot="tower" transform="translate(395, 92)">
+            ${!p.tower ? `
+              <rect x="0" y="0" width="102" height="154" rx="14" fill="#E3F4FF" stroke="#4A9EE0" stroke-width="3.5" stroke-dasharray="8 6"/>
+              <circle cx="51" cy="95" r="14" fill="#FFFFFF" stroke="#4A9EE0" stroke-width="2.5" stroke-dasharray="4 4"/>
+              <text x="51" y="50" text-anchor="middle" fill="#1F5B8C" font-size="14.5" font-weight="800">2. Vị trí</text>
+              <text x="51" y="70" text-anchor="middle" fill="#1F5B8C" font-size="14.5" font-weight="800">Thân máy</text>
+            ` : `
+              <g class="anim-pop anim-glow">
+                <rect x="0" y="0" width="102" height="154" rx="14" fill="#637B9E" stroke="#34466A" stroke-width="4"/>
+                <rect x="10" y="12" width="82" height="130" rx="10" fill="#829AB8"/>
+                <rect x="20" y="24" width="62" height="14" rx="5" fill="#34466A"/>
+                <rect x="20" y="46" width="62" height="8" rx="4" fill="#4A6082"/>
+                <circle cx="51" cy="86" r="15" fill="#5AD2BE" stroke="#FFFFFF" stroke-width="3"/>
+                <circle cx="36" cy="118" r="5" fill="#76FF03"/>
+                <circle cx="54" cy="118" r="5" fill="#FFE082"/>
+                <text x="51" y="148" text-anchor="middle" fill="#FFFFFF" font-size="11.5" font-weight="800">THÂN MÁY ✓</text>
+              </g>
+            `}
+          </g>
+
+          <!-- SLOT 3: KEYBOARD (Bàn phím) -->
+          <g class="drop-slot ${!p.keyboard ? highlightClass : ''}" data-slot="keyboard" transform="translate(135, 252)">
+            ${!p.keyboard ? `
+              <polygon points="14,0 226,0 242,54 0,54" fill="#FFF9E6" stroke="#D98A2B" stroke-width="3.5" stroke-dasharray="8 6"/>
+              <text x="121" y="26" text-anchor="middle" fill="#7A4900" font-size="15" font-weight="800">3. Vị trí Bàn phím</text>
+              <text x="121" y="44" text-anchor="middle" fill="#9E6312" font-size="12" font-weight="700">(Đặt phía trước màn hình)</text>
+            ` : `
+              <g class="anim-pop anim-glow">
+                <polygon points="14,0 226,0 242,54 0,54" fill="#FFFFFF" stroke="#34466A" stroke-width="3.5" stroke-linejoin="round"/>
+                <g fill="#9ED9FF">
+                  <rect x="24" y="8" width="20" height="10" rx="2"/>
+                  <rect x="49" y="8" width="20" height="10" rx="2"/>
+                  <rect x="74" y="8" width="20" height="10" rx="2"/>
+                  <rect x="99" y="8" width="20" height="10" rx="2"/>
+                  <rect x="124" y="8" width="20" height="10" rx="2"/>
+                  <rect x="149" y="8" width="20" height="10" rx="2"/>
+                  <rect x="174" y="8" width="20" height="10" rx="2"/>
+                  <rect x="199" y="8" width="20" height="10" rx="2"/>
+                </g>
+                <g fill="#FFE082">
+                  <rect x="20" y="23" width="24" height="10" rx="2"/>
+                  <rect x="49" y="23" width="22" height="10" rx="2"/>
+                  <rect x="76" y="23" width="22" height="10" rx="2"/>
+                  <rect x="103" y="23" width="22" height="10" rx="2"/>
+                  <rect x="130" y="23" width="22" height="10" rx="2"/>
+                  <rect x="157" y="23" width="22" height="10" rx="2"/>
+                  <rect x="184" y="23" width="36" height="10" rx="2"/>
+                </g>
+                <rect x="64" y="38" width="114" height="10" rx="4" fill="#FD8193"/>
+              </g>
+            `}
+          </g>
+
+          <!-- SLOT 4: MOUSE (Chuột) -->
+          <g class="drop-slot ${!p.mouse ? highlightClass : ''}" data-slot="mouse" transform="translate(405, 255)">
+            ${!p.mouse ? `
+              <ellipse cx="48" cy="28" rx="46" ry="26" fill="#FFF9E6" stroke="#D98A2B" stroke-width="3.5" stroke-dasharray="7 5"/>
+              <text x="48" y="25" text-anchor="middle" fill="#7A4900" font-size="14" font-weight="800">4. Vị trí</text>
+              <text x="48" y="42" text-anchor="middle" fill="#7A4900" font-size="14" font-weight="800">Chuột</text>
+            ` : `
+              <g class="anim-pop anim-glow">
+                <ellipse cx="48" cy="28" rx="44" ry="24" fill="#5AD2BE" opacity="0.4"/>
+                <rect x="28" y="4" width="40" height="46" rx="20" fill="#FFFFFF" stroke="#34466A" stroke-width="3.5"/>
+                <line x1="48" y1="4" x2="48" y2="22" stroke="#34466A" stroke-width="3"/>
+                <line x1="28" y1="22" x2="68" y2="22" stroke="#34466A" stroke-width="2.5"/>
+                <rect x="44.5" y="8" width="7" height="10" rx="3.5" fill="#FD8193"/>
+              </g>
+            `}
+          </g>
+        </svg>
+      `;
+
+      // Bind click-to-place on SVG drop slots
+      sceneMount.querySelectorAll(".drop-slot").forEach((slotEl) => {
+        slotEl.addEventListener("click", () => {
+          const targetSlot = slotEl.getAttribute("data-slot");
+          if (appState.s1SelectedPart) {
+            attemptPlacePartStage1(appState.s1SelectedPart, targetSlot);
+          } else if (!appState.s1Placed[targetSlot]) {
+            sound.playClick();
+            setMascotFeedback("welcome", "GỢI Ý THAO TÁC", "Em hãy chạm chọn một linh kiện ở khay bên phải trước, hoặc kéo trực tiếp linh kiện thả vào vị trí này nhé!");
+          }
+        });
+      });
+    }
+
+    function renderStage1Controls() {
+      const cfg = GAME_CONFIG.stages.stage1;
+      const mount = document.getElementById("stage-task-mount");
+
+      const cardsHTML = appState.s1TrayOrder.map((part) => {
+        const isPlaced = appState.s1Placed[part.id];
+        const isSelected = appState.s1SelectedPart === part.id;
+        return `
+          <div class="part-card ${isPlaced ? 'placed' : ''} ${isSelected ? 'selected' : ''}"
+               data-part="${part.id}"
+               tabindex="${isPlaced ? '-1' : '0'}"
+               role="button"
+               aria-label="Linh kiện ${part.name} ${isPlaced ? 'đã lắp xong' : 'chưa lắp'}">
+            ${getPartIconSVG(part.id)}
+            <div class="part-name">${part.name}</div>
+            <div class="part-status">${isPlaced ? "✅ Đã lắp lên bàn" : (isSelected ? "👉 Đang chọn (chạm vào bàn)" : "Kéo hoặc chạm để chọn")}</div>
+          </div>
+        `;
+      }).join("");
+
+      mount.innerHTML = `
+        <div class="instruction-banner">💡 ${cfg.instruction}</div>
+        <div class="parts-tray">
+          ${cardsHTML}
+        </div>
+      `;
+
+      mount.querySelectorAll(".part-card").forEach((cardEl) => {
+        const partId = cardEl.getAttribute("data-part");
+        if (appState.s1Placed[partId]) return;
+
+        // Keyboard accessibility
+        cardEl.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            selectPartStage1(partId);
+          }
+        });
+
+        // Pointer Drag & Click support
+        setupPointerDrag(cardEl, partId, (droppedSlotId) => {
+          if (droppedSlotId) {
+            attemptPlacePartStage1(partId, droppedSlotId);
+          } else {
+            selectPartStage1(partId);
+          }
+        });
+      });
+    }
+
+    function selectPartStage1(partId) {
+      sound.playClick();
+      if (appState.s1SelectedPart === partId) {
+        appState.s1SelectedPart = null;
+      } else {
+        appState.s1SelectedPart = partId;
+        const partObj = GAME_CONFIG.stages.stage1.parts.find(p => p.id === partId);
+        setMascotFeedback("welcome", "ĐANG CHỌN LINH KIỆN", `Em đang cầm "${partObj.name}". Hãy chạm vào đúng vị trí của nó trên chiếc bàn bên trái nhé!`);
+      }
+      renderStage1Scene();
+      renderStage1Controls();
+    }
+
+    function attemptPlacePartStage1(partId, slotId) {
+      if (appState.s1Placed[partId]) return;
+      const partObj = GAME_CONFIG.stages.stage1.parts.find(p => p.id === partId);
+
+      if (partId === slotId) {
+        // Correct placement
+        appState.s1Placed[partId] = true;
+        appState.s1SelectedPart = null;
+        sound.playCorrect();
+        setMascotFeedback("celebrate", "LẮP ĐÚNG RỒI! 🌟", partObj.correctMsg);
+        renderStage1Scene();
+        renderStage1Controls();
+
+        // Check if all 4 placed
+        const allDone = Object.values(appState.s1Placed).every(Boolean);
+        if (allDone) {
+          setTimeout(() => {
+            markStageComplete(1, GAME_CONFIG.stages.stage1.completeMsg);
+          }, 450);
+        }
+      } else {
+        // Wrong slot
+        sound.playWrong();
+        setMascotFeedback("encourage", "THỬ LẠI NHÉ! 💡", partObj.wrongHint);
+        const cardEl = document.querySelector(`.part-card[data-part="${partId}"]`);
+        if (cardEl) {
+          cardEl.style.animation = "gentleShake 0.36s ease";
+          setTimeout(() => { cardEl.style.animation = ""; }, 400);
+        }
+      }
+    }
+
+    // Universal Pointer Drag Helper for Stage 1 & Stage 4
+    function setupPointerDrag(element, itemPayload, onCompleteCallback) {
+      let startX = 0, startY = 0;
+      let isDragging = false;
+      const ghost = document.getElementById("drag-ghost");
+
+      const onPointerDown = (e) => {
+        if (e.button !== undefined && e.button !== 0) return;
+        startX = e.clientX;
+        startY = e.clientY;
+        isDragging = false;
+
+        const onPointerMove = (moveEvt) => {
+          const dx = moveEvt.clientX - startX;
+          const dy = moveEvt.clientY - startY;
+          if (!isDragging && Math.hypot(dx, dy) > 8) {
+            isDragging = true;
+            ghost.innerHTML = element.innerHTML;
+            ghost.style.display = "flex";
+            ghost.style.flexDirection = "column";
+            ghost.style.alignItems = "center";
+          }
+          if (isDragging) {
+            ghost.style.left = `${moveEvt.clientX}px`;
+            ghost.style.top = `${moveEvt.clientY}px`;
+          }
+        };
+
+        const onPointerUp = (upEvt) => {
+          window.removeEventListener("pointermove", onPointerMove);
+          window.removeEventListener("pointerup", onPointerUp);
+          ghost.style.display = "none";
+
+          if (isDragging) {
+            const dropTarget = document.elementFromPoint(upEvt.clientX, upEvt.clientY);
+            const slotGroup = dropTarget ? dropTarget.closest("[data-slot]") : null;
+            const slotId = slotGroup ? slotGroup.getAttribute("data-slot") : null;
+            onCompleteCallback(slotId);
+          } else {
+            onCompleteCallback(null);
+          }
+        };
+
+        window.addEventListener("pointermove", onPointerMove);
+        window.addEventListener("pointerup", onPointerUp);
+      };
+
+      element.addEventListener("pointerdown", onPointerDown);
+    }
+
+    /* ============================================================================
+       6. MÀN 2: AI LÀM VIỆC GÌ? (GHÉP CẶP THIẾT BỊ & CHỨC NĂNG + HOẠT HỌA TRỰC QUAN)
+       ============================================================================ */
+    function renderStage2() {
+      const cfg = GAME_CONFIG.stages.stage2;
+      document.getElementById("stage-num-badge").textContent = "MÀN 2/4";
+      document.getElementById("stage-title-text").textContent = cfg.title;
+
+      if (!appState.stageCompleted[2]) {
+        setMascotFeedback("welcome", "RÔ-BỐT BÍP HƯỚNG DẪN", cfg.welcomeMsg);
+      }
+
+      renderStage2Scene();
+      renderStage2Controls();
+    }
+
+    function renderStage2Scene() {
+      const m = appState.s2Matched;
+      const sceneMount = document.getElementById("svg-scene-mount");
+
+      sceneMount.innerHTML = `
+        <svg viewBox="0 0 580 360" role="img" aria-label="Mô phỏng hoạt động của các bộ phận máy tính khi ghép đúng chức năng">
+          <rect x="20" y="15" width="540" height="230" rx="22" fill="#FFFFFF" opacity="0.75"/>
+          <polygon points="45,235 535,235 565,330 15,330" fill="#FFE0B2" stroke="#D9A36A" stroke-width="4" stroke-linejoin="round"/>
+          <rect x="15" y="325" width="550" height="16" rx="6" fill="#D9A36A"/>
+
+          <!-- MONITOR WITH DYNAMIC SCREEN ANIMATION -->
+          <g transform="translate(150, 68)">
+            <rect x="87" y="130" width="30" height="28" rx="4" fill="#7B93B2" stroke="#34466A" stroke-width="3.5"/>
+            <ellipse cx="102" cy="160" rx="48" ry="10" fill="#9BB1CC" stroke="#34466A" stroke-width="3.5"/>
+            <rect x="0" y="0" width="205" height="135" rx="18" fill="#4F678C" stroke="#34466A" stroke-width="4"/>
+
+            ${m.monitor ? `
+              <!-- Lit up active display showing information -->
+              <rect x="10" y="10" width="185" height="106" rx="10" fill="#9CE5FF"/>
+              <circle cx="42" cy="36" r="14" fill="#FFE082"/>
+              <path d="M14,116 Q65,70 115,116 Z" fill="#5AD2BE"/>
+              <path d="M85,116 Q140,65 191,116 Z" fill="#3BB89F"/>
+              <rect x="82" y="22" width="100" height="44" rx="8" fill="#FFFFFF" opacity="0.92"/>
+              <text x="132" y="41" text-anchor="middle" fill="#1E3A68" font-size="11" font-weight="900">HIỂN THỊ THÔNG TIN</text>
+              <text x="132" y="57" text-anchor="middle" fill="#0F766E" font-size="11" font-weight="800">Hình ảnh & Chữ ✨</text>
+            ` : `
+              <!-- Standby screen -->
+              <rect x="10" y="10" width="185" height="106" rx="10" fill="#364966"/>
+              <text x="102" y="66" text-anchor="middle" fill="#9BB1CC" font-size="13" font-weight="700">Chờ kích hoạt hiển thị...</text>
+            `}
+
+            <!-- Typing Output from Keyboard if matched -->
+            ${m.keyboard ? `
+              <g class="anim-pop">
+                <rect x="22" y="74" width="118" height="28" rx="8" fill="#FFF8E1" stroke="#FFB300" stroke-width="2"/>
+                <text x="81" y="93" text-anchor="middle" fill="#7A4900" font-size="13" font-weight="900">A B C 1 2 3 ⌨️</text>
+              </g>
+            ` : ``}
+
+            <!-- Moving Arrow Cursor from Mouse if matched -->
+            ${m.mouse ? `
+              <g transform="translate(148, 76)">
+                <polygon points="0,0 0,24 7,18 13,28 17,25 11,15 20,15" fill="#FF4081" stroke="#FFFFFF" stroke-width="2">
+                  <animateTransform attributeName="transform" type="translate" values="0,0; -35,-20; 0,0" dur="2.2s" repeatCount="indefinite"/>
+                </polygon>
+              </g>
+            ` : ``}
+          </g>
+
+          <!-- SYSTEM UNIT WITH PROCESSING GEARS ANIMATION -->
+          <g transform="translate(395, 88)">
+            <rect x="0" y="0" width="104" height="156" rx="14" fill="#637B9E" stroke="#34466A" stroke-width="4"/>
+            <rect x="10" y="12" width="84" height="132" rx="10" fill="#829AB8"/>
+            <rect x="20" y="22" width="64" height="12" rx="4" fill="#34466A"/>
+            ${m.tower ? `
+              <!-- Spinning Processing Gear / Brain Window -->
+              <rect x="18" y="42" width="68" height="62" rx="10" fill="#1E293B" stroke="#5AD2BE" stroke-width="2.5"/>
+              <g class="spin-origin" transform="translate(52, 73)">
+                <circle cx="0" cy="0" r="16" fill="none" stroke="#5AD2BE" stroke-width="5" stroke-dasharray="7 5"/>
+                <circle cx="0" cy="0" r="7" fill="#FFE082"/>
+              </g>
+              <text x="52" y="122" text-anchor="middle" fill="#E6FBF5" font-size="10.5" font-weight="900">ĐANG XỬ LÍ ⚙️</text>
+              <circle cx="36" cy="134" r="5" fill="#76FF03"/>
+              <circle cx="54" cy="134" r="5" fill="#FFE082"/>
+            ` : `
+              <circle cx="52" cy="80" r="15" fill="#4A6082" stroke="#FFFFFF" stroke-width="2.5"/>
+              <text x="52" y="125" text-anchor="middle" fill="#E2E8F0" font-size="11" font-weight="700">Thân máy</text>
+            `}
+          </g>
+
+          <!-- KEYBOARD WITH FLOATING KEYS ANIMATION -->
+          <g transform="translate(135, 250)">
+            <polygon points="14,0 226,0 242,54 0,54" fill="#FFFFFF" stroke="${m.keyboard ? '#3BB89F' : '#34466A'}" stroke-width="3.5" stroke-linejoin="round"/>
+            <g fill="${m.keyboard ? '#5AD2BE' : '#9ED9FF'}">
+              <rect x="24" y="8" width="20" height="10" rx="2"/>
+              <rect x="49" y="8" width="20" height="10" rx="2"/>
+              <rect x="74" y="8" width="20" height="10" rx="2"/>
+              <rect x="99" y="8" width="20" height="10" rx="2"/>
+              <rect x="124" y="8" width="20" height="10" rx="2"/>
+              <rect x="149" y="8" width="20" height="10" rx="2"/>
+              <rect x="174" y="8" width="20" height="10" rx="2"/>
+              <rect x="199" y="8" width="20" height="10" rx="2"/>
+            </g>
+            <rect x="64" y="36" width="114" height="10" rx="4" fill="#FD8193"/>
+            ${m.keyboard ? `
+              <g class="anim-pop">
+                <circle cx="65" cy="-12" r="12" fill="#FFE082" stroke="#D97706" stroke-width="2"/>
+                <text x="65" y="-8" text-anchor="middle" fill="#5C4300" font-size="12" font-weight="900">A</text>
+                <circle cx="115" cy="-16" r="12" fill="#9ED9FF" stroke="#1D4ED8" stroke-width="2"/>
+                <text x="115" y="-12" text-anchor="middle" fill="#1E3A8A" font-size="12" font-weight="900">5</text>
+              </g>
+            ` : ``}
+          </g>
+
+          <!-- MOUSE WITH MOTION RINGS -->
+          <g transform="translate(405, 255)">
+            <ellipse cx="48" cy="28" rx="44" ry="24" fill="${m.mouse ? '#5AD2BE' : '#75DCCA'}" opacity="0.4"/>
+            <rect x="28" y="4" width="40" height="46" rx="20" fill="#FFFFFF" stroke="#34466A" stroke-width="3.5"/>
+            <line x1="48" y1="4" x2="48" y2="22" stroke="#34466A" stroke-width="3"/>
+            <line x1="28" y1="22" x2="68" y2="22" stroke="#34466A" stroke-width="2.5"/>
+            <rect x="44.5" y="8" width="7" height="10" rx="3.5" fill="#FD8193"/>
+            ${m.mouse ? `
+              <path d="M16,18 Q6,28 16,38" fill="none" stroke="#FF4081" stroke-width="3" stroke-linecap="round"/>
+              <path d="M80,18 Q90,28 80,38" fill="none" stroke="#FF4081" stroke-width="3" stroke-linecap="round"/>
+            ` : ``}
+          </g>
+        </svg>
+      `;
+    }
+
+    function renderStage2Controls() {
+      const cfg = GAME_CONFIG.stages.stage2;
+      const mount = document.getElementById("stage-task-mount");
+
+      const leftButtons = cfg.pairs.map((item) => {
+        const isMatched = appState.s2Matched[item.id];
+        const isSelected = appState.s2SelectedDevice === item.id;
+        return `
+          <button type="button"
+                  class="match-btn ${isMatched ? 'matched' : ''} ${isSelected ? 'selected' : ''}"
+                  data-device="${item.id}"
+                  ${isMatched ? 'disabled' : ''}>
+            <div class="match-mini-icon">${getPartIconSVG(item.id)}</div>
+            <div>
+              <div>${item.deviceName}</div>
+              <div style="font-size: 12px; color: var(--text-muted);">${isMatched ? '✅ Đã ghép đúng' : 'Chạm để chọn'}</div>
+            </div>
+          </button>
+        `;
+      }).join("");
+
+      const rightButtons = appState.s2FuncOrder.map((item) => {
+        const isMatched = appState.s2Matched[item.id];
+        const isSelected = appState.s2SelectedFunc === item.id;
+        return `
+          <button type="button"
+                  class="match-btn ${isMatched ? 'matched' : ''} ${isSelected ? 'selected' : ''}"
+                  data-func="${item.id}"
+                  ${isMatched ? 'disabled' : ''}>
+            <span>${isMatched ? '✅ ' : '🔹 '}${item.functionText}</span>
+          </button>
+        `;
+      }).join("");
+
+      mount.innerHTML = `
+        <div class="instruction-banner">💡 ${cfg.instruction}</div>
+        <div class="match-columns">
+          <div class="match-col">
+            <div class="match-col-header">BỘ PHẬN MÁY TÍNH</div>
+            ${leftButtons}
+          </div>
+          <div class="match-col">
+            <div class="match-col-header">CHỨC NĂNG TƯƠNG ỨNG</div>
+            ${rightButtons}
+          </div>
+        </div>
+      `;
+
+      mount.querySelectorAll("[data-device]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          sound.playClick();
+          const devId = btn.getAttribute("data-device");
+          appState.s2SelectedDevice = appState.s2SelectedDevice === devId ? null : devId;
+          checkStage2Match();
+        });
+      });
+
+      mount.querySelectorAll("[data-func]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          sound.playClick();
+          const funcId = btn.getAttribute("data-func");
+          appState.s2SelectedFunc = appState.s2SelectedFunc === funcId ? null : funcId;
+          checkStage2Match();
+        });
+      });
+    }
+
+    function checkStage2Match() {
+      const dev = appState.s2SelectedDevice;
+      const fn = appState.s2SelectedFunc;
+
+      if (dev && fn) {
+        const pairObj = GAME_CONFIG.stages.stage2.pairs.find(p => p.id === dev);
+        if (dev === fn) {
+          // Correct match
+          appState.s2Matched[dev] = true;
+          appState.s2SelectedDevice = null;
+          appState.s2SelectedFunc = null;
+          sound.playCorrect();
+          setMascotFeedback("celebrate", "GHÉP CẶP CHÍNH XÁC! 🌟", pairObj.correctMsg);
+          renderStage2Scene();
+          renderStage2Controls();
+
+          const allMatched = Object.values(appState.s2Matched).every(Boolean);
+          if (allMatched) {
+            setTimeout(() => {
+              markStageComplete(2, GAME_CONFIG.stages.stage2.completeMsg);
+            }, 450);
+          }
+        } else {
+          // Wrong match
+          appState.s2SelectedFunc = null;
+          sound.playWrong();
+          setMascotFeedback("encourage", "CHƯA KHỚP RỒI! 💡", pairObj.wrongHint);
+          renderStage2Controls();
+        }
+      } else {
+        renderStage2Controls();
+      }
+    }
+
+    /* ============================================================================
+       7. MÀN 3: NHÀ KHÁM PHÁ MÁY TÍNH (3 HÌNH MINH HỌA RIÊNG BIỆT CHO 3 THIẾT BỊ)
+       ============================================================================ */
+    function renderStage3() {
+      const cfg = GAME_CONFIG.stages.stage3;
+      document.getElementById("stage-num-badge").textContent = "MÀN 3/4";
+      document.getElementById("stage-title-text").textContent = cfg.title;
+
+      if (!appState.stageCompleted[3] && !appState.s3Solved.some(Boolean)) {
+        setMascotFeedback("welcome", "RÔ-BỐT BÍP HƯỚNG DẪN", cfg.welcomeMsg);
+      }
+
+      renderStage3Scene();
+      renderStage3Controls();
+    }
+
+    function renderStage3Scene() {
+      const idx = appState.s3CurrentIdx;
+      const isSolved = appState.s3Solved[idx];
+      const sceneMount = document.getElementById("svg-scene-mount");
+
+      if (idx === 0) {
+        // SITUATION 1: LAPTOP (MÁY TÍNH XÁCH TAY)
+        sceneMount.innerHTML = `
+          <svg viewBox="0 0 560 350" role="img" aria-label="Hình minh họa Máy tính xách tay có màn hình và bàn phím gắn liền, có vùng cảm ứng chuột">
+            <rect x="25" y="15" width="510" height="315" rx="24" fill="#FFFFFF" opacity="0.75"/>
+            <text x="280" y="45" text-anchor="middle" fill="#1E3A68" font-size="18" font-weight="900">MÁY TÍNH XÁCH TAY</text>
+
+            <!-- Clamshell Laptop Top Screen -->
+            <g transform="translate(135, 62)">
+              <rect x="20" y="0" width="250" height="148" rx="14" fill="#3B4F6B" stroke="#233247" stroke-width="4"/>
+              <rect x="30" y="10" width="230" height="126" rx="8" fill="#A0E4FF"/>
+              <circle cx="145" cy="5" r="3" fill="#5AD2BE"/>
+              <!-- Screen Illustration -->
+              <circle cx="70" cy="42" r="16" fill="#FFE082"/>
+              <path d="M35,136 Q95,82 155,136 Z" fill="#5AD2BE"/>
+              <path d="M120,136 Q185,76 255,136 Z" fill="#3BB89F"/>
+              <!-- Cursor on Laptop Screen -->
+              <polygon points="165,58 165,80 172,75 177,84 181,81 176,72 184,72" fill="#FF4081" stroke="#FFFFFF" stroke-width="1.5"/>
+
+              <!-- Hinge (Khớp gập gắn liền) -->
+              <rect x="85" y="146" width="120" height="8" rx="4" fill="#233247"/>
+
+              <!-- Attached Bottom Keyboard Deck (Bàn phím gắn liền + Vùng cảm ứng) -->
+              <polygon points="20,152 270,152 305,232 -15,232" fill="#D5E3F0" stroke="#233247" stroke-width="4" stroke-linejoin="round"/>
+              <!-- Physical Keys -->
+              <polygon points="26,160 264,160 278,198 12,198" fill="#475D7A"/>
+              <g fill="#FFFFFF" opacity="0.9">
+                <rect x="32" y="165" width="22" height="7" rx="1.5"/>
+                <rect x="58" y="165" width="22" height="7" rx="1.5"/>
+                <rect x="84" y="165" width="22" height="7" rx="1.5"/>
+                <rect x="110" y="165" width="22" height="7" rx="1.5"/>
+                <rect x="136" y="165" width="22" height="7" rx="1.5"/>
+                <rect x="162" y="165" width="22" height="7" rx="1.5"/>
+                <rect x="188" y="165" width="22" height="7" rx="1.5"/>
+                <rect x="214" y="165" width="38" height="7" rx="1.5"/>
+                <rect x="85" y="186" width="115" height="8" rx="2" fill="#FFE082"/>
+              </g>
+
+              <!-- Touchpad (Vùng cảm ứng chuột) -->
+              <polygon points="112,203 178,203 184,226 106,226" fill="${isSolved ? '#5AD2BE' : '#9ED9FF'}" stroke="#233247" stroke-width="2.5"/>
+            </g>
+
+            <!-- Callout Labels -->
+            <g transform="translate(26, 125)">
+              <rect x="0" y="0" width="115" height="44" rx="10" fill="#FFF8E1" stroke="#FFB300" stroke-width="2"/>
+              <text x="57" y="19" text-anchor="middle" fill="#5C4300" font-size="11.5" font-weight="800">Có thể gấp gọn</text>
+              <text x="57" y="35" text-anchor="middle" fill="#7A4900" font-size="11" font-weight="700">Màn hình + Phím liền</text>
+            </g>
+
+            <g transform="translate(395, 245)">
+              <rect x="0" y="0" width="135" height="44" rx="10" fill="#E6FBF5" stroke="#3BB89F" stroke-width="2"/>
+              <text x="67" y="19" text-anchor="middle" fill="#0E6251" font-size="11.5" font-weight="800">Vùng cảm ứng</text>
+              <text x="67" y="35" text-anchor="middle" fill="#0E6251" font-size="11" font-weight="700">Điều khiển con trỏ</text>
+              <line x1="0" y1="22" x2="-78" y2="30" stroke="#3BB89F" stroke-width="2.5" stroke-dasharray="4 3"/>
+            </g>
+          </svg>
+        `;
+      } else if (idx === 1) {
+        // SITUATION 2: TABLET (MÁY TÍNH BẢNG)
+        sceneMount.innerHTML = `
+          <svg viewBox="0 0 560 350" role="img" aria-label="Hình minh họa Máy tính bảng với màn hình cảm ứng và bàn phím ảo hiện trên màn hình">
+            <rect x="25" y="15" width="510" height="315" rx="24" fill="#FFFFFF" opacity="0.75"/>
+            <text x="280" y="45" text-anchor="middle" fill="#1E3A68" font-size="18" font-weight="900">MÁY TÍNH BẢNG</text>
+
+            <!-- Sleek Horizontal Tablet Frame -->
+            <g transform="translate(115, 64)">
+              <rect x="0" y="0" width="330" height="215" rx="24" fill="#34466A" stroke="#1E293B" stroke-width="4"/>
+              <rect x="14" y="14" width="302" height="187" rx="14" fill="#EBF8FF"/>
+              <circle cx="7" cy="107" r="3.5" fill="#7CC8FF"/>
+
+              <!-- Top App Area on Tablet -->
+              <rect x="26" y="24" width="278" height="72" rx="10" fill="#FFFFFF" stroke="#BDE7FF" stroke-width="2"/>
+              <text x="42" y="52" fill="#1E3A68" font-size="15" font-weight="800">Em học Tin học lớp 3 ✏️</text>
+              <text x="42" y="76" fill="#3B82F6" font-size="13.5" font-weight="700">Chạm tay lên màn hình cảm ứng!</text>
+
+              <!-- On-Screen Virtual Keyboard (Bàn phím ảo trên màn hình) -->
+              <rect x="24" y="106" width="282" height="86" rx="10" fill="#D5ECFF" stroke="#6CC2FF" stroke-width="2.5"/>
+              <text x="165" y="123" text-anchor="middle" fill="#1E4D7B" font-size="11.5" font-weight="900">⌨️ BÀN PHÍM ẢO TRÊN MÀN HÌNH</text>
+              <g fill="#FFFFFF" stroke="#7CC8FF" stroke-width="1.5">
+                <rect x="36" y="130" width="26" height="18" rx="4"/>
+                <rect x="68" y="130" width="26" height="18" rx="4"/>
+                <rect x="100" y="130" width="26" height="18" rx="4"/>
+                <rect x="132" y="130" width="26" height="18" rx="4"/>
+                <rect x="164" y="130" width="26" height="18" rx="4"/>
+                <rect x="196" y="130" width="26" height="18" rx="4"/>
+                <rect x="228" y="130" width="26" height="18" rx="4"/>
+                <rect x="260" y="130" width="34" height="18" rx="4"/>
+                <rect x="92" y="156" width="146" height="20" rx="5" fill="#FFE082"/>
+              </g>
+              <text x="49" y="143" text-anchor="middle" fill="#1E3A68" font-size="11" font-weight="800">Q</text>
+              <text x="81" y="143" text-anchor="middle" fill="#1E3A68" font-size="11" font-weight="800">W</text>
+              <text x="113" y="143" text-anchor="middle" fill="#1E3A68" font-size="11" font-weight="800">E</text>
+              <text x="145" y="143" text-anchor="middle" fill="#1E3A68" font-size="11" font-weight="800">R</text>
+              <text x="177" y="143" text-anchor="middle" fill="#1E3A68" font-size="11" font-weight="800">T</text>
+              <text x="209" y="143" text-anchor="middle" fill="#1E3A68" font-size="11" font-weight="800">Y</text>
+
+              <!-- Touch Ripple & Cute Hand Finger Tapping -->
+              <circle cx="241" cy="140" r="16" fill="none" stroke="#FF4081" stroke-width="3" stroke-dasharray="4 3"/>
+              <g transform="translate(235, 138)">
+                <rect x="0" y="0" width="18" height="36" rx="9" fill="#FFCCBC" stroke="#8D6E63" stroke-width="2.5"/>
+                <ellipse cx="22" cy="36" rx="22" ry="18" fill="#FFCCBC" stroke="#8D6E63" stroke-width="2.5"/>
+              </g>
+            </g>
+          </svg>
+        `;
+      } else {
+        // SITUATION 3: SMARTPHONE (ĐIỆN THOẠI THÔNG MINH)
+        sceneMount.innerHTML = `
+          <svg viewBox="0 0 560 350" role="img" aria-label="Hình minh họa Điện thoại thông minh nhỏ gọn cầm trên tay, có màn hình cảm ứng và bàn phím ảo">
+            <rect x="25" y="15" width="510" height="315" rx="24" fill="#FFFFFF" opacity="0.75"/>
+            <text x="280" y="45" text-anchor="middle" fill="#1E3A68" font-size="18" font-weight="900">ĐIỆN THOẠI THÔNG MINH</text>
+
+            <!-- Hand Holding Compact Vertical Smartphone -->
+            <g transform="translate(205, 56)">
+              <!-- Left Palm & Fingers -->
+              <ellipse cx="-8" cy="120" rx="18" ry="10" fill="#FFCCBC" stroke="#8D6E63" stroke-width="2.5"/>
+              <ellipse cx="-8" cy="150" rx="18" ry="10" fill="#FFCCBC" stroke="#8D6E63" stroke-width="2.5"/>
+              <ellipse cx="-8" cy="180" rx="18" ry="10" fill="#FFCCBC" stroke="#8D6E63" stroke-width="2.5"/>
+
+              <!-- Smartphone Vertical Body -->
+              <rect x="0" y="0" width="146" height="248" rx="24" fill="#2B3B5C" stroke="#1E293B" stroke-width="4"/>
+              <rect x="9" y="12" width="128" height="224" rx="16" fill="#E6F7FF"/>
+              <!-- Speaker notch -->
+              <rect x="53" y="18" width="40" height="5" rx="2.5" fill="#34466A"/>
+
+              <!-- App Icons on Smartphone -->
+              <rect x="20" y="34" width="30" height="30" rx="8" fill="#5AD2BE"/>
+              <rect x="58" y="34" width="30" height="30" rx="8" fill="#FFE082"/>
+              <rect x="96" y="34" width="30" height="30" rx="8" fill="#FF8598"/>
+
+              <!-- Search / Message Box -->
+              <rect x="18" y="76" width="110" height="46" rx="10" fill="#FFFFFF" stroke="#9ED9FF" stroke-width="2"/>
+              <text x="73" y="96" text-anchor="middle" fill="#1E3A68" font-size="11" font-weight="800">Xin chào Bíp! 👋</text>
+              <text x="73" y="112" text-anchor="middle" fill="#0F766E" font-size="10" font-weight="700">Màn hình cảm ứng</text>
+
+              <!-- Compact Virtual Keyboard at Bottom of Phone -->
+              <rect x="14" y="138" width="118" height="86" rx="10" fill="#CFEBFD" stroke="#7CC8FF" stroke-width="2"/>
+              <text x="73" y="153" text-anchor="middle" fill="#1E4D7B" font-size="9.5" font-weight="900">BÀN PHÍM ẢO</text>
+              <g fill="#FFFFFF">
+                <rect x="20" y="160" width="18" height="14" rx="3"/>
+                <rect x="42" y="160" width="18" height="14" rx="3"/>
+                <rect x="64" y="160" width="18" height="14" rx="3"/>
+                <rect x="86" y="160" width="18" height="14" rx="3"/>
+                <rect x="108" y="160" width="18" height="14" rx="3"/>
+                <rect x="34" y="180" width="78" height="14" rx="4" fill="#FFE082"/>
+              </g>
+
+              <!-- Thumb touching screen -->
+              <path d="M146,185 Q115,165 104,185 Q98,200 146,215 Z" fill="#FFCCBC" stroke="#8D6E63" stroke-width="2.5"/>
+              <circle cx="104" cy="184" r="12" fill="none" stroke="#FF4081" stroke-width="2.5" stroke-dasharray="3 3"/>
+            </g>
+
+            <!-- Feature Callout -->
+            <g transform="translate(38, 120)">
+              <rect x="0" y="0" width="142" height="58" rx="12" fill="#FFF8E1" stroke="#FFB300" stroke-width="2"/>
+              <text x="71" y="22" text-anchor="middle" fill="#5C4300" font-size="12" font-weight="800">Nhỏ gọn vừa bàn tay</text>
+              <text x="71" y="40" text-anchor="middle" fill="#7A4900" font-size="11" font-weight="700">Chạm cảm ứng & Phím ảo</text>
+            </g>
+          </svg>
+        `;
+      }
+    }
+
+    function renderStage3Controls() {
+      const cfg = GAME_CONFIG.stages.stage3;
+      const idx = appState.s3CurrentIdx;
+      const mission = cfg.missions[idx];
+      const isSolved = appState.s3Solved[idx];
+      const mount = document.getElementById("stage-task-mount");
+
+      const dotsHTML = cfg.missions.map((m, i) => {
+        const cls = i === idx ? "active" : (appState.s3Solved[i] ? "completed" : "");
+        return `<button type="button" class="step-dot ${cls}" data-m-idx="${i}">${appState.s3Solved[i] ? '✅ ' : ''}${m.tabLabel}</button>`;
+      }).join("");
+
+      const optionsHTML = mission.options.map((opt, oIdx) => {
+        const solvedClass = isSolved && opt.isCorrect ? "correct-choice" : "";
+        return `
+          <button type="button"
+                  class="option-btn ${solvedClass}"
+                  data-opt="${oIdx}"
+                  ${isSolved ? "disabled" : ""}>
+            <span style="font-size: 18px;">${isSolved && opt.isCorrect ? "✅" : "🔹"}</span>
+            <span>${opt.text}</span>
+          </button>
+        `;
+      }).join("");
+
+      mount.innerHTML = `
+        <div class="scenario-progress-dots">${dotsHTML}</div>
+        <div class="question-card">
+          <div class="question-title">🔍 ${mission.question}</div>
+          <div class="options-list">
+            ${optionsHTML}
+          </div>
+        </div>
+      `;
+
+      mount.querySelectorAll("[data-m-idx]").forEach((dotBtn) => {
+        dotBtn.addEventListener("click", () => {
+          sound.playClick();
+          appState.s3CurrentIdx = Number(dotBtn.getAttribute("data-m-idx"));
+          renderStage3Scene();
+          renderStage3Controls();
+        });
+      });
+
+      mount.querySelectorAll("[data-opt]").forEach((optBtn) => {
+        optBtn.addEventListener("click", () => {
+          const oIdx = Number(optBtn.getAttribute("data-opt"));
+          const chosen = mission.options[oIdx];
+
+          if (chosen.isCorrect) {
+            appState.s3Solved[idx] = true;
+            sound.playCorrect();
+            setMascotFeedback("celebrate", "KHÁM PHÁ CHÍNH XÁC! 🌟", mission.correctMsg);
+            renderStage3Scene();
+            renderStage3Controls();
+
+            if (appState.s3Solved.every(Boolean)) {
+              setTimeout(() => {
+                markStageComplete(3, cfg.completeMsg);
+              }, 450);
+            } else {
+              // Automatically advance to next unsolved device after short delay
+              setTimeout(() => {
+                const nextUnsolved = appState.s3Solved.findIndex(v => !v);
+                if (nextUnsolved !== -1) {
+                  appState.s3CurrentIdx = nextUnsolved;
+                  renderStage3Scene();
+                  renderStage3Controls();
+                }
+              }, 1500);
+            }
+          } else {
+            sound.playWrong();
+            optBtn.classList.add("wrong-choice");
+            setMascotFeedback("encourage", "QUAN SÁT LẠI HÌNH NHÉ! 💡", chosen.hint);
+            setTimeout(() => optBtn.classList.remove("wrong-choice"), 450);
+          }
+        });
+      });
+    }
+
+    /* ============================================================================
+       8. MÀN 4: BẢO VỆ PHÒNG MÁY AN TOÀN (4 TÌNH HUỐNG MINH HỌA TRỰC QUAN)
+       ============================================================================ */
+    function renderStage4() {
+      const cfg = GAME_CONFIG.stages.stage4;
+      document.getElementById("stage-num-badge").textContent = "MÀN 4/4";
+      document.getElementById("stage-title-text").textContent = cfg.title;
+
+      if (!appState.stageCompleted[4] && !appState.s4Solved.some(Boolean)) {
+        setMascotFeedback("welcome", "RÔ-BỐT BÍP HƯỚNG DẪN", cfg.welcomeMsg);
+      }
+
+      renderStage4Scene();
+      renderStage4Controls();
+    }
+
+    function renderStage4Scene() {
+      const idx = appState.s4CurrentIdx;
+      const solved = appState.s4Solved[idx];
+      const sceneMount = document.getElementById("svg-scene-mount");
+
+      let artwork = "";
+      if (idx === 0) {
+        // SCENARIO 1: FRAYED POWER WIRE (DÂY ĐIỆN HỞ)
+        artwork = `
+          <rect x="30" y="20" width="500" height="310" rx="24" fill="#FFF8F8" stroke="#FFC2CD" stroke-width="3"/>
+          <!-- Wall Socket -->
+          <rect x="75" y="95" width="76" height="76" rx="12" fill="#FFFFFF" stroke="#34466A" stroke-width="3.5"/>
+          <circle cx="98" cy="133" r="6" fill="#34466A"/>
+          <circle cx="128" cy="133" r="6" fill="#34466A"/>
+          <!-- Power Cord with Frayed Insulation -->
+          <path d="M113,150 Q180,235 280,205 Q360,180 430,220" fill="none" stroke="#34466A" stroke-width="10" stroke-linecap="round"/>
+          <!-- Exposed Copper & Sparks -->
+          <circle cx="255" cy="208" r="24" fill="#FFF3CD" stroke="#F59E0B" stroke-width="3"/>
+          <path d="M245,208 L265,208" stroke="#DC2626" stroke-width="6"/>
+          <polygon points="255,172 248,192 260,192 252,210 270,188 258,188" fill="#F59E0B"/>
+          <text x="255" y="252" text-anchor="middle" fill="#B91C1C" font-size="14" font-weight="900">⚡ DÂY ĐIỆN BỊ HỞ VỎ BỌC!</text>
+
+          ${!solved ? `
+            <!-- Hand reaching dangerously -->
+            <g transform="translate(320, 145)">
+              <rect x="0" y="0" width="80" height="28" rx="14" fill="#FFCCBC" stroke="#8D6E63" stroke-width="3"/>
+              <text x="40" y="-10" text-anchor="middle" fill="#991B1B" font-size="13" font-weight="800">Định chạm tay vào?</text>
+            </g>
+          ` : `
+            <!-- Safety Shield & Call Adult Badge -->
+            <g class="anim-pop" transform="translate(290, 95)">
+              <rect x="0" y="0" width="205" height="68" rx="16" fill="#FEE2E2" stroke="#DC2626" stroke-width="3"/>
+              <text x="102" y="28" text-anchor="middle" fill="#991B1B" font-size="14" font-weight="900">⚠️ KHÔNG NÊN CHẠM VÀO!</text>
+              <text x="102" y="50" text-anchor="middle" fill="#7F1D1D" font-size="12" font-weight="800">Báo ngay cho người lớn hỗ trợ</text>
+            </g>
+          `}
+        `;
+      } else if (idx === 1) {
+        // SCENARIO 2: WIPING DUST WITH DRY SOFT CLOTH (DÙNG KHĂN KHÔ LAU BỤI NHẸ)
+        artwork = `
+          <rect x="30" y="20" width="500" height="310" rx="24" fill="#F2FBF9" stroke="#9CE5D6" stroke-width="3"/>
+          <!-- Unplugged Monitor -->
+          <g transform="translate(145, 70)">
+            <rect x="85" y="130" width="30" height="28" fill="#7B93B2" stroke="#34466A" stroke-width="3.5"/>
+            <ellipse cx="100" cy="160" rx="48" ry="10" fill="#9BB1CC" stroke="#34466A" stroke-width="3.5"/>
+            <rect x="0" y="0" width="200" height="135" rx="18" fill="#4F678C" stroke="#34466A" stroke-width="4"/>
+            <rect x="10" y="10" width="180" height="106" rx="10" fill="#BAE6FD"/>
+            <!-- Sparkles of cleanliness -->
+            <path d="M45,35 L49,45 L59,49 L49,53 L45,63 L41,53 L31,49 L41,45 Z" fill="#FFFFFF"/>
+            <path d="M145,75 L148,83 L156,86 L148,89 L145,97 L142,89 L134,86 L142,83 Z" fill="#FFFFFF"/>
+            <!-- Soft Dry Microfiber Cloth -->
+            <g transform="translate(82, 34)">
+              <path d="M0,10 Q25,0 50,10 L56,48 Q28,58 0,48 Z" fill="#FFE082" stroke="#D97706" stroke-width="3"/>
+              <text x="28" y="34" text-anchor="middle" fill="#5C4300" font-size="11" font-weight="900">KHĂN KHÔ</text>
+            </g>
+          </g>
+          <text x="280" y="275" text-anchor="middle" fill="#0F766E" font-size="14.5" font-weight="900">✨ Dùng khăn khô và mềm lau nhẹ bụi bẩn khi máy đã tắt</text>
+          ${solved ? `
+            <g class="anim-pop" transform="translate(365, 75)">
+              <rect x="0" y="0" width="145" height="54" rx="14" fill="#D1FAE5" stroke="#10B981" stroke-width="3"/>
+              <text x="72" y="33" text-anchor="middle" fill="#065F46" font-size="15" font-weight="900">✅ NÊN LÀM!</text>
+            </g>
+          ` : ``}
+        `;
+      } else if (idx === 2) {
+        // SCENARIO 3: CUP OF WATER NEXT TO KEYBOARD (CỐC NƯỚC CẠNH BÀN PHÍM)
+        artwork = `
+          <rect x="30" y="20" width="500" height="310" rx="24" fill="#FFF8F8" stroke="#FFC2CD" stroke-width="3"/>
+          <polygon points="55,210 505,210 525,295 35,295" fill="#FFE0B2" stroke="#D9A36A" stroke-width="3.5"/>
+          <!-- Keyboard on Desk -->
+          <g transform="translate(95, 225)">
+            <polygon points="12,0 218,0 232,52 0,52" fill="#FFFFFF" stroke="#34466A" stroke-width="3.5"/>
+            <rect x="24" y="10" width="184" height="12" rx="3" fill="#9ED9FF"/>
+            <rect x="60" y="32" width="110" height="10" rx="3" fill="#FD8193"/>
+          </g>
+
+          <!-- Tilting Cup of Water Right Next to Keyboard -->
+          <g transform="translate(355, 155) rotate(-14)">
+            <polygon points="8,0 56,0 48,74 16,74" fill="#E0F2FE" stroke="#0284C7" stroke-width="3.5"/>
+            <path d="M11,22 Q32,16 53,22 L47,71 L17,71 Z" fill="#38BDF8" opacity="0.8"/>
+            <!-- Splashing Water Droplets toward Keyboard -->
+            <circle cx="-12" cy="18" r="6" fill="#0284C7"/>
+            <circle cx="-26" cy="34" r="5" fill="#0284C7"/>
+            <circle cx="-18" cy="48" r="4" fill="#0284C7"/>
+          </g>
+          <text x="280" y="110" text-anchor="middle" fill="#B91C1C" font-size="15" font-weight="900">💧 Đặt cốc nước đầy ngay sát bàn phím máy tính</text>
+
+          ${solved ? `
+            <g class="anim-pop" transform="translate(155, 45)">
+              <rect x="0" y="0" width="250" height="50" rx="14" fill="#FEE2E2" stroke="#DC2626" stroke-width="3"/>
+              <text x="125" y="31" text-anchor="middle" fill="#991B1B" font-size="15" font-weight="900">⚠️ KHÔNG NÊN ĐỂ NƯỚC GẦN MÁY!</text>
+            </g>
+          ` : ``}
+        `;
+      } else {
+        // SCENARIO 4: ASKING ADULT FOR POWER SOURCE HELP (NHỜ NGƯỜI LỚN HỖ TRỢ NGUỒN ĐIỆN)
+        artwork = `
+          <rect x="30" y="20" width="500" height="310" rx="24" fill="#F2FBF9" stroke="#9CE5D6" stroke-width="3"/>
+          <!-- Adult / Teacher Figure Safely Checking Outlet -->
+          <g transform="translate(120, 78)">
+            <circle cx="55" cy="36" r="26" fill="#FFCCBC" stroke="#34466A" stroke-width="3.5"/>
+            <path d="M30,30 Q55,8 80,30" fill="#4E342E"/>
+            <circle cx="46" cy="36" r="3" fill="#34466A"/>
+            <circle cx="64" cy="36" r="3" fill="#34466A"/>
+            <path d="M46,47 Q55,54 64,47" fill="none" stroke="#34466A" stroke-width="3" stroke-linecap="round"/>
+            <rect x="22" y="66" width="66" height="90" rx="18" fill="#5AD2BE" stroke="#34466A" stroke-width="3.5"/>
+            <text x="55" y="115" text-anchor="middle" fill="#FFFFFF" font-size="12" font-weight="900">NGƯỜI LỚN</text>
+          </g>
+
+          <!-- Polite Student Standing Back Safely -->
+          <g transform="translate(310, 108)">
+            <circle cx="45" cy="30" r="22" fill="#FFCCBC" stroke="#34466A" stroke-width="3.5"/>
+            <circle cx="38" cy="28" r="3" fill="#34466A"/>
+            <circle cx="52" cy="28" r="3" fill="#34466A"/>
+            <path d="M38,38 Q45,44 52,38" fill="none" stroke="#34466A" stroke-width="2.5" stroke-linecap="round"/>
+            <rect x="18" y="55" width="54" height="72" rx="16" fill="#FFE082" stroke="#34466A" stroke-width="3.5"/>
+            <text x="45" y="95" text-anchor="middle" fill="#5C4300" font-size="11.5" font-weight="900">HỌC SINH</text>
+          </g>
+
+          <!-- Speech Bubble from Student -->
+          <rect x="235" y="42" width="255" height="44" rx="12" fill="#FFFFFF" stroke="#5AD2BE" stroke-width="2.5"/>
+          <text x="362" y="69" text-anchor="middle" fill="#0F766E" font-size="12.5" font-weight="800">"Cô ơi, cắm giúp em nguồn điện máy tính ạ!"</text>
+
+          ${solved ? `
+            <g class="anim-pop" transform="translate(175, 255)">
+              <rect x="0" y="0" width="210" height="48" rx="14" fill="#D1FAE5" stroke="#10B981" stroke-width="3"/>
+              <text x="105" y="30" text-anchor="middle" fill="#065F46" font-size="15" font-weight="900">✅ NÊN LÀM • RẤT AN TOÀN!</text>
+            </g>
+          ` : ``}
+        `;
+      }
+
+      sceneMount.innerHTML = `
+        <svg viewBox="0 0 560 350" class="drop-slot" data-slot="SCENE_DROP" role="img" aria-label="Tranh tình huống an toàn phòng máy">
+          ${artwork}
+        </svg>
+      `;
+
+      // Allow clicking on scene if stamp is pre-selected
+      const svgDrop = sceneMount.querySelector("[data-slot='SCENE_DROP']");
+      svgDrop.addEventListener("click", () => {
+        if (appState.s4SelectedStamp) {
+          evaluateStage4Answer(appState.s4SelectedStamp);
+        }
+      });
+    }
+
+    function renderStage4Controls() {
+      const cfg = GAME_CONFIG.stages.stage4;
+      const idx = appState.s4CurrentIdx;
+      const sc = cfg.scenarios[idx];
+      const isSolved = appState.s4Solved[idx];
+      const mount = document.getElementById("stage-task-mount");
+
+      const dotsHTML = cfg.scenarios.map((item, i) => {
+        const cls = i === idx ? "active" : (appState.s4Solved[i] ? "completed" : "");
+        return `<button type="button" class="step-dot ${cls}" data-s4-idx="${i}">${appState.s4Solved[i] ? '✅ ' : ''}${item.tabLabel}</button>`;
+      }).join("");
+
+      mount.innerHTML = `
+        <div class="scenario-progress-dots">${dotsHTML}</div>
+        <div class="question-card">
+          <div class="question-title">${sc.title}</div>
+          <p style="font-size: 15.5px; font-weight: 700; color: var(--text-main);">${sc.desc}</p>
+          <div class="safety-stamps-grid">
+            <button type="button"
+                    class="stamp-card stamp-should"
+                    id="stamp-should"
+                    ${isSolved ? "disabled" : ""}>
+              <span style="font-size: 28px;">✅</span>
+              <span>NÊN LÀM</span>
+              <span style="font-size: 12.5px; font-weight: 700;">(An toàn & Đúng quy tắc)</span>
+            </button>
+            <button type="button"
+                    class="stamp-card stamp-shouldnt"
+                    id="stamp-shouldnt"
+                    ${isSolved ? "disabled" : ""}>
+              <span style="font-size: 28px;">⚠️</span>
+              <span>KHÔNG NÊN</span>
+              <span style="font-size: 12.5px; font-weight: 700;">(Nguy hiểm & Cần tránh)</span>
+            </button>
+          </div>
+        </div>
+      `;
+
+      mount.querySelectorAll("[data-s4-idx]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          sound.playClick();
+          appState.s4CurrentIdx = Number(btn.getAttribute("data-s4-idx"));
+          renderStage4Scene();
+          renderStage4Controls();
+        });
+      });
+
+      const btnShould = document.getElementById("stamp-should");
+      const btnShouldnt = document.getElementById("stamp-shouldnt");
+
+      if (!isSolved) {
+        setupPointerDrag(btnShould, "SHOULD", () => evaluateStage4Answer("SHOULD"));
+        setupPointerDrag(btnShouldnt, "SHOULD_NOT", () => evaluateStage4Answer("SHOULD_NOT"));
+      }
+    }
+
+    function evaluateStage4Answer(choice) {
+      const cfg = GAME_CONFIG.stages.stage4;
+      const idx = appState.s4CurrentIdx;
+      const sc = cfg.scenarios[idx];
+      if (appState.s4Solved[idx]) return;
+
+      if (choice === sc.correctChoice) {
+        appState.s4Solved[idx] = true;
+        sound.playCorrect();
+        setMascotFeedback("celebrate", "QUYẾT ĐỊNH AN TOÀN! 🛡️", sc.correctMsg);
+        renderStage4Scene();
+        renderStage4Controls();
+
+        if (appState.s4Solved.every(Boolean)) {
+          setTimeout(() => {
+            markStageComplete(4, cfg.completeMsg);
+          }, 450);
+        } else {
+          setTimeout(() => {
+            const nextIdx = appState.s4Solved.findIndex(v => !v);
+            if (nextIdx !== -1) {
+              appState.s4CurrentIdx = nextIdx;
+              renderStage4Scene();
+              renderStage4Controls();
+            }
+          }, 1600);
+        }
+      } else {
+        sound.playWrong();
+        setMascotFeedback("encourage", "CẨN THẬN AN TOÀN ĐIỆN! ⚡", sc.wrongHint);
+      }
+    }
+
+    /* ============================================================================
+       9. HIỆU ỨNG PHÁO GIẤY CHIẾN THẮNG (CONFETTI)
+       ============================================================================ */
+    let confettiFrame = null;
+    function startConfetti() {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const canvas = document.getElementById("confetti-canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ["#5AD2BE", "#FFE082", "#FF8598", "#7CC8FF", "#C5A8FF"];
+      const pieces = Array.from({ length: 75 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * -canvas.height,
+        w: 8 + Math.random() * 8,
+        h: 8 + Math.random() * 6,
+        vy: 2 + Math.random() * 3.5,
+        vx: -1.5 + Math.random() * 3,
+        rot: Math.random() * Math.PI * 2,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      }));
+
+      const render = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach((p) => {
+          p.y += p.vy;
+          p.x += p.vx;
+          p.rot += 0.05;
+          if (p.y > canvas.height) p.y = -20;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+        confettiFrame = requestAnimationFrame(render);
+      };
+      render();
+    }
+
+    function stopConfetti() {
+      if (confettiFrame) {
+        cancelAnimationFrame(confettiFrame);
+        confettiFrame = null;
+      }
+      const canvas = document.getElementById("confetti-canvas");
+      const ctx = canvas.getContext("2d");
+      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    /* ============================================================================
+       10. GẮN SỰ KIỆN NÚT ĐIỀU KHIỂN TOÀN CỤC & KHỞI TẠO
+       ============================================================================ */
+    function resetAllGame() {
+      appState.stageCompleted = { 1: false, 2: false, 3: false, 4: false };
+      appState.stageScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
+      appState.s1TrayOrder = [];
+      appState.s2FuncOrder = [];
+      appState.s3CurrentIdx = 0;
+      appState.s3Solved = [false, false, false];
+      appState.s4CurrentIdx = 0;
+      appState.s4Solved = [false, false, false, false];
+      loadStage(1, true);
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      // Start Game Button (Triggers Web Audio BGM safely after user gesture)
+      document.getElementById("btn-start-game").addEventListener("click", () => {
+        appState.hasStarted = true;
+        sound.playClick();
+        sound.startBGM();
+        loadStage(1, false);
+      });
+
+      // Next Stage Button
+      document.getElementById("btn-next-stage").addEventListener("click", () => {
+        if (!appState.stageCompleted[appState.currentStage]) return;
+        sound.playClick();
+        if (appState.currentStage < 4) {
+          loadStage(appState.currentStage + 1, false);
+        } else {
+          showScreen("summary");
+        }
+      });
+
+      // Reset Current Stage Button
+      document.getElementById("btn-reset-stage").addEventListener("click", () => {
+        sound.playClick();
+        loadStage(appState.currentStage, true);
+      });
+
+      // Home Buttons
+      document.getElementById("btn-home").addEventListener("click", () => {
+        sound.playClick();
+        showScreen("welcome");
+      });
+
+      document.getElementById("btn-summary-home").addEventListener("click", () => {
+        sound.playClick();
+        showScreen("welcome");
+      });
+
+      // Play Again from Summary
+      document.getElementById("btn-play-again").addEventListener("click", () => {
+        sound.playClick();
+        resetAllGame();
+      });
+
+      // Independent BGM Toggle
+      const btnBgm = document.getElementById("btn-bgm");
+      btnBgm.addEventListener("click", () => {
+        sound.bgmEnabled = !sound.bgmEnabled;
+        btnBgm.setAttribute("aria-pressed", String(sound.bgmEnabled));
+        btnBgm.classList.toggle("off", !sound.bgmEnabled);
+        btnBgm.textContent = sound.bgmEnabled ? "🎵 Nhạc nền: BẬT" : "🎵 Nhạc nền: TẮT";
+        if (sound.bgmEnabled && appState.hasStarted) {
+          sound.startBGM();
+        } else {
+          sound.stopBGM();
+        }
+      });
+
+      // Independent SFX Toggle
+      const btnSfx = document.getElementById("btn-sfx");
+      btnSfx.addEventListener("click", () => {
+        sound.sfxEnabled = !sound.sfxEnabled;
+        btnSfx.setAttribute("aria-pressed", String(sound.sfxEnabled));
+        btnSfx.classList.toggle("off", !sound.sfxEnabled);
+        btnSfx.textContent = sound.sfxEnabled ? "🔊 Hiệu ứng: BẬT" : "🔊 Hiệu ứng: TẮT";
+        if (sound.sfxEnabled) sound.playClick();
+      });
+
+      // Help Modal Controls
+      const helpModal = document.getElementById("help-modal");
+      const openHelp = () => {
+        sound.playClick();
+        helpModal.classList.add("open");
+      };
+      const closeHelp = () => {
+        sound.playClick();
+        helpModal.classList.remove("open");
+      };
+      document.getElementById("btn-help").addEventListener("click", openHelp);
+      document.getElementById("btn-welcome-help").addEventListener("click", openHelp);
+      document.getElementById("btn-close-help").addEventListener("click", closeHelp);
+      helpModal.addEventListener("click", (e) => {
+        if (e.target === helpModal) closeHelp();
+      });
+
+      updateHeaderUI();
+    });
+  </script>
+</body>
+</html>

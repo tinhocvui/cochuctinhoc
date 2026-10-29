@@ -1,0 +1,3356 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BIÊN TẬP VIÊN SIÊU ĐẲNG | Tin học 5 – Bài 7: Thực hành soạn thảo văn bản</title>
+  <style>
+    /* ==========================================================================
+       TIÊU CHUẨN MỸ THUẬT V5 - BẢNG MÀU PASTEL & XỨ SỞ CÔNG NGHỆ
+       Hoạt động 100% Ngoại tuyến - Không dùng CDN hay phông chữ mạng
+       ========================================================================== */
+    :root {
+      --bg-cream: #F8F7FF;
+      --bg-peach: #FFF0F3;
+      --bg-mint: #E8F8F5;
+      --bg-lavender: #EFEAFF;
+      --primary-purple: #58429B;
+      --primary-purple-dark: #3F2E75;
+      --accent-teal: #4ABDAA;
+      --accent-teal-dark: #2E8B7A;
+      --accent-gold: #F2BE4A;
+      --accent-gold-dark: #D49B27;
+      --accent-pink: #F6B6C8;
+      --accent-coral: #FF7675;
+      --text-main: #2A2344;
+      --text-muted: #5E547E;
+      --card-bg: #FFFFFF;
+      --border-soft: #DCD4F5;
+      --shadow-soft: 0 10px 28px rgba(88, 66, 155, 0.12);
+      --shadow-btn: 0 5px 0 var(--primary-purple-dark);
+      --shadow-teal: 0 5px 0 var(--accent-teal-dark);
+      --shadow-gold: 0 5px 0 var(--accent-gold-dark);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --font-main: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--bg-cream) 0%, var(--bg-lavender) 50%, var(--bg-mint) 100%);
+      font-family: var(--font-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    /* Tôn trọng prefers-reduced-motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* Khung ứng dụng chính ưu tiên tỷ lệ 16:9 và đáp ứng đa màn hình */
+    .app-shell {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 12px 18px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ==========================================================================
+       THANH ĐẦU TRANG (HEADER) & ĐIỀU KHIỂN ÂM THANH ĐỘC LẬP
+       ========================================================================== */
+    .top-bar {
+      background: var(--card-bg);
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 10px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      z-index: 20;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--primary-purple), #7357C6);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 6px 14px;
+      border-radius: 999px;
+      letter-spacing: 0.3px;
+      box-shadow: 0 3px 10px rgba(88, 66, 155, 0.25);
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--primary-purple);
+      letter-spacing: 0.2px;
+    }
+
+    .status-group {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill-stat {
+      background: var(--bg-lavender);
+      border: 2px solid #D3C6FA;
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-weight: 800;
+      color: var(--primary-purple);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.98rem;
+      min-height: 44px;
+    }
+
+    .pill-stat.score-pill {
+      background: #FFF8E5;
+      border-color: var(--accent-gold);
+      color: #9A6700;
+    }
+
+    .audio-controls {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: #F5F3FC;
+      padding: 4px 10px;
+      border-radius: 16px;
+      border: 1px solid var(--border-soft);
+    }
+
+    /* Nút bấm tiêu chuẩn V5 >= 44x44px */
+    .btn {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 16px;
+      border-radius: 14px;
+      border: 2px solid transparent;
+      font-family: inherit;
+      font-size: 0.96rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.14s ease, box-shadow 0.14s ease, background-color 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible,
+    [tabindex]:focus-visible {
+      outline: 3px solid var(--accent-gold);
+      outline-offset: 2px;
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(3px);
+    }
+
+    .btn:disabled {
+      opacity: 0.48;
+      cursor: not-allowed;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+
+    .btn-primary {
+      background: var(--primary-purple);
+      color: #FFFFFF;
+      box-shadow: var(--shadow-btn);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: #674EB3;
+    }
+
+    .btn-teal {
+      background: var(--accent-teal);
+      color: #FFFFFF;
+      box-shadow: var(--shadow-teal);
+    }
+    .btn-teal:hover:not(:disabled) {
+      background: #3CA896;
+    }
+
+    .btn-gold {
+      background: var(--accent-gold);
+      color: #2A2344;
+      box-shadow: var(--shadow-gold);
+    }
+    .btn-gold:hover:not(:disabled) {
+      background: #F6C95E;
+    }
+
+    .btn-outline {
+      background: #FFFFFF;
+      color: var(--primary-purple);
+      border-color: #C7B9F2;
+      box-shadow: 0 4px 0 #D8CEF8;
+    }
+    .btn-outline:hover:not(:disabled) {
+      background: var(--bg-lavender);
+    }
+
+    .btn-toggle {
+      padding: 6px 12px;
+      font-size: 0.88rem;
+      border-radius: 12px;
+      background: #FFFFFF;
+      color: var(--text-main);
+      border: 2px solid #D3C6FA;
+      box-shadow: 0 3px 0 #D3C6FA;
+    }
+    .btn-toggle[aria-pressed="true"] {
+      background: var(--accent-teal);
+      color: #FFFFFF;
+      border-color: var(--accent-teal-dark);
+      box-shadow: 0 3px 0 var(--accent-teal-dark);
+    }
+    .btn-toggle[aria-pressed="false"] {
+      background: #F2EFF9;
+      color: var(--text-muted);
+    }
+
+    .volume-slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      padding: 0 4px;
+    }
+
+    .volume-slider-wrap input[type="range"] {
+      width: 72px;
+      accent-color: var(--primary-purple);
+      cursor: pointer;
+    }
+
+    /* ==========================================================================
+       BỐI CẢNH ĐA LỚP TÒA SOẠN VĂN BẢN TRẺ EM (THAY ĐỔI THEO TIẾN ĐỘ 4 MÀN)
+       ========================================================================== */
+    .studio-banner {
+      background: linear-gradient(180deg, #FFFFFF 0%, #F4F0FF 100%);
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 12px 18px;
+      display: grid;
+      grid-template-columns: 310px 1fr 290px;
+      gap: 16px;
+      align-items: center;
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* Nhân vật đồng hành Pixel + Bong bóng chữ (KHÔNG GIỌNG ĐỌC) */
+    .mascot-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-peach);
+      border: 2px solid var(--accent-pink);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+    }
+
+    .mascot-svg-wrap {
+      width: 76px;
+      height: 76px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .speech-bubble {
+      background: #FFFFFF;
+      border: 2px solid var(--accent-pink);
+      border-radius: 14px;
+      padding: 8px 12px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-main);
+      position: relative;
+      box-shadow: 0 4px 10px rgba(246, 182, 200, 0.25);
+    }
+
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: 24px;
+      border-width: 8px 10px 8px 0;
+      border-style: solid;
+      border-color: transparent var(--accent-pink) transparent transparent;
+    }
+
+    .studio-scene-wrap {
+      height: 104px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 2px solid #DFD6F7;
+      background: #F9F7FF;
+      position: relative;
+    }
+
+    /* Thanh điều hướng 4 màn */
+    .level-stepper {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .level-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .level-tab {
+      min-height: 44px;
+      border-radius: 12px;
+      border: 2px solid #D3C6FA;
+      background: #FFFFFF;
+      font-weight: 800;
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .level-tab.active {
+      background: var(--primary-purple);
+      color: #FFFFFF;
+      border-color: var(--primary-purple-dark);
+      box-shadow: 0 3px 0 var(--primary-purple-dark);
+    }
+
+    .level-tab.completed {
+      background: var(--bg-mint);
+      color: var(--accent-teal-dark);
+      border-color: var(--accent-teal);
+    }
+
+    .level-tab.active.completed {
+      background: var(--primary-purple);
+      color: #FFFFFF;
+    }
+
+    /* ==========================================================================
+       KHU VỰC MÀN HÌNH CHÍNH (WELCOME, LEVELS, SUMMARY)
+       ========================================================================== */
+    .screen-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screen-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-soft);
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      animation: fadeSlideIn 0.28s ease-out;
+    }
+
+    .screen-card.active {
+      display: flex;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* MÀN CHÀO MỪNG */
+    .welcome-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 24px;
+      align-items: center;
+      margin: auto 0;
+    }
+
+    .welcome-hero-svg {
+      width: 100%;
+      max-height: 360px;
+      border-radius: var(--radius-lg);
+      border: 3px solid #E3DAFC;
+      background: linear-gradient(180deg, #F8F6FF 0%, #E8F8F5 100%);
+      box-shadow: inset 0 0 24px rgba(88, 66, 155, 0.06);
+    }
+
+    .welcome-info {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .subject-tag {
+      display: inline-flex;
+      align-self: flex-start;
+      background: var(--bg-mint);
+      color: var(--accent-teal-dark);
+      border: 2px solid var(--accent-teal);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .game-main-title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--primary-purple);
+      line-height: 1.15;
+    }
+
+    .mission-box {
+      background: #FBF9FF;
+      border: 2px dashed #C7B9F2;
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mode-selector {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: var(--bg-lavender);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+    }
+
+    .mode-option {
+      flex: 1;
+      min-width: 160px;
+      background: #FFFFFF;
+      border: 2px solid #D3C6FA;
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+    }
+
+    .mode-option.selected {
+      border-color: var(--primary-purple);
+      background: #F4F0FF;
+      box-shadow: 0 0 0 2px rgba(88, 66, 155, 0.2);
+    }
+
+    /* GIAO DIỆN MÔ PHỎNG SOẠN THẢO VĂN BẢN (WORD SIMULATOR) */
+    .level-header-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #EFEAFF;
+    }
+
+    .level-title-block h2 {
+      font-size: 1.35rem;
+      color: var(--primary-purple);
+      font-weight: 900;
+    }
+
+    .level-title-block p {
+      font-size: 0.96rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .practice-banner {
+      background: #FFF9E6;
+      border: 2px solid var(--accent-gold);
+      border-radius: 12px;
+      padding: 8px 14px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #7A5200;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sim-window {
+      border: 2px solid #C8BBE8;
+      border-radius: 18px;
+      background: #F4F2FA;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(88, 66, 155, 0.08);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sim-titlebar {
+      background: linear-gradient(90deg, var(--primary-purple), #6F55C2);
+      color: #FFFFFF;
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .sim-disclaimer {
+      font-size: 0.78rem;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    .sim-ribbon {
+      background: #FFFFFF;
+      border-bottom: 2px solid #E2DCF5;
+      padding: 8px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ribbon-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-right: 10px;
+      border-right: 2px solid #EEEAF8;
+    }
+    .ribbon-group:last-child {
+      border-right: none;
+    }
+
+    .sim-workspace {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr 330px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .paper-sheet {
+      background: #FFFFFF;
+      border: 2px solid #DED8F0;
+      border-radius: 14px;
+      padding: 20px 24px;
+      min-height: 310px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+      position: relative;
+    }
+
+    .side-inspector {
+      background: #FFFFFF;
+      border: 2px solid #E2DCF5;
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #F8F7FF;
+      border: 1px solid #E3DCFA;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .checklist-item.done {
+      background: var(--bg-mint);
+      border-color: var(--accent-teal);
+      color: #1B5E52;
+    }
+
+    /* MÀN 1: SOẠN THẢO BÀI THƠ */
+    .poem-editor-area {
+      width: 100%;
+      min-height: 155px;
+      border: 2px solid #B6A4E8;
+      border-radius: 12px;
+      padding: 14px;
+      font-family: var(--font-main);
+      font-size: 1.15rem;
+      line-height: 1.65;
+      color: var(--text-main);
+      resize: vertical;
+      background: #FFFEFA;
+      user-select: text;
+    }
+
+    .line-diff-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .line-diff-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: #F6F4FC;
+      border: 1px solid #DFD7F7;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .line-diff-row.match {
+      background: #E8F8F5;
+      border-color: var(--accent-teal);
+      color: #165B4C;
+    }
+
+    .assist-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .chip-btn {
+      min-height: 40px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: #EFEAFF;
+      border: 2px solid #CBBDF2;
+      color: var(--primary-purple);
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+    .chip-btn:hover {
+      background: #E1D6FF;
+    }
+
+    /* MÀN 2: SAO CHÉP, DI CHUYỂN, XÓA */
+    .doc-block-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .doc-block {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 2px solid #D8CFF2;
+      background: #FAF9FF;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      transition: all 0.15s ease;
+    }
+
+    .doc-block:hover {
+      border-color: var(--primary-purple);
+    }
+
+    .doc-block.selected {
+      background: #EDE5FF;
+      border-color: var(--primary-purple);
+      box-shadow: 0 0 0 3px rgba(88, 66, 155, 0.18);
+    }
+
+    .insert-slot {
+      min-height: 40px;
+      border: 2px dashed #B5A4E3;
+      border-radius: 10px;
+      background: #FBF9FF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px 10px;
+    }
+
+    .insert-slot.selected-slot {
+      border-color: var(--accent-teal-dark);
+      background: var(--bg-mint);
+      color: var(--accent-teal-dark);
+    }
+
+    /* MÀN 3: CHÈN HÌNH TRÁI ĐẤT & KÉO THẢ BỐ CỤC */
+    .gallery-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .gallery-card {
+      border: 2px solid #D8CFF2;
+      border-radius: 12px;
+      padding: 8px;
+      background: #FFFFFF;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .gallery-card.chosen {
+      border-color: var(--accent-teal);
+      background: var(--bg-mint);
+    }
+
+    .layout-page-canvas {
+      position: relative;
+      min-height: 280px;
+      border: 2px solid #D6CEEE;
+      border-radius: 12px;
+      padding: 16px;
+      background: #FFFFFF;
+      overflow: hidden;
+    }
+
+    .target-dropzone {
+      width: 150px;
+      height: 150px;
+      border: 3px dashed var(--accent-teal);
+      border-radius: 14px;
+      background: rgba(74, 189, 170, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--accent-teal-dark);
+      float: right;
+      margin: 0 0 10px 16px;
+      transition: all 0.2s ease;
+    }
+
+    .target-dropzone.occupied {
+      border-style: solid;
+      background: #E8F8F5;
+    }
+
+    .draggable-earth {
+      position: absolute;
+      width: 136px;
+      height: 136px;
+      border: 3px solid var(--primary-purple);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 8px 20px rgba(88, 66, 155, 0.25);
+      cursor: grab;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      touch-action: none;
+    }
+
+    .draggable-earth:active {
+      cursor: grabbing;
+    }
+
+    .draggable-earth.docked {
+      position: static;
+      width: 100%;
+      height: 100%;
+      border: none;
+      box-shadow: none;
+      background: transparent;
+    }
+
+    /* MÀN 4: ĐỊNH DẠNG HOÀN THIỆN & LƯU TỆP */
+    .save-dialog-box {
+      background: #F8F6FF;
+      border: 2px solid #C8BBE8;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .folder-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .folder-item {
+      border: 2px solid #D8CFF2;
+      border-radius: 10px;
+      padding: 8px;
+      background: #FFFFFF;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .folder-item.selected {
+      border-color: var(--primary-purple);
+      background: #EDE5FF;
+    }
+
+    /* KHUNG PHẢN HỒI ĐÚNG / SAI & THANH ĐIỀU KHIỂN DƯỚI CÙNG */
+    .feedback-bar {
+      min-height: 54px;
+      border-radius: 14px;
+      padding: 10px 16px;
+      font-weight: 800;
+      font-size: 0.96rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #F4F1FC;
+      border: 2px solid #DCD4F5;
+      color: var(--text-main);
+    }
+
+    .feedback-bar.success {
+      background: var(--bg-mint);
+      border-color: var(--accent-teal);
+      color: #145A4B;
+    }
+
+    .feedback-bar.error {
+      background: #FFF0F0;
+      border-color: var(--accent-coral);
+      color: #8E2424;
+    }
+
+    .feedback-bar.hint {
+      background: #FFF8E6;
+      border-color: var(--accent-gold);
+      color: #7D5300;
+    }
+
+    .bottom-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 6px;
+    }
+
+    /* HỘP THOẠI HƯỚNG DẪN (MODAL) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(42, 35, 68, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #FFFFFF;
+      border: 3px solid var(--primary-purple);
+      border-radius: var(--radius-lg);
+      max-width: 720px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    /* HIỆU ỨNG PHÁO GIẤY NGÔI SAO KHI HOÀN THÀNH (TỐI ĐA ~2 GIÂY) */
+    .confetti-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 90;
+      overflow: hidden;
+    }
+
+    .star-particle {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      animation: starFall 1.6s ease-out forwards;
+    }
+
+    @keyframes starFall {
+      0% { transform: translateY(-20px) scale(0.5) rotate(0deg); opacity: 1; }
+      80% { opacity: 1; }
+      100% { transform: translateY(260px) scale(1.1) rotate(240deg); opacity: 0; }
+    }
+
+    /* MÀN TỔNG KẾT & HUY HIỆU */
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .badge-card {
+      background: linear-gradient(180deg, #FFFFFF 0%, #F7F4FF 100%);
+      border: 2px solid #D5C8F7;
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-card.unlocked {
+      border-color: var(--accent-gold);
+      background: linear-gradient(180deg, #FFFDF7 0%, #FFF5D6 100%);
+    }
+
+    /* ĐÁP ỨNG MÀN HÌNH NHỎ & TABLET */
+    @media (max-width: 1100px) {
+      .studio-banner {
+        grid-template-columns: 1fr;
+      }
+      .welcome-grid,
+      .sim-workspace {
+        grid-template-columns: 1fr;
+      }
+      .badge-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .badge-grid,
+      .gallery-cards,
+      .folder-grid {
+        grid-template-columns: 1fr;
+      }
+      .game-main-title {
+        font-size: 1.65rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Lớp hiệu ứng ngôi sao chúc mừng ngắn (~1.6s) -->
+  <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <!-- ========================================================================
+         THANH ĐẦU TRANG: TÊN BÀI, ĐIỂM SỐ, TIẾN ĐỘ & 2 CÔNG TẮC ÂM THANH ĐỘC LẬP
+         ======================================================================== -->
+    <header class="top-bar" role="banner">
+      <div class="brand-group">
+        <span class="brand-badge">TIN HỌC 5 • BÀI 7</span>
+        <h1 class="brand-title">BIÊN TẬP VIÊN SIÊU ĐẲNG</h1>
+      </div>
+
+      <div class="status-group">
+        <div class="pill-stat" id="progressIndicator" aria-live="polite">
+          <span>Tiến độ:</span>
+          <strong id="progressText">Màn 1/4</strong>
+        </div>
+
+        <div class="pill-stat score-pill" aria-live="polite">
+          <span>Điểm số:</span>
+          <strong id="scoreText">0 / 100</strong>
+        </div>
+
+        <!-- ĐÚNG HAI CÔNG TẮC ÂM THANH ĐỘC LẬP: NHẠC NỀN & HIỆU ỨNG (TUYỆT ĐỐI KHÔNG GIỌNG ĐỌC) -->
+        <div class="audio-controls" role="group" aria-label="Điều khiển âm thanh">
+          <button type="button" id="btnToggleBgm" class="btn btn-toggle" aria-pressed="true" title="Bật/Tắt nhạc nền">
+            🎵 Nhạc nền: BẬT
+          </button>
+          <button type="button" id="btnToggleSfx" class="btn btn-toggle" aria-pressed="true" title="Bật/Tắt hiệu ứng âm thanh">
+            ✨ Hiệu ứng: BẬT
+          </button>
+          <div class="volume-slider-wrap">
+            <label for="masterVolume">Âm lượng</label>
+            <input type="range" id="masterVolume" min="0" max="100" value="75" />
+          </div>
+          <button type="button" id="btnQuickMute" class="btn btn-outline" style="padding: 6px 10px; min-height: 38px; font-size: 0.82rem;" title="Tắt nhanh toàn bộ âm thanh">
+            🔇 Tắt nhanh
+          </button>
+        </div>
+
+        <button type="button" id="btnHomeTop" class="btn btn-outline" title="Về màn hình chào mừng">
+          🏠 Trang chủ
+        </button>
+      </div>
+    </header>
+
+    <!-- ========================================================================
+         THANH BỐI CẢNH TÒA SOẠN + NHÂN VẬT PIXEL + CHUYỂN MÀN
+         ======================================================================== -->
+    <section class="studio-banner" id="studioBanner" aria-label="Bối cảnh tòa soạn và Trợ lí Pixel">
+      <!-- Nhân vật đồng hành Pixel dùng bong bóng chữ -->
+      <div class="mascot-box">
+        <div class="mascot-svg-wrap" id="pixelAvatarContainer" aria-hidden="true">
+          <!-- SVG Pixel được render động theo cảm xúc -->
+        </div>
+        <div class="speech-bubble" id="pixelSpeechText" aria-live="polite">
+          Chào mừng em đến với Tòa soạn Văn bản Trẻ em! Cùng mình biên tập bản tin Trái Đất Xanh nhé!
+        </div>
+      </div>
+
+      <!-- Bối cảnh tòa soạn văn bản trẻ em đa lớp thay đổi theo tiến độ -->
+      <div class="studio-scene-wrap" id="studioSceneContainer" aria-label="Minh họa Tòa soạn văn bản mở khóa theo từng màn">
+        <!-- SVG tòa soạn đa lớp được cập nhật động -->
+      </div>
+
+      <!-- Điều hướng 4 màn chơi -->
+      <div class="level-stepper">
+        <div style="display:flex; justify-content:space-between; font-size:0.84rem; font-weight:800; color:var(--text-muted);">
+          <span id="currentModeLabel">Chế độ: Luyện tập</span>
+          <span id="unlockedRoomsLabel">Tòa soạn: 0/4 khu vực</span>
+        </div>
+        <div class="level-tabs" role="tablist" aria-label="Danh sách 4 màn chơi">
+          <button type="button" class="level-tab active" data-level="1" id="tabLevel1" role="tab">
+            <span>Màn 1</span>
+            <small id="tabStatus1">Gõ thơ</small>
+          </button>
+          <button type="button" class="level-tab" data-level="2" id="tabLevel2" role="tab" disabled>
+            <span>Màn 2</span>
+            <small id="tabStatus2">Khóa 🔒</small>
+          </button>
+          <button type="button" class="level-tab" data-level="3" id="tabLevel3" role="tab" disabled>
+            <span>Màn 3</span>
+            <small id="tabStatus3">Khóa 🔒</small>
+          </button>
+          <button type="button" class="level-tab" data-level="4" id="tabLevel4" role="tab" disabled>
+            <span>Màn 4</span>
+            <small id="tabStatus4">Khóa 🔒</small>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         KHU VỰC CÁC MÀN HÌNH CHÍNH
+         ======================================================================== -->
+    <main class="screen-container">
+      <!-- 0. MÀN HÌNH CHÀO MỪNG -->
+      <section class="screen-card active" id="screenWelcome" aria-labelledby="welcomeHeading">
+        <div class="welcome-grid">
+          <!-- Tranh minh họa SVG lớn của Tòa soạn Văn bản Trẻ em -->
+          <div class="welcome-hero-svg" aria-hidden="true">
+            <svg viewBox="0 0 680 420" width="100%" height="100%">
+              <defs>
+                <linearGradient id="skyGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#EFEAFF"/>
+                  <stop offset="55%" stop-color="#FFF0F3"/>
+                  <stop offset="100%" stop-color="#E8F8F5"/>
+                </linearGradient>
+                <linearGradient id="screenGlow" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#FFFFFF"/>
+                  <stop offset="100%" stop-color="#F0ECFF"/>
+                </linearGradient>
+              </defs>
+              <rect width="680" height="420" fill="url(#skyGrad)"/>
+              <!-- Cửa sổ tòa soạn phía sau -->
+              <rect x="40" y="30" width="210" height="125" rx="16" fill="#FFFFFF" stroke="#C8BBE8" stroke-width="4"/>
+              <circle cx="95" cy="85" r="32" fill="#4ABDAA" opacity="0.25"/>
+              <path d="M40 120 Q110 90 165 120 T250 115 L250 155 L40 155 Z" fill="#A3E4D7"/>
+              <!-- Bảng hiệu tòa soạn -->
+              <rect x="280" y="28" width="360" height="58" rx="16" fill="#58429B"/>
+              <text x="460" y="64" text-anchor="middle" fill="#F2BE4A" font-size="21" font-weight="900" font-family="Segoe UI, sans-serif">TÒA SOẠN VĂN BẢN TRẺ EM</text>
+
+              <!-- Bàn làm việc và Màn hình soạn thảo lớn -->
+              <rect x="60" y="310" width="560" height="24" rx="12" fill="#D5C8F7"/>
+              <rect x="110" y="334" width="26" height="70" rx="8" fill="#9A89CC"/>
+              <rect x="544" y="334" width="26" height="70" rx="8" fill="#9A89CC"/>
+
+              <!-- Màn hình máy tính trung tâm -->
+              <rect x="260" y="285" width="90" height="30" rx="6" fill="#7D69B8"/>
+              <rect x="145" y="102" width="320" height="192" rx="20" fill="#58429B"/>
+              <rect x="157" y="114" width="296" height="168" rx="12" fill="url(#screenGlow)"/>
+              <!-- Thanh công cụ mô phỏng trên màn hình -->
+              <rect x="167" y="122" width="276" height="26" rx="6" fill="#EFEAFF"/>
+              <rect x="175" y="127" width="38" height="16" rx="4" fill="#4ABDAA"/>
+              <text x="194" y="139" text-anchor="middle" fill="#fff" font-size="10" font-weight="800">Copy</text>
+              <rect x="218" y="127" width="38" height="16" rx="4" fill="#F2BE4A"/>
+              <text x="237" y="139" text-anchor="middle" fill="#2A2344" font-size="10" font-weight="800">Paste</text>
+              <rect x="261" y="127" width="22" height="16" rx="4" fill="#58429B"/>
+              <text x="272" y="139" text-anchor="middle" fill="#fff" font-size="10" font-weight="900">B</text>
+              <!-- Trang bản thảo và hình Trái Đất trên màn hình -->
+              <rect x="175" y="156" width="165" height="14" rx="4" fill="#58429B"/>
+              <rect x="175" y="178" width="150" height="9" rx="4" fill="#9A89CC"/>
+              <rect x="175" y="194" width="155" height="9" rx="4" fill="#9A89CC"/>
+              <rect x="175" y="210" width="135" height="9" rx="4" fill="#9A89CC"/>
+              <rect x="175" y="226" width="148" height="9" rx="4" fill="#9A89CC"/>
+              <!-- Khung hình minh họa Trái Đất -->
+              <rect x="352" y="158" width="80" height="80" rx="12" fill="#E8F8F5" stroke="#4ABDAA" stroke-width="3"/>
+              <circle cx="392" cy="198" r="28" fill="#3498DB"/>
+              <path d="M376 186 Q390 178 400 190 Q412 202 395 215 Q378 212 376 186 Z" fill="#2ECC71"/>
+              <circle cx="382" cy="186" r="4" fill="#FFFFFF" opacity="0.7"/>
+
+              <!-- Bàn phím & Chuột minh họa đầy đủ -->
+              <rect x="180" y="298" width="180" height="14" rx="5" fill="#FFFFFF" stroke="#58429B" stroke-width="3"/>
+              <ellipse cx="395" cy="304" rx="16" ry="9" fill="#FFFFFF" stroke="#58429B" stroke-width="3"/>
+
+              <!-- Nhân vật trợ lí Pixel đứng bên phải cầm bảng điều khiển -->
+              <g transform="translate(490, 128)">
+                <ellipse cx="65" cy="175" rx="46" ry="12" fill="#D5C8F7"/>
+                <!-- Thân robot chibi -->
+                <rect x="25" y="88" width="80" height="72" rx="26" fill="#FFFFFF" stroke="#58429B" stroke-width="4"/>
+                <rect x="39" y="102" width="52" height="38" rx="10" fill="#E8F8F5" stroke="#4ABDAA" stroke-width="3"/>
+                <path d="M48 122 L60 132 L82 110" fill="none" stroke="#4ABDAA" stroke-width="4" stroke-linecap="round"/>
+                <!-- Đầu robot chibi -->
+                <line x1="65" y1="8" x2="65" y2="26" stroke="#58429B" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="65" cy="8" r="9" fill="#F2BE4A" stroke="#58429B" stroke-width="3"/>
+                <rect x="15" y="24" width="100" height="66" rx="28" fill="#FFFFFF" stroke="#58429B" stroke-width="4"/>
+                <rect x="27" y="36" width="76" height="42" rx="16" fill="#2A2344"/>
+                <!-- Mắt cười tươi -->
+                <path d="M40 56 Q48 44 56 56" fill="none" stroke="#4ABDAA" stroke-width="4" stroke-linecap="round"/>
+                <path d="M74 56 Q82 44 90 56" fill="none" stroke="#4ABDAA" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="35" cy="64" r="5" fill="#F6B6C8"/>
+                <circle cx="95" cy="64" r="5" fill="#F6B6C8"/>
+                <path d="M56 64 Q65 72 74 64" fill="none" stroke="#F2BE4A" stroke-width="3.5" stroke-linecap="round"/>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Thông tin bài học & Chọn chế độ chơi -->
+          <div class="welcome-info">
+            <span class="subject-tag">SGK Tin học 5 – Kết nối tri thức với cuộc sống (Trang 34–36)</span>
+            <h2 class="game-main-title" id="welcomeHeading">BIÊN TẬP VIÊN SIÊU ĐẲNG</h2>
+            <p style="font-size: 1.05rem; font-weight: 700; color: var(--text-muted);">
+              Bài 7: Thực hành soạn thảo văn bản — Cùng trợ lí <strong>Pixel</strong> biên tập, trình bày, chèn hình minh họa và xuất bản chuyên san <em>“Bảo vệ Trái Đất Xanh”</em>!
+            </p>
+
+            <div class="mission-box">
+              <strong style="color: var(--primary-purple); font-size: 1rem;">🎯 Nhiệm vụ 4 màn của Biên tập viên nhí:</strong>
+              <ul style="padding-left: 20px; font-weight: 700; font-size: 0.94rem; color: var(--text-main);">
+                <li><strong>Màn 1 (25đ):</strong> Sửa lỗi kí tự thừa và gõ bài thơ 4 dòng đúng chữ hoa, dấu tiếng Việt, xuống dòng.</li>
+                <li><strong>Màn 2 (25đ):</strong> Dùng Chọn, Cắt (Cut), Sao chép (Copy), Dán (Paste) và Xóa (Delete) để sắp xếp đúng bố cục.</li>
+                <li><strong>Màn 3 (25đ):</strong> Chèn hình Trái Đất SVG, chọn chế độ Bao quanh chữ và kéo thả vào khung minh họa.</li>
+                <li><strong>Màn 4 (25đ):</strong> Định dạng tiêu đề, chỉnh màu/cỡ chữ dễ đọc và lưu tệp vào đúng thư mục học tập.</li>
+              </ul>
+            </div>
+
+            <!-- Chọn chế độ Luyện tập / Thử thách -->
+            <div class="mode-selector" role="radiogroup" aria-label="Chọn chế độ chơi">
+              <div class="mode-option selected" id="modePractice" role="radio" aria-checked="true" tabindex="0">
+                <span>🌱</span>
+                <div>
+                  <div>Chế độ Luyện tập</div>
+                  <small style="font-weight: 600; color: var(--text-muted);">Hiện sẵn hướng dẫn từng bước</small>
+                </div>
+              </div>
+              <div class="mode-option" id="modeChallenge" role="radio" aria-checked="false" tabindex="0">
+                <span>🚀</span>
+                <div>
+                  <div>Chế độ Thử thách</div>
+                  <small style="font-weight: 600; color: var(--text-muted);">Tự khám phá, mở gợi ý khi cần</small>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px;">
+              <button type="button" id="btnStartGame" class="btn btn-primary" style="font-size: 1.12rem; padding: 12px 28px;">
+                ▶ Bắt đầu biên tập
+              </button>
+              <button type="button" id="btnOpenGuide" class="btn btn-gold" style="font-size: 1.05rem; padding: 12px 22px;">
+                📖 Hướng dẫn cách chơi
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 1. MÀN 1: GÕ BÀI THƠ NGẮN TỰ TẠO -->
+      <section class="screen-card" id="screenLevel1" aria-labelledby="l1Heading">
+        <div class="level-header-bar">
+          <div class="level-title-block">
+            <h2 id="l1Heading">MÀN 1: GÕ BÀI THƠ NGẮN TỰ TẠO (25 ĐIỂM)</h2>
+            <p id="l1Desc">Sửa lỗi kí tự thừa ở dòng 1 và gõ hoàn chỉnh bài thơ 4 dòng đúng chữ hoa, dấu tiếng Việt, xuống dòng bằng phím Enter.</p>
+          </div>
+          <div class="practice-banner" id="l1PracticeBanner">
+            💡 <span>Gợi ý nhanh: Sửa dòng 1 bằng nút Xóa lùi (Backspace), sau đó gõ tiếp dòng 2, 3, 4 (hoặc dùng nút điền nhanh để luyện quy tắc).</span>
+          </div>
+        </div>
+
+        <div class="sim-window">
+          <div class="sim-titlebar">
+            <span>📝 Phần mềm Soạn thảo - Ban_Thao_Tho_Trai_Dat.docx</span>
+            <span class="sim-disclaimer">Giao diện mô phỏng phục vụ học tập</span>
+          </div>
+
+          <div class="sim-ribbon">
+            <div class="ribbon-group">
+              <button type="button" id="btnL1CleanLine1" class="btn btn-outline" title="Mô phỏng phím Backspace/Delete xóa kí tự thừa ở dòng 1">
+                ⌫ Xóa kí tự lỗi dòng 1 (`hhh`, `###`)
+              </button>
+              <button type="button" id="btnL1FixSpaces" class="btn btn-outline" title="Chuẩn hóa khoảng trắng và viết hoa đầu dòng">
+                ✨ Chuẩn hóa chữ hoa đầu dòng
+              </button>
+            </div>
+            <div class="ribbon-group">
+              <span style="font-size: 0.85rem; font-weight: 800; color: var(--text-muted);">Hỗ trợ gõ nhanh từng dòng:</span>
+              <button type="button" class="chip-btn" data-insert-line="1">+ Dòng 2</button>
+              <button type="button" class="chip-btn" data-insert-line="2">+ Dòng 3</button>
+              <button type="button" class="chip-btn" data-insert-line="3">+ Dòng 4</button>
+            </div>
+          </div>
+
+          <div class="sim-workspace">
+            <div class="paper-sheet">
+              <label for="poemInput" style="display:block; font-weight:800; color:var(--primary-purple); margin-bottom:8px;">
+                Trang soạn thảo bài thơ (Em hãy gõ trực tiếp hoặc dùng thanh công cụ hỗ trợ):
+              </label>
+              <textarea id="poemInput" class="poem-editor-area" rows="5" spellcheck="false" aria-label="Ô nhập bài thơ 4 dòng"></textarea>
+
+              <div class="line-diff-list" id="l1DiffList" aria-live="polite">
+                <!-- Hiển thị trạng thái khớp từng dòng thơ theo thời gian thực -->
+              </div>
+            </div>
+
+            <aside class="side-inspector">
+              <strong style="color: var(--primary-purple); font-size: 0.98rem;">📌 Bài thơ mẫu cần gõ chính xác:</strong>
+              <div id="l1TargetPoemBox" style="background:#FFFDF5; border:2px solid var(--accent-gold); border-radius:10px; padding:10px 12px; font-weight:800; color:#2A2344; line-height:1.7;">
+                <!-- Render từ GAME_CONFIG -->
+              </div>
+
+              <strong style="color: var(--primary-purple); font-size: 0.94rem; margin-top:4px;">✅ 3 Tiêu chí hoàn thành Màn 1:</strong>
+              <div class="checklist-item" id="l1Check1">
+                <span>⬜</span> <span>1. Xóa sạch kí tự lỗi (`hhh`, `###`) ở dòng 1.</span>
+              </div>
+              <div class="checklist-item" id="l1Check2">
+                <span>⬜</span> <span>2. Đủ 4 dòng thơ (nhấn Enter xuống dòng đúng chỗ).</span>
+              </div>
+              <div class="checklist-item" id="l1Check3">
+                <span>⬜</span> <span>3. Đúng chính tả, chữ hoa đầu dòng và dấu chấm cuối bài.</span>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <div class="feedback-bar" id="l1Feedback" role="status" aria-live="polite">
+          <span>Hãy sửa dòng 1 và gõ đủ 4 dòng thơ về Trái Đất rồi nhấn "Kiểm tra Màn 1" nhé!</span>
+        </div>
+
+        <div class="bottom-actions">
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-gold" id="btnL1Hint">💡 Gợi ý (0/2)</button>
+            <button type="button" class="btn btn-outline" id="btnL1Reset">🔄 Làm lại màn</button>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-teal" id="btnL1Verify">✔ Kiểm tra Màn 1</button>
+            <button type="button" class="btn btn-primary" id="btnL1Next" disabled>Tiếp tục sang Màn 2 ➡</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. MÀN 2: SAO CHÉP VÀ DI CHUYỂN VĂN BẢN -->
+      <section class="screen-card" id="screenLevel2" aria-labelledby="l2Heading">
+        <div class="level-header-bar">
+          <div class="level-title-block">
+            <h2 id="l2Heading">MÀN 2: SAO CHÉP VÀ DI CHUYỂN VĂN BẢN (25 ĐIỂM)</h2>
+            <p id="l2Desc">Sử dụng thao tác Chọn đoạn văn, Cắt (Cut), Sao chép (Copy), Dán (Paste) và Xóa (Delete) để sắp xếp đúng bố cục bài viết.</p>
+          </div>
+          <div class="practice-banner" id="l2PracticeBanner">
+            💡 <span>Mẹo: Nháy chọn đoạn văn -> bấm Cắt/Sao chép -> nháy vào Vị trí chèn -> bấm Dán (hoặc dùng phím tắt Ctrl+X, Ctrl+C, Ctrl+V, Delete).</span>
+          </div>
+        </div>
+
+        <div class="sim-window">
+          <div class="sim-titlebar">
+            <span>📋 Phần mềm Soạn thảo - Bien_Tap_Bo_Cuc.docx</span>
+            <span class="sim-disclaimer">Giao diện mô phỏng phục vụ học tập</span>
+          </div>
+
+          <div class="sim-ribbon">
+            <div class="ribbon-group">
+              <button type="button" id="btnL2Cut" class="btn btn-outline" title="Di chuyển đoạn đang chọn vào Bộ nhớ tạm (Ctrl+X)">
+                ✂️ Cắt (Cut)
+              </button>
+              <button type="button" id="btnL2Copy" class="btn btn-outline" title="Sao chép đoạn đang chọn vào Bộ nhớ tạm (Ctrl+C)">
+                📄 Sao chép (Copy)
+              </button>
+              <button type="button" id="btnL2Paste" class="btn btn-teal" title="Dán nội dung từ Bộ nhớ tạm vào vị trí đích đang chọn (Ctrl+V)">
+                📋 Dán vào vị trí chọn (Paste)
+              </button>
+              <button type="button" id="btnL2Delete" class="btn btn-outline" style="color:#B82E2E; border-color:#F5B7B1;" title="Xóa đoạn văn bản thừa đang chọn (Delete)">
+                🗑️ Xóa đoạn lỗi (Delete)
+              </button>
+            </div>
+          </div>
+
+          <div class="sim-workspace">
+            <div class="paper-sheet">
+              <div style="font-weight:800; color:var(--primary-purple); margin-bottom:8px;">
+                1. Nháy chọn một đoạn văn bản bên dưới, sau đó chọn vị trí chèn (khung nét đứt) để Dán:
+              </div>
+              <div id="l2DocumentContainer" class="doc-block-list" aria-live="polite">
+                <!-- Danh sách các đoạn văn và khe chèn được render động -->
+              </div>
+            </div>
+
+            <aside class="side-inspector">
+              <!-- Màn hình SVG hiển thị Bộ nhớ tạm (Clipboard) -->
+              <div style="background:#F4F0FF; border:2px solid #C8BBE8; border-radius:12px; padding:10px;">
+                <div style="display:flex; align-items:center; gap:8px; font-weight:800; color:var(--primary-purple); margin-bottom:6px;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="5" y="4" width="14" height="17" rx="3" fill="#FFFFFF" stroke="#58429B" stroke-width="2"/>
+                    <rect x="8" y="2" width="8" height="4" rx="1.5" fill="#F2BE4A" stroke="#58429B" stroke-width="1.5"/>
+                  </svg>
+                  <span>Bộ nhớ tạm (Clipboard):</span>
+                </div>
+                <div id="l2ClipboardBox" style="background:#FFFFFF; border:1px dashed #9A89CC; border-radius:8px; padding:8px; font-size:0.86rem; font-weight:700; min-height:48px; color:var(--text-muted);">
+                  (Chưa có nội dung nào trong Clipboard)
+                </div>
+              </div>
+
+              <strong style="color: var(--primary-purple); font-size: 0.94rem;">✅ 3 Thao tác cần hoàn thành:</strong>
+              <div class="checklist-item" id="l2Check1">
+                <span>⬜</span> <span>1. Di chuyển (Cut + Paste) để xếp đúng thứ tự: Mở bài ➔ Thân bài ➔ Kết bài.</span>
+              </div>
+              <div class="checklist-item" id="l2Check2">
+                <span>⬜</span> <span>2. Sao chép (Copy + Paste) câu khẩu hiệu đặt thêm một bản ở cuối bài.</span>
+              </div>
+              <div class="checklist-item" id="l2Check3">
+                <span>⬜</span> <span>3. Chọn và Xóa (Delete) dòng "[Bản nháp lỗi cần xóa]".</span>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <div class="feedback-bar" id="l2Feedback" role="status" aria-live="polite">
+          <span>Hãy nháy chọn một đoạn văn bản để bắt đầu Cắt, Sao chép hoặc Xóa!</span>
+        </div>
+
+        <div class="bottom-actions">
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-gold" id="btnL2Hint">💡 Gợi ý (0/2)</button>
+            <button type="button" class="btn btn-outline" id="btnL2Reset">🔄 Làm lại màn</button>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-teal" id="btnL2Verify">✔ Kiểm tra Màn 2</button>
+            <button type="button" class="btn btn-primary" id="btnL2Next" disabled>Tiếp tục sang Màn 3 ➡</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. MÀN 3: CHÈN HÌNH TRÁI ĐẤT -->
+      <section class="screen-card" id="screenLevel3" aria-labelledby="l3Heading">
+        <div class="level-header-bar">
+          <div class="level-title-block">
+            <h2 id="l3Heading">MÀN 3: CHÈN HÌNH TRÁI ĐẤT & BỐ TRÍ VĂN BẢN (25 ĐIỂM)</h2>
+            <p id="l3Desc">Chọn đúng hình minh họa Trái Đất, đổi kiểu bố trí "Bao quanh chữ" và kéo đặt hình vào khung minh họa để không che khuất chữ.</p>
+          </div>
+          <div class="practice-banner" id="l3PracticeBanner">
+            💡 <span>Thực hiện đủ 3 bước: (1) Chọn hình Quả Địa Cầu Xanh ➔ (2) Chọn "Bao quanh chữ" ➔ (3) Kéo hình thả vào Khung minh họa bên phải.</span>
+          </div>
+        </div>
+
+        <div class="sim-window">
+          <div class="sim-titlebar">
+            <span>🖼️ Phần mềm Soạn thảo - Chen_Hinh_Minh_Hoa.docx</span>
+            <span class="sim-disclaimer">Giao diện mô phỏng phục vụ học tập</span>
+          </div>
+
+          <div class="sim-ribbon">
+            <div class="ribbon-group">
+              <span style="font-size:0.86rem; font-weight:800; color:var(--primary-purple);">Kiểu bố trí ảnh (Wrap Text):</span>
+              <button type="button" id="btnWrapOverlap" class="btn btn-toggle" aria-pressed="true">
+                🚫 Đè lên chữ (Che chữ)
+              </button>
+              <button type="button" id="btnWrapSquare" class="btn btn-toggle" aria-pressed="false">
+                📰 Bao quanh chữ (Không che chữ)
+              </button>
+            </div>
+
+            <div class="ribbon-group">
+              <span style="font-size:0.86rem; font-weight:800; color:var(--primary-purple);">Kích thước ảnh:</span>
+              <button type="button" id="btnSizeBalanced" class="btn btn-outline" style="min-height:38px; padding:4px 10px;">
+                📐 Cỡ chuẩn (100%)
+              </button>
+              <button type="button" id="btnMoveToFrame" class="btn btn-outline" style="min-height:38px; padding:4px 10px;" title="Hỗ trợ bàn phím: đưa ảnh vào khung">
+                🎯 Đưa ảnh vào Khung minh họa
+              </button>
+            </div>
+          </div>
+
+          <div class="sim-workspace">
+            <!-- Trang văn bản có khung kéo thả -->
+            <div class="layout-page-canvas" id="l3PageCanvas">
+              <h3 style="color:var(--primary-purple); margin-bottom:10px; font-size:1.2rem;">CHUNG TAY BẢO VỆ HÀNH TINH XANH</h3>
+
+              <!-- Vùng đích thả hình ở góc phải -->
+              <div class="target-dropzone" id="l3Dropzone">
+                <span id="l3DropzoneLabel">Khung minh họa chuẩn<br/>(Kéo thả hình Trái Đất vào đây)</span>
+              </div>
+
+              <!-- Hình Trái Đất có thể kéo thả bằng chuột/cảm ứng -->
+              <div class="draggable-earth" id="l3DraggableEarth" tabindex="0" role="button" aria-label="Hình minh họa Trái Đất, kéo thả vào khung bên phải">
+                <svg width="92" height="92" viewBox="0 0 100 100" aria-hidden="true">
+                  <circle cx="50" cy="50" r="42" fill="#2980B9" stroke="#1B4F72" stroke-width="3"/>
+                  <path d="M26 35 Q45 20 62 36 Q78 52 55 74 Q32 70 26 35 Z" fill="#2ECC71"/>
+                  <path d="M64 25 Q78 30 82 46 Q70 50 64 25 Z" fill="#27AE60"/>
+                  <ellipse cx="42" cy="24" rx="14" ry="5" fill="#FFFFFF" opacity="0.65"/>
+                  <ellipse cx="66" cy="68" rx="16" ry="5" fill="#FFFFFF" opacity="0.6"/>
+                </svg>
+                <span style="font-size:0.75rem; font-weight:800; color:var(--primary-purple);">Trái Đất Xanh</span>
+              </div>
+
+              <p id="l3BodyParagraph1" style="font-size:1.02rem; line-height:1.75; color:var(--text-main); margin-bottom:10px;">
+                Trái Đất là ngôi nhà chung tươi đẹp của con người và muôn loài sinh vật. Rừng cây xanh mát giúp làm sạch bầu không khí, còn đại dương mênh mông điều hòa khí hậu mỗi ngày.
+              </p>
+              <p id="l3BodyParagraph2" style="font-size:1.02rem; line-height:1.75; color:var(--text-main);">
+                Mỗi học sinh đều có thể góp sức bảo vệ môi trường bằng những việc làm thiết thực: trồng thêm cây xanh, tiết kiệm điện nước, bỏ rác đúng nơi quy định và hạn chế túi ni-lông.
+              </p>
+            </div>
+
+            <aside class="side-inspector">
+              <strong style="color: var(--primary-purple); font-size: 0.94rem;">1. Thư viện Chèn > Hình ảnh (Chọn 1 hình):</strong>
+              <div class="gallery-cards">
+                <button type="button" class="gallery-card" data-img-choice="earth" id="cardImgEarth">
+                  <svg width="52" height="52" viewBox="0 0 64 64" aria-hidden="true">
+                    <circle cx="32" cy="32" r="26" fill="#3498DB"/>
+                    <path d="M18 24 Q30 14 42 26 Q50 38 34 48 Q20 44 18 24 Z" fill="#2ECC71"/>
+                  </svg>
+                  <span>Quả Địa Cầu Xanh</span>
+                </button>
+
+                <button type="button" class="gallery-card" data-img-choice="cake" id="cardImgCake">
+                  <svg width="52" height="52" viewBox="0 0 64 64" aria-hidden="true">
+                    <rect x="14" y="30" width="36" height="22" rx="4" fill="#F6B6C8" stroke="#D9809E" stroke-width="2"/>
+                    <rect x="30" y="16" width="4" height="14" fill="#F2BE4A"/>
+                    <circle cx="32" cy="12" r="4" fill="#FF7675"/>
+                  </svg>
+                  <span>Bánh Sinh Nhật</span>
+                </button>
+
+                <button type="button" class="gallery-card" data-img-choice="car" id="cardImgCar">
+                  <svg width="52" height="52" viewBox="0 0 64 64" aria-hidden="true">
+                    <rect x="10" y="30" width="44" height="14" rx="5" fill="#E74C3C"/>
+                    <path d="M20 30 L26 20 L42 20 L48 30 Z" fill="#85C1E9"/>
+                    <circle cx="20" cy="44" r="6" fill="#2C3E50"/>
+                    <circle cx="44" cy="44" r="6" fill="#2C3E50"/>
+                  </svg>
+                  <span>Xe Đua Thể Thao</span>
+                </button>
+              </div>
+
+              <strong style="color: var(--primary-purple); font-size: 0.94rem; margin-top:4px;">✅ 3 Tiêu chí hoàn thành Màn 3:</strong>
+              <div class="checklist-item" id="l3Check1">
+                <span>⬜</span> <span>1. Chèn đúng hình minh họa "Quả Địa Cầu Xanh".</span>
+              </div>
+              <div class="checklist-item" id="l3Check2">
+                <span>⬜</span> <span>2. Chọn kiểu bố trí "Bao quanh chữ (Không che chữ)".</span>
+              </div>
+              <div class="checklist-item" id="l3Check3">
+                <span>⬜</span> <span>3. Kéo đặt hình vào đúng "Khung minh họa chuẩn" bên phải.</span>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <div class="feedback-bar" id="l3Feedback" role="status" aria-live="polite">
+          <span>Hãy chọn hình ảnh phù hợp với bài viết từ Thư viện bên phải để chèn vào trang!</span>
+        </div>
+
+        <div class="bottom-actions">
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-gold" id="btnL3Hint">💡 Gợi ý (0/2)</button>
+            <button type="button" class="btn btn-outline" id="btnL3Reset">🔄 Làm lại màn</button>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-teal" id="btnL3Verify">✔ Kiểm tra Màn 3</button>
+            <button type="button" class="btn btn-primary" id="btnL3Next" disabled>Tiếp tục sang Màn 4 ➡</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. MÀN 4: CHỈNH SỬA ĐỊNH DẠNG VÀ LƯU TỆP -->
+      <section class="screen-card" id="screenLevel4" aria-labelledby="l4Heading">
+        <div class="level-header-bar">
+          <div class="level-title-block">
+            <h2 id="l4Heading">MÀN 4: ĐỊNH DẠNG HOÀN THIỆN VÀ LƯU TỆP (25 ĐIỂM)</h2>
+            <p id="l4Desc">Bổ sung tiêu đề in đậm căn giữa, đổi màu/cỡ chữ nội dung cho rõ ràng và lưu văn bản vào đúng thư mục học tập.</p>
+          </div>
+          <div class="practice-banner" id="l4PracticeBanner">
+            💡 <span>Thực hiện: (1) Chọn tiêu đề + Bật In đậm + Căn giữa ➔ (2) Đổi cỡ chữ nội dung 14pt, màu chữ đậm ➔ (3) Chọn thư mục "Bài tập Tin học 5" và Lưu tệp.</span>
+          </div>
+        </div>
+
+        <div class="sim-window">
+          <div class="sim-titlebar">
+            <span>💾 Phần mềm Soạn thảo - Hoan_Thien_Va_Luu.docx</span>
+            <span class="sim-disclaimer">Giao diện mô phỏng phục vụ học tập</span>
+          </div>
+
+          <div class="sim-ribbon">
+            <div class="ribbon-group">
+              <label for="l4TitleSelect" style="font-size:0.84rem; font-weight:800; color:var(--primary-purple);">Tiêu đề:</label>
+              <select id="l4TitleSelect" class="btn btn-outline" style="min-height:40px; padding:4px 10px;">
+                <option value="">-- Chưa có tiêu đề --</option>
+                <option value="BẢO VỆ TRÁI ĐẤT XANH">BẢO VỆ TRÁI ĐẤT XANH (Đúng chủ đề)</option>
+                <option value="LỊCH THI ĐẤU BÓNG ĐÁ">LỊCH THI ĐẤU BÓNG ĐÁ (Sai chủ đề)</option>
+              </select>
+              <button type="button" id="btnL4Bold" class="btn btn-toggle" aria-pressed="false" title="In đậm tiêu đề (Bold)">
+                <strong>B</strong> In đậm
+              </button>
+              <button type="button" id="btnL4Center" class="btn btn-toggle" aria-pressed="false" title="Căn giữa tiêu đề">
+                ☰ Căn giữa
+              </button>
+            </div>
+
+            <div class="ribbon-group">
+              <label for="l4BodySize" style="font-size:0.84rem; font-weight:800; color:var(--primary-purple);">Cỡ chữ nội dung:</label>
+              <select id="l4BodySize" class="btn btn-outline" style="min-height:40px; padding:4px 8px;">
+                <option value="8">8 pt (Quá nhỏ)</option>
+                <option value="14">14 pt (Rõ ràng, chuẩn)</option>
+              </select>
+
+              <label for="l4BodyColor" style="font-size:0.84rem; font-weight:800; color:var(--primary-purple);">Màu chữ nội dung:</label>
+              <select id="l4BodyColor" class="btn btn-outline" style="min-height:40px; padding:4px 8px;">
+                <option value="pale">Vàng nhạt (Khó đọc trên nền trắng)</option>
+                <option value="dark">Xanh tím đậm (Tương phản rõ ràng)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sim-workspace">
+            <!-- Bản xem trước tài liệu thay đổi trực tiếp theo định dạng -->
+            <div class="paper-sheet" id="l4PreviewSheet">
+              <div id="l4PreviewTitle" style="font-size:1.35rem; margin-bottom:12px; color:#999999; text-align:left; font-weight:400; border-bottom:2px dashed #EAE4F8; padding-bottom:8px;">
+                (Chưa có tiêu đề bài viết)
+              </div>
+
+              <div style="display:flex; gap:14px; align-items:flex-start;">
+                <div id="l4PreviewBody" style="flex:1; font-size:0.72rem; color:#E5C858; line-height:1.7; transition:all 0.2s ease;">
+                  <p style="margin-bottom:8px;">
+                    <strong>Mở bài:</strong> Trái Đất là ngôi nhà chung kì diệu của chúng ta.
+                  </p>
+                  <p style="margin-bottom:8px;">
+                    <strong>Thân bài:</strong> Rừng xanh lọc không khí, biển cả điều hòa khí hậu cho muôn loài.
+                  </p>
+                  <p style="margin-bottom:8px;">
+                    <strong>Thơ:</strong> Trái Đất xanh tươi đẹp / Rừng cây đón nắng mai / Biển reo cùng sóng biếc / Em giữ gìn tương lai.
+                  </p>
+                  <p>
+                    <strong>Kết bài:</strong> Hãy cùng nhau bảo vệ hành tinh xanh!
+                  </p>
+                </div>
+
+                <div style="width:110px; padding:8px; border:2px solid var(--accent-teal); border-radius:12px; background:#E8F8F5; text-align:center; flex-shrink:0;">
+                  <svg width="72" height="72" viewBox="0 0 100 100" aria-hidden="true">
+                    <circle cx="50" cy="50" r="40" fill="#2980B9"/>
+                    <path d="M26 35 Q45 20 62 36 Q78 52 55 74 Q32 70 26 35 Z" fill="#2ECC71"/>
+                  </svg>
+                  <div style="font-size:0.74rem; font-weight:800; color:var(--accent-teal-dark);">Trái Đất Xanh</div>
+                </div>
+              </div>
+
+              <div id="l4SavedStamp" style="display:none; margin-top:12px; padding:8px 12px; border-radius:10px; background:#E8F8F5; border:2px solid var(--accent-teal); color:#145A4B; font-weight:800; font-size:0.88rem;">
+                ✅ Đã lưu bản thảo: <strong>Thư mục Bài tập Tin học 5 / Bao_Ve_Trai_Dat.docx</strong> (Lưu trong lượt chơi)
+              </div>
+            </div>
+
+            <!-- Hộp thoại Lưu tệp ảo & Xuất bản thảo -->
+            <aside class="side-inspector">
+              <div class="save-dialog-box">
+                <strong style="color:var(--primary-purple); font-size:0.94rem;">📂 Hộp thoại Lưu văn bản (File > Save):</strong>
+                <div style="font-size:0.82rem; font-weight:700; color:var(--text-muted);">Chọn đúng thư mục lưu bài học:</div>
+                <div class="folder-grid">
+                  <button type="button" class="folder-item" data-folder="study" id="folderStudy">
+                    <span>📁</span>
+                    <span>Bài tập Tin học 5</span>
+                  </button>
+                  <button type="button" class="folder-item" data-folder="temp" id="folderTemp">
+                    <span>📂</span>
+                    <span>Nháp tạm thời</span>
+                  </button>
+                  <button type="button" class="folder-item" data-folder="trash" id="folderTrash">
+                    <span>🗑️</span>
+                    <span>Thùng rác</span>
+                  </button>
+                </div>
+
+                <label for="l4FileNameInput" style="font-size:0.82rem; font-weight:800; color:var(--primary-purple);">Tên tệp văn bản:</label>
+                <div style="display:flex; gap:6px;">
+                  <input type="text" id="l4FileNameInput" value="Bao_Ve_Trai_Dat.docx" style="flex:1; min-height:40px; padding:6px 10px; border-radius:10px; border:2px solid #C8BBE8; font-weight:700;" />
+                  <button type="button" id="btnL4SaveAction" class="btn btn-primary" style="min-height:40px; padding:6px 12px;">
+                    💾 Lưu
+                  </button>
+                </div>
+              </div>
+
+              <strong style="color: var(--primary-purple); font-size: 0.92rem;">✅ 3 Tiêu chí hoàn thành Màn 4:</strong>
+              <div class="checklist-item" id="l4Check1">
+                <span>⬜</span> <span>1. Tiêu đề "BẢO VỆ TRÁI ĐẤT XANH" được In đậm & Căn giữa.</span>
+              </div>
+              <div class="checklist-item" id="l4Check2">
+                <span>⬜</span> <span>2. Nội dung cỡ chữ 14pt, màu Xanh tím đậm dễ đọc.</span>
+              </div>
+              <div class="checklist-item" id="l4Check3">
+                <span>⬜</span> <span>3. Lưu tệp vào đúng thư mục "Bài tập Tin học 5".</span>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <div class="feedback-bar" id="l4Feedback" role="status" aria-live="polite">
+          <span>Hãy hoàn thiện định dạng tiêu đề, màu chữ và nhấn "Lưu" vào đúng thư mục học tập!</span>
+        </div>
+
+        <div class="bottom-actions">
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-gold" id="btnL4Hint">💡 Gợi ý (0/2)</button>
+            <button type="button" class="btn btn-outline" id="btnL4Reset">🔄 Làm lại màn</button>
+            <button type="button" class="btn btn-outline" id="btnDownloadProduct" title="Tải tệp sản phẩm .html về máy thật">
+              ⬇ Xuất bản thảo về máy (.html)
+            </button>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-teal" id="btnL4Verify">✔ Kiểm tra Màn 4</button>
+            <button type="button" class="btn btn-primary" id="btnL4Finish" disabled>🏆 Xem Tổng kết & Huy hiệu ➡</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. MÀN TỔNG KẾT & TRAO HUY HIỆU -->
+      <section class="screen-card" id="screenSummary" aria-labelledby="summaryHeading">
+        <div style="text-align:center; display:flex; flex-direction:column; align-items:center; gap:10px;">
+          <span class="subject-tag">HOÀN THÀNH XUẤT SẮC CHUYÊN SAN</span>
+          <h2 id="summaryHeading" style="font-size:2rem; color:var(--primary-purple); font-weight:900;">
+            CHÚC MỪNG BIÊN TẬP VIÊN SIÊU ĐẲNG!
+          </h2>
+          <div style="font-size:1.35rem; font-weight:900; color:#9A6700; background:#FFF8E5; border:3px solid var(--accent-gold); padding:10px 26px; border-radius:999px;">
+            Tổng điểm đạt được: <span id="finalScoreValue">100</span> / 100 điểm
+          </div>
+        </div>
+
+        <!-- 4 Huy hiệu kĩ năng -->
+        <div class="badge-grid" id="summaryBadges">
+          <div class="badge-card unlocked">
+            <svg width="58" height="58" viewBox="0 0 64 64" aria-hidden="true">
+              <circle cx="32" cy="32" r="28" fill="#FFF3C4" stroke="#F2BE4A" stroke-width="4"/>
+              <text x="32" y="40" text-anchor="middle" font-size="24" font-weight="900" fill="#58429B">AĂ</text>
+            </svg>
+            <strong style="color:var(--primary-purple);">Cây Bút Chuẩn Xác</strong>
+            <small style="font-weight:600; color:var(--text-muted);">Gõ tiếng Việt có dấu, chữ hoa và xuống dòng chuẩn.</small>
+          </div>
+
+          <div class="badge-card unlocked">
+            <svg width="58" height="58" viewBox="0 0 64 64" aria-hidden="true">
+              <circle cx="32" cy="32" r="28" fill="#E8F8F5" stroke="#4ABDAA" stroke-width="4"/>
+              <rect x="20" y="18" width="16" height="22" rx="3" fill="#4ABDAA"/>
+              <rect x="28" y="24" width="16" height="22" rx="3" fill="#58429B"/>
+            </svg>
+            <strong style="color:var(--primary-purple);">Bậc Thầy Bố Cục</strong>
+            <small style="font-weight:600; color:var(--text-muted);">Thành thạo Chọn, Sao chép, Di chuyển và Xóa văn bản.</small>
+          </div>
+
+          <div class="badge-card unlocked">
+            <svg width="58" height="58" viewBox="0 0 64 64" aria-hidden="true">
+              <circle cx="32" cy="32" r="28" fill="#EFEAFF" stroke="#58429B" stroke-width="4"/>
+              <circle cx="32" cy="32" r="16" fill="#3498DB"/>
+              <path d="M24 26 Q32 20 38 28 Q42 36 32 42 Z" fill="#2ECC71"/>
+            </svg>
+            <strong style="color:var(--primary-purple);">Họa Sĩ Trình Bày</strong>
+            <small style="font-weight:600; color:var(--text-muted);">Chèn ảnh đúng chủ đề và bố trí không che chữ.</small>
+          </div>
+
+          <div class="badge-card unlocked">
+            <svg width="58" height="58" viewBox="0 0 64 64" aria-hidden="true">
+              <circle cx="32" cy="32" r="28" fill="#FFF0F3" stroke="#F6B6C8" stroke-width="4"/>
+              <rect x="20" y="18" width="24" height="28" rx="4" fill="#58429B"/>
+              <rect x="25" y="22" width="14" height="8" rx="2" fill="#FFFFFF"/>
+            </svg>
+            <strong style="color:var(--primary-purple);">Tổng Biên Tập Nhí</strong>
+            <small style="font-weight:600; color:var(--text-muted);">Định dạng hài hòa và lưu tệp đúng thư mục.</small>
+          </div>
+        </div>
+
+        <!-- 3 Nhận xét kiến thức cốt lõi theo SGK Tin học 5 Bài 7 -->
+        <div class="mission-box" style="background:#F8F7FF; border-style:solid;">
+          <strong style="color:var(--primary-purple); font-size:1.05rem;">📚 Ghi nhớ kiến thức sau Bài 7 (Thực hành soạn thảo văn bản):</strong>
+          <ul style="padding-left:20px; font-weight:700; color:var(--text-main); display:flex; flex-direction:column; gap:6px;">
+            <li><strong>1. Chỉnh sửa nhanh bằng Sao chép & Di chuyển:</strong> Kết hợp thao tác <em>Chọn văn bản</em> với <code>Copy / Paste</code> (sao chép phần lặp lại) và <code>Cut / Paste</code> (di chuyển khổ đặt sai vị trí) giúp biên tập văn bản nhanh, không phải gõ lại.</li>
+            <li><strong>2. Kết hợp hài hòa hình ảnh và văn bản:</strong> Khi chèn hình minh họa (<code>Insert > Pictures</code>), cần chọn chế độ bố trí <em>Bao quanh chữ (Square/Tight)</em> và đặt ở vị trí cân đối để không che khuất nội dung chữ.</li>
+            <li><strong>3. Định dạng dễ đọc & Lưu trữ ngăn nắp:</strong> Tiêu đề cần nổi bật (căn giữa, in đậm), màu chữ nội dung phải tương phản rõ với nền trang giấy, và luôn lưu tệp với tên có ý nghĩa vào đúng thư mục học tập.</li>
+          </ul>
+        </div>
+
+        <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap; margin-top:4px;">
+          <button type="button" id="btnReviewLevels" class="btn btn-outline">
+            🔍 Xem lại Màn 1 – 4 đã hoàn thành
+          </button>
+          <button type="button" id="btnSummaryExport" class="btn btn-teal">
+            ⬇ Tải bản thảo hoàn chỉnh (.html)
+          </button>
+          <button type="button" id="btnPlayAgain" class="btn btn-primary">
+            🔄 Chơi lại từ đầu
+          </button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL HƯỚNG DẪN CÁCH CHƠI (CHỈ BẰNG CHỮ, HÌNH & BIỂU TƯỢNG - KHÔNG TTS)
+       ========================================================================== -->
+  <div class="modal-backdrop" id="guideModal" role="dialog" aria-modal="true" aria-labelledby="guideModalTitle">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 id="guideModalTitle" style="font-size:1.4rem; color:var(--primary-purple); font-weight:900;">
+          📖 Hướng dẫn trò chơi: BIÊN TẬP VIÊN SIÊU ĐẲNG
+        </h3>
+        <button type="button" id="btnCloseGuideTop" class="btn btn-outline" style="min-height:40px; padding:4px 12px;">✕ Đóng</button>
+      </div>
+
+      <p style="font-weight:700; color:var(--text-muted);">
+        Em hãy đồng hành cùng trợ lí <strong>Pixel</strong> vượt qua 4 màn thực hành soạn thảo văn bản để mở khóa toàn bộ Tòa soạn Văn bản Trẻ em:
+      </p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div style="background:#F8F7FF; border:2px solid #D8CFF2; border-radius:12px; padding:12px;">
+          <strong style="color:var(--primary-purple);">⌨️ Màn 1: Gõ bài thơ 4 dòng</strong>
+          <p style="font-size:0.9rem; font-weight:600; margin-top:4px;">
+            Xóa các kí tự bị dư ở dòng 1 và gõ tiếp 3 dòng thơ còn lại. Chú ý viết hoa chữ cái đầu dòng, gõ đúng dấu tiếng Việt và nhấn <code>Enter</code> để xuống dòng.
+          </p>
+        </div>
+        <div style="background:#F8F7FF; border:2px solid #D8CFF2; border-radius:12px; padding:12px;">
+          <strong style="color:var(--primary-purple);">📋 Màn 2: Sao chép & Di chuyển</strong>
+          <p style="font-size:0.9rem; font-weight:600; margin-top:4px;">
+            Nháy chọn đoạn văn bản cần chỉnh ➔ bấm <strong>Cắt (Cut)</strong> hoặc <strong>Sao chép (Copy)</strong> ➔ nháy chọn vị trí chèn (khung nét đứt) ➔ bấm <strong>Dán (Paste)</strong>. Xóa dòng nháp lỗi bằng nút <strong>Xóa</strong>.
+          </p>
+        </div>
+        <div style="background:#F8F7FF; border:2px solid #D8CFF2; border-radius:12px; padding:12px;">
+          <strong style="color:var(--primary-purple);">🌍 Màn 3: Chèn hình Trái Đất</strong>
+          <p style="font-size:0.9rem; font-weight:600; margin-top:4px;">
+            Chọn đúng hình minh họa Trái Đất từ thư viện ➔ chuyển sang chế độ <strong>Bao quanh chữ</strong> ➔ kéo thả hình (hoặc dùng nút điều khiển) vào khung minh họa bên phải.
+          </p>
+        </div>
+        <div style="background:#F8F7FF; border:2px solid #D8CFF2; border-radius:12px; padding:12px;">
+          <strong style="color:var(--primary-purple);">💾 Màn 4: Định dạng & Lưu tệp</strong>
+          <p style="font-size:0.9rem; font-weight:600; margin-top:4px;">
+            Chọn tiêu đề đúng, bật <strong>In đậm + Căn giữa</strong>, chỉnh cỡ chữ <code>14pt</code> và màu chữ đậm dễ đọc, sau đó lưu vào thư mục <strong>Bài tập Tin học 5</strong>.
+          </p>
+        </div>
+      </div>
+
+      <div style="background:#FFF8E5; border:2px solid var(--accent-gold); border-radius:12px; padding:10px 14px; font-size:0.9rem; font-weight:700;">
+        🎵 <strong>Âm thanh:</strong> Em có thể bật/tắt riêng biệt hai công tắc <strong>Nhạc nền</strong> và <strong>Hiệu ứng</strong> trên thanh đầu trang bất cứ lúc nào.
+      </div>
+
+      <div style="display:flex; justify-content:flex-end;">
+        <button type="button" id="btnCloseGuideBottom" class="btn btn-primary">Đã hiểu, bắt đầu thôi!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MÃ NGUỒN JAVASCRIPT: GAME_CONFIG + WEB AUDIO SYNTH + LOGIC 4 MÀN
+       ========================================================================== -->
+  <script>
+    /**
+     * ============================================================================
+     * CẤU HÌNH TRÒ CHƠI (GAME_CONFIG)
+     * Giáo viên có thể dễ dàng chỉnh sửa nội dung bài thơ, đoạn văn, câu gợi ý,
+     * điểm số và cài đặt âm lượng tại đối tượng cấu hình dưới đây.
+     * ============================================================================
+     */
+    const GAME_CONFIG = {
+      meta: {
+        grade: "Lớp 5",
+        lesson: "Bài 7: Thực hành soạn thảo văn bản",
+        gameTitle: "BIÊN TẬP VIÊN SIÊU ĐẲNG",
+        pointsPerLevel: 25,
+        maxScore: 100
+      },
+      audio: {
+        defaultMasterVolume: 0.75,
+        bgmGain: 0.12, // Âm lượng nhạc nền nhẹ nhàng 12%
+        sfxGain: 0.28,
+        // Giai điệu nhạc nền nguyên gốc vui tươi (tần số Hz - ngũ cung Đô trưởng)
+        melodyNotes: [523.25, 587.33, 659.25, 783.99, 659.25, 783.99, 880.00, 783.99, 659.25, 587.33, 523.25, 659.25],
+        noteDurationMs: 360
+      },
+      levels: {
+        level1: {
+          title: "MÀN 1: GÕ BÀI THƠ NGẮN TỰ TẠO",
+          initialCorruptedText: "Trái Đất xanhhhh tươi đẹp###",
+          targetLines: [
+            "Trái Đất xanh tươi đẹp",
+            "Rừng cây đón nắng mai",
+            "Biển reo cùng sóng biếc",
+            "Em giữ gìn tương lai."
+          ],
+          hints: [
+            "Gợi ý 1/2: Ở dòng 1, em hãy xóa bớt 3 chữ 'h' thừa trong từ 'xanhhhh' và 3 dấu '###' ở cuối dòng (có thể bấm nút '⌫ Xóa kí tự lỗi dòng 1').",
+            "Gợi ý 2/2: Nhấn phím Enter để xuống dòng và gõ đúng 3 dòng tiếp theo. Nhớ viết hoa chữ cái đầu mỗi dòng và đặt dấu chấm '.' ở cuối dòng thứ 4 nhé!"
+          ]
+        },
+        level2: {
+          title: "MÀN 2: SAO CHÉP VÀ DI CHUYỂN VĂN BẢN",
+          initialBlocks: [
+            {
+              id: "slogan_top",
+              type: "slogan",
+              text: "Khẩu hiệu: Hãy cùng nhau bảo vệ hành tinh xanh!"
+            },
+            {
+              id: "body_para",
+              type: "body",
+              text: "Thân bài: Rừng xanh lọc không khí, biển cả điều hòa khí hậu cho muôn loài."
+            },
+            {
+              id: "intro_para",
+              type: "intro",
+              text: "Mở bài: Trái Đất là ngôi nhà chung kì diệu của chúng ta."
+            },
+            {
+              id: "corrupt_draft",
+              type: "corrupt",
+              text: "[Bản nháp lỗi cần xóa] Hãy cùng nhau nháp thử 123..."
+            },
+            {
+              id: "conclusion_para",
+              type: "conclusion",
+              text: "Kết bài: Mỗi việc làm nhỏ mỗi ngày đều giúp Trái Đất thêm tươi đẹp."
+            }
+          ],
+          // Thứ tự đúng của các loại đoạn văn sau khi biên tập:
+          // Khẩu hiệu đầu -> Mở bài -> Thân bài -> Kết bài -> Khẩu hiệu cuối (được sao chép)
+          targetOrderTypes: ["slogan", "intro", "body", "conclusion", "slogan"],
+          hints: [
+            "Gợi ý 1/2: Nháy chọn đoạn 'Mở bài', bấm '✂️ Cắt (Cut)', sau đó nháy chọn 'Vị trí chèn số 2 (Phía trước Thân bài)' và bấm '📋 Dán (Paste)'. Đừng quên chọn dòng '[Bản nháp lỗi cần xóa]' và bấm '🗑️ Xóa'.",
+            "Gợi ý 2/2: Nháy chọn dòng 'Khẩu hiệu: Hãy cùng nhau bảo vệ hành tinh xanh!', bấm '📄 Sao chép (Copy)', rồi nháy chọn 'Vị trí chèn cuối bài' và bấm '📋 Dán (Paste)'."
+          ]
+        },
+        level3: {
+          title: "MÀN 3: CHÈN HÌNH TRÁI ĐẤT",
+          correctImage: "earth",
+          wrongReasons: {
+            cake: "Hình 'Bánh Sinh Nhật' rất đẹp nhưng không phù hợp với nội dung bài viết bảo vệ Trái Đất. Em hãy chọn hình 'Quả Địa Cầu Xanh' nhé!",
+            car: "Hình 'Xe Đua Thể Thao' không đúng chủ đề thiên nhiên và Trái Đất. Em hãy chọn hình 'Quả Địa Cầu Xanh' nhé!"
+          },
+          hints: [
+            "Gợi ý 1/2: Trong khung Thư viện bên phải, hãy nháy chọn 'Quả Địa Cầu Xanh', sau đó trên thanh công cụ chọn nút '📰 Bao quanh chữ (Không che chữ)'.",
+            "Gợi ý 2/2: Dùng chuột kéo hình Trái Đất thả vào ô 'Khung minh họa chuẩn' ở bên phải trang văn bản (hoặc nhấn nút '🎯 Đưa ảnh vào Khung minh họa')."
+          ]
+        },
+        level4: {
+          title: "MÀN 4: CHỈNH SỬA VÀ LƯU",
+          correctTitle: "BẢO VỆ TRÁI ĐẤT XANH",
+          correctSize: "14",
+          correctColor: "dark",
+          correctFolder: "study",
+          hints: [
+            "Gợi ý 1/2: Chọn tiêu đề 'BẢO VỆ TRÁI ĐẤT XANH', bật cả 2 nút 'B In đậm' và '☰ Căn giữa'. Tiếp theo chọn Cỡ chữ '14 pt' và Màu chữ 'Xanh tím đậm'.",
+            "Gợi ý 2/2: Trong hộp thoại Lưu văn bản bên phải, nháy chọn thư mục '📁 Bài tập Tin học 5', kiểm tra tên tệp và bấm nút '💾 Lưu'."
+          ]
+        }
+      }
+    };
+
+    /**
+     * ============================================================================
+     * HỆ THỐNG ÂM THANH NGUYÊN GỐC BẰNG WEB AUDIO API
+     * Tuyệt đối KHÔNG dùng giọng đọc, KHÔNG TTS, KHÔNG speechSynthesis.
+     * Hỗ trợ 2 công tắc độc lập: Nhạc nền (BGM) và Hiệu ứng (SFX).
+     * ============================================================================
+     */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.bgmEnabled = true;
+        this.sfxEnabled = true;
+        this.masterVolume = GAME_CONFIG.audio.defaultMasterVolume;
+        this.isQuickMuted = false;
+        this.bgmTimer = null;
+        this.noteIndex = 0;
+        this.isPlayingBgm = false;
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+          this.ctx.resume().catch(() => {});
+        }
+      }
+
+      getEffectiveVolume(baseGain) {
+        if (this.isQuickMuted) return 0;
+        return baseGain * this.masterVolume;
+      }
+
+      startBgm() {
+        this.initContext();
+        this.stopBgm();
+        if (!this.bgmEnabled || this.isQuickMuted || !this.ctx || document.hidden) return;
+
+        this.isPlayingBgm = true;
+        const playNextStep = () => {
+          if (!this.isPlayingBgm || !this.bgmEnabled || this.isQuickMuted || document.hidden || !this.ctx) {
+            return;
+          }
+          const notes = GAME_CONFIG.audio.melodyNotes;
+          const freq = notes[this.noteIndex % notes.length];
+          this.noteIndex++;
+
+          try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(freq, now);
+
+            const vol = this.getEffectiveVolume(GAME_CONFIG.audio.bgmGain);
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.linearRampToValueAtTime(vol, now + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.31);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.33);
+          } catch (e) {}
+
+          this.bgmTimer = window.setTimeout(playNextStep, GAME_CONFIG.audio.noteDurationMs);
+        };
+
+        playNextStep();
+      }
+
+      stopBgm() {
+        this.isPlayingBgm = false;
+        if (this.bgmTimer) {
+          clearTimeout(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      }
+
+      playSfx(type) {
+        if (!this.sfxEnabled || this.isQuickMuted) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const vol = this.getEffectiveVolume(GAME_CONFIG.audio.sfxGain);
+        if (vol <= 0.001) return;
+
+        const playTone = (freq, startOffset, duration, wave = "sine", peakScale = 1) => {
+          try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = wave;
+            osc.frequency.setValueAtTime(freq, now + startOffset);
+            gain.gain.setValueAtTime(0.0001, now + startOffset);
+            gain.gain.linearRampToValueAtTime(vol * peakScale, now + startOffset + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + startOffset + duration);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + startOffset);
+            osc.stop(now + startOffset + duration + 0.01);
+          } catch (e) {}
+        };
+
+        switch (type) {
+          case "click":
+            playTone(660, 0, 0.07, "sine", 0.6);
+            break;
+          case "action":
+            playTone(523.25, 0, 0.08, "triangle", 0.7);
+            playTone(659.25, 0.07, 0.1, "triangle", 0.7);
+            break;
+          case "error":
+            playTone(310, 0, 0.14, "sine", 0.65);
+            playTone(260, 0.12, 0.18, "sine", 0.65);
+            break;
+          case "levelClear":
+            playTone(523.25, 0, 0.11, "triangle", 0.9);
+            playTone(659.25, 0.1, 0.11, "triangle", 0.9);
+            playTone(783.99, 0.2, 0.12, "triangle", 0.9);
+            playTone(1046.5, 0.32, 0.28, "triangle", 1.0);
+            break;
+          case "victory":
+            playTone(523.25, 0, 0.12, "triangle", 1);
+            playTone(659.25, 0.12, 0.12, "triangle", 1);
+            playTone(783.99, 0.24, 0.12, "triangle", 1);
+            playTone(1046.5, 0.36, 0.38, "triangle", 1);
+            break;
+        }
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    // Tạm dừng nhạc nền khi ẩn tab để tránh rò rỉ timer
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        sound.stopBgm();
+      } else if (gameState.hasStarted && sound.bgmEnabled && !sound.isQuickMuted) {
+        sound.startBgm();
+      }
+    });
+
+    /**
+     * ============================================================================
+     * TRẠNG THÁI TRÒ CHƠI (GAME STATE)
+     * ============================================================================
+     */
+    const gameState = {
+      hasStarted: false,
+      mode: "practice", // "practice" | "challenge"
+      currentScreen: "welcome", // "welcome" | "level1" | "level2" | "level3" | "level4" | "summary"
+      score: 0,
+      completedLevels: { 1: false, 2: false, 3: false, 4: false },
+      hintsUsed: { 1: 0, 2: 0, 3: 0, 4: 0 },
+
+      // Dữ liệu tương tác riêng từng màn
+      level2: {
+        blocks: [],
+        selectedBlockIndex: null,
+        selectedSlotIndex: null,
+        clipboard: null,
+        hasCutOrMoved: false,
+        hasCopied: false,
+        hasDeletedCorrupt: false
+      },
+      level3: {
+        selectedImage: null,
+        wrapMode: "overlap", // "overlap" | "square"
+        isDockedInFrame: false,
+        dragX: 90,
+        dragY: 85
+      },
+      level4: {
+        title: "",
+        isBold: false,
+        isCentered: false,
+        bodySize: "8",
+        bodyColor: "pale",
+        selectedFolder: null,
+        fileName: "Bao_Ve_Trai_Dat.docx",
+        isSaved: false
+      }
+    };
+
+    /**
+     * ============================================================================
+     * ĐỒ HỌA SVG ĐỘNG: TRỢ LÍ PIXEL (4 BIỂU CẢM) & TÒA SOẠN VĂN BẢN (4 CẤP ĐỘ)
+     * ============================================================================
+     */
+    function renderPixelMascot(mood = "guiding", message = "") {
+      const container = document.getElementById("pixelAvatarContainer");
+      const speechEl = document.getElementById("pixelSpeechText");
+      if (message) {
+        speechEl.textContent = message;
+      }
+
+      let eyeSvg = "";
+      let mouthSvg = "";
+      let antennaColor = "#F2BE4A";
+
+      if (mood === "happy" || mood === "proud") {
+        antennaColor = "#4ABDAA";
+        eyeSvg = `
+          <path d="M24 38 Q30 29 36 38" fill="none" stroke="#4ABDAA" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M48 38 Q54 29 60 38" fill="none" stroke="#4ABDAA" stroke-width="3.5" stroke-linecap="round"/>
+        `;
+        mouthSvg = `<path d="M34 46 Q42 54 50 46" fill="none" stroke="#F2BE4A" stroke-width="3" stroke-linecap="round"/>`;
+      } else if (mood === "thinking") {
+        antennaColor = "#FF7675";
+        eyeSvg = `
+          <circle cx="30" cy="36" r="4.5" fill="#F2BE4A"/>
+          <circle cx="54" cy="36" r="4.5" fill="#F2BE4A"/>
+        `;
+        mouthSvg = `<line x1="36" y1="47" x2="48" y2="45" stroke="#F6B6C8" stroke-width="3" stroke-linecap="round"/>`;
+      } else {
+        // guiding
+        eyeSvg = `
+          <circle cx="30" cy="36" r="4.5" fill="#4ABDAA"/>
+          <circle cx="54" cy="36" r="4.5" fill="#4ABDAA"/>
+        `;
+        mouthSvg = `<path d="M36 46 Q42 51 48 46" fill="none" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round"/>`;
+      }
+
+      container.innerHTML = `
+        <svg viewBox="0 0 84 84" width="100%" height="100%">
+          <circle cx="42" cy="42" r="39" fill="#FFFFFF" stroke="#58429B" stroke-width="3"/>
+          <line x1="42" y1="6" x2="42" y2="17" stroke="#58429B" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="42" cy="6" r="5" fill="${antennaColor}" stroke="#58429B" stroke-width="2"/>
+          <rect x="14" y="17" width="56" height="44" rx="18" fill="#58429B"/>
+          <rect x="20" y="23" width="44" height="32" rx="12" fill="#2A2344"/>
+          ${eyeSvg}
+          <circle cx="24" cy="43" r="3.5" fill="#F6B6C8"/>
+          <circle cx="60" cy="43" r="3.5" fill="#F6B6C8"/>
+          ${mouthSvg}
+          <!-- Bảng điều khiển nhỏ của Pixel -->
+          <rect x="24" y="63" width="36" height="14" rx="4" fill="#4ABDAA" stroke="#58429B" stroke-width="2"/>
+          <line x1="30" y1="70" x2="54" y2="70" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      `;
+    }
+
+    function renderStudioScene() {
+      const container = document.getElementById("studioSceneContainer");
+      const c1 = gameState.completedLevels[1];
+      const c2 = gameState.completedLevels[2];
+      const c3 = gameState.completedLevels[3];
+      const c4 = gameState.completedLevels[4];
+
+      const unlockedCount = [c1, c2, c3, c4].filter(Boolean).length;
+      document.getElementById("unlockedRoomsLabel").textContent = `Tòa soạn: ${unlockedCount}/4 khu vực`;
+
+      container.innerHTML = `
+        <svg viewBox="0 0 620 104" width="100%" height="100%">
+          <rect width="620" height="104" fill="#F6F3FF"/>
+          <!-- Khu vực 1: Bàn Gõ Thơ -->
+          <g transform="translate(12, 10)">
+            <rect width="138" height="84" rx="12" fill="${c1 ? '#E8F8F5' : '#FFFFFF'}" stroke="${c1 ? '#4ABDAA' : '#D5C8F7'}" stroke-width="2.5"/>
+            <rect x="14" y="14" width="54" height="36" rx="6" fill="${c1 ? '#58429B' : '#CBC2E8'}"/>
+            <rect x="19" y="19" width="44" height="26" rx="4" fill="#FFFFFF"/>
+            <line x1="24" y1="26" x2="56" y2="26" stroke="${c1 ? '#4ABDAA' : '#ccc'}" stroke-width="3"/>
+            <line x1="24" y1="34" x2="50" y2="34" stroke="${c1 ? '#58429B' : '#ccc'}" stroke-width="3"/>
+            <text x="76" y="32" font-size="11" font-weight="800" fill="#2A2344">1. Bàn Bản Thảo</text>
+            <text x="76" y="48" font-size="10" font-weight="700" fill="${c1 ? '#1E826C' : '#7F759E'}">${c1 ? '✔ Đã sáng đèn' : 'Đang biên tập'}</text>
+          </g>
+
+          <!-- Khu vực 2: Trạm Cắt Dán Bố Cục -->
+          <g transform="translate(164, 10)">
+            <rect width="138" height="84" rx="12" fill="${c2 ? '#E8F8F5' : '#FFFFFF'}" stroke="${c2 ? '#4ABDAA' : '#D5C8F7'}" stroke-width="2.5"/>
+            <rect x="16" y="14" width="38" height="44" rx="6" fill="${c2 ? '#F2BE4A' : '#E0DAF0'}"/>
+            <rect x="22" y="22" width="26" height="30" rx="3" fill="#FFFFFF"/>
+            <text x="62" y="32" font-size="11" font-weight="800" fill="#2A2344">2. Trạm Bố Cục</text>
+            <text x="62" y="48" font-size="10" font-weight="700" fill="${c2 ? '#1E826C' : '#7F759E'}">${c2 ? '✔ Đã sắp xếp' : 'Chờ xử lí'}</text>
+          </g>
+
+          <!-- Khu vực 3: Phòng Minh Họa Trái Đất -->
+          <g transform="translate(316, 10)">
+            <rect width="138" height="84" rx="12" fill="${c3 ? '#E8F8F5' : '#FFFFFF'}" stroke="${c3 ? '#4ABDAA' : '#D5C8F7'}" stroke-width="2.5"/>
+            <circle cx="35" cy="36" r="18" fill="${c3 ? '#3498DB' : '#D8D0EE'}"/>
+            <path d="M26 30 Q35 22 42 32 Q46 42 34 46 Z" fill="${c3 ? '#2ECC71' : '#C2B7E2'}"/>
+            <text x="60" y="32" font-size="11" font-weight="800" fill="#2A2344">3. Phòng Đồ Họa</text>
+            <text x="60" y="48" font-size="10" font-weight="700" fill="${c3 ? '#1E826C' : '#7F759E'}">${c3 ? '✔ Đã chèn ảnh' : 'Chờ minh họa'}</text>
+          </g>
+
+          <!-- Khu vực 4: Máy In Xuất Bản & Lưu Trữ -->
+          <g transform="translate(468, 10)">
+            <rect width="140" height="84" rx="12" fill="${c4 ? '#FFF8E5' : '#FFFFFF'}" stroke="${c4 ? '#F2BE4A' : '#D5C8F7'}" stroke-width="2.5"/>
+            <rect x="14" y="20" width="40" height="32" rx="6" fill="${c4 ? '#58429B' : '#D8D0EE'}"/>
+            <rect x="22" y="12" width="24" height="12" rx="2" fill="#FFFFFF" stroke="${c4 ? '#58429B' : '#BDB2DC'}" stroke-width="2"/>
+            <text x="60" y="32" font-size="11" font-weight="800" fill="#2A2344">4. Trạm Xuất Bản</text>
+            <text x="60" y="48" font-size="10" font-weight="700" fill="${c4 ? '#9A6700' : '#7F759E'}">${c4 ? '🏆 Đã xuất bản!' : 'Chờ lưu tệp'}</text>
+          </g>
+        </svg>
+      `;
+    }
+
+    function launchStarConfetti() {
+      const layer = document.getElementById("confettiLayer");
+      layer.innerHTML = "";
+      const colors = ["#F2BE4A", "#4ABDAA", "#58429B", "#F6B6C8", "#FF7675"];
+      for (let i = 0; i < 24; i++) {
+        const star = document.createElement("div");
+        star.className = "star-particle";
+        star.style.left = `${10 + Math.random() * 80}%`;
+        star.style.top = `${10 + Math.random() * 20}%`;
+        star.style.animationDelay = `${Math.random() * 0.25}s`;
+        const color = colors[i % colors.length];
+        star.innerHTML = `
+          <svg viewBox="0 0 24 24" width="18" height="18">
+            <polygon points="12,2 15,9 22,9 16,14 18,21 12,17 6,21 8,14 2,9 9,9" fill="${color}"/>
+          </svg>
+        `;
+        layer.appendChild(star);
+      }
+      setTimeout(() => {
+        layer.innerHTML = "";
+      }, 1900);
+    }
+
+    /**
+     * ============================================================================
+     * CẬP NHẬT GIAO DIỆN CHUNG & CHUYỂN MÀN
+     * ============================================================================
+     */
+    function updateHeaderAndTabs() {
+      document.getElementById("scoreText").textContent = `${gameState.score} / ${GAME_CONFIG.meta.maxScore}`;
+      document.getElementById("currentModeLabel").textContent =
+        gameState.mode === "practice" ? "Chế độ: Luyện tập 🌱" : "Chế độ: Thử thách 🚀";
+
+      // Ẩn/hiện banner gợi ý sẵn tùy theo chế độ Luyện tập hay Thử thách
+      const showPractice = gameState.mode === "practice";
+      ["l1PracticeBanner", "l2PracticeBanner", "l3PracticeBanner", "l4PracticeBanner"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = showPractice ? "flex" : "none";
+      });
+
+      const titles = { 1: "Gõ thơ", 2: "Bố cục", 3: "Chèn hình", 4: "Lưu tệp" };
+      for (let lv = 1; lv <= 4; lv++) {
+        const tab = document.getElementById(`tabLevel${lv}`);
+        const status = document.getElementById(`tabStatus${lv}`);
+        const isUnlocked = lv === 1 || gameState.completedLevels[lv - 1] || gameState.completedLevels[lv];
+        tab.disabled = !isUnlocked;
+        tab.classList.toggle("completed", gameState.completedLevels[lv]);
+        tab.classList.toggle("active", gameState.currentScreen === `level${lv}`);
+        if (gameState.completedLevels[lv]) {
+          status.textContent = "Hoàn thành ✔";
+        } else if (isUnlocked) {
+          status.textContent = titles[lv];
+        } else {
+          status.textContent = "Khóa 🔒";
+        }
+      }
+
+      renderStudioScene();
+    }
+
+    function switchScreen(screenName) {
+      gameState.currentScreen = screenName;
+      const map = {
+        welcome: "screenWelcome",
+        level1: "screenLevel1",
+        level2: "screenLevel2",
+        level3: "screenLevel3",
+        level4: "screenLevel4",
+        summary: "screenSummary"
+      };
+
+      Object.values(map).forEach(id => {
+        document.getElementById(id).classList.remove("active");
+      });
+      const targetId = map[screenName];
+      if (targetId) {
+        document.getElementById(targetId).classList.add("active");
+      }
+
+      if (screenName.startsWith("level")) {
+        const lvNum = screenName.replace("level", "");
+        document.getElementById("progressText").textContent = `Màn ${lvNum}/4`;
+      } else if (screenName === "summary") {
+        document.getElementById("progressText").textContent = "Hoàn thành 4/4";
+        document.getElementById("finalScoreValue").textContent = String(gameState.score);
+      } else {
+        document.getElementById("progressText").textContent = "Bắt đầu";
+      }
+
+      updateHeaderAndTabs();
+    }
+
+    function awardLevelScoreOnce(levelNumber) {
+      if (!gameState.completedLevels[levelNumber]) {
+        gameState.completedLevels[levelNumber] = true;
+        gameState.score += GAME_CONFIG.meta.pointsPerLevel;
+      }
+      updateHeaderAndTabs();
+      launchStarConfetti();
+      sound.playSfx("levelClear");
+    }
+
+    function setFeedback(elId, type, text) {
+      const bar = document.getElementById(elId);
+      bar.className = "feedback-bar " + (type || "");
+      bar.innerHTML = `<span>${text}</span>`;
+    }
+
+    function setChecklist(elId, isDone, labelText) {
+      const item = document.getElementById(elId);
+      item.classList.toggle("done", isDone);
+      item.innerHTML = `<span>${isDone ? "✅" : "⬜"}</span> <span>${labelText}</span>`;
+    }
+
+    /**
+     * ============================================================================
+     * LOGIC MÀN 1: GÕ BÀI THƠ NGẮN TỰ TẠO
+     * ============================================================================
+     */
+    function initLevel1() {
+      const cfg = GAME_CONFIG.levels.level1;
+      gameState.hintsUsed[1] = 0;
+      document.getElementById("btnL1Hint").textContent = "💡 Gợi ý (0/2)";
+      document.getElementById("l1TargetPoemBox").innerHTML = cfg.targetLines
+        .map((line, idx) => `<div>Dòng ${idx + 1}: ${line}</div>`)
+        .join("");
+
+      const input = document.getElementById("poemInput");
+      input.value = cfg.initialCorruptedText;
+      updateLevel1RealtimeStatus();
+
+      document.getElementById("btnL1Next").disabled = !gameState.completedLevels[1];
+      setFeedback("l1Feedback", "", "Hãy sửa các kí tự dư ở dòng 1 và gõ tiếp dòng 2, 3, 4 của bài thơ nhé!");
+    }
+
+    function getNormalizedLines(rawText) {
+      return rawText
+        .replace(/\r\n/g, "\n")
+        .split("\n")
+        .map(line => line.replace(/\s+/g, " ").trim())
+        .filter((line, idx, arr) => !(idx === arr.length - 1 && line === ""));
+    }
+
+    function updateLevel1RealtimeStatus() {
+      const cfg = GAME_CONFIG.levels.level1;
+      const raw = document.getElementById("poemInput").value;
+      const userLines = getNormalizedLines(raw);
+
+      const line1Clean = userLines[0] === cfg.targetLines[0];
+      const hasFourLines = userLines.length === 4;
+      const allLinesExact =
+        hasFourLines &&
+        cfg.targetLines.every((target, i) => userLines[i] === target);
+
+      setChecklist("l1Check1", line1Clean, "1. Xóa sạch kí tự lỗi (`hhh`, `###`) ở dòng 1.");
+      setChecklist("l1Check2", hasFourLines, "2. Đủ 4 dòng thơ (nhấn Enter xuống dòng đúng chỗ).");
+      setChecklist("l1Check3", allLinesExact, "3. Đúng chính tả, chữ hoa đầu dòng và dấu chấm cuối bài.");
+
+      // Render bảng so khớp từng dòng
+      const diffContainer = document.getElementById("l1DiffList");
+      diffContainer.innerHTML = cfg.targetLines
+        .map((target, idx) => {
+          const current = userLines[idx] || "(Chưa gõ)";
+          const isMatch = current === target;
+          return `
+            <div class="line-diff-row ${isMatch ? "match" : ""}">
+              <span>Dòng ${idx + 1}: ${current}</span>
+              <span>${isMatch ? "✔ Chính xác" : "✎ Cần chỉnh"}</span>
+            </div>
+          `;
+        })
+        .join("");
+
+      return { line1Clean, hasFourLines, allLinesExact, userLines };
+    }
+
+    function verifyLevel1() {
+      const cfg = GAME_CONFIG.levels.level1;
+      const status = updateLevel1RealtimeStatus();
+
+      if (!status.line1Clean) {
+        sound.playSfx("error");
+        renderPixelMascot("thinking", "Dòng 1 vẫn còn kí tự thừa hoặc chưa khớp mẫu. Em hãy sửa thành: 'Trái Đất xanh tươi đẹp' nhé!");
+        setFeedback("l1Feedback", "error", "Chưa đạt: Dòng 1 chưa đúng. Em hãy xóa 3 chữ 'h' thừa và '###' ở cuối dòng 1.");
+        return;
+      }
+
+      if (!status.hasFourLines) {
+        sound.playSfx("error");
+        renderPixelMascot("thinking", `Hiện tại bản thảo mới có ${status.userLines.length}/4 dòng. Em nhớ nhấn Enter để xuống dòng và gõ đủ 4 dòng thơ nhé!`);
+        setFeedback("l1Feedback", "error", `Chưa đạt: Bản thảo hiện có ${status.userLines.length} dòng. Cần gõ đủ 4 dòng thơ và xuống dòng bằng phím Enter.`);
+        return;
+      }
+
+      if (!status.allLinesExact) {
+        const wrongIdx = cfg.targetLines.findIndex((t, i) => status.userLines[i] !== t);
+        sound.playSfx("error");
+        renderPixelMascot("thinking", `Dòng ${wrongIdx + 1} chưa khớp hoàn toàn. Em kiểm tra lại chữ hoa đầu dòng, dấu tiếng Việt và dấu chấm cuối câu nhé!`);
+        setFeedback(
+          "l1Feedback",
+          "error",
+          `Chưa đạt ở Dòng ${wrongIdx + 1}: Cần gõ đúng là "${cfg.targetLines[wrongIdx]}".`
+        );
+        return;
+      }
+
+      // Hoàn thành Màn 1
+      awardLevelScoreOnce(1);
+      document.getElementById("btnL1Next").disabled = false;
+      renderPixelMascot("proud", "Tuyệt vời! Em đã gõ bài thơ 4 dòng đúng chuẩn chữ hoa, dấu tiếng Việt và xuống dòng! Bàn Bản Thảo đã sáng đèn!");
+      setFeedback("l1Feedback", "success", "🎉 Xuất sắc (+25 điểm)! Bài thơ 4 dòng đã được soạn thảo chính xác. Em hãy nhấn 'Tiếp tục sang Màn 2'!");
+    }
+
+    /**
+     * ============================================================================
+     * LOGIC MÀN 2: SAO CHÉP VÀ DI CHUYỂN VĂN BẢN (SELECT, CUT, COPY, PASTE, DELETE)
+     * ============================================================================
+     */
+    function initLevel2() {
+      const cfg = GAME_CONFIG.levels.level2;
+      gameState.hintsUsed[2] = 0;
+      document.getElementById("btnL2Hint").textContent = "💡 Gợi ý (0/2)";
+
+      gameState.level2 = {
+        blocks: cfg.initialBlocks.map(b => ({ ...b })),
+        selectedBlockIndex: null,
+        selectedSlotIndex: null,
+        clipboard: null,
+        hasCutOrMoved: false,
+        hasCopied: false,
+        hasDeletedCorrupt: false
+      };
+
+      renderLevel2Document();
+      updateLevel2Checklist();
+      document.getElementById("btnL2Next").disabled = !gameState.completedLevels[2];
+      setFeedback("l2Feedback", "", "Nháy chọn một đoạn văn bản, sau đó dùng Cắt (Cut), Sao chép (Copy), Dán (Paste) hoặc Xóa (Delete)!");
+    }
+
+    function renderLevel2Document() {
+      const container = document.getElementById("l2DocumentContainer");
+      const st = gameState.level2;
+      let html = "";
+
+      for (let i = 0; i <= st.blocks.length; i++) {
+        const isSlotSelected = st.selectedSlotIndex === i;
+        html += `
+          <div class="insert-slot ${isSlotSelected ? "selected-slot" : ""}" data-slot-index="${i}" tabindex="0" role="button">
+            ➕ Vị trí chèn số ${i + 1} ${i === st.blocks.length ? "(Cuối bài)" : ""} — Nháy chọn để Dán (Paste) tại đây
+          </div>
+        `;
+
+        if (i < st.blocks.length) {
+          const blk = st.blocks[i];
+          const isSelected = st.selectedBlockIndex === i;
+          html += `
+            <div class="doc-block ${isSelected ? "selected" : ""}" data-block-index="${i}" tabindex="0" role="button">
+              <span>${blk.text}</span>
+              <span style="font-size:0.78rem; padding:3px 8px; border-radius:999px; background:#EFEAFF; color:var(--primary-purple);">
+                ${isSelected ? "Đang chọn ✔" : "Nháy để chọn"}
+              </span>
+            </div>
+          `;
+        }
+      }
+
+      container.innerHTML = html;
+
+      // Cập nhật hiển thị Clipboard
+      const clipBox = document.getElementById("l2ClipboardBox");
+      if (st.clipboard) {
+        clipBox.style.color = "var(--primary-purple)";
+        clipBox.textContent = `[${st.clipboard.mode === "cut" ? "Đã Cắt" : "Đã Sao chép"}]: "${st.clipboard.block.text}"`;
+      } else {
+        clipBox.style.color = "var(--text-muted)";
+        clipBox.textContent = "(Chưa có nội dung nào trong Clipboard)";
+      }
+    }
+
+    function evaluateLevel2State() {
+      const blocks = gameState.level2.blocks;
+      const noCorrupt = !blocks.some(b => b.type === "corrupt");
+      const types = blocks.map(b => b.type);
+
+      // Kiểm tra thứ tự Mở bài -> Thân bài -> Kết bài
+      const introIdx = types.indexOf("intro");
+      const bodyIdx = types.indexOf("body");
+      const conclIdx = types.indexOf("conclusion");
+      const orderCorrect = introIdx !== -1 && bodyIdx !== -1 && conclIdx !== -1 && introIdx < bodyIdx && bodyIdx < conclIdx;
+
+      // Kiểm tra câu khẩu hiệu xuất hiện ở cả đầu bài và cuối bài
+      const sloganTopAndBottom =
+        blocks.length >= 2 &&
+        blocks[0].type === "slogan" &&
+        blocks[blocks.length - 1].type === "slogan";
+
+      return { noCorrupt, orderCorrect, sloganTopAndBottom };
+    }
+
+    function updateLevel2Checklist() {
+      const ev = evaluateLevel2State();
+      setChecklist("l2Check1", ev.orderCorrect, "1. Di chuyển (Cut + Paste) để xếp đúng thứ tự: Mở bài ➔ Thân bài ➔ Kết bài.");
+      setChecklist("l2Check2", ev.sloganTopAndBottom, "2. Sao chép (Copy + Paste) câu khẩu hiệu đặt thêm một bản ở cuối bài.");
+      setChecklist("l2Check3", ev.noCorrupt, "3. Chọn và Xóa (Delete) dòng '[Bản nháp lỗi cần xóa]'.");
+      return ev;
+    }
+
+    function handleLevel2Cut() {
+      const st = gameState.level2;
+      if (st.selectedBlockIndex === null) {
+        sound.playSfx("error");
+        setFeedback("l2Feedback", "error", "Em hãy nháy chọn một đoạn văn bản trước khi bấm '✂️ Cắt (Cut)' nhé!");
+        return;
+      }
+      const removed = st.blocks.splice(st.selectedBlockIndex, 1)[0];
+      st.clipboard = { block: removed, mode: "cut" };
+      st.selectedBlockIndex = null;
+      st.hasCutOrMoved = true;
+      sound.playSfx("action");
+      renderLevel2Document();
+      updateLevel2Checklist();
+      renderPixelMascot("guiding", "Đã Cắt đoạn văn vào Bộ nhớ tạm (Clipboard)! Bây giờ em hãy nháy chọn một 'Vị trí chèn' rồi bấm 'Dán (Paste)' nhé!");
+      setFeedback("l2Feedback", "", "Đã Cắt (Cut) vào Bộ nhớ tạm! Hãy chọn một 'Vị trí chèn' (khung nét đứt) rồi bấm '📋 Dán'.");
+    }
+
+    function handleLevel2Copy() {
+      const st = gameState.level2;
+      if (st.selectedBlockIndex === null) {
+        sound.playSfx("error");
+        setFeedback("l2Feedback", "error", "Em hãy nháy chọn một đoạn văn bản trước khi bấm '📄 Sao chép (Copy)' nhé!");
+        return;
+      }
+      const copied = { ...st.blocks[st.selectedBlockIndex], id: "copy_" + Date.now() };
+      st.clipboard = { block: copied, mode: "copy" };
+      st.hasCopied = true;
+      sound.playSfx("action");
+      renderLevel2Document();
+      updateLevel2Checklist();
+      renderPixelMascot("guiding", "Đã Sao chép vào Bộ nhớ tạm! Đoạn gốc vẫn giữ nguyên. Hãy chọn 'Vị trí chèn cuối bài' và bấm 'Dán (Paste)' nhé!");
+      setFeedback("l2Feedback", "", "Đã Sao chép (Copy)! Hãy chọn 'Vị trí chèn cuối bài' và bấm '📋 Dán'.");
+    }
+
+    function handleLevel2Paste() {
+      const st = gameState.level2;
+      if (!st.clipboard) {
+        sound.playSfx("error");
+        setFeedback("l2Feedback", "error", "Bộ nhớ tạm đang trống! Em hãy chọn đoạn văn rồi bấm 'Cắt' hoặc 'Sao chép' trước khi Dán.");
+        return;
+      }
+      const targetSlot = st.selectedSlotIndex !== null ? st.selectedSlotIndex : st.blocks.length;
+      st.blocks.splice(targetSlot, 0, { ...st.clipboard.block, id: "pasted_" + Date.now() });
+      if (st.clipboard.mode === "cut") {
+        st.clipboard = null;
+      }
+      st.selectedSlotIndex = null;
+      sound.playSfx("action");
+      renderLevel2Document();
+      updateLevel2Checklist();
+      setFeedback("l2Feedback", "", "Đã Dán (Paste) đoạn văn bản vào vị trí đã chọn!");
+    }
+
+    function handleLevel2Delete() {
+      const st = gameState.level2;
+      if (st.selectedBlockIndex === null) {
+        sound.playSfx("error");
+        setFeedback("l2Feedback", "error", "Em hãy nháy chọn đoạn văn bản cần xóa trước khi bấm '🗑️ Xóa' nhé!");
+        return;
+      }
+      const target = st.blocks[st.selectedBlockIndex];
+      if (target.type !== "corrupt") {
+        sound.playSfx("error");
+        renderPixelMascot("thinking", "Ấy đừng xóa đoạn văn chính của bài viết nhé! Em chỉ nên xóa dòng '[Bản nháp lỗi cần xóa]' thôi!");
+        setFeedback("l2Feedback", "error", "Đoạn này là nội dung chính của bài viết, không nên xóa! Hãy chọn dòng '[Bản nháp lỗi cần xóa]' để xóa.");
+        return;
+      }
+      st.blocks.splice(st.selectedBlockIndex, 1);
+      st.selectedBlockIndex = null;
+      st.hasDeletedCorrupt = true;
+      sound.playSfx("action");
+      renderLevel2Document();
+      updateLevel2Checklist();
+      setFeedback("l2Feedback", "", "Đã xóa sạch dòng nháp lỗi khỏi văn bản!");
+    }
+
+    function verifyLevel2() {
+      const ev = updateLevel2Checklist();
+      if (!ev.orderCorrect) {
+        sound.playSfx("error");
+        renderPixelMascot("thinking", "Thứ tự bố cục chưa đúng! Đoạn 'Mở bài' phải đứng trước 'Thân bài' và 'Kết bài'. Em dùng Cắt (Cut) + Dán (Paste) để chuyển nhé!");
+        setFeedback("l2Feedback", "error", "Chưa đạt: Thứ tự các đoạn văn chưa đúng (cần xếp: Mở bài ➔ Thân bài ➔ Kết bài).");
+        return;
+      }
+      if (!ev.noCorrupt) {
+        sound.playSfx("error");
+        renderPixelMascot("thinking", "Trong bài vẫn còn dòng '[Bản nháp lỗi cần xóa]'. Em hãy chọn dòng đó và nhấn nút '🗑️ Xóa' nhé!");
+        setFeedback("l2Feedback", "error", "Chưa đạt: Hãy chọn và Xóa dòng '[Bản nháp lỗi cần xóa]'.");
+        return;
+      }
+      if (!ev.sloganTopAndBottom) {
+        sound.playSfx("error");
+        renderPixelMascot("thinking", "Em hãy Sao chép (Copy) câu 'Khẩu hiệu: Hãy cùng nhau bảo vệ hành tinh xanh!' ở đầu bài và Dán (Paste) thêm một bản ở vị trí cuối bài nhé!");
+        setFeedback("l2Feedback", "error", "Chưa đạt: Cần có câu khẩu hiệu ở cả đầu bài và cuối bài (dùng Sao chép + Dán).");
+        return;
+      }
+
+      awardLevelScoreOnce(2);
+      document.getElementById("btnL2Next").disabled = false;
+      renderPixelMascot("proud", "Quá siêu! Em đã làm chủ hoàn toàn các thao tác Chọn, Cắt, Sao chép, Dán và Xóa văn bản! Trạm Bố Cục đã mở khóa!");
+      setFeedback("l2Feedback", "success", "🎉 Hoàn thành Màn 2 (+25 điểm)! Bố cục bài viết đã mạch lạc, chặt chẽ. Nhấn 'Tiếp tục sang Màn 3' nhé!");
+    }
+
+    /**
+     * ============================================================================
+     * LOGIC MÀN 3: CHÈN HÌNH TRÁI ĐẤT & KÉO THẢ BỐ CỤC
+     * ============================================================================
+     */
+    function initLevel3() {
+      gameState.hintsUsed[3] = 0;
+      document.getElementById("btnL3Hint").textContent = "💡 Gợi ý (0/2)";
+
+      gameState.level3 = {
+        selectedImage: null,
+        wrapMode: "overlap",
+        isDockedInFrame: false,
+        dragX: 90,
+        dragY: 85
+      };
+
+      document.querySelectorAll(".gallery-card").forEach(btn => btn.classList.remove("chosen"));
+      const earthEl = document.getElementById("l3DraggableEarth");
+      const dropzone = document.getElementById("l3Dropzone");
+      const canvas = document.getElementById("l3PageCanvas");
+
+      if (earthEl.parentElement !== canvas) {
+        canvas.appendChild(earthEl);
+      }
+      earthEl.style.display = "none";
+      earthEl.classList.remove("docked");
+      dropzone.classList.remove("occupied");
+      document.getElementById("l3DropzoneLabel").style.display = "block";
+
+      document.getElementById("btnWrapOverlap").setAttribute("aria-pressed", "true");
+      document.getElementById("btnWrapSquare").setAttribute("aria-pressed", "false");
+
+      updateLevel3Checklist();
+      document.getElementById("btnL3Next").disabled = !gameState.completedLevels[3];
+      setFeedback("l3Feedback", "", "Bước 1: Hãy chọn hình minh họa phù hợp từ Thư viện bên phải!");
+    }
+
+    function updateLevel3Checklist() {
+      const st = gameState.level3;
+      const isEarth = st.selectedImage === "earth";
+      const isSquare = st.wrapMode === "square";
+      const isDocked = st.isDockedInFrame;
+
+      setChecklist("l3Check1", isEarth, "1. Chèn đúng hình minh họa 'Quả Địa Cầu Xanh'.");
+      setChecklist("l3Check2", isSquare, "2. Chọn kiểu bố trí 'Bao quanh chữ (Không che chữ)'.");
+      setChecklist("l3Check3", isDocked, "3. Kéo đặt hình vào đúng 'Khung minh họa chuẩn' bên phải.");
+
+      return { isEarth, isSquare, isDocked };
+    }
+
+    function dockEarthIntoFrame() {
+      const st = gameState.level3;
+      if (st.selectedImage !== "earth") {
+        sound.playSfx("error");
+        setFeedback("l3Feedback", "error", "Em cần chọn chèn hình 'Quả Địa Cầu Xanh' từ Thư viện trước nhé!");
+        return;
+      }
+      const earthEl = document.getElementById("l3DraggableEarth");
+      const dropzone = document.getElementById("l3Dropzone");
+      document.getElementById("l3DropzoneLabel").style.display = "none";
+      dropzone.classList.add("occupied");
+      earthEl.classList.add("docked");
+      earthEl.style.left = "";
+      earthEl.style.top = "";
+      dropzone.appendChild(earthEl);
+      st.isDockedInFrame = true;
+      sound.playSfx("action");
+      updateLevel3Checklist();
+      renderPixelMascot("happy", "Hình Trái Đất đã nằm gọn trong khung minh họa! Hãy đảm bảo đã chọn chế độ 'Bao quanh chữ' rồi nhấn Kiểm tra nhé!");
+      setFeedback("l3Feedback", "", "Đã đặt hình Trái Đất vào đúng Khung minh họa bên phải!");
+    }
+
+    function setupLevel3DragAndDrop() {
+      const earthEl = document.getElementById("l3DraggableEarth");
+      const canvas = document.getElementById("l3PageCanvas");
+      const dropzone = document.getElementById("l3Dropzone");
+      let isDragging = false;
+      let startX = 0;
+      let startY = 0;
+
+      earthEl.addEventListener("pointerdown", e => {
+        if (gameState.level3.isDockedInFrame) return;
+        isDragging = true;
+        earthEl.setPointerCapture(e.pointerId);
+        startX = e.clientX - gameState.level3.dragX;
+        startY = e.clientY - gameState.level3.dragY;
+      });
+
+      earthEl.addEventListener("pointermove", e => {
+        if (!isDragging || gameState.level3.isDockedInFrame) return;
+        const rect = canvas.getBoundingClientRect();
+        let nx = e.clientX - startX;
+        let ny = e.clientY - startY;
+        nx = Math.max(8, Math.min(rect.width - 144, nx));
+        ny = Math.max(8, Math.min(rect.height - 144, ny));
+        gameState.level3.dragX = nx;
+        gameState.level3.dragY = ny;
+        earthEl.style.left = `${nx}px`;
+        earthEl.style.top = `${ny}px`;
+      });
+
+      earthEl.addEventListener("pointerup", e => {
+        if (!isDragging) return;
+        isDragging = false;
+        const earthRect = earthEl.getBoundingClientRect();
+        const dropRect = dropzone.getBoundingClientRect();
+
+        const centerX = earthRect.left + earthRect.width / 2;
+        const centerY = earthRect.top + earthRect.height / 2;
+
+        if (
+          centerX >= dropRect.left - 25 &&
+          centerX <= dropRect.right + 25 &&
+          centerY >= dropRect.top - 25 &&
+          centerY <= dropRect.bottom + 25
+        ) {
+          dockEarthIntoFrame();
+        }
+      });
+    }
+
+    function verifyLevel3() {
+      const ev = updateLevel3Checklist();
+      if (!ev.isEarth) {
+        sound.playSfx("error");
+        setFeedback("l3Feedback", "error", "Chưa đạt: Em hãy chọn hình 'Quả Địa Cầu Xanh' trong Thư viện Chèn > Hình ảnh.");
+        return;
+      }
+      if (!ev.isSquare) {
+        sound.playSfx("error");
+        renderPixelMascot("thinking", "Hình ảnh đang ở chế độ 'Đè lên chữ' làm che khuất văn bản. Em hãy bấm chọn nút '📰 Bao quanh chữ (Không che chữ)' trên thanh công cụ nhé!");
+        setFeedback("l3Feedback", "error", "Chưa đạt: Hãy chuyển kiểu bố trí ảnh sang '📰 Bao quanh chữ (Không che chữ)'.");
+        return;
+      }
+      if (!ev.isDocked) {
+        sound.playSfx("error");
+        renderPixelMascot("thinking", "Hình Trái Đất vẫn đang nằm giữa trang làm che dòng chữ. Em hãy kéo thả hình vào 'Khung minh họa chuẩn' ở góc phải nhé!");
+        setFeedback("l3Feedback", "error", "Chưa đạt: Hãy kéo hình Trái Đất đặt vào 'Khung minh họa chuẩn' bên phải trang.");
+        return;
+      }
+
+      awardLevelScoreOnce(3);
+      document.getElementById("btnL3Next").disabled = false;
+      renderPixelMascot("proud", "Tuyệt đẹp! Trang báo đã có hình minh họa Trái Đất sinh động mà không hề che khuất chữ! Phòng Đồ Họa đã mở khóa!");
+      setFeedback("l3Feedback", "success", "🎉 Hoàn thành Màn 3 (+25 điểm)! Hình minh họa và văn bản đã bố trí cân đối. Nhấn 'Tiếp tục sang Màn 4' nhé!");
+    }
+
+    /**
+     * ============================================================================
+     * LOGIC MÀN 4: ĐỊNH DẠNG HOÀN THIỆN VÀ LƯU TỆP
+     * ============================================================================
+     */
+    function initLevel4() {
+      gameState.hintsUsed[4] = 0;
+      document.getElementById("btnL4Hint").textContent = "💡 Gợi ý (0/2)";
+
+      gameState.level4 = {
+        title: "",
+        isBold: false,
+        isCentered: false,
+        bodySize: "8",
+        bodyColor: "pale",
+        selectedFolder: null,
+        fileName: "Bao_Ve_Trai_Dat.docx",
+        isSaved: false
+      };
+
+      document.getElementById("l4TitleSelect").value = "";
+      document.getElementById("btnL4Bold").setAttribute("aria-pressed", "false");
+      document.getElementById("btnL4Center").setAttribute("aria-pressed", "false");
+      document.getElementById("l4BodySize").value = "8";
+      document.getElementById("l4BodyColor").value = "pale";
+      document.getElementById("l4FileNameInput").value = "Bao_Ve_Trai_Dat.docx";
+      document.getElementById("l4SavedStamp").style.display = "none";
+
+      document.querySelectorAll(".folder-item").forEach(el => el.classList.remove("selected"));
+
+      updateLevel4PreviewAndChecklist();
+      document.getElementById("btnL4Finish").disabled = !gameState.completedLevels[4];
+      setFeedback("l4Feedback", "", "Hãy chọn tiêu đề, định dạng chữ rõ ràng và lưu vào đúng thư mục học tập!");
+    }
+
+    function updateLevel4PreviewAndChecklist() {
+      const st = gameState.level4;
+      const cfg = GAME_CONFIG.levels.level4;
+
+      const titleEl = document.getElementById("l4PreviewTitle");
+      if (!st.title) {
+        titleEl.textContent = "(Chưa có tiêu đề bài viết)";
+        titleEl.style.color = "#999999";
+      } else {
+        titleEl.textContent = st.title;
+        titleEl.style.color = "#58429B";
+      }
+      titleEl.style.fontWeight = st.isBold ? "900" : "500";
+      titleEl.style.textAlign = st.isCentered ? "center" : "left";
+
+      const bodyEl = document.getElementById("l4PreviewBody");
+      bodyEl.style.fontSize = st.bodySize === "14" ? "1.02rem" : "0.72rem";
+      bodyEl.style.color = st.bodyColor === "dark" ? "#2A2344" : "#E5C858";
+
+      const c1 = st.title === cfg.correctTitle && st.isBold && st.isCentered;
+      const c2 = st.bodySize === cfg.correctSize && st.bodyColor === cfg.correctColor;
+      const c3 = st.isSaved && st.selectedFolder === cfg.correctFolder && st.fileName.trim().length >= 3;
+
+      setChecklist("l4Check1", c1, "1. Tiêu đề 'BẢO VỆ TRÁI ĐẤT XANH' được In đậm & Căn giữa.");
+      setChecklist("l4Check2", c2, "2. Nội dung cỡ chữ 14pt, màu Xanh tím đậm dễ đọc.");
+      setChecklist("l4Check3", c3, "3. Lưu tệp vào đúng thư mục 'Bài tập Tin học 5'.");
+
+      return { c1, c2, c3 };
+    }
+
+    function verifyLevel4() {
+      const ev = updateLevel4PreviewAndChecklist();
+      if (!ev.c1) {
+        sound.playSfx("error");
+        renderPixelMascot("thinking", "Tiêu đề chưa đạt yêu cầu! Em hãy chọn đúng tiêu đề 'BẢO VỆ TRÁI ĐẤT XANH' và bật cả hai nút 'B In đậm' và '☰ Căn giữa' nhé!");
+        setFeedback("l4Feedback", "error", "Chưa đạt: Tiêu đề cần là 'BẢO VỆ TRÁI ĐẤT XANH', được In đậm (B) và Căn giữa.");
+        return;
+      }
+      if (!ev.c2) {
+        sound.playSfx("error");
+        renderPixelMascot("thinking", "Chữ nội dung màu vàng nhạt cỡ 8pt rất khó đọc! Em hãy đổi sang cỡ chữ '14 pt' và màu chữ 'Xanh tím đậm' nhé!");
+        setFeedback("l4Feedback", "error", "Chưa đạt: Hãy chỉnh cỡ chữ nội dung lên 14 pt và chọn màu 'Xanh tím đậm'.");
+        return;
+      }
+      if (!ev.c3) {
+        sound.playSfx("error");
+        renderPixelMascot("thinking", "Em chưa lưu tệp vào đúng thư mục học tập! Hãy chọn thư mục '📁 Bài tập Tin học 5' và bấm nút '💾 Lưu' nhé!");
+        setFeedback("l4Feedback", "error", "Chưa đạt: Hãy chọn thư mục '📁 Bài tập Tin học 5' và bấm nút '💾 Lưu'.");
+        return;
+      }
+
+      awardLevelScoreOnce(4);
+      document.getElementById("btnL4Finish").disabled = false;
+      renderPixelMascot("proud", "Hoan hô Tổng Biên Tập Nhí! Em đã hoàn thiện chuyên san Bảo vệ Trái Đất Xanh và mở khóa trọn vẹn cả 4 khu vực của Tòa soạn!");
+      setFeedback("l4Feedback", "success", "🎉 Hoàn thành Màn 4 (+25 điểm)! Nhấn '🏆 Xem Tổng kết & Huy hiệu' để nhận bằng khen nhé!");
+    }
+
+    /**
+     * Xuất bản thảo sản phẩm thành tệp .html thật tải về máy người chơi
+     */
+    function exportPublicationFile() {
+      sound.playSfx("action");
+      const poemLines = GAME_CONFIG.levels.level1.targetLines.map(l => `<p style="margin:4px 0;">${l}</p>`).join("");
+      const htmlContent = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Bản thảo: BẢO VỆ TRÁI ĐẤT XANH - Tin học 5 Bài 7</title>
+<style>
+  body { font-family: "Segoe UI", Arial, sans-serif; background:#F8F7FF; padding:32px; color:#2A2344; }
+  .page { max-width:720px; margin:0 auto; background:#FFFFFF; border:3px solid #58429B; border-radius:18px; padding:28px; }
+  h1 { text-align:center; color:#58429B; }
+  .poem { background:#E8F8F5; border-left:5px solid #4ABDAA; padding:12px 18px; border-radius:8px; font-weight:bold; margin:16px 0; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <h1>BẢO VỆ TRÁI ĐẤT XANH</h1>
+    <p><strong>Khẩu hiệu:</strong> Hãy cùng nhau bảo vệ hành tinh xanh!</p>
+    <p><strong>Mở bài:</strong> Trái Đất là ngôi nhà chung kì diệu của chúng ta.</p>
+    <p><strong>Thân bài:</strong> Rừng xanh lọc không khí, biển cả điều hòa khí hậu cho muôn loài.</p>
+    <div class="poem">${poemLines}</div>
+    <p><strong>Kết bài:</strong> Mỗi việc làm nhỏ mỗi ngày đều giúp Trái Đất thêm tươi đẹp.</p>
+    <p><strong>Thông điệp:</strong> Hãy cùng nhau bảo vệ hành tinh xanh!</p>
+    <hr/>
+    <small>Sản phẩm thực hành Tin học 5 – Bài 7: Thực hành soạn thảo văn bản (Trò chơi: Biên Tập Viên Siêu Đẳng)</small>
+  </div>
+</body>
+</html>`;
+
+      const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Bao_Ve_Trai_Dat_Xanh_TinHoc5.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    /**
+     * ============================================================================
+     * GẮN SỰ KIỆN TƯƠNG TÁC (EVENT LISTENERS)
+     * ============================================================================
+     */
+    function bindAllEvents() {
+      // Công tắc âm thanh độc lập: Nhạc nền & Hiệu ứng
+      const btnBgm = document.getElementById("btnToggleBgm");
+      const btnSfx = document.getElementById("btnToggleSfx");
+      const sliderVol = document.getElementById("masterVolume");
+      const btnMute = document.getElementById("btnQuickMute");
+
+      btnBgm.addEventListener("click", () => {
+        sound.bgmEnabled = !sound.bgmEnabled;
+        btnBgm.setAttribute("aria-pressed", String(sound.bgmEnabled));
+        btnBgm.textContent = sound.bgmEnabled ? "🎵 Nhạc nền: BẬT" : "🎵 Nhạc nền: TẮT";
+        if (sound.bgmEnabled && gameState.hasStarted) {
+          sound.startBgm();
+        } else {
+          sound.stopBgm();
+        }
+      });
+
+      btnSfx.addEventListener("click", () => {
+        sound.sfxEnabled = !sound.sfxEnabled;
+        btnSfx.setAttribute("aria-pressed", String(sound.sfxEnabled));
+        btnSfx.textContent = sound.sfxEnabled ? "✨ Hiệu ứng: BẬT" : "✨ Hiệu ứng: TẮT";
+        if (sound.sfxEnabled) sound.playSfx("click");
+      });
+
+      sliderVol.addEventListener("input", e => {
+        sound.masterVolume = Number(e.target.value) / 100;
+        if (sound.masterVolume > 0 && sound.isQuickMuted) {
+          sound.isQuickMuted = false;
+          btnMute.textContent = "🔇 Tắt nhanh";
+        }
+      });
+
+      btnMute.addEventListener("click", () => {
+        sound.isQuickMuted = !sound.isQuickMuted;
+        btnMute.textContent = sound.isQuickMuted ? "🔊 Bật lại âm" : "🔇 Tắt nhanh";
+        if (sound.isQuickMuted) {
+          sound.stopBgm();
+        } else if (gameState.hasStarted && sound.bgmEnabled) {
+          sound.startBgm();
+        }
+      });
+
+      // Chọn chế độ chơi Luyện tập / Thử thách
+      const modePrac = document.getElementById("modePractice");
+      const modeChal = document.getElementById("modeChallenge");
+      const selectMode = mode => {
+        gameState.mode = mode;
+        modePrac.classList.toggle("selected", mode === "practice");
+        modeChal.classList.toggle("selected", mode === "challenge");
+        modePrac.setAttribute("aria-checked", String(mode === "practice"));
+        modeChal.setAttribute("aria-checked", String(mode === "challenge"));
+        sound.playSfx("click");
+        updateHeaderAndTabs();
+      };
+      modePrac.addEventListener("click", () => selectMode("practice"));
+      modeChal.addEventListener("click", () => selectMode("challenge"));
+
+      // Nút Bắt đầu trò chơi (Khởi tạo Web Audio API sau tương tác người chơi)
+      document.getElementById("btnStartGame").addEventListener("click", () => {
+        gameState.hasStarted = true;
+        sound.initContext();
+        sound.playSfx("action");
+        sound.startBgm();
+        renderPixelMascot("guiding", "Màn 1 bắt đầu! Em hãy sửa kí tự dư ở dòng 1 và gõ hoàn chỉnh bài thơ 4 dòng về Trái Đất nhé!");
+        switchScreen("level1");
+      });
+
+      // Nút Trang chủ
+      document.getElementById("btnHomeTop").addEventListener("click", () => {
+        sound.playSfx("click");
+        sound.stopBgm();
+        renderPixelMascot("guiding", "Chào mừng em trở lại màn hình chính của Tòa soạn Văn bản Trẻ em!");
+        switchScreen("welcome");
+      });
+
+      // Hộp thoại Hướng dẫn
+      const guideModal = document.getElementById("guideModal");
+      document.getElementById("btnOpenGuide").addEventListener("click", () => {
+        sound.playSfx("click");
+        guideModal.classList.add("open");
+      });
+      document.getElementById("btnCloseGuideTop").addEventListener("click", () => {
+        sound.playSfx("click");
+        guideModal.classList.remove("open");
+      });
+      document.getElementById("btnCloseGuideBottom").addEventListener("click", () => {
+        sound.playSfx("click");
+        guideModal.classList.remove("open");
+      });
+
+      // Chuyển tab giữa các màn đã mở khóa
+      document.querySelectorAll(".level-tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+          if (tab.disabled) return;
+          const lv = tab.getAttribute("data-level");
+          sound.playSfx("click");
+          switchScreen(`level${lv}`);
+        });
+      });
+
+      // ================= MÀN 1 EVENTS =================
+      const poemInput = document.getElementById("poemInput");
+      poemInput.addEventListener("input", () => {
+        updateLevel1RealtimeStatus();
+      });
+
+      document.getElementById("btnL1CleanLine1").addEventListener("click", () => {
+        sound.playSfx("action");
+        const lines = poemInput.value.split("\n");
+        lines[0] = GAME_CONFIG.levels.level1.targetLines[0];
+        poemInput.value = lines.join("\n");
+        updateLevel1RealtimeStatus();
+        renderPixelMascot("happy", "Đã xóa sạch các kí tự dư 'hhh' và '###' ở dòng 1! Giờ em hãy gõ tiếp dòng 2, 3, 4 nhé!");
+      });
+
+      document.getElementById("btnL1FixSpaces").addEventListener("click", () => {
+        sound.playSfx("action");
+        const cleaned = getNormalizedLines(poemInput.value).map(line => {
+          if (!line) return "";
+          return line.charAt(0).toUpperCase() + line.slice(1);
+        });
+        poemInput.value = cleaned.join("\n");
+        updateLevel1RealtimeStatus();
+      });
+
+      document.querySelectorAll("[data-insert-line]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          sound.playSfx("click");
+          const idx = Number(btn.getAttribute("data-insert-line"));
+          const targetLine = GAME_CONFIG.levels.level1.targetLines[idx];
+          const currentLines = getNormalizedLines(poemInput.value);
+          currentLines[idx] = targetLine;
+          poemInput.value = currentLines.join("\n");
+          updateLevel1RealtimeStatus();
+        });
+      });
+
+      document.getElementById("btnL1Hint").addEventListener("click", () => {
+        sound.playSfx("click");
+        const step = Math.min(2, gameState.hintsUsed[1] + 1);
+        gameState.hintsUsed[1] = step;
+        document.getElementById("btnL1Hint").textContent = `💡 Gợi ý (${step}/2)`;
+        const hintText = GAME_CONFIG.levels.level1.hints[step - 1];
+        renderPixelMascot("thinking", hintText);
+        setFeedback("l1Feedback", "hint", hintText);
+      });
+
+      document.getElementById("btnL1Reset").addEventListener("click", () => {
+        sound.playSfx("click");
+        initLevel1();
+      });
+
+      document.getElementById("btnL1Verify").addEventListener("click", verifyLevel1);
+      document.getElementById("btnL1Next").addEventListener("click", () => {
+        sound.playSfx("action");
+        renderPixelMascot("guiding", "Chào mừng em đến với Màn 2! Hãy dùng Cắt, Sao chép, Dán và Xóa để sắp xếp lại bố cục bài viết nhé!");
+        switchScreen("level2");
+      });
+
+      // ================= MÀN 2 EVENTS =================
+      document.getElementById("l2DocumentContainer").addEventListener("click", e => {
+        const blockEl = e.target.closest("[data-block-index]");
+        const slotEl = e.target.closest("[data-slot-index]");
+        if (blockEl) {
+          sound.playSfx("click");
+          gameState.level2.selectedBlockIndex = Number(blockEl.getAttribute("data-block-index"));
+          renderLevel2Document();
+        } else if (slotEl) {
+          sound.playSfx("click");
+          gameState.level2.selectedSlotIndex = Number(slotEl.getAttribute("data-slot-index"));
+          renderLevel2Document();
+        }
+      });
+
+      document.getElementById("btnL2Cut").addEventListener("click", handleLevel2Cut);
+      document.getElementById("btnL2Copy").addEventListener("click", handleLevel2Copy);
+      document.getElementById("btnL2Paste").addEventListener("click", handleLevel2Paste);
+      document.getElementById("btnL2Delete").addEventListener("click", handleLevel2Delete);
+
+      // Hỗ trợ phím tắt thật Ctrl+X, Ctrl+C, Ctrl+V, Delete ở Màn 2
+      document.addEventListener("keydown", e => {
+        if (gameState.currentScreen !== "level2") return;
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "x") {
+          e.preventDefault();
+          handleLevel2Cut();
+        } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "c") {
+          e.preventDefault();
+          handleLevel2Copy();
+        } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "v") {
+          e.preventDefault();
+          handleLevel2Paste();
+        } else if (e.key === "Delete") {
+          e.preventDefault();
+          handleLevel2Delete();
+        }
+      });
+
+      document.getElementById("btnL2Hint").addEventListener("click", () => {
+        sound.playSfx("click");
+        const step = Math.min(2, gameState.hintsUsed[2] + 1);
+        gameState.hintsUsed[2] = step;
+        document.getElementById("btnL2Hint").textContent = `💡 Gợi ý (${step}/2)`;
+        const hintText = GAME_CONFIG.levels.level2.hints[step - 1];
+        renderPixelMascot("thinking", hintText);
+        setFeedback("l2Feedback", "hint", hintText);
+      });
+
+      document.getElementById("btnL2Reset").addEventListener("click", () => {
+        sound.playSfx("click");
+        initLevel2();
+      });
+
+      document.getElementById("btnL2Verify").addEventListener("click", verifyLevel2);
+      document.getElementById("btnL2Next").addEventListener("click", () => {
+        sound.playSfx("action");
+        renderPixelMascot("guiding", "Màn 3 bắt đầu! Em hãy chọn hình Trái Đất, đổi kiểu bố trí Bao quanh chữ và kéo thả vào khung nhé!");
+        switchScreen("level3");
+      });
+
+      // ================= MÀN 3 EVENTS =================
+      document.querySelectorAll("[data-img-choice]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const choice = btn.getAttribute("data-img-choice");
+          document.querySelectorAll(".gallery-card").forEach(b => b.classList.remove("chosen"));
+          btn.classList.add("chosen");
+
+          if (choice !== "earth") {
+            gameState.level3.selectedImage = choice;
+            sound.playSfx("error");
+            const reason = GAME_CONFIG.levels.level3.wrongReasons[choice];
+            renderPixelMascot("thinking", reason);
+            setFeedback("l3Feedback", "error", reason);
+            updateLevel3Checklist();
+            return;
+          }
+
+          gameState.level3.selectedImage = "earth";
+          sound.playSfx("action");
+          const earthEl = document.getElementById("l3DraggableEarth");
+          earthEl.style.display = "flex";
+          if (!gameState.level3.isDockedInFrame) {
+            earthEl.style.left = `${gameState.level3.dragX}px`;
+            earthEl.style.top = `${gameState.level3.dragY}px`;
+          }
+          updateLevel3Checklist();
+          renderPixelMascot("happy", "Đã chèn hình Quả Địa Cầu Xanh! Hình đang đè lên chữ, em hãy chọn 'Bao quanh chữ' rồi kéo hình vào khung bên phải nhé!");
+          setFeedback("l3Feedback", "", "Đã chèn hình Trái Đất! Bây giờ hãy chọn '📰 Bao quanh chữ' và kéo hình vào Khung minh họa.");
+        });
+      });
+
+      document.getElementById("btnWrapOverlap").addEventListener("click", () => {
+        sound.playSfx("click");
+        gameState.level3.wrapMode = "overlap";
+        document.getElementById("btnWrapOverlap").setAttribute("aria-pressed", "true");
+        document.getElementById("btnWrapSquare").setAttribute("aria-pressed", "false");
+        updateLevel3Checklist();
+      });
+
+      document.getElementById("btnWrapSquare").addEventListener("click", () => {
+        sound.playSfx("action");
+        gameState.level3.wrapMode = "square";
+        document.getElementById("btnWrapOverlap").setAttribute("aria-pressed", "false");
+        document.getElementById("btnWrapSquare").setAttribute("aria-pressed", "true");
+        updateLevel3Checklist();
+        setFeedback("l3Feedback", "", "Đã chọn chế độ 'Bao quanh chữ (Không che chữ)'! Hãy kéo hình Trái Đất vào khung bên phải.");
+      });
+
+      document.getElementById("btnSizeBalanced").addEventListener("click", () => {
+        sound.playSfx("click");
+        setFeedback("l3Feedback", "", "Kích thước hình ảnh đã được đặt ở mức Cỡ chuẩn (100%) cân đối với trang viết.");
+      });
+
+      document.getElementById("btnMoveToFrame").addEventListener("click", dockEarthIntoFrame);
+      setupLevel3DragAndDrop();
+
+      document.getElementById("btnL3Hint").addEventListener("click", () => {
+        sound.playSfx("click");
+        const step = Math.min(2, gameState.hintsUsed[3] + 1);
+        gameState.hintsUsed[3] = step;
+        document.getElementById("btnL3Hint").textContent = `💡 Gợi ý (${step}/2)`;
+        const hintText = GAME_CONFIG.levels.level3.hints[step - 1];
+        renderPixelMascot("thinking", hintText);
+        setFeedback("l3Feedback", "hint", hintText);
+      });
+
+      document.getElementById("btnL3Reset").addEventListener("click", () => {
+        sound.playSfx("click");
+        initLevel3();
+      });
+
+      document.getElementById("btnL3Verify").addEventListener("click", verifyLevel3);
+      document.getElementById("btnL3Next").addEventListener("click", () => {
+        sound.playSfx("action");
+        renderPixelMascot("guiding", "Màn 4 cuối cùng rồi! Em hãy định dạng tiêu đề, chỉnh màu chữ rõ ràng và lưu tệp vào đúng thư mục nhé!");
+        switchScreen("level4");
+      });
+
+      // ================= MÀN 4 EVENTS =================
+      document.getElementById("l4TitleSelect").addEventListener("change", e => {
+        sound.playSfx("click");
+        gameState.level4.title = e.target.value;
+        updateLevel4PreviewAndChecklist();
+      });
+
+      document.getElementById("btnL4Bold").addEventListener("click", () => {
+        sound.playSfx("click");
+        gameState.level4.isBold = !gameState.level4.isBold;
+        document.getElementById("btnL4Bold").setAttribute("aria-pressed", String(gameState.level4.isBold));
+        updateLevel4PreviewAndChecklist();
+      });
+
+      document.getElementById("btnL4Center").addEventListener("click", () => {
+        sound.playSfx("click");
+        gameState.level4.isCentered = !gameState.level4.isCentered;
+        document.getElementById("btnL4Center").setAttribute("aria-pressed", String(gameState.level4.isCentered));
+        updateLevel4PreviewAndChecklist();
+      });
+
+      document.getElementById("l4BodySize").addEventListener("change", e => {
+        sound.playSfx("click");
+        gameState.level4.bodySize = e.target.value;
+        updateLevel4PreviewAndChecklist();
+      });
+
+      document.getElementById("l4BodyColor").addEventListener("change", e => {
+        sound.playSfx("click");
+        gameState.level4.bodyColor = e.target.value;
+        updateLevel4PreviewAndChecklist();
+      });
+
+      document.querySelectorAll("[data-folder]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          sound.playSfx("click");
+          document.querySelectorAll(".folder-item").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          gameState.level4.selectedFolder = btn.getAttribute("data-folder");
+          updateLevel4PreviewAndChecklist();
+        });
+      });
+
+      document.getElementById("btnL4SaveAction").addEventListener("click", () => {
+        const st = gameState.level4;
+        st.fileName = document.getElementById("l4FileNameInput").value.trim();
+        if (!st.selectedFolder) {
+          sound.playSfx("error");
+          setFeedback("l4Feedback", "error", "Em hãy chọn một thư mục trước khi bấm nút '💾 Lưu' nhé!");
+          return;
+        }
+        if (st.selectedFolder !== "study") {
+          sound.playSfx("error");
+          renderPixelMascot("thinking", "Thư mục này không phải nơi lưu bài tập môn Tin học! Em hãy chọn thư mục '📁 Bài tập Tin học 5' nhé!");
+          setFeedback("l4Feedback", "error", "Thư mục chưa phù hợp! Hãy chọn '📁 Bài tập Tin học 5' để dễ tìm lại bài sau này.");
+          return;
+        }
+        st.isSaved = true;
+        sound.playSfx("action");
+        document.getElementById("l4SavedStamp").style.display = "block";
+        updateLevel4PreviewAndChecklist();
+        renderPixelMascot("happy", "Đã lưu tệp Bao_Ve_Trai_Dat.docx vào thư mục Bài tập Tin học 5! Giờ hãy bấm 'Kiểm tra Màn 4' nhé!");
+        setFeedback("l4Feedback", "", "Đã lưu văn bản vào đúng thư mục học tập (Lưu trong lượt chơi)!");
+      });
+
+      document.getElementById("btnDownloadProduct").addEventListener("click", exportPublicationFile);
+
+      document.getElementById("btnL4Hint").addEventListener("click", () => {
+        sound.playSfx("click");
+        const step = Math.min(2, gameState.hintsUsed[4] + 1);
+        gameState.hintsUsed[4] = step;
+        document.getElementById("btnL4Hint").textContent = `💡 Gợi ý (${step}/2)`;
+        const hintText = GAME_CONFIG.levels.level4.hints[step - 1];
+        renderPixelMascot("thinking", hintText);
+        setFeedback("l4Feedback", "hint", hintText);
+      });
+
+      document.getElementById("btnL4Reset").addEventListener("click", () => {
+        sound.playSfx("click");
+        initLevel4();
+      });
+
+      document.getElementById("btnL4Verify").addEventListener("click", verifyLevel4);
+      document.getElementById("btnL4Finish").addEventListener("click", () => {
+        sound.playSfx("victory");
+        launchStarConfetti();
+        renderPixelMascot("proud", "Chúc mừng Biên Tập Viên Siêu Đẳng! Em đã đạt trọn vẹn 100/100 điểm và nhận đủ 4 huy hiệu danh giá!");
+        switchScreen("summary");
+      });
+
+      // ================= MÀN TỔNG KẾT EVENTS =================
+      document.getElementById("btnReviewLevels").addEventListener("click", () => {
+        sound.playSfx("click");
+        switchScreen("level1");
+      });
+
+      document.getElementById("btnSummaryExport").addEventListener("click", exportPublicationFile);
+
+      document.getElementById("btnPlayAgain").addEventListener("click", () => {
+        sound.playSfx("action");
+        gameState.score = 0;
+        gameState.completedLevels = { 1: false, 2: false, 3: false, 4: false };
+        initLevel1();
+        initLevel2();
+        initLevel3();
+        initLevel4();
+        renderPixelMascot("guiding", "Lượt chơi mới đã sẵn sàng! Cùng Pixel chinh phục lại 4 màn biên tập nhé!");
+        switchScreen("level1");
+      });
+    }
+
+    // Khởi chạy toàn bộ ứng dụng khi trang tải xong
+    window.addEventListener("DOMContentLoaded", () => {
+      renderPixelMascot("guiding");
+      renderStudioScene();
+      initLevel1();
+      initLevel2();
+      initLevel3();
+      initLevel4();
+      bindAllEvents();
+      updateHeaderAndTabs();
+    });
+  </script>
+</body>
+</html>

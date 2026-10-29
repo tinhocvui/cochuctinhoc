@@ -1,0 +1,3202 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SLIDE ĐẦU TAY – Tin học 4 Bài 7: Tạo bài trình chiếu</title>
+  <style>
+    :root {
+      --bg-cream: #FFF9ED;
+      --bg-panel: #FFFFFF;
+      --bg-soft: #FDF3DF;
+      --peach: #FF9850;
+      --peach-dark: #E0782F;
+      --mint: #40B8B3;
+      --mint-dark: #2B928D;
+      --lavender: #8069C6;
+      --lavender-dark: #5F49A3;
+      --gold: #FFD773;
+      --pink: #FF85A2;
+      --success: #2EB872;
+      --danger: #F15B5B;
+      --text-main: #2D2640;
+      --text-muted: #6C6382;
+      --border-soft: #E9DEC9;
+      --shadow-soft: 0 8px 22px rgba(72, 52, 117, 0.10);
+      --shadow-btn: 0 5px 0 rgba(0, 0, 0, 0.16);
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --font-sans: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    input, textarea {
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-sans);
+      background: radial-gradient(circle at 15% 15%, #FFFDF9 0%, #FFF9ED 55%, #F6EBD8 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    /* Фокус bằng bàn phím rõ ràng */
+    button:focus-visible,
+    input:focus-visible,
+    [tabindex]:focus-visible {
+      outline: 3px solid var(--lavender);
+      outline-offset: 2px;
+    }
+
+    /* KHUNG TRÒ CHƠI CHÍNH (Ưu tiên 16:9, responsive) */
+    .app-shell {
+      width: 100%;
+      max-width: 1360px;
+      min-height: 100vh;
+      padding: 12px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    /* THANH ĐẦU TRANG */
+    .topbar {
+      background: var(--bg-panel);
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 10px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: var(--shadow-soft);
+      z-index: 10;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--peach), #FFB677);
+      color: #fff;
+      font-weight: 800;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      letter-spacing: 0.3px;
+      box-shadow: 0 3px 8px rgba(255, 152, 80, 0.35);
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--lavender-dark);
+      margin: 0;
+    }
+
+    .brand-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* ĐIỀU HƯỚNG MÀN & ĐIỂM SỐ */
+    .hud-center {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .stage-pills {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-soft);
+      padding: 5px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+    }
+
+    .stage-pill {
+      min-width: 44px;
+      min-height: 38px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .stage-pill.active {
+      background: var(--lavender);
+      color: #fff;
+      box-shadow: 0 3px 8px rgba(128, 105, 198, 0.35);
+    }
+
+    .stage-pill.completed {
+      background: #E3F9EE;
+      color: #1A8754;
+      border: 1px solid #9CE2BF;
+    }
+
+    .stage-pill.completed.active {
+      background: var(--mint);
+      color: #fff;
+    }
+
+    .stage-pill:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .score-box {
+      background: linear-gradient(135deg, #FFF5D6, #FFE699);
+      border: 2px solid #F5C451;
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-weight: 800;
+      color: #6B4C00;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1rem;
+      min-height: 44px;
+    }
+
+    /* CÔNG TẮC ÂM THANH & ĐIỀU KHIỂN NHANH */
+    .audio-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-3d {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 16px;
+      border-radius: 14px;
+      border: 2px solid rgba(0,0,0,0.08);
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.2s;
+      box-shadow: var(--shadow-btn);
+      background: #fff;
+      color: var(--text-main);
+    }
+
+    .btn-3d:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    .btn-3d:active:not(:disabled) {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.16);
+    }
+
+    .btn-3d:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-peach {
+      background: linear-gradient(180deg, #FFA96B 0%, var(--peach) 100%);
+      color: #fff;
+      border-color: var(--peach-dark);
+      box-shadow: 0 5px 0 var(--peach-dark);
+    }
+
+    .btn-mint {
+      background: linear-gradient(180deg, #56CCC7 0%, var(--mint) 100%);
+      color: #fff;
+      border-color: var(--mint-dark);
+      box-shadow: 0 5px 0 var(--mint-dark);
+    }
+
+    .btn-lavender {
+      background: linear-gradient(180deg, #9882DC 0%, var(--lavender) 100%);
+      color: #fff;
+      border-color: var(--lavender-dark);
+      box-shadow: 0 5px 0 var(--lavender-dark);
+    }
+
+    .btn-soft {
+      background: var(--bg-soft);
+      color: var(--text-main);
+      border-color: #D8CBB0;
+      box-shadow: 0 4px 0 #D8CBB0;
+    }
+
+    .toggle-pill {
+      min-height: 44px;
+      padding: 6px 12px;
+      border-radius: 12px;
+      border: 2px solid var(--border-soft);
+      background: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-main);
+      transition: all 0.15s;
+    }
+
+    .toggle-pill.on {
+      background: #E8F8F5;
+      border-color: var(--mint);
+      color: #166965;
+    }
+
+    .toggle-pill.off {
+      background: #F7F3EB;
+      color: var(--text-muted);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #BBB;
+    }
+
+    .toggle-pill.on .status-dot {
+      background: var(--mint);
+      box-shadow: 0 0 6px var(--mint);
+    }
+
+    /* BỐ CỤC CHÍNH */
+    .main-stage {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 14px;
+      min-height: 560px;
+    }
+
+    @media (max-width: 1024px) {
+      .main-stage {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* CỘT NHÂN VẬT ĐỒNG HÀNH MÂY & HƯỚNG DẪN */
+    .companion-panel {
+      background: var(--bg-panel);
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .theater-lights {
+      display: flex;
+      justify-content: space-around;
+      padding: 4px 10px 8px;
+      border-bottom: 2px dashed var(--border-soft);
+    }
+
+    .bulb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #E6DEC8;
+      border: 2px solid #C9BFA6;
+      transition: all 0.3s ease;
+    }
+
+    .bulb.lit {
+      background: var(--gold);
+      border-color: var(--peach);
+      box-shadow: 0 0 10px var(--gold);
+    }
+
+    .character-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+    }
+
+    .may-avatar-wrap {
+      width: 155px;
+      height: 155px;
+      background: radial-gradient(circle, #FFF5E4 0%, #F3E9FF 75%);
+      border-radius: 50%;
+      border: 4px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 6px 16px rgba(128, 105, 198, 0.15);
+    }
+
+    .character-name-tag {
+      background: var(--lavender);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-top: -14px;
+      z-index: 2;
+    }
+
+    .speech-bubble {
+      background: #FFFDF7;
+      border: 2px solid var(--peach);
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-size: 0.96rem;
+      line-height: 1.45;
+      color: var(--text-main);
+      font-weight: 600;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(255, 152, 80, 0.12);
+      min-height: 92px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: left;
+    }
+
+    .speech-bubble.correct {
+      border-color: var(--success);
+      background: #F1FBF6;
+    }
+
+    .speech-bubble.wrong {
+      border-color: var(--danger);
+      background: #FFF5F5;
+    }
+
+    .mission-checklist {
+      background: var(--bg-soft);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      border: 1px solid var(--border-soft);
+    }
+
+    .mission-checklist h4 {
+      margin: 0 0 8px 0;
+      font-size: 0.92rem;
+      color: var(--lavender-dark);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.88rem;
+      padding: 6px 4px;
+      border-bottom: 1px dashed rgba(0,0,0,0.07);
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .task-item:last-child {
+      border-bottom: none;
+    }
+
+    .task-item.done {
+      color: #16794B;
+      font-weight: 700;
+    }
+
+    .task-item.active-task {
+      color: var(--peach-dark);
+      font-weight: 800;
+    }
+
+    .task-check {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 2px solid #C5B9D6;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.78rem;
+      background: #fff;
+    }
+
+    .task-item.done .task-check {
+      background: var(--success);
+      border-color: var(--success);
+      color: #fff;
+    }
+
+    .hint-box {
+      background: #F3EEFF;
+      border: 2px dashed var(--lavender);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      color: #463577;
+      font-weight: 600;
+      display: none;
+    }
+
+    .hint-box.visible {
+      display: block;
+    }
+
+    /* KHUNG TƯƠNG TÁC CHÍNH BÊN PHẢI */
+    .workspace-panel {
+      background: var(--bg-panel);
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* NHÃN BẮT BUỘC CHO GIAO DIỆN MÔ PHỎNG */
+    .sim-disclaimer {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #F2EFE9;
+      color: #5C556B;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #DCD4C4;
+    }
+
+    .stage-header-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--bg-soft);
+    }
+
+    .stage-title-group h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      color: var(--lavender-dark);
+    }
+
+    .stage-title-group p {
+      margin: 3px 0 0;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* GIAO DIỆN PHẦN MỀM TRÌNH CHIẾU GIẢ LẬP */
+    .ppt-window {
+      border: 3px solid #D5C8EC;
+      border-radius: 16px;
+      background: #F7F5FB;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 410px;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .ppt-titlebar {
+      background: linear-gradient(90deg, #D95338 0%, #FF834F 50%, #8069C6 100%);
+      color: #fff;
+      padding: 7px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .ppt-window-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .ppt-window-dots span {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.75);
+    }
+
+    .ppt-ribbon {
+      background: #FFFFFF;
+      border-bottom: 2px solid #E4DCF2;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .ribbon-tab {
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      background: #F3EFFA;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    .ribbon-tab.active {
+      background: #FFE8D6;
+      color: #C8521A;
+      border-color: #FFBA8C;
+    }
+
+    .ribbon-divider {
+      width: 2px;
+      height: 32px;
+      background: #E8E2F4;
+      margin: 0 4px;
+    }
+
+    .ribbon-tool {
+      min-height: 44px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      border: 2px solid #E2D9F3;
+      background: #FFFDF9;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 800;
+      font-size: 0.86rem;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .ribbon-tool:hover:not(:disabled) {
+      border-color: var(--peach);
+      background: #FFF4EB;
+      transform: translateY(-1px);
+    }
+
+    .ribbon-tool.highlight-pulse {
+      border-color: var(--peach);
+      box-shadow: 0 0 0 4px rgba(255, 152, 80, 0.28);
+    }
+
+    .ribbon-tool.identified {
+      border-color: var(--success);
+      background: #EAFAF1;
+    }
+
+    .ppt-body {
+      display: grid;
+      grid-template-columns: 185px 1fr;
+      flex: 1;
+      min-height: 310px;
+    }
+
+    @media (max-width: 720px) {
+      .ppt-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* VÙNG TRANG CHIẾU THU NHỎ (THUMBNAIL PANE) */
+    .ppt-thumbnails {
+      background: #EFEAF8;
+      border-right: 2px solid #DED5F0;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+    }
+
+    .ppt-thumbnails.identified {
+      background: #E6F9F0;
+      border-right-color: var(--success);
+    }
+
+    .thumb-card {
+      background: #fff;
+      border: 3px solid #C8BBE3;
+      border-radius: 10px;
+      padding: 6px;
+      aspect-ratio: 16 / 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .thumb-card.active-slide {
+      border-color: var(--peach);
+      box-shadow: 0 0 0 3px rgba(255, 152, 80, 0.25);
+    }
+
+    .thumb-num {
+      position: absolute;
+      top: 4px;
+      left: 6px;
+      background: var(--lavender);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 6px;
+    }
+
+    /* VÙNG SOẠN THẢO TRANG CHIẾU CHÍNH */
+    .ppt-canvas-wrap {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #E7E1F3;
+      position: relative;
+      gap: 10px;
+    }
+
+    .slide-stage {
+      width: 100%;
+      max-width: 680px;
+      aspect-ratio: 16 / 9;
+      background: #FFFFFF;
+      border: 3px solid #C5B7E3;
+      border-radius: 14px;
+      box-shadow: 0 10px 24px rgba(55, 40, 95, 0.12);
+      position: relative;
+      overflow: hidden;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: all 0.25s;
+    }
+
+    .slide-stage.identified {
+      border-color: var(--success);
+      box-shadow: 0 0 0 4px rgba(46, 184, 114, 0.25);
+    }
+
+    /* KHUNG TIÊU ĐỀ & NỘI DUNG TRÊN SLIDE */
+    .slide-placeholder-title {
+      border: 2px dashed #9B86D1;
+      border-radius: 12px;
+      padding: 12px 16px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.85);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+      z-index: 2;
+    }
+
+    .slide-placeholder-title:hover {
+      border-color: var(--peach);
+      background: #FFF9F2;
+    }
+
+    .slide-placeholder-title.identified {
+      border: 3px solid var(--success);
+      background: #EBFAF2;
+    }
+
+    .slide-placeholder-sub {
+      border: 2px dashed #77C9C5;
+      border-radius: 10px;
+      padding: 10px 14px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.82);
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    /* BẢNG ĐIỀU KHIỂN THAO TÁC PHỤ TỪNG MÀN */
+    .control-strip {
+      width: 100%;
+      background: #FFFDF8;
+      border: 2px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .quick-chip {
+      padding: 6px 12px;
+      min-height: 38px;
+      border-radius: 999px;
+      border: 2px solid var(--mint);
+      background: #F0FBF9;
+      color: #1A6E6A;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .quick-chip:hover {
+      background: var(--mint);
+      color: #fff;
+    }
+
+    .text-input-field {
+      padding: 9px 14px;
+      min-height: 44px;
+      border-radius: 10px;
+      border: 2px solid #C6B7E2;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      background: #fff;
+      min-width: 220px;
+    }
+
+    /* MÀN 3: KHUNG KÉO THẢ ẢNH HOA SVG */
+    .slide2-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      flex: 1;
+      align-items: center;
+      z-index: 2;
+      margin-top: 6px;
+    }
+
+    .drop-slot {
+      height: 145px;
+      border: 3px dashed #A898D8;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.78);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 8px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .drop-slot.hovered, .drop-slot.selected-slot {
+      border-color: var(--peach);
+      background: #FFF4E8;
+      box-shadow: 0 0 0 4px rgba(255, 152, 80, 0.2);
+    }
+
+    .drop-slot.filled {
+      border-style: solid;
+      border-color: var(--mint);
+      background: rgba(255, 255, 255, 0.94);
+    }
+
+    .flower-lib-card {
+      border: 2px solid #DED4F0;
+      border-radius: 12px;
+      padding: 6px 10px;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: grab;
+      font-weight: 700;
+      font-size: 0.85rem;
+      min-height: 48px;
+      transition: all 0.15s;
+    }
+
+    .flower-lib-card:hover {
+      border-color: var(--peach);
+      transform: translateY(-2px);
+    }
+
+    .flower-lib-card.picked {
+      border-color: var(--lavender);
+      background: #F2ECFF;
+      box-shadow: 0 0 0 3px rgba(128, 105, 198, 0.25);
+    }
+
+    /* THANH CHÂN TRANG ĐIỀU KHIỂN MÀN CHƠI */
+    .stage-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 8px;
+      border-top: 2px solid var(--bg-soft);
+    }
+
+    /* MÀN HÌNH CHÀO MỪNG / TỔNG KẾT / TRÌNH CHIẾU FULL */
+    .overlay-screen {
+      position: fixed;
+      inset: 0;
+      background: rgba(45, 38, 64, 0.68);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .overlay-screen.hidden {
+      display: none;
+    }
+
+    .modal-card {
+      background: var(--bg-cream);
+      border: 4px solid var(--gold);
+      border-radius: 26px;
+      max-width: 920px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 24px 28px;
+      box-shadow: 0 20px 50px rgba(25, 16, 48, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+    }
+
+    .welcome-hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+      align-items: center;
+      background: #fff;
+      padding: 18px;
+      border-radius: 20px;
+      border: 2px solid var(--border-soft);
+    }
+
+    @media (max-width: 768px) {
+      .welcome-hero {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mode-selector {
+      display: flex;
+      gap: 10px;
+      margin: 8px 0;
+      flex-wrap: wrap;
+    }
+
+    .mode-option {
+      flex: 1;
+      min-width: 180px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 2px solid var(--border-soft);
+      background: var(--bg-soft);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+
+    .mode-option.selected {
+      border-color: var(--peach);
+      background: #FFF3E6;
+      box-shadow: 0 0 0 3px rgba(255, 152, 80, 0.22);
+    }
+
+    /* HỘP THOẠI LƯU TỆP GIẢ LẬP (MÀN 4) */
+    .save-dialog-box {
+      background: #fff;
+      border: 3px solid var(--lavender);
+      border-radius: 16px;
+      padding: 14px;
+      width: 100%;
+      max-width: 650px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .folder-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .folder-card {
+      border: 2px solid #E2D9F3;
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      background: #FAF8FF;
+      font-weight: 800;
+      font-size: 0.9rem;
+      transition: all 0.15s;
+    }
+
+    .folder-card:hover {
+      border-color: var(--peach);
+      background: #FFF6EE;
+    }
+
+    .folder-card.selected {
+      border-color: var(--mint);
+      background: #E8FAF7;
+      box-shadow: 0 0 0 3px rgba(64, 184, 179, 0.25);
+    }
+
+    /* TRÌNH CHIẾU TOÀN MÀN HÌNH TRONG ỨNG DỤNG (MÀN 4) */
+    .slideshow-theater {
+      background: #1D1829;
+      color: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .theater-screen {
+      width: 100%;
+      max-width: 640px;
+      aspect-ratio: 16 / 9;
+      border-radius: 12px;
+      border: 4px solid var(--gold);
+      background: #fff;
+      color: var(--text-main);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(255, 215, 115, 0.25);
+    }
+
+    /* CONFETTI CANVAS */
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 200;
+    }
+
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .badge-item {
+      background: #fff;
+      border: 2px solid var(--gold);
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas pháo giấy chúc mừng (tối đa 2 giây, tôn trọng prefers-reduced-motion) -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <div class="app-shell">
+    <!-- THANH CÔNG CỤ TRÊN CÙNG -->
+    <header class="topbar" role="banner">
+      <div class="brand-group">
+        <span class="brand-badge">TIN HỌC 4 • BÀI 7</span>
+        <div>
+          <h1 class="brand-title" id="uiGameTitle">SLIDE ĐẦU TAY</h1>
+          <div class="brand-sub">Tạo bài trình chiếu • Kết nối tri thức với cuộc sống</div>
+        </div>
+      </div>
+
+      <!-- Tiến độ 1/4 & Điểm số -->
+      <nav class="hud-center" aria-label="Tiến độ các màn chơi">
+        <div class="stage-pills" id="stageNavPills">
+          <button type="button" class="stage-pill active" data-stage="1">Màn 1</button>
+          <button type="button" class="stage-pill" data-stage="2" disabled>Màn 2</button>
+          <button type="button" class="stage-pill" data-stage="3" disabled>Màn 3</button>
+          <button type="button" class="stage-pill" data-stage="4" disabled>Màn 4</button>
+        </div>
+        <div class="score-box" aria-live="polite">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#F59E0B" aria-hidden="true">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+          </svg>
+          <span>Điểm: <strong id="scoreDisplay">0</strong> / 100</span>
+        </div>
+      </nav>
+
+      <!-- ĐÚNG 2 CÔNG TẮC ÂM THANH ĐỘC LẬP: Nhạc nền & Hiệu ứng + Nút Trang chủ -->
+      <div class="audio-controls">
+        <button type="button" id="btnToggleBgm" class="toggle-pill on" aria-pressed="true" title="Bật/Tắt Nhạc nền">
+          <span class="status-dot"></span>
+          <span>Nhạc nền</span>
+        </button>
+        <button type="button" id="btnToggleSfx" class="toggle-pill on" aria-pressed="true" title="Bật/Tắt Hiệu ứng âm thanh">
+          <span class="status-dot"></span>
+          <span>Hiệu ứng</span>
+        </button>
+        <button type="button" id="btnQuickMute" class="btn-3d btn-soft" title="Tắt nhanh toàn bộ âm thanh" style="padding:8px 12px;">
+          🔇 Tắt nhanh
+        </button>
+        <button type="button" id="btnHome" class="btn-3d btn-soft" title="Về màn hình chính">
+          🏠 Trang chủ
+        </button>
+      </div>
+    </header>
+
+    <!-- KHÔNG GIAN CHƠI CHÍNH -->
+    <main class="main-stage">
+      <!-- CỘT TRÁI: NHÂN VẬT MÂY & TIẾN ĐỘ NHIỆM VỤ -->
+      <aside class="companion-panel" aria-label="Nhân vật đồng hành Mây">
+        <div>
+          <!-- Đèn rạp trình chiếu nhỏ sáng dần theo số màn hoàn thành -->
+          <div class="theater-lights" title="Đèn rạp trình chiếu mở khóa theo từng màn">
+            <div class="bulb" id="bulb1"></div>
+            <div class="bulb" id="bulb2"></div>
+            <div class="bulb" id="bulb3"></div>
+            <div class="bulb" id="bulb4"></div>
+          </div>
+
+          <div class="character-stage" style="margin-top: 10px;">
+            <div class="may-avatar-wrap" id="mayAvatarContainer">
+              <!-- SVG Nhân vật Mây với kính bảo hộ (biểu cảm động theo trạng thái) -->
+            </div>
+            <span class="character-name-tag">Mây – Nhà phát minh nhí</span>
+          </div>
+
+          <!-- Bong bóng chữ phản hồi của Mây (Tuyệt đối không có giọng đọc) -->
+          <div class="speech-bubble" id="maySpeechBubble" aria-live="polite" style="margin-top:10px;">
+            Chào cậu! Mình là Mây. Cùng mình khám phá phòng thí nghiệm trình chiếu và tạo bộ slide đầu tay thật đẹp nhé!
+          </div>
+        </div>
+
+        <!-- Danh sách nhiệm vụ trong màn hiện tại -->
+        <div class="mission-checklist">
+          <h4>
+            <span>📋 Nhiệm vụ màn <span id="currentStageNumLabel">1</span>/4</span>
+            <span id="modeBadgeLabel" style="font-size:0.78rem; background:#FFE8D6; color:#C8521A; padding:2px 8px; border-radius:99px;">Luyện tập</span>
+          </h4>
+          <div id="taskListContainer"></div>
+        </div>
+
+        <!-- Hộp gợi ý 2 cấp độ -->
+        <div class="hint-box" id="hintDisplayBox" aria-live="polite"></div>
+      </aside>
+
+      <!-- CỘT PHẢI: SÂN KHẤU & GIAO DIỆN MÔ PHỎNG TƯƠNG TÁC -->
+      <section class="workspace-panel" aria-label="Khu vực tương tác bài học">
+        <div class="stage-header-bar">
+          <div class="stage-title-group">
+            <h2 id="stageHeading">Màn 1: Nhận diện công cụ trình chiếu</h2>
+            <p id="stageSubheading">Nháy chuột vào đúng các vùng trên phần mềm trình chiếu để kích hoạt rạp chiếu nhỏ.</p>
+          </div>
+          <span class="sim-disclaimer" title="Lưu ý sư phạm">
+            🖥️ Giao diện mô phỏng phục vụ học tập
+          </span>
+        </div>
+
+        <!-- Vùng chứa nội dung động của từng màn (1, 2, 3, 4) -->
+        <div id="stageInteractiveMount" style="flex:1; display:flex; flex-direction:column; gap:10px;"></div>
+
+        <!-- Chân trang điều khiển màn -->
+        <div class="stage-footer">
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" id="btnHint" class="btn-3d btn-lavender">
+              💡 Gợi ý (<span id="hintStepCount">0/2</span>)
+            </button>
+            <button type="button" id="btnResetStage" class="btn-3d btn-soft">
+              🔄 Làm lại màn
+            </button>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <span id="stageStatusTag" style="font-weight:800; font-size:0.9rem; color:var(--text-muted);">
+              Hoàn thành các bước để mở khóa màn tiếp theo
+            </span>
+            <button type="button" id="btnNextStage" class="btn-3d btn-mint" disabled>
+              Tiếp tục ➔
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MÀN HÌNH CHÀO MỪNG & HƯỚNG DẪN -->
+  <div class="overlay-screen" id="welcomeOverlay" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <span class="brand-badge">SÁCH GIÁO KHOA TIN HỌC 4 – BÀI 7 (TRANG 30–33)</span>
+        <span class="sim-disclaimer">Giao diện mô phỏng phục vụ học tập</span>
+      </div>
+
+      <div class="welcome-hero">
+        <div>
+          <h2 id="welcomeTitle" style="font-size:2rem; margin:0 0 8px; color:var(--lavender-dark);">
+            SLIDE ĐẦU TAY
+          </h2>
+          <p style="font-size:1.02rem; line-height:1.5; color:var(--text-main); font-weight:600; margin:0 0 12px;">
+            Đồng hành cùng nhà phát minh nhí <strong>Mây</strong> khôi phục Rạp Trình Chiếu Sáng Tạo! Em sẽ thực hành nhận diện công cụ, gõ tiêu đề có dấu về <em>“Các loài hoa”</em>, chèn ảnh minh họa và lưu bài đúng thư mục.
+          </p>
+
+          <div style="margin-bottom:12px;">
+            <div style="font-weight:800; font-size:0.9rem; color:var(--lavender-dark); margin-bottom:6px;">
+              CHỌN CHẾ ĐỘ CHƠI:
+            </div>
+            <div class="mode-selector">
+              <button type="button" class="mode-option selected" id="modePracticeBtn" data-mode="practice">
+                <div style="font-weight:900; color:var(--peach-dark);">🌱 Chế độ Luyện tập</div>
+                <div style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">Hiện sẵn gợi ý trực quan từng bước, phù hợp làm quen bài mới.</div>
+              </button>
+              <button type="button" class="mode-option" id="modeChallengeBtn" data-mode="challenge">
+                <div style="font-weight:900; color:var(--lavender-dark);">🚀 Chế độ Thử thách</div>
+                <div style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">Ẩn gợi ý ban đầu để tự suy luận (vẫn có thể bấm nút Gợi ý khi cần).</div>
+              </button>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:14px;">
+            <button type="button" id="btnStartGame" class="btn-3d btn-peach" style="font-size:1.1rem; padding:12px 26px;">
+              ▶ Bắt đầu chơi
+            </button>
+            <button type="button" id="btnShowGuide" class="btn-3d btn-lavender" style="font-size:1rem;">
+              📖 Hướng dẫn cách chơi
+            </button>
+          </div>
+        </div>
+
+        <!-- Tranh minh họa SVG lớn Màn chào mừng -->
+        <div style="display:flex; justify-content:center; align-items:center;">
+          <svg viewBox="0 0 360 260" width="100%" style="max-width:340px; border-radius:18px; background:linear-gradient(180deg,#FFF5E6,#EFE7FF); border:3px solid #FFD773;">
+            <!-- Rèm rạp trình chiếu -->
+            <path d="M0 0 Q40 50 0 110 Z" fill="#FF85A2" />
+            <path d="M360 0 Q320 50 360 110 Z" fill="#FF85A2" />
+            <rect x="28" y="24" width="304" height="175" rx="14" fill="#FFFFFF" stroke="#8069C6" stroke-width="4"/>
+            <!-- Thanh công cụ mô phỏng trên tranh -->
+            <rect x="32" y="28" width="296" height="24" rx="8" fill="#FF9850"/>
+            <circle cx="46" cy="40" r="4" fill="#FFF"/>
+            <circle cx="58" cy="40" r="4" fill="#FFF"/>
+            <!-- Thumbnail bên trái -->
+            <rect x="40" y="60" width="60" height="40" rx="5" fill="#FFF9ED" stroke="#FF9850" stroke-width="2.5"/>
+            <rect x="40" y="108" width="60" height="40" rx="5" fill="#F3EFFA" stroke="#C5B7E3" stroke-width="2"/>
+            <!-- Slide chính ở giữa với hoa SVG -->
+            <rect x="112" y="60" width="204" height="124" rx="8" fill="#FFFDF7" stroke="#40B8B3" stroke-width="2.5"/>
+            <text x="214" y="88" text-anchor="middle" font-size="14" font-weight="900" fill="#5F49A3">CÁC LOÀI HOA</text>
+            <!-- Hoa hướng dương & hoa hồng nhỏ -->
+            <g transform="translate(165, 130)">
+              <circle cx="0" cy="0" r="18" fill="#FFD773"/>
+              <circle cx="0" cy="0" r="9" fill="#784421"/>
+            </g>
+            <g transform="translate(255, 130)">
+              <circle cx="0" cy="0" r="16" fill="#FF85A2"/>
+              <circle cx="0" cy="0" r="7" fill="#D83B64"/>
+            </g>
+            <!-- Đèn sân khấu phía dưới -->
+            <circle cx="90" cy="230" r="12" fill="#FFD773" stroke="#FF9850" stroke-width="3"/>
+            <circle cx="180" cy="230" r="12" fill="#40B8B3" stroke="#2B928D" stroke-width="3"/>
+            <circle cx="270" cy="230" r="12" fill="#FFD773" stroke="#FF9850" stroke-width="3"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Khung Hướng dẫn bằng chữ + biểu tượng (ẩn/hiện khi bấm nút Hướng dẫn) -->
+      <div id="guideCollapseBox" style="display:none; background:#FFF; border:2px solid var(--lavender); border-radius:16px; padding:16px;">
+        <h3 style="margin:0 0 8px; color:var(--lavender-dark);">🧭 Hướng dẫn thao tác trong trò chơi</h3>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:10px; font-size:0.9rem;">
+          <div style="background:var(--bg-soft); padding:10px; border-radius:10px;">
+            <strong>1. Màn 1 (Nhận diện):</strong> Nháy chuột chọn đúng 4 bộ phận trên cửa sổ phần mềm trình chiếu theo lời nhắn của Mây.
+          </div>
+          <div style="background:var(--bg-soft); padding:10px; border-radius:10px;">
+            <strong>2. Màn 2 (Trang tiêu đề):</strong> Chọn mẫu nền trang chiếu, gõ tiêu đề <code>CÁC LOÀI HOA</code> và tên nhóm, sau đó bấm Áp dụng.
+          </div>
+          <div style="background:var(--bg-soft); padding:10px; border-radius:10px;">
+            <strong>3. Màn 3 (Chèn ảnh):</strong> Bấm tạo trang 2, chọn 2 bức ảnh hoa SVG, kéo thả (hoặc nháy chọn) vào khung và chỉnh kích thước.
+          </div>
+          <div style="background:var(--bg-soft); padding:10px; border-radius:10px;">
+            <strong>4. Màn 4 (Xem & Lưu):</strong> Bật chế độ Trình chiếu toàn màn hình để duyệt 2 trang, rồi lưu bài vào đúng thư mục <code>Bài tập</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MÀN HÌNH TỔNG KẾT & HUY HIỆU CUỐI GAME -->
+  <div class="overlay-screen hidden" id="victoryOverlay" role="dialog" aria-modal="true" aria-labelledby="victoryTitle">
+    <div class="modal-card">
+      <div style="text-align:center;">
+        <span class="brand-badge" style="background:var(--mint);">HOÀN THÀNH XUẤT SẮC BÀI HỌC!</span>
+        <h2 id="victoryTitle" style="font-size:2.1rem; color:var(--lavender-dark); margin:10px 0 4px;">
+          🎉 CHÚC MỪNG NHÀ THIẾT KẾ SLIDE NHÍ!
+        </h2>
+        <p style="font-size:1.1rem; font-weight:700; color:var(--peach-dark); margin:0;">
+          Tổng điểm đạt được: <span id="finalScoreValue" style="font-size:1.5rem;">100</span> / 100 điểm
+        </p>
+      </div>
+
+      <!-- Huy hiệu đạt được -->
+      <div>
+        <h3 style="margin:0 0 8px; font-size:1rem; color:var(--lavender-dark);">🏅 Huy hiệu em đã chinh phục:</h3>
+        <div class="badge-grid">
+          <div class="badge-item">
+            <svg width="46" height="46" viewBox="0 0 48 48">
+              <circle cx="24" cy="24" r="20" fill="#FFD773" stroke="#FF9850" stroke-width="3"/>
+              <path d="M24 12L27.5 19.5L35.5 20.5L29.5 26L31 34L24 30L17 34L18.5 26L12.5 20.5L20.5 19.5Z" fill="#FFF"/>
+            </svg>
+            <div>
+              <div style="font-weight:900; color:var(--text-main);">Mắt Tinh Nhận Diện</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Thuộc làu các vùng trên phần mềm trình chiếu</div>
+            </div>
+          </div>
+          <div class="badge-item">
+            <svg width="46" height="46" viewBox="0 0 48 48">
+              <circle cx="24" cy="24" r="20" fill="#E3F9EE" stroke="#40B8B3" stroke-width="3"/>
+              <rect x="13" y="15" width="22" height="18" rx="3" fill="#40B8B3"/>
+              <circle cx="24" cy="24" r="5" fill="#FFD773"/>
+            </svg>
+            <div>
+              <div style="font-weight:900; color:var(--text-main);">Họa Sĩ Trình Chiếu</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Soạn chữ có dấu & bố cục ảnh hoa cân đối</div>
+            </div>
+          </div>
+          <div class="badge-item">
+            <svg width="46" height="46" viewBox="0 0 48 48">
+              <circle cx="24" cy="24" r="20" fill="#F2ECFF" stroke="#8069C6" stroke-width="3"/>
+              <path d="M14 16H22L25 19H34V33H14V16Z" fill="#8069C6"/>
+            </svg>
+            <div>
+              <div style="font-weight:900; color:var(--text-main);">Lưu Trữ Ngăn Nắp</div>
+              <div style="font-size:0.8rem; color:var(--text-muted);">Trình chiếu kiểm tra và lưu đúng thư mục Bài tập</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Nhận xét ghi nhớ kiến thức theo SGK Tin học 4 Bài 7 -->
+      <div style="background:#FFF; border:2px solid var(--border-soft); border-radius:16px; padding:14px 18px;">
+        <h3 style="margin:0 0 8px; font-size:1rem; color:var(--lavender-dark);">📌 Ghi nhớ kiến thức sau bài học (SGK Tin học 4 – Bài 7):</h3>
+        <ul id="summaryTakeawaysList" style="margin:0; padding-left:20px; line-height:1.6; font-weight:600; color:var(--text-main);"></ul>
+      </div>
+
+      <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+        <button type="button" id="btnExportCard" class="btn-3d btn-lavender">
+          📥 Tải thẻ kỷ niệm bài trình chiếu (.html)
+        </button>
+        <button type="button" id="btnPlayAgain" class="btn-3d btn-peach" style="padding:12px 28px; font-size:1.05rem;">
+          🔄 Chơi lại từ đầu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * ============================================================================
+     * CẤU HÌNH TRÒ CHƠI (GAME_CONFIG) - DỄ DÀNG CHỈNH SỬA CHO GIÁO VIÊN
+     * ============================================================================
+     * Giáo viên có thể thay đổi tên bài, câu hỏi, tiêu đề mẫu, gợi ý và giải thích
+     * ngay trong đối tượng GAME_CONFIG bên dưới mà không cần can thiệp logic.
+     */
+    const GAME_CONFIG = {
+      gameTitle: "SLIDE ĐẦU TAY",
+      gradeSubject: "Tin học 4 – Bài 7: Tạo bài trình chiếu (Trang 30–33)",
+      pointsPerStage: 25,
+      maxScore: 100,
+      audio: {
+        bgmVolume: 0.12, // Âm lượng nhạc nền êm dịu 12% (10-15% theo chuẩn)
+        sfxVolume: 0.28,
+        tempoBpm: 108
+      },
+
+      // Nội dung chi tiết 4 màn chơi
+      stages: {
+        1: {
+          title: "Màn 1: Nhận diện công cụ trình chiếu",
+          subtitle: "Hãy nháy chuột vào đúng từng bộ phận trên giao diện phần mềm trình chiếu theo yêu cầu của Mây.",
+          introSpeech: "Để tạo bài trình chiếu, trước hết chúng mình cần làm quen với cửa sổ phần mềm. Cậu hãy tìm và nháy vào đúng 4 vùng theo thứ tự nhé!",
+          hints: [
+            "Gợi ý 1: Hãy đọc kỹ tên bộ phận đang được đánh dấu màu cam trong danh sách nhiệm vụ bên trái.",
+            "Gợi ý 2: Nút 'New Slide' nằm trên thanh công cụ phía trên; vùng thu nhỏ nằm ở cột bên trái; trang chiếu lớn nằm ở chính giữa."
+          ],
+          targets: [
+            {
+              id: "new_slide_btn",
+              label: "1. Nháy chọn lệnh thêm trang chiếu mới (New Slide)",
+              prompt: "Nhiệm vụ 1: Cậu hãy nháy chuột vào nút lệnh «New Slide (Thêm trang)» trên dải lệnh Home nhé!",
+              correctMsg: "Chính xác! Nút New Slide trên thẻ Home giúp chúng mình tạo thêm một trang chiếu mới.",
+              wrongExplain: "Chưa đúng rồi! Nút New Slide nằm trên thanh công cụ phía trên, có biểu tượng trang chiếu kèm dấu cộng (+) màu cam."
+            },
+            {
+              id: "thumbnail_pane",
+              label: "2. Nháy chọn vùng trang chiếu thu nhỏ (bên trái)",
+              prompt: "Nhiệm vụ 2: Bây giờ cậu hãy nháy vào «Vùng trang chiếu thu nhỏ» nằm ở cột bên trái màn hình!",
+              correctMsg: "Tuyệt vời! Vùng trang chiếu thu nhỏ giúp em quan sát danh sách và chuyển nhanh giữa các trang chiếu.",
+              wrongExplain: "Vùng bạn vừa nháy chưa phải là cột trang chiếu thu nhỏ. Hãy nhìn sang khung dọc phía bên trái nhé!"
+            },
+            {
+              id: "slide_workspace",
+              label: "3. Nháy chọn vùng soạn thảo trang chiếu lớn (ở giữa)",
+              prompt: "Nhiệm vụ 3: Hãy nháy chuột vào «Vùng trang chiếu chính» (sân khấu lớn ở giữa) nơi hiển thị nội dung trang chiếu!",
+              correctMsg: "Giỏi lắm! Đây là vùng làm việc chính để em đưa văn bản và hình ảnh lên trang chiếu.",
+              wrongExplain: "Đó chưa phải vùng soạn thảo trang chiếu chính. Hãy nháy vào trang giấy trắng hình chữ nhật lớn ở giữa màn hình!"
+            },
+            {
+              id: "title_placeholder",
+              label: "4. Nháy chọn khung nhập tiêu đề trang chiếu",
+              prompt: "Nhiệm vụ 4: Cuối cùng, hãy nháy vào «Khung nhập tiêu đề» có viền nét đứt nằm bên trong trang chiếu!",
+              correctMsg: "Xuất sắc! Khi nháy vào khung viền nét đứt này, con trỏ soạn thảo sẽ xuất hiện để em gõ chữ.",
+              wrongExplain: "Hãy nháy trực tiếp vào khung chữ nhật viền nét đứt có dòng chữ 'Nháy để nhập tiêu đề' ở giữa trang chiếu nhé!"
+            }
+          ],
+          distractorFeedback: {
+            ribbon_insert: "Đây là thẻ Insert (Chèn) dùng khi muốn chèn ảnh hoặc hình khối, chưa phải bộ phận Mây đang hỏi.",
+            ribbon_slideshow: "Đây là nút Slide Show dùng để chiếu toàn màn hình ở bước cuối cùng.",
+            titlebar: "Đây là thanh tiêu đề trên cùng của cửa sổ phần mềm."
+          }
+        },
+
+        2: {
+          title: "Màn 2: Trang chiếu chủ đề Hoa",
+          subtitle: "Chọn mẫu trang trí, nhập tiêu đề «CÁC LOÀI HOA» và tên nhóm thực hiện lên trang chiếu đầu tiên.",
+          introSpeech: "Trang chiếu đầu tiên (Trang tiêu đề) giới thiệu chủ đề của cả bài. Cậu hãy chọn phông nền, gõ tiêu đề «CÁC LOÀI HOA» và tên nhóm rồi bấm Áp dụng nhé!",
+          expectedTitle: "CÁC LOÀI HOA",
+          presetsTitleChips: ["CÁC", "LOÀI", "HOA", "CÁC LOÀI HOA"],
+          presetAuthors: ["Nhóm Hoa Hồng", "Nhóm Hướng Dương", "Nhóm Hoa Sen"],
+          themes: [
+            { id: "spring", name: "Hoa Mùa Xuân", bg: "linear-gradient(135deg, #FFFDF7 0%, #FFEAF2 100%)", border: "#FF85A2" },
+            { id: "garden", name: "Khu Vườn Nhỏ", bg: "linear-gradient(135deg, #F4FBF9 0%, #E0F5F2 100%)", border: "#40B8B3" },
+            { id: "sunshine", name: "Nắng Ban Mai", bg: "linear-gradient(135deg, #FFFDF2 0%, #FFF0C2 100%)", border: "#FF9850" }
+          ],
+          hints: [
+            "Gợi ý 1: Nhớ thực hiện đủ 3 bước: (1) Chọn 1 trong 3 mẫu nền, (2) Gõ đúng chữ 'CÁC LOÀI HOA', (3) Nhập tên nhóm (ít nhất 3 ký tự) và bấm 'Áp dụng lên trang chiếu'.",
+            "Gợi ý 2: Nếu ngại gõ bàn phím, cậu có thể bấm vào các thẻ từ gợi ý màu xanh ngọc ngay dưới ô nhập để điền nhanh tiếng Việt có dấu!"
+          ]
+        },
+
+        3: {
+          title: "Màn 3: Chèn ảnh & Bố cục trang 2",
+          subtitle: "Tạo trang chiếu số 2, chèn 2 bức ảnh hoa SVG từ thư viện, đặt vào 2 khung bố cục và chỉnh kích thước.",
+          introSpeech: "Bài trình chiếu thêm sinh động khi có hình ảnh minh họa! Cậu hãy bấm '+ Thêm trang 2', chọn 2 loài hoa đưa vào 2 khung trên trang chiếu và chỉnh kích thước cho vừa vặn nhé!",
+          slide2DefaultHeading: "Vẻ đẹp các loài hoa quanh em",
+          targetMinSize: 95,
+          targetMaxSize: 135,
+          flowers: [
+            { id: "rose", name: "Hoa Hồng Đỏ", desc: "Cánh hoa đỏ thắm rực rỡ" },
+            { id: "sunflower", name: "Hoa Hướng Dương", desc: "Luôn hướng về phía mặt trời" },
+            { id: "lotus", name: "Hoa Sen Hồng", desc: "Thanh khiết tỏa hương thơm ngát" },
+            { id: "daisy", name: "Hoa Cúc Vàng", desc: "Báo hiệu mùa thu dịu dàng" }
+          ],
+          hints: [
+            "Gợi ý 1: Đầu tiên hãy bấm nút '+ Thêm trang chiếu số 2' trên thanh công cụ. Sau đó nháy chọn (hoặc kéo thả) 2 bông hoa bất kỳ vào Khung ảnh 1 và Khung ảnh 2.",
+            "Gợi ý 2: Sau khi đã có đủ 2 ảnh trên trang chiếu 2, hãy kéo thanh trượt 'Kích thước ảnh' (hoặc bấm nút Phóng to) để ảnh đạt mức Cân đối (100% - 125%)."
+          ]
+        },
+
+        4: {
+          title: "Màn 4: Xem trình chiếu và Lưu bài",
+          subtitle: "Bật chế độ trình chiếu toàn màn hình để kiểm tra cả 2 trang, sau đó lưu bài vào thư mục «Bài tập».",
+          introSpeech: "Bước cuối cùng rất quan trọng! Cậu hãy bật chế độ 'Trình chiếu (F5)' để xem trọn vẹn 2 trang, rồi mở hộp thoại Lưu và chọn đúng thư mục «Bài tập» nhé!",
+          correctFolderId: "baitap",
+          defaultFileName: "Cac loai hoa - Lop 4",
+          folders: [
+            { id: "nhac", name: "Thư mục Nhạc", isCorrect: false, reason: "Thư mục 'Nhạc' dùng để chứa các tệp âm thanh, không nên lưu bài tập trình chiếu ở đây." },
+            { id: "baitap", name: "Bài tập", isCorrect: true, reason: "Chính xác! Lưu bài trình chiếu vào thư mục 'Bài tập' giúp em dễ dàng tìm lại khi nộp bài cho thầy cô." },
+            { id: "trochoi", name: "Trò chơi", isCorrect: false, reason: "Thư mục 'Trò chơi' không phải nơi quy định để lưu bài học Tin học." }
+          ],
+          hints: [
+            "Gợi ý 1: Hãy bấm nút '▶ Trình chiếu (Slide Show)' trên thanh công cụ, sau đó bấm nút 'Trang tiếp theo ➔' để xem hết Trang 1 và Trang 2 rồi đóng trình chiếu.",
+            "Gợi ý 2: Khi hộp thoại Lưu hiện ra, hãy nháy chọn thư mục tên là «Bài tập», kiểm tra tên tệp và bấm nút «Lưu trong lượt chơi»."
+          ]
+        }
+      },
+
+      // Tổng kết kiến thức hiển thị ở màn Chiến thắng
+      takeaways: [
+        "Phần mềm trình chiếu giúp tạo bài trình chiếu gồm nhiều trang chiếu (slide) sinh động có cả chữ và hình ảnh.",
+        "Trang đầu tiên thường là trang tiêu đề giới thiệu tên chủ đề (ví dụ: CÁC LOÀI HOA) và tên người thực hiện.",
+        "Sau khi thêm trang mới (New Slide), chèn ảnh (Pictures) và kiểm tra ở chế độ Trình chiếu, em cần đặt tên tệp rõ ràng và lưu đúng thư mục quy định."
+      ]
+    };
+
+    /**
+     * ============================================================================
+     * HỆ THỐNG ÂM THANH WEB AUDIO API (CHỈ NHẠC NỀN & SFX, KHÔNG GIỌNG ĐỌC / TTS)
+     * ============================================================================
+     */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.bgmEnabled = true;
+        this.sfxEnabled = true;
+        this.isPlayingBgm = false;
+        this.bgmTimer = null;
+        this.noteIndex = 0;
+
+        // Giai điệu pentatonic vui tươi nguyên gốc (tần số Hz, độ dài phách)
+        this.melody = [
+          { f: 523.25, d: 0.35 }, // C5
+          { f: 587.33, d: 0.35 }, // D5
+          { f: 659.25, d: 0.50 }, // E5
+          { f: 783.99, d: 0.35 }, // G5
+          { f: 659.25, d: 0.35 }, // E5
+          { f: 880.00, d: 0.55 }, // A5
+          { f: 783.99, d: 0.65 }, // G5
+          { f: 0,      d: 0.25 }, // Nghỉ
+          { f: 659.25, d: 0.35 }, // E5
+          { f: 783.99, d: 0.35 }, // G5
+          { f: 659.25, d: 0.35 }, // E5
+          { f: 587.33, d: 0.45 }, // D5
+          { f: 523.25, d: 0.70 }, // C5
+          { f: 0,      d: 0.35 }  // Nghỉ
+        ];
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === "suspended") {
+          this.ctx.resume().catch(() => {});
+        }
+      }
+
+      startBgm() {
+        this.initContext();
+        if (!this.ctx || !this.bgmEnabled) return;
+        this.stopBgm();
+        this.isPlayingBgm = true;
+        this.scheduleNextNote();
+      }
+
+      scheduleNextNote() {
+        if (!this.isPlayingBgm || !this.bgmEnabled || !this.ctx || document.hidden) return;
+        const item = this.melody[this.noteIndex % this.melody.length];
+        this.noteIndex++;
+
+        if (item.f > 0 && this.ctx.state === "running") {
+          try {
+            const now = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(item.f, now);
+
+            const vol = GAME_CONFIG.audio.bgmVolume;
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(vol, now + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + item.d * 0.92);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + item.d);
+          } catch (e) {}
+        }
+
+        this.bgmTimer = setTimeout(() => {
+          this.scheduleNextNote();
+        }, item.d * 1000);
+      }
+
+      stopBgm() {
+        this.isPlayingBgm = false;
+        if (this.bgmTimer) {
+          clearTimeout(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      }
+
+      toggleBgm(forceState) {
+        this.bgmEnabled = typeof forceState === "boolean" ? forceState : !this.bgmEnabled;
+        if (this.bgmEnabled) {
+          this.startBgm();
+        } else {
+          this.stopBgm();
+        }
+        return this.bgmEnabled;
+      }
+
+      toggleSfx(forceState) {
+        this.sfxEnabled = typeof forceState === "boolean" ? forceState : !this.sfxEnabled;
+        return this.sfxEnabled;
+      }
+
+      playSfx(type) {
+        if (!this.sfxEnabled) return;
+        this.initContext();
+        if (!this.ctx || this.ctx.state !== "running") return;
+
+        const now = this.ctx.currentTime;
+        const maxVol = GAME_CONFIG.audio.sfxVolume;
+
+        const playTone = (freq, startOffset, duration, wave = "sine", volScale = 1) => {
+          try {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = wave;
+            osc.frequency.setValueAtTime(freq, now + startOffset);
+            gain.gain.setValueAtTime(0.001, now + startOffset);
+            gain.gain.linearRampToValueAtTime(maxVol * volScale, now + startOffset + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + startOffset + duration);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + startOffset);
+            osc.stop(now + startOffset + duration + 0.02);
+          } catch (e) {}
+        };
+
+        if (type === "click") {
+          playTone(660, 0, 0.07, "sine", 0.5);
+        } else if (type === "correct") {
+          playTone(587.33, 0, 0.12, "triangle", 0.8);
+          playTone(880.00, 0.10, 0.22, "triangle", 0.9);
+        } else if (type === "wrong") {
+          playTone(310, 0, 0.14, "sine", 0.6);
+          playTone(250, 0.12, 0.20, "sine", 0.6);
+        } else if (type === "stageClear") {
+          playTone(523.25, 0, 0.12, "triangle", 0.9);
+          playTone(659.25, 0.11, 0.12, "triangle", 0.9);
+          playTone(783.99, 0.22, 0.12, "triangle", 0.9);
+          playTone(1046.50, 0.34, 0.32, "triangle", 1.0);
+        } else if (type === "victory") {
+          [523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5].forEach((f, idx) => {
+            playTone(f, idx * 0.12, 0.22, "triangle", 1.0);
+          });
+        }
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    // Tự động tạm dừng nhạc khi ẩn tab trình duyệt
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        sound.stopBgm();
+      } else if (gameState.hasStarted && sound.bgmEnabled) {
+        sound.startBgm();
+      }
+    });
+
+    /**
+     * ============================================================================
+     * THƯ VIỆN ĐỒ HỌA SVG TỰ DỰNG (NHÂN VẬT MÂY & BỘ SƯU TẬP HOA ĐA LỚP)
+     * ============================================================================
+     */
+    function getMayCharacterSVG(mood = "normal") {
+      // mood: "normal" | "happy" | "thinking" | "cheering"
+      let mouthPath = "M 67 88 Q 75 95 83 88"; // Cười nhẹ
+      let eyeLeft = `<circle cx="63" cy="74" r="4.5" fill="#2D2640"/><circle cx="61.5" cy="72.5" r="1.5" fill="#FFF"/>`;
+      let eyeRight = `<circle cx="87" cy="74" r="4.5" fill="#2D2640"/><circle cx="85.5" cy="72.5" r="1.5" fill="#FFF"/>`;
+      let blushOpacity = "0.55";
+      let spark = "";
+
+      if (mood === "happy" || mood === "cheering") {
+        mouthPath = "M 65 86 Q 75 99 85 86 Z";
+        eyeLeft = `<path d="M 58 74 Q 63 68 68 74" stroke="#2D2640" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+        eyeRight = `<path d="M 82 74 Q 87 68 92 74" stroke="#2D2640" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+        blushOpacity = "0.85";
+        spark = `
+          <path d="M24 34 L27 42 L35 45 L27 48 L24 56 L21 48 L13 45 L21 42 Z" fill="#FFD773"/>
+          <path d="M126 30 L128 36 L134 38 L128 40 L126 46 L124 40 L118 38 L124 36 Z" fill="#FF85A2"/>
+        `;
+      } else if (mood === "thinking") {
+        mouthPath = "M 69 90 Q 75 87 81 90";
+        eyeLeft = `<circle cx="64" cy="72" r="4.5" fill="#2D2640"/>`;
+        eyeRight = `<circle cx="88" cy="72" r="4.5" fill="#2D2640"/>`;
+      }
+
+      return `
+        <svg viewBox="0 0 150 150" width="142" height="142" aria-label="Nhân vật Mây">
+          ${spark}
+          <!-- Tóc bồng bềnh hình mây tím oải hương -->
+          <circle cx="46" cy="68" r="22" fill="#8069C6"/>
+          <circle cx="104" cy="68" r="22" fill="#8069C6"/>
+          <circle cx="75" cy="48" r="28" fill="#8069C6"/>
+          <!-- Áo khoác nhà phát minh cam - xanh ngọc -->
+          <path d="M 42 138 Q 45 104 75 104 Q 105 104 108 138 Z" fill="#40B8B3" stroke="#2B928D" stroke-width="2.5"/>
+          <path d="M 63 106 L 75 126 L 87 106 Z" fill="#FFF9ED"/>
+          <circle cx="75" cy="130" r="4" fill="#FFD773"/>
+          <!-- Khuôn mặt chibi -->
+          <rect x="47" y="50" width="56" height="52" rx="25" fill="#FFE6D5" stroke="#E5B89B" stroke-width="2"/>
+          <!-- Má hồng -->
+          <ellipse cx="55" cy="82" rx="5.5" ry="3.2" fill="#FF85A2" opacity="${blushOpacity}"/>
+          <ellipse cx="95" cy="82" rx="5.5" ry="3.2" fill="#FF85A2" opacity="${blushOpacity}"/>
+          <!-- Mắt & Miệng -->
+          ${eyeLeft}
+          ${eyeRight}
+          <path d="${mouthPath}" stroke="#D9534F" stroke-width="2.8" fill="${mood === 'happy' || mood === 'cheering' ? '#FF85A2' : 'none'}" stroke-linecap="round"/>
+          <!-- Tóc mái -->
+          <path d="M 48 64 Q 62 50 76 60 Q 90 50 102 64" fill="#8069C6"/>
+          <!-- Kính bảo hộ nhà phát minh trên trán -->
+          <rect x="44" y="38" width="62" height="16" rx="8" fill="#FF9850" stroke="#C85A17" stroke-width="2"/>
+          <circle cx="62" cy="46" r="10" fill="#E0F7FA" stroke="#5F49A3" stroke-width="3"/>
+          <circle cx="88" cy="46" r="10" fill="#E0F7FA" stroke="#5F49A3" stroke-width="3"/>
+          <line x1="72" y1="46" x2="78" y2="46" stroke="#5F49A3" stroke-width="3"/>
+          <path d="M 58 42 L 63 47" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+          <path d="M 84 42 L 89 47" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      `;
+    }
+
+    // Hình minh họa SVG các loài hoa đa lớp (Không dùng emoji phóng to)
+    function getFlowerIllustrationSVG(flowerId, sizePx = 90) {
+      if (flowerId === "rose") {
+        return `
+          <svg width="${sizePx}" height="${sizePx}" viewBox="0 0 100 100" aria-label="Hoa Hồng Đỏ">
+            <rect x="6" y="6" width="88" height="88" rx="14" fill="#FFF4F6" stroke="#FF85A2" stroke-width="2"/>
+            <!-- Thân và lá -->
+            <path d="M50 55 L50 86" stroke="#2EB872" stroke-width="5" stroke-linecap="round"/>
+            <path d="M50 72 Q32 65 30 76 Q40 82 50 74" fill="#40B8B3"/>
+            <path d="M50 68 Q68 60 70 71 Q60 78 50 70" fill="#2EB872"/>
+            <!-- Cánh hoa hồng đa lớp -->
+            <circle cx="50" cy="40" r="22" fill="#F15B5B"/>
+            <circle cx="42" cy="36" r="14" fill="#FF85A2"/>
+            <circle cx="58" cy="36" r="14" fill="#E03E52"/>
+            <path d="M38 38 Q50 52 62 38 Q56 24 50 28 Q44 24 38 38 Z" fill="#FFC2D1"/>
+            <circle cx="50" cy="37" r="6" fill="#C81E3A"/>
+          </svg>
+        `;
+      }
+      if (flowerId === "sunflower") {
+        return `
+          <svg width="${sizePx}" height="${sizePx}" viewBox="0 0 100 100" aria-label="Hoa Hướng Dương">
+            <rect x="6" y="6" width="88" height="88" rx="14" fill="#FFFDF0" stroke="#FFD773" stroke-width="2"/>
+            <path d="M50 55 L50 86" stroke="#2EB872" stroke-width="5" stroke-linecap="round"/>
+            <path d="M50 72 Q30 66 32 78 Q42 82 50 74" fill="#2EB872"/>
+            <!-- Cánh hoa hướng dương -->
+            <g transform="translate(50,40)">
+              <ellipse cx="0" cy="-20" rx="6" ry="11" fill="#FF9850"/>
+              <ellipse cx="0" cy="20" rx="6" ry="11" fill="#FF9850"/>
+              <ellipse cx="-20" cy="0" rx="11" ry="6" fill="#FF9850"/>
+              <ellipse cx="20" cy="0" rx="11" ry="6" fill="#FF9850"/>
+              <ellipse cx="-14" cy="-14" rx="8" ry="8" fill="#FFD773"/>
+              <ellipse cx="14" cy="-14" rx="8" ry="8" fill="#FFD773"/>
+              <ellipse cx="-14" cy="14" rx="8" ry="8" fill="#FFD773"/>
+              <ellipse cx="14" cy="14" rx="8" ry="8" fill="#FFD773"/>
+              <circle cx="0" cy="0" r="13" fill="#6B4226" stroke="#F59E0B" stroke-width="2"/>
+              <circle cx="-4" cy="-3" r="1.5" fill="#FFD773"/>
+              <circle cx="4" cy="-3" r="1.5" fill="#FFD773"/>
+              <circle cx="0" cy="4" r="1.5" fill="#FFD773"/>
+            </g>
+          </svg>
+        `;
+      }
+      if (flowerId === "lotus") {
+        return `
+          <svg width="${sizePx}" height="${sizePx}" viewBox="0 0 100 100" aria-label="Hoa Sen Hồng">
+            <rect x="6" y="6" width="88" height="88" rx="14" fill="#F2FBF9" stroke="#40B8B3" stroke-width="2"/>
+            <!-- Lá sen -->
+            <ellipse cx="50" cy="76" rx="28" ry="8" fill="#40B8B3"/>
+            <!-- Cánh sen -->
+            <path d="M50 22 Q24 44 36 66 Q50 70 50 66" fill="#FF85A2"/>
+            <path d="M50 22 Q76 44 64 66 Q50 70 50 66" fill="#FF85A2"/>
+            <path d="M50 18 Q36 42 50 68 Q64 42 50 18 Z" fill="#FFB3C6"/>
+            <circle cx="50" cy="52" r="6" fill="#FFD773"/>
+          </svg>
+        `;
+      }
+      // Hoa cúc vàng (daisy)
+      return `
+        <svg width="${sizePx}" height="${sizePx}" viewBox="0 0 100 100" aria-label="Hoa Cúc Vàng">
+          <rect x="6" y="6" width="88" height="88" rx="14" fill="#F6F3FF" stroke="#8069C6" stroke-width="2"/>
+          <path d="M50 54 L50 86" stroke="#2EB872" stroke-width="4.5" stroke-linecap="round"/>
+          <g transform="translate(50,40)">
+            <circle cx="0" cy="-16" r="8" fill="#FFD773"/>
+            <circle cx="0" cy="16" r="8" fill="#FFD773"/>
+            <circle cx="-16" cy="0" r="8" fill="#FFD773"/>
+            <circle cx="16" cy="0" r="8" fill="#FFD773"/>
+            <circle cx="-11" cy="-11" r="8" fill="#FFE699"/>
+            <circle cx="11" cy="-11" r="8" fill="#FFE699"/>
+            <circle cx="-11" cy="11" r="8" fill="#FFE699"/>
+            <circle cx="11" cy="11" r="8" fill="#FFE699"/>
+            <circle cx="0" cy="0" r="10" fill="#FF9850"/>
+          </g>
+        </svg>
+      `;
+    }
+
+    /**
+     * ============================================================================
+     * TRẠNG THÁI TRÒ CHƠI (GAME STATE) & LOGIC ĐIỀU PHỐI 4 MÀN
+     * ============================================================================
+     */
+    const gameState = {
+      hasStarted: false,
+      mode: "practice", // "practice" | "challenge"
+      currentStage: 1,
+      score: 0,
+      completedStages: { 1: false, 2: false, 3: false, 4: false },
+      hintStepUsed: { 1: 0, 2: 0, 3: 0, 4: 0 },
+
+      // Dữ liệu từng màn của học sinh (liên thông từ Màn 1 -> Màn 4)
+      stage1: {
+        stepIndex: 0,
+        foundIds: []
+      },
+      stage2: {
+        selectedTheme: "spring",
+        titleText: "",
+        authorText: "",
+        applied: false
+      },
+      stage3: {
+        slide2Created: false,
+        slide2Heading: GAME_CONFIG.stages[3].slide2DefaultHeading,
+        activePickedFlower: null,
+        slot1Flower: null,
+        slot2Flower: null,
+        imageScale: 80, // Cần chỉnh lên 95 - 135%
+        resizedOk: false
+      },
+      stage4: {
+        inSlideshow: false,
+        currentSlideShowPage: 1,
+        viewedSlide1: false,
+        viewedSlide2: false,
+        finishedSlideshow: false,
+        saveDialogOpen: false,
+        selectedFolderId: null,
+        fileName: GAME_CONFIG.stages[4].defaultFileName,
+        savedSuccess: false
+      }
+    };
+
+    // Cập nhật Nhân vật Mây và bong bóng thoại
+    function updateMayCompanion(message, mood = "normal", bubbleState = "normal") {
+      const avatarWrap = document.getElementById("mayAvatarContainer");
+      const speechEl = document.getElementById("maySpeechBubble");
+      if (avatarWrap) avatarWrap.innerHTML = getMayCharacterSVG(mood);
+      if (speechEl) {
+        speechEl.textContent = message;
+        speechEl.className = "speech-bubble";
+        if (bubbleState === "correct") speechEl.classList.add("correct");
+        if (bubbleState === "wrong") speechEl.classList.add("wrong");
+      }
+    }
+
+    // Chuẩn hóa chuỗi tiếng Việt để kiểm tra tiêu đề "CÁC LOÀI HOA"
+    function normalizeText(str) {
+      return (str || "").trim().replace(/\s+/g, " ").toUpperCase();
+    }
+
+    // Cập nhật giao diện HUD trên cùng, đèn rạp chiếu, danh sách nhiệm vụ
+    function updateGlobalHUD() {
+      document.getElementById("scoreDisplay").textContent = gameState.score;
+      document.getElementById("currentStageNumLabel").textContent = gameState.currentStage;
+      document.getElementById("modeBadgeLabel").textContent =
+        gameState.mode === "practice" ? "🌱 Luyện tập" : "🚀 Thử thách";
+
+      // Đèn sân khấu sáng dần theo màn đã qua
+      for (let i = 1; i <= 4; i++) {
+        const bulb = document.getElementById("bulb" + i);
+        if (bulb) {
+          bulb.classList.toggle("lit", !!gameState.completedStages[i]);
+        }
+      }
+
+      // Nút chuyển nhanh giữa các màn
+      const pills = document.querySelectorAll("#stageNavPills .stage-pill");
+      pills.forEach((btn) => {
+        const st = Number(btn.getAttribute("data-stage"));
+        btn.classList.toggle("active", st === gameState.currentStage);
+        btn.classList.toggle("completed", !!gameState.completedStages[st]);
+        // Cho phép bấm vào màn hiện tại, màn đã hoàn thành, hoặc màn kế tiếp của màn vừa xong
+        const canAccess = st === 1 || gameState.completedStages[st] || gameState.completedStages[st - 1];
+        btn.disabled = !canAccess;
+        btn.innerHTML = `${gameState.completedStages[st] ? "✅ " : ""}Màn ${st}`;
+      });
+
+      // Nút Tiếp tục
+      const nextBtn = document.getElementById("btnNextStage");
+      const statusTag = document.getElementById("stageStatusTag");
+      const isCurrDone = !!gameState.completedStages[gameState.currentStage];
+      nextBtn.disabled = !isCurrDone;
+      if (isCurrDone) {
+        nextBtn.textContent = gameState.currentStage < 4 ? "Qua màn tiếp theo ➔" : "Xem bảng thành tích 🏆";
+        statusTag.textContent = "🎉 Đã hoàn thành màn này (+25 điểm)!";
+        statusTag.style.color = "var(--success)";
+      } else {
+        nextBtn.textContent = "Tiếp tục ➔";
+        statusTag.textContent = "Hoàn thành đủ nhiệm vụ bên dưới để mở khóa";
+        statusTag.style.color = "var(--text-muted)";
+      }
+
+      // Bộ đếm gợi ý
+      const hStep = gameState.hintStepUsed[gameState.currentStage] || 0;
+      document.getElementById("hintStepCount").textContent = `${hStep}/2`;
+    }
+
+    // Cộng điểm hoàn thành màn (chỉ cộng đúng 1 lần duy nhất cho mỗi màn)
+    function awardStageCompletion(stageNum, customCongratsMsg) {
+      if (!gameState.completedStages[stageNum]) {
+        gameState.completedStages[stageNum] = true;
+        gameState.score = Math.min(GAME_CONFIG.maxScore, gameState.score + GAME_CONFIG.pointsPerStage);
+        sound.playSfx("stageClear");
+        triggerConfetti(1400);
+      } else {
+        sound.playSfx("correct");
+      }
+      updateMayCompanion(
+        customCongratsMsg || "Tuyệt vời! Cậu đã hoàn thành xuất sắc màn này và nhận 25 điểm. Hãy bấm 'Qua màn tiếp theo' nhé!",
+        "cheering",
+        "correct"
+      );
+      updateGlobalHUD();
+      renderMissionChecklist();
+    }
+
+    // Hiển thị danh sách nhiệm vụ bên cột trái
+    function renderMissionChecklist() {
+      const container = document.getElementById("taskListContainer");
+      const st = gameState.currentStage;
+      let items = [];
+
+      if (st === 1) {
+        items = GAME_CONFIG.stages[1].targets.map((t, idx) => ({
+          label: t.label,
+          done: gameState.stage1.foundIds.includes(t.id),
+          active: gameState.stage1.stepIndex === idx && !gameState.stage1.foundIds.includes(t.id)
+        }));
+      } else if (st === 2) {
+        const s2 = gameState.stage2;
+        const titleOk = normalizeText(s2.titleText) === GAME_CONFIG.stages[2].expectedTitle;
+        const authorOk = s2.authorText.trim().length >= 3;
+        items = [
+          { label: "1. Chọn mẫu nền trang chiếu chủ đề Hoa", done: !!s2.selectedTheme, active: !s2.selectedTheme },
+          { label: "2. Nhập tiêu đề «CÁC LOÀI HOA»", done: titleOk, active: !titleOk },
+          { label: "3. Nhập tên nhóm & bấm «Áp dụng lên trang chiếu»", done: titleOk && authorOk && s2.applied, active: titleOk && (!authorOk || !s2.applied) }
+        ];
+      } else if (st === 3) {
+        const s3 = gameState.stage3;
+        const bothPhotos = !!(s3.slot1Flower && s3.slot2Flower);
+        items = [
+          { label: "1. Bấm nút «+ Thêm trang chiếu số 2»", done: s3.slide2Created, active: !s3.slide2Created },
+          { label: "2. Chèn ảnh hoa vào Khung bố cục 1", done: !!s3.slot1Flower, active: s3.slide2Created && !s3.slot1Flower },
+          { label: "3. Chèn ảnh hoa vào Khung bố cục 2", done: !!s3.slot2Flower, active: s3.slide2Created && !!s3.slot1Flower && !s3.slot2Flower },
+          { label: "4. Chỉnh kích thước ảnh cân đối (95% – 135%)", done: bothPhotos && s3.resizedOk, active: bothPhotos && !s3.resizedOk }
+        ];
+      } else if (st === 4) {
+        const s4 = gameState.stage4;
+        items = [
+          { label: "1. Bật chế độ «Trình chiếu (Slide Show)»", done: s4.viewedSlide1, active: !s4.viewedSlide1 },
+          { label: "2. Duyệt xem cả Trang 1 và Trang 2 rồi thoát chiếu", done: s4.finishedSlideshow, active: s4.viewedSlide1 && !s4.finishedSlideshow },
+          { label: "3. Lưu bài vào đúng thư mục «Bài tập»", done: s4.savedSuccess, active: s4.finishedSlideshow && !s4.savedSuccess }
+        ];
+      }
+
+      container.innerHTML = items.map((it) => `
+        <div class="task-item ${it.done ? "done" : ""} ${it.active ? "active-task" : ""}">
+          <span class="task-check">${it.done ? "✓" : ""}</span>
+          <span>${it.label}</span>
+        </div>
+      `).join("");
+    }
+
+    /**
+     * ============================================================================
+     * RENDER NỘI DUNG TỪNG MÀN (1 -> 4)
+     * ============================================================================
+     */
+    function loadStage(stageNumber) {
+      gameState.currentStage = stageNumber;
+      const cfg = GAME_CONFIG.stages[stageNumber];
+      document.getElementById("stageHeading").textContent = cfg.title;
+      document.getElementById("stageSubheading").textContent = cfg.subtitle;
+
+      // Xử lý hộp gợi ý theo chế độ Luyện tập / Thử thách
+      const hintBox = document.getElementById("hintDisplayBox");
+      if (gameState.mode === "practice") {
+        gameState.hintStepUsed[stageNumber] = Math.max(1, gameState.hintStepUsed[stageNumber]);
+        hintBox.textContent = "💡 " + cfg.hints[0];
+        hintBox.classList.add("visible");
+      } else {
+        if (gameState.hintStepUsed[stageNumber] === 0) {
+          hintBox.classList.remove("visible");
+          hintBox.textContent = "";
+        }
+      }
+
+      updateMayCompanion(cfg.introSpeech, "normal", "normal");
+      renderMissionChecklist();
+      updateGlobalHUD();
+
+      if (stageNumber === 1) renderStage1();
+      else if (stageNumber === 2) renderStage2();
+      else if (stageNumber === 3) renderStage3();
+      else if (stageNumber === 4) renderStage4();
+    }
+
+    // -------------------------------------------------------------------------
+    // MÀN 1: NHẬN DIỆN CÔNG CỤ TRÌNH CHIẾU
+    // -------------------------------------------------------------------------
+    function renderStage1() {
+      const mount = document.getElementById("stageInteractiveMount");
+      const s1 = gameState.stage1;
+      const currentTarget = GAME_CONFIG.stages[1].targets[s1.stepIndex] || null;
+
+      if (currentTarget && !gameState.completedStages[1]) {
+        updateMayCompanion(currentTarget.prompt, "normal", "normal");
+      }
+
+      const isFound = (id) => s1.foundIds.includes(id);
+      const isPracticeTarget = (id) =>
+        gameState.mode === "practice" && currentTarget && currentTarget.id === id;
+
+      mount.innerHTML = `
+        <div class="control-strip" style="background:#F5F0FF; border-color:#D0C2F0;">
+          <div style="font-weight:800; color:var(--lavender-dark);">
+            🎯 Yêu cầu hiện tại:
+            <span style="color:var(--peach-dark);">
+              ${currentTarget ? currentTarget.label : "Đã nhận diện đủ 4 bộ phận của phần mềm trình chiếu!"}
+            </span>
+          </div>
+          <div style="font-size:0.84rem; font-weight:700; color:var(--text-muted);">
+            Đã tìm đúng: <strong>${s1.foundIds.length} / 4</strong> vùng
+          </div>
+        </div>
+
+        <div class="ppt-window" role="region" aria-label="Cửa sổ mô phỏng phần mềm trình chiếu">
+          <div class="ppt-titlebar" data-s1-zone="titlebar" style="cursor:pointer;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="ppt-window-dots"><span></span><span></span><span></span></div>
+              <span>📊 Phần mềm Trình chiếu – Bài trình chiếu 1 (Giao diện mô phỏng phục vụ học tập)</span>
+            </div>
+            <span>_ □ ✕</span>
+          </div>
+
+          <!-- Thanh công cụ Ribbon -->
+          <div class="ppt-ribbon">
+            <span class="ribbon-tab active">Home (Trang đầu)</span>
+            <span class="ribbon-tab" data-s1-zone="ribbon_insert">Insert (Chèn)</span>
+            <span class="ribbon-tab" data-s1-zone="ribbon_slideshow">Slide Show (Trình chiếu)</span>
+            <div class="ribbon-divider"></div>
+
+            <button type="button"
+              class="ribbon-tool ${isFound('new_slide_btn') ? 'identified' : ''} ${isPracticeTarget('new_slide_btn') ? 'highlight-pulse' : ''}"
+              data-s1-target="new_slide_btn">
+              <svg width="22" height="22" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="14" rx="2" fill="#FFF3E0" stroke="#FF9850" stroke-width="2"/>
+                <path d="M12 7v8M8 11h8" stroke="#E0782F" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+              <span>New Slide (Thêm trang)</span>
+              ${isFound('new_slide_btn') ? '✅' : ''}
+            </button>
+          </div>
+
+          <div class="ppt-body">
+            <!-- Vùng trang chiếu thu nhỏ bên trái -->
+            <div class="ppt-thumbnails ${isFound('thumbnail_pane') ? 'identified' : ''} ${isPracticeTarget('thumbnail_pane') ? 'highlight-pulse' : ''}"
+                 data-s1-target="thumbnail_pane"
+                 tabindex="0"
+                 role="button"
+                 aria-label="Vùng trang chiếu thu nhỏ bên trái">
+              <div style="font-size:0.78rem; font-weight:800; color:#5F49A3;">
+                Trang thu nhỏ ${isFound('thumbnail_pane') ? '✅' : ''}
+              </div>
+              <div class="thumb-card active-slide" style="pointer-events:none;">
+                <span class="thumb-num">1</span>
+                <div style="margin-top:18px; height:8px; background:#D8CEF0; border-radius:4px;"></div>
+                <div style="height:6px; width:70%; margin:0 auto 8px; background:#E8E2F6; border-radius:4px;"></div>
+              </div>
+            </div>
+
+            <!-- Vùng soạn thảo trang chiếu lớn ở giữa -->
+            <div class="ppt-canvas-wrap">
+              <div class="slide-stage ${isFound('slide_workspace') ? 'identified' : ''} ${isPracticeTarget('slide_workspace') ? 'highlight-pulse' : ''}"
+                   data-s1-target="slide_workspace"
+                   tabindex="0"
+                   role="button"
+                   aria-label="Vùng soạn thảo trang chiếu chính">
+                <div style="position:absolute; top:8px; right:12px; font-size:0.76rem; font-weight:800; color:#7A6A9E;">
+                  Vùng trang chiếu chính ${isFound('slide_workspace') ? '✅' : ''}
+                </div>
+
+                <!-- Khung nhập tiêu đề -->
+                <div class="slide-placeholder-title ${isFound('title_placeholder') ? 'identified' : ''} ${isPracticeTarget('title_placeholder') ? 'highlight-pulse' : ''}"
+                     data-s1-target="title_placeholder"
+                     tabindex="0"
+                     role="button"
+                     aria-label="Khung nhập tiêu đề trang chiếu">
+                  <div style="font-size:1.35rem; font-weight:900; color:#4A3B75;">
+                    Nháy chuột để nhập tiêu đề ${isFound('title_placeholder') ? '✅' : ''}
+                  </div>
+                  <div style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">
+                    (Khung nhập tiêu đề trang chiếu)
+                  </div>
+                </div>
+
+                <div class="slide-placeholder-sub" style="pointer-events:none; opacity:0.8;">
+                  <div style="font-size:0.95rem; font-weight:700; color:#3B8683;">
+                    Nháy chuột để nhập phụ đề / tên nhóm
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Gắn sự kiện tương tác cho Màn 1
+      mount.querySelectorAll("[data-s1-target]").forEach((el) => {
+        const handleSelect = (e) => {
+          e.stopPropagation();
+          const clickedId = el.getAttribute("data-s1-target");
+          handleStage1Click(clickedId);
+        };
+        el.addEventListener("click", handleSelect);
+        el.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleSelect(e);
+          }
+        });
+      });
+
+      mount.querySelectorAll("[data-s1-zone]").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const zoneKey = el.getAttribute("data-s1-zone");
+          const msg = GAME_CONFIG.stages[1].distractorFeedback[zoneKey] || "Hãy chọn đúng vùng mà Mây đang yêu cầu nhé!";
+          sound.playSfx("wrong");
+          updateMayCompanion(msg, "thinking", "wrong");
+        });
+      });
+    }
+
+    function handleStage1Click(clickedId) {
+      const s1 = gameState.stage1;
+      const targets = GAME_CONFIG.stages[1].targets;
+      const currentTarget = targets[s1.stepIndex];
+
+      if (!currentTarget) return;
+
+      if (clickedId === currentTarget.id) {
+        if (!s1.foundIds.includes(clickedId)) {
+          s1.foundIds.push(clickedId);
+        }
+        s1.stepIndex++;
+
+        if (s1.stepIndex >= targets.length) {
+          renderStage1();
+          awardStageCompletion(
+            1,
+            "Hoan hô! Cậu đã nhận diện chính xác cả 4 bộ phận quan trọng trên cửa sổ phần mềm trình chiếu (+25 điểm)!"
+          );
+        } else {
+          sound.playSfx("correct");
+          const nextT = targets[s1.stepIndex];
+          renderStage1();
+          updateMayCompanion(
+            `${currentTarget.correctMsg} Tiếp theo: ${nextT.prompt}`,
+            "happy",
+            "correct"
+          );
+          renderMissionChecklist();
+        }
+      } else {
+        sound.playSfx("wrong");
+        updateMayCompanion(currentTarget.wrongExplain, "thinking", "wrong");
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // MÀN 2: TRANG CHIẾU CHỦ ĐỀ HOA (GÕ TIÊU ĐỀ & TÊN NHÓM, XEM TRƯỚC TRỰC TIẾP)
+    // -------------------------------------------------------------------------
+    function renderStage2() {
+      const mount = document.getElementById("stageInteractiveMount");
+      const s2 = gameState.stage2;
+      const cfg2 = GAME_CONFIG.stages[2];
+      const activeThemeObj = cfg2.themes.find((t) => t.id === s2.selectedTheme) || cfg2.themes[0];
+
+      mount.innerHTML = `
+        <!-- Thanh điều khiển chọn mẫu nền, nhập chữ & từ gợi ý nhanh -->
+        <div class="control-strip">
+          <div style="display:flex; flex-direction:column; gap:6px; flex:1; min-width:260px;">
+            <div style="font-size:0.84rem; font-weight:800; color:var(--lavender-dark);">
+              1️⃣ Chọn mẫu trang trí nền cho Trang 1:
+            </div>
+            <div class="chip-group">
+              ${cfg2.themes.map((th) => `
+                <button type="button" class="quick-chip" data-theme-id="${th.id}"
+                  style="${s2.selectedTheme === th.id ? 'background:var(--peach); color:#fff; border-color:var(--peach-dark);' : ''}">
+                  🎨 ${th.name}
+                </button>
+              `).join("")}
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:6px; flex:2; min-width:300px;">
+            <div style="font-size:0.84rem; font-weight:800; color:var(--lavender-dark);">
+              2️⃣ Nhập tiêu đề bắt buộc «CÁC LOÀI HOA» và Tên nhóm:
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <input type="text" id="inputSlideTitle" class="text-input-field"
+                placeholder="Nhập tiêu đề: CÁC LOÀI HOA"
+                value="${s2.titleText}"
+                aria-label="Ô nhập tiêu đề trang chiếu" />
+              <input type="text" id="inputSlideAuthor" class="text-input-field"
+                placeholder="Nhập tên nhóm (VD: Nhóm Hoa Hồng)"
+                value="${s2.authorText}"
+                aria-label="Ô nhập tên nhóm thực hiện" />
+              <button type="button" id="btnApplySlide1" class="btn-3d btn-peach">
+                ✨ Áp dụng lên trang chiếu
+              </button>
+            </div>
+            <div class="chip-group" style="margin-top:2px;">
+              <span style="font-size:0.78rem; font-weight:700; color:var(--text-muted);">Chèn nhanh tiếng Việt:</span>
+              ${cfg2.presetsTitleChips.map((w) => `
+                <button type="button" class="quick-chip" data-insert-title="${w}" style="padding:3px 10px; min-height:30px; font-size:0.78rem;">
+                  + ${w}
+                </button>
+              `).join("")}
+              ${cfg2.presetAuthors.map((au) => `
+                <button type="button" class="quick-chip" data-insert-author="${au}" style="padding:3px 10px; min-height:30px; font-size:0.78rem; border-color:var(--lavender); color:var(--lavender-dark);">
+                  👥 ${au}
+                </button>
+              `).join("")}
+            </div>
+          </div>
+        </div>
+
+        <!-- Cửa sổ mô phỏng hiển thị ngay văn bản trên Slide 1 và Thumbnail 1 -->
+        <div class="ppt-window">
+          <div class="ppt-titlebar">
+            <span>📊 Soạn thảo Trang chiếu 1 (Trang tiêu đề) – Giao diện mô phỏng phục vụ học tập</span>
+            <span>Trang 1 / 1</span>
+          </div>
+          <div class="ppt-body">
+            <!-- Thumbnail cập nhật trực tiếp -->
+            <div class="ppt-thumbnails">
+              <div style="font-size:0.78rem; font-weight:800; color:#5F49A3;">Trang thu nhỏ</div>
+              <div class="thumb-card active-slide" style="background:${activeThemeObj.bg}; border-color:${activeThemeObj.border};">
+                <span class="thumb-num">1</span>
+                <div id="thumb1TitlePreview" style="margin-top:16px; font-size:0.65rem; font-weight:900; text-align:center; color:#4A3B75; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  ${s2.titleText || "CÁC LOÀI HOA"}
+                </div>
+                <div id="thumb1AuthorPreview" style="font-size:0.55rem; text-align:center; color:#2B928D; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  ${s2.authorText || "Tên nhóm"}
+                </div>
+              </div>
+            </div>
+
+            <!-- Sân khấu Slide 1 xem trước trực tiếp -->
+            <div class="ppt-canvas-wrap">
+              <div class="slide-stage" id="slide1LiveCanvas" style="background:${activeThemeObj.bg}; border-color:${activeThemeObj.border};">
+                <!-- Hoa góc trang trí SVG -->
+                <div style="position:absolute; top:10px; left:12px; opacity:0.85;">
+                  ${getFlowerIllustrationSVG("sunflower", 48)}
+                </div>
+                <div style="position:absolute; bottom:10px; right:12px; opacity:0.85;">
+                  ${getFlowerIllustrationSVG("rose", 48)}
+                </div>
+
+                <div class="slide-placeholder-title" style="border-color:${activeThemeObj.border};">
+                  <div id="liveSlideTitleText" style="font-size:2rem; font-weight:900; color:#4A3B75; letter-spacing:0.5px;">
+                    ${s2.titleText ? s2.titleText : '<span style="color:#A396C4;">[Gõ tiêu đề: CÁC LOÀI HOA]</span>'}
+                  </div>
+                </div>
+
+                <div class="slide-placeholder-sub">
+                  <div id="liveSlideAuthorText" style="font-size:1.15rem; font-weight:800; color:#2B928D;">
+                    ${s2.authorText ? "Thực hiện: " + s2.authorText : '<span style="color:#89B8B6;">[Gõ tên nhóm thực hiện]</span>'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const titleInput = document.getElementById("inputSlideTitle");
+      const authorInput = document.getElementById("inputSlideAuthor");
+
+      const syncLivePreview = () => {
+        s2.titleText = titleInput.value;
+        s2.authorText = authorInput.value;
+        document.getElementById("liveSlideTitleText").textContent = s2.titleText || "[Gõ tiêu đề: CÁC LOÀI HOA]";
+        document.getElementById("liveSlideAuthorText").textContent = s2.authorText ? "Thực hiện: " + s2.authorText : "[Gõ tên nhóm thực hiện]";
+        document.getElementById("thumb1TitlePreview").textContent = s2.titleText || "Trang 1";
+        document.getElementById("thumb1AuthorPreview").textContent = s2.authorText || "";
+        renderMissionChecklist();
+      };
+
+      titleInput.addEventListener("input", syncLivePreview);
+      authorInput.addEventListener("input", syncLivePreview);
+
+      // Đổi mẫu nền
+      mount.querySelectorAll("[data-theme-id]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          sound.playSfx("click");
+          s2.selectedTheme = btn.getAttribute("data-theme-id");
+          renderStage2();
+          updateMayCompanion("Mẫu nền trang chiếu trông tươi sáng lắm! Giờ cậu hãy kiểm tra tiêu đề và tên nhóm nhé.", "happy", "normal");
+        });
+      });
+
+      // Chèn nhanh từ tiếng Việt cho tiêu đề
+      mount.querySelectorAll("[data-insert-title]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          sound.playSfx("click");
+          const word = btn.getAttribute("data-insert-title");
+          if (word === "CÁC LOÀI HOA") {
+            titleInput.value = "CÁC LOÀI HOA";
+          } else {
+            titleInput.value = (titleInput.value.trim() + " " + word).trim();
+          }
+          syncLivePreview();
+        });
+      });
+
+      // Chèn nhanh tên nhóm
+      mount.querySelectorAll("[data-insert-author]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          sound.playSfx("click");
+          authorInput.value = btn.getAttribute("data-insert-author");
+          syncLivePreview();
+        });
+      });
+
+      // Nút kiểm tra & áp dụng lên trang chiếu
+      document.getElementById("btnApplySlide1").addEventListener("click", () => {
+        syncLivePreview();
+        const normalizedTitle = normalizeText(s2.titleText);
+        const authorClean = s2.authorText.trim();
+
+        if (normalizedTitle !== cfg2.expectedTitle) {
+          sound.playSfx("wrong");
+          updateMayCompanion(
+            `Tiêu đề chưa khớp yêu cầu! Cậu hãy nhập đúng cụm từ có dấu «${cfg2.expectedTitle}» (có thể bấm nút '+ CÁC LOÀI HOA' màu xanh để điền nhanh nhé).`,
+            "thinking",
+            "wrong"
+          );
+          return;
+        }
+
+        if (authorClean.length < 3) {
+          sound.playSfx("wrong");
+          updateMayCompanion(
+            "Cậu đừng quên nhập tên nhóm thực hiện (ví dụ: Nhóm Hoa Hồng) có ít nhất 3 ký tự vào ô bên cạnh nhé!",
+            "thinking",
+            "wrong"
+          );
+          return;
+        }
+
+        s2.applied = true;
+        awardStageCompletion(
+          2,
+          `Tuyệt đẹp! Trang tiêu đề «${s2.titleText.toUpperCase()}» của ${authorClean} đã hiển thị rõ ràng trên trang chiếu (+25 điểm)!`
+        );
+      });
+    }
+
+    // -------------------------------------------------------------------------
+    // MÀN 3: TẠO TRANG 2, CHÈN 2 ẢNH HOA SVG, KÉO THẢ BỐ CỤC & ĐỔI KÍCH THƯỚC
+    // -------------------------------------------------------------------------
+    function renderStage3() {
+      const mount = document.getElementById("stageInteractiveMount");
+      const s3 = gameState.stage3;
+      const cfg3 = GAME_CONFIG.stages[3];
+
+      const getFlowerName = (id) => {
+        const f = cfg3.flowers.find((item) => item.id === id);
+        return f ? f.name : "";
+      };
+
+      mount.innerHTML = `
+        <!-- Thanh công cụ Thư viện ảnh hoa SVG & Thanh trượt chỉnh kích thước -->
+        <div class="control-strip">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <button type="button" id="btnCreateSlide2" class="btn-3d ${s3.slide2Created ? 'btn-soft' : 'btn-peach'}">
+              ➕ ${s3.slide2Created ? 'Đã tạo Trang chiếu số 2 ✅' : 'Thêm trang chiếu số 2 (New Slide)'}
+            </button>
+
+            <div style="font-size:0.84rem; font-weight:800; color:var(--lavender-dark); margin-left:6px;">
+              🌸 Thư viện ảnh SVG (Kéo thả hoặc Nháy chọn rồi nháy vào khung):
+            </div>
+          </div>
+
+          <div class="chip-group">
+            ${cfg3.flowers.map((fl) => `
+              <div class="flower-lib-card ${s3.activePickedFlower === fl.id ? 'picked' : ''}"
+                   draggable="${s3.slide2Created ? 'true' : 'false'}"
+                   data-flower-id="${fl.id}"
+                   tabindex="0"
+                   role="button"
+                   aria-label="Chọn ảnh ${fl.name}">
+                ${getFlowerIllustrationSVG(fl.id, 38)}
+                <span>${fl.name}</span>
+              </div>
+            `).join("")}
+          </div>
+
+          <!-- Điều chỉnh kích thước ảnh -->
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; width:100%; padding-top:6px; border-top:1px dashed var(--border-soft);">
+            <span style="font-size:0.86rem; font-weight:800; color:var(--lavender-dark);">
+              📐 Kích thước ảnh hoa trên trang 2: <strong id="scaleValueLabel">${s3.imageScale}%</strong>
+              <span style="font-size:0.78rem; color:${s3.resizedOk ? 'var(--success)' : 'var(--peach-dark)'};">
+                (${s3.resizedOk ? 'Đã cân đối ✅' : 'Hãy chỉnh vào khoảng 95% – 135%'})
+              </span>
+            </span>
+            <button type="button" id="btnScaleDown" class="btn-3d btn-soft" style="min-height:36px; padding:4px 10px;" ${!s3.slide2Created ? 'disabled' : ''}>➖ Thu nhỏ</button>
+            <input type="range" id="sliderImgScale" min="65" max="145" step="5" value="${s3.imageScale}"
+                   style="width:160px; accent-color:var(--peach); cursor:pointer;" ${!s3.slide2Created ? 'disabled' : ''} />
+            <button type="button" id="btnScaleUp" class="btn-3d btn-soft" style="min-height:36px; padding:4px 10px;" ${!s3.slide2Created ? 'disabled' : ''}>➕ Phóng to</button>
+          </div>
+        </div>
+
+        <!-- Cửa sổ mô phỏng có Thumbnail Trang 1 & Trang 2 -->
+        <div class="ppt-window">
+          <div class="ppt-titlebar">
+            <span>📊 Chèn ảnh minh họa vào Trang chiếu số 2 – Giao diện mô phỏng phục vụ học tập</span>
+            <span>${s3.slide2Created ? 'Đang chọn: Trang 2 / 2' : 'Đang ở: Trang 1 / 1'}</span>
+          </div>
+          <div class="ppt-body">
+            <div class="ppt-thumbnails">
+              <div style="font-size:0.78rem; font-weight:800; color:#5F49A3;">Trang thu nhỏ</div>
+              <!-- Thumbnail 1 -->
+              <div class="thumb-card ${!s3.slide2Created ? 'active-slide' : ''}">
+                <span class="thumb-num">1</span>
+                <div style="margin-top:16px; font-size:0.62rem; font-weight:900; text-align:center; color:#4A3B75;">
+                  ${gameState.stage2.titleText || "CÁC LOÀI HOA"}
+                </div>
+              </div>
+              <!-- Thumbnail 2 xuất hiện khi thêm trang -->
+              ${s3.slide2Created ? `
+                <div class="thumb-card active-slide">
+                  <span class="thumb-num">2</span>
+                  <div style="margin-top:12px; font-size:0.55rem; font-weight:800; text-align:center; color:#2B928D;">
+                    Vẻ đẹp các loài hoa
+                  </div>
+                  <div style="display:flex; justify-content:center; gap:4px; margin-top:4px;">
+                    <span style="width:16px; height:14px; background:${s3.slot1Flower ? '#FFD773' : '#E2D9F3'}; border-radius:3px;"></span>
+                    <span style="width:16px; height:14px; background:${s3.slot2Flower ? '#FF85A2' : '#E2D9F3'}; border-radius:3px;"></span>
+                  </div>
+                </div>
+              ` : `
+                <div style="font-size:0.76rem; color:var(--peach-dark); font-weight:700; text-align:center; padding:8px; border:2px dashed var(--peach); border-radius:8px;">
+                  Bấm nút «+ Thêm trang chiếu số 2» ở trên để tạo trang mới
+                </div>
+              `}
+            </div>
+
+            <!-- Vùng soạn thảo Trang 2 -->
+            <div class="ppt-canvas-wrap">
+              ${!s3.slide2Created ? `
+                <div class="slide-stage" style="align-items:center; text-align:center; background:#FFF9F0;">
+                  <h3 style="color:var(--lavender-dark); margin:0 0 8px;">Chưa có Trang chiếu số 2</h3>
+                  <p style="color:var(--text-muted); font-weight:600; max-width:420px; margin:0 0 14px;">
+                    Hãy nháy vào nút <strong>«+ Thêm trang chiếu số 2 (New Slide)»</strong> màu cam ở phía trên để tạo trang mới trước khi chèn ảnh hoa nhé!
+                  </p>
+                </div>
+              ` : `
+                <div class="slide-stage" style="justify-content:flex-start;">
+                  <div class="slide-placeholder-title" style="padding:8px 12px; margin-bottom:8px;">
+                    <div style="font-size:1.25rem; font-weight:900; color:#4A3B75;">
+                      ${s3.slide2Heading}
+                    </div>
+                  </div>
+
+                  <!-- 2 khung bố cục ảnh hoa (tránh đè lên chữ tiêu đề) -->
+                  <div class="slide2-grid">
+                    <div class="drop-slot ${s3.slot1Flower ? 'filled' : ''} ${s3.activePickedFlower ? 'selected-slot' : ''}"
+                         id="dropSlot1" data-slot="1" tabindex="0" role="button"
+                         aria-label="Khung ảnh hoa số 1">
+                      ${s3.slot1Flower ? `
+                        ${getFlowerIllustrationSVG(s3.slot1Flower, Math.round(92 * s3.imageScale / 100))}
+                        <div style="font-size:0.8rem; font-weight:800; color:#2D2640; margin-top:4px;">
+                          ${getFlowerName(s3.slot1Flower)}
+                        </div>
+                      ` : `
+                        <span style="font-weight:800; color:#7A6A9E; font-size:0.88rem;">🖼️ Khung ảnh 1</span>
+                        <span style="font-size:0.76rem; color:var(--text-muted);">Kéo ảnh hoa vào đây hoặc nháy chọn</span>
+                      `}
+                    </div>
+
+                    <div class="drop-slot ${s3.slot2Flower ? 'filled' : ''} ${s3.activePickedFlower ? 'selected-slot' : ''}"
+                         id="dropSlot2" data-slot="2" tabindex="0" role="button"
+                         aria-label="Khung ảnh hoa số 2">
+                      ${s3.slot2Flower ? `
+                        ${getFlowerIllustrationSVG(s3.slot2Flower, Math.round(92 * s3.imageScale / 100))}
+                        <div style="font-size:0.8rem; font-weight:800; color:#2D2640; margin-top:4px;">
+                          ${getFlowerName(s3.slot2Flower)}
+                        </div>
+                      ` : `
+                        <span style="font-weight:800; color:#7A6A9E; font-size:0.88rem;">🖼️ Khung ảnh 2</span>
+                        <span style="font-size:0.76rem; color:var(--text-muted);">Kéo ảnh hoa vào đây hoặc nháy chọn</span>
+                      `}
+                    </div>
+                  </div>
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Sự kiện tạo trang chiếu số 2
+      document.getElementById("btnCreateSlide2").addEventListener("click", () => {
+        if (!s3.slide2Created) {
+          s3.slide2Created = true;
+          sound.playSfx("correct");
+          updateMayCompanion(
+            "Đã thêm Trang chiếu số 2 vào cột thu nhỏ! Bây giờ cậu hãy chọn 2 bức ảnh hoa từ thư viện để đưa vào Khung ảnh 1 và Khung ảnh 2 nhé.",
+            "happy",
+            "correct"
+          );
+          renderMissionChecklist();
+          renderStage3();
+        }
+      });
+
+      // Chọn / Kéo ảnh hoa từ thư viện
+      mount.querySelectorAll("[data-flower-id]").forEach((card) => {
+        const flowerId = card.getAttribute("data-flower-id");
+
+        card.addEventListener("click", () => {
+          if (!s3.slide2Created) {
+            sound.playSfx("wrong");
+            updateMayCompanion("Cậu cần bấm nút «+ Thêm trang chiếu số 2» trước khi chèn ảnh hoa nhé!", "thinking", "wrong");
+            return;
+          }
+          sound.playSfx("click");
+          s3.activePickedFlower = flowerId;
+          // Nếu 1 trong 2 khung còn trống, hướng dẫn nháy vào khung đích
+          renderStage3();
+          updateMayCompanion(
+            "Đã chọn ảnh hoa! Hãy nháy chuột vào «Khung ảnh 1» hoặc «Khung ảnh 2» bên dưới để đặt ảnh vào trang chiếu.",
+            "normal",
+            "normal"
+          );
+        });
+
+        card.addEventListener("dragstart", (e) => {
+          if (!s3.slide2Created) {
+            e.preventDefault();
+            return;
+          }
+          s3.activePickedFlower = flowerId;
+          if (e.dataTransfer) {
+            e.dataTransfer.setData("text/plain", flowerId);
+          }
+        });
+      });
+
+      // Đặt ảnh hoa vào Khung 1 hoặc Khung 2 (hỗ trợ cả Kéo-thả và Nháy chọn)
+      mount.querySelectorAll("[data-slot]").forEach((slotEl) => {
+        const slotNum = Number(slotEl.getAttribute("data-slot"));
+
+        const placeFlowerInSlot = (flowerId) => {
+          if (!flowerId) {
+            sound.playSfx("wrong");
+            updateMayCompanion("Hãy nháy chọn một loài hoa trên thanh Thư viện ảnh trước rồi mới nháy vào khung nhé!", "thinking", "wrong");
+            return;
+          }
+          if (slotNum === 1) s3.slot1Flower = flowerId;
+          else s3.slot2Flower = flowerId;
+          s3.activePickedFlower = null;
+          sound.playSfx("correct");
+          checkStage3Completion();
+          renderStage3();
+        };
+
+        slotEl.addEventListener("click", () => {
+          placeFlowerInSlot(s3.activePickedFlower);
+        });
+
+        slotEl.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          slotEl.classList.add("hovered");
+        });
+
+        slotEl.addEventListener("dragleave", () => {
+          slotEl.classList.remove("hovered");
+        });
+
+        slotEl.addEventListener("drop", (e) => {
+          e.preventDefault();
+          slotEl.classList.remove("hovered");
+          const droppedId = (e.dataTransfer && e.dataTransfer.getData("text/plain")) || s3.activePickedFlower;
+          placeFlowerInSlot(droppedId);
+        });
+      });
+
+      // Thanh trượt và nút thay đổi kích thước ảnh
+      const updateScale = (newVal) => {
+        s3.imageScale = Math.max(65, Math.min(145, Number(newVal)));
+        s3.resizedOk = s3.imageScale >= cfg3.targetMinSize && s3.imageScale <= cfg3.targetMaxSize;
+        sound.playSfx("click");
+        checkStage3Completion();
+        renderStage3();
+      };
+
+      const slider = document.getElementById("sliderImgScale");
+      if (slider) {
+        slider.addEventListener("change", (e) => updateScale(e.target.value));
+      }
+      const btnUp = document.getElementById("btnScaleUp");
+      if (btnUp) {
+        btnUp.addEventListener("click", () => updateScale(s3.imageScale + 15));
+      }
+      const btnDown = document.getElementById("btnScaleDown");
+      if (btnDown) {
+        btnDown.addEventListener("click", () => updateScale(s3.imageScale - 15));
+      }
+    }
+
+    function checkStage3Completion() {
+      const s3 = gameState.stage3;
+      const cfg3 = GAME_CONFIG.stages[3];
+      s3.resizedOk = s3.imageScale >= cfg3.targetMinSize && s3.imageScale <= cfg3.targetMaxSize;
+      renderMissionChecklist();
+
+      if (s3.slide2Created && s3.slot1Flower && s3.slot2Flower && s3.resizedOk) {
+        awardStageCompletion(
+          3,
+          "Quá đỉnh! Cậu đã tạo Trang 2, chèn 2 bức ảnh hoa SVG và căn chỉnh kích thước cân đối, không che khuất chữ (+25 điểm)!"
+        );
+      } else if (s3.slide2Created && s3.slot1Flower && s3.slot2Flower && !s3.resizedOk) {
+        updateMayCompanion(
+          "Cậu đã chèn đủ 2 ảnh hoa rồi! Bây giờ hãy bấm nút «➕ Phóng to» hoặc kéo thanh trượt kích thước lên mức 95% – 135% cho ảnh rõ đẹp nhé.",
+          "happy",
+          "normal"
+        );
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // MÀN 4: XEM TRÌNH CHIẾU TOÀN MÀN HÌNH & LƯU BÀI VÀO THƯ MỤC "BÀI TẬP"
+    // -------------------------------------------------------------------------
+    function renderStage4() {
+      const mount = document.getElementById("stageInteractiveMount");
+      const s4 = gameState.stage4;
+      const s2 = gameState.stage2;
+      const s3 = gameState.stage3;
+      const cfg4 = GAME_CONFIG.stages[4];
+
+      const slide1Title = s2.titleText || "CÁC LOÀI HOA";
+      const slide1Author = s2.authorText || "Nhóm Hoa Hồng";
+      const flower1 = s3.slot1Flower || "rose";
+      const flower2 = s3.slot2Flower || "sunflower";
+
+      // Nếu đang ở chế độ Trình chiếu toàn màn hình trong ứng dụng
+      if (s4.inSlideshow) {
+        mount.innerHTML = `
+          <div class="slideshow-theater" role="region" aria-label="Chế độ trình chiếu toàn màn hình">
+            <div style="display:flex; justify-content:space-between; width:100%; max-width:640px; align-items:center;">
+              <span style="font-weight:800; color:var(--gold);">
+                🎬 CHẾ ĐỘ TRÌNH CHIẾU TOÀN MÀN HÌNH – Trang ${s4.currentSlideShowPage} / 2
+              </span>
+              <span style="font-size:0.8rem; color:#DDD;">
+                Đã xem: Trang 1 ${s4.viewedSlide1 ? '✅' : '⬜'} | Trang 2 ${s4.viewedSlide2 ? '✅' : '⬜'}
+              </span>
+            </div>
+
+            <div class="theater-screen">
+              ${s4.currentSlideShowPage === 1 ? `
+                <div style="position:absolute; top:12px; left:14px;">${getFlowerIllustrationSVG("sunflower", 54)}</div>
+                <div style="position:absolute; bottom:12px; right:14px;">${getFlowerIllustrationSVG("rose", 54)}</div>
+                <h2 style="font-size:2.2rem; color:#4A3B75; margin:0 0 12px; text-align:center;">${slide1Title}</h2>
+                <p style="font-size:1.2rem; font-weight:800; color:#2B928D; margin:0;">Thực hiện: ${slide1Author}</p>
+              ` : `
+                <h3 style="font-size:1.45rem; color:#4A3B75; margin:0 0 14px;">${s3.slide2Heading}</h3>
+                <div style="display:flex; gap:28px; align-items:center; justify-content:center;">
+                  <div style="text-align:center;">
+                    ${getFlowerIllustrationSVG(flower1, 110)}
+                  </div>
+                  <div style="text-align:center;">
+                    ${getFlowerIllustrationSVG(flower2, 110)}
+                  </div>
+                </div>
+              `}
+            </div>
+
+            <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+              <button type="button" id="btnPrevSlideShow" class="btn-3d btn-soft" ${s4.currentSlideShowPage === 1 ? 'disabled' : ''}>
+                ⬅ Trang trước
+              </button>
+              <button type="button" id="btnNextSlideShow" class="btn-3d btn-peach" ${s4.currentSlideShowPage === 2 ? 'disabled' : ''}>
+                Trang tiếp theo ➔
+              </button>
+              <button type="button" id="btnExitSlideShow" class="btn-3d btn-mint">
+                ⏹ Hoàn tất xem & Thoát trình chiếu (Esc)
+              </button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("btnPrevSlideShow").addEventListener("click", () => {
+          sound.playSfx("click");
+          s4.currentSlideShowPage = 1;
+          s4.viewedSlide1 = true;
+          renderStage4();
+        });
+
+        document.getElementById("btnNextSlideShow").addEventListener("click", () => {
+          sound.playSfx("correct");
+          s4.currentSlideShowPage = 2;
+          s4.viewedSlide2 = true;
+          updateMayCompanion("Trang chiếu số 2 hiển thị 2 bông hoa rất rõ ràng! Giờ cậu có thể bấm «Hoàn tất xem & Thoát trình chiếu» nhé.", "happy", "correct");
+          renderStage4();
+        });
+
+        document.getElementById("btnExitSlideShow").addEventListener("click", () => {
+          if (!s4.viewedSlide2) {
+            sound.playSfx("wrong");
+            updateMayCompanion("Cậu hãy bấm nút «Trang tiếp theo ➔» để kiểm tra cả Trang chiếu số 2 trước khi thoát nhé!", "thinking", "wrong");
+            return;
+          }
+          sound.playSfx("correct");
+          s4.inSlideshow = false;
+          s4.finishedSlideshow = true;
+          updateMayCompanion("Đã kiểm tra xong bài trình chiếu! Bây giờ cậu hãy bấm nút «💾 Lưu bài (Save)» và chọn đúng thư mục «Bài tập» nhé.", "happy", "correct");
+          renderMissionChecklist();
+          renderStage4();
+        });
+        return;
+      }
+
+      // Giao diện bình thường của Màn 4 (Thanh công cụ Trình chiếu & Hộp thoại Lưu bài)
+      mount.innerHTML = `
+        <div class="control-strip">
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <button type="button" id="btnStartSlideShow" class="btn-3d ${s4.finishedSlideshow ? 'btn-soft' : 'btn-peach'}">
+              ▶ Bật Trình chiếu toàn màn hình (F5) ${s4.finishedSlideshow ? '✅' : ''}
+            </button>
+            <button type="button" id="btnOpenSaveDialog" class="btn-3d ${s4.savedSuccess ? 'btn-soft' : 'btn-lavender'}">
+              💾 Mở hộp thoại Lưu bài (Save) ${s4.savedSuccess ? '✅' : ''}
+            </button>
+          </div>
+          <span style="font-size:0.84rem; font-weight:700; color:var(--text-muted);">
+            Lưu trong lượt chơi • Không tạo tệp hệ thống trái phép
+          </span>
+        </div>
+
+        <div class="ppt-window">
+          <div class="ppt-titlebar">
+            <span>📊 Kiểm tra và Lưu bài trình chiếu – Giao diện mô phỏng phục vụ học tập</span>
+            <span>2 trang chiếu hoàn chỉnh</span>
+          </div>
+          <div class="ppt-body">
+            <div class="ppt-thumbnails">
+              <div class="thumb-card active-slide">
+                <span class="thumb-num">1</span>
+                <div style="margin-top:16px; font-size:0.62rem; font-weight:900; text-align:center;">${slide1Title}</div>
+              </div>
+              <div class="thumb-card">
+                <span class="thumb-num">2</span>
+                <div style="margin-top:14px; font-size:0.56rem; font-weight:800; text-align:center;">2 ảnh hoa SVG</div>
+              </div>
+            </div>
+
+            <div class="ppt-canvas-wrap">
+              ${s4.saveDialogOpen ? `
+                <!-- HỘP THOẠI LƯU TỆP GIẢ LẬP -->
+                <div class="save-dialog-box" role="dialog" aria-label="Hộp thoại Lưu bài trình chiếu">
+                  <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--bg-soft); padding-bottom:8px;">
+                    <strong style="color:var(--lavender-dark); font-size:1rem;">📁 Hộp thoại Lưu tệp (Save As)</strong>
+                    <span class="sim-disclaimer">Giao diện mô phỏng phục vụ học tập</span>
+                  </div>
+
+                  <div style="margin-top:10px; font-size:0.88rem; font-weight:800; color:var(--text-main);">
+                    1. Chọn đúng thư mục lưu bài theo yêu cầu:
+                  </div>
+                  <div class="folder-grid">
+                    ${cfg4.folders.map((fd) => `
+                      <div class="folder-card ${s4.selectedFolderId === fd.id ? 'selected' : ''}"
+                           data-folder-id="${fd.id}" tabindex="0" role="button">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="#FFD773" stroke="#E0782F" stroke-width="1.8">
+                          <path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6z"/>
+                        </svg>
+                        <span>${fd.name}</span>
+                      </div>
+                    `).join("")}
+                  </div>
+
+                  <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:10px;">
+                    <label for="saveFileNameInput" style="font-weight:800; font-size:0.88rem;">2. Tên tệp:</label>
+                    <input type="text" id="saveFileNameInput" class="text-input-field" style="flex:1;" value="${s4.fileName}" />
+                    <button type="button" id="btnConfirmSave" class="btn-3d btn-mint">
+                      💾 Lưu trong lượt chơi
+                    </button>
+                  </div>
+                </div>
+              ` : `
+                <div class="slide-stage" style="align-items:center; text-align:center;">
+                  <h3 style="color:var(--lavender-dark); margin:0 0 8px;">Sẵn sàng trình chiếu & Lưu bài!</h3>
+                  <p style="color:var(--text-muted); font-weight:600; max-width:460px; margin:0 0 14px;">
+                    Bước 1: Bấm nút <strong>«▶ Bật Trình chiếu toàn màn hình»</strong> để duyệt xem Trang 1 và Trang 2.<br/>
+                    Bước 2: Bấm nút <strong>«💾 Mở hộp thoại Lưu bài»</strong> và chọn thư mục <strong>«Bài tập»</strong>.
+                  </p>
+                  <div style="display:flex; gap:16px;">
+                    ${getFlowerIllustrationSVG(flower1, 74)}
+                    ${getFlowerIllustrationSVG(flower2, 74)}
+                  </div>
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("btnStartSlideShow").addEventListener("click", () => {
+        sound.playSfx("click");
+        s4.inSlideshow = true;
+        s4.currentSlideShowPage = 1;
+        s4.viewedSlide1 = true;
+        updateMayCompanion(
+          "Đang ở chế độ Trình chiếu toàn màn hình! Cậu hãy bấm «Trang tiếp theo ➔» để kiểm tra tiếp Trang số 2 nhé.",
+          "happy",
+          "normal"
+        );
+        renderMissionChecklist();
+        renderStage4();
+      });
+
+      document.getElementById("btnOpenSaveDialog").addEventListener("click", () => {
+        if (!s4.finishedSlideshow) {
+          sound.playSfx("wrong");
+          updateMayCompanion(
+            "Trước khi lưu bài, cậu hãy bấm nút «▶ Bật Trình chiếu toàn màn hình» để kiểm tra lại cả 2 trang chiếu đã nhé!",
+            "thinking",
+            "wrong"
+          );
+          return;
+        }
+        sound.playSfx("click");
+        s4.saveDialogOpen = true;
+        renderStage4();
+      });
+
+      // Chọn thư mục trong hộp thoại Lưu
+      mount.querySelectorAll("[data-folder-id]").forEach((folderEl) => {
+        folderEl.addEventListener("click", () => {
+          const fId = folderEl.getAttribute("data-folder-id");
+          s4.selectedFolderId = fId;
+          const folderObj = cfg4.folders.find((f) => f.id === fId);
+          if (folderObj && !folderObj.isCorrect) {
+            sound.playSfx("wrong");
+            updateMayCompanion(folderObj.reason, "thinking", "wrong");
+          } else if (folderObj && folderObj.isCorrect) {
+            sound.playSfx("click");
+            updateMayCompanion(folderObj.reason + " Giờ hãy bấm nút «Lưu trong lượt chơi»!", "happy", "correct");
+          }
+          renderStage4();
+        });
+      });
+
+      const confirmSaveBtn = document.getElementById("btnConfirmSave");
+      if (confirmSaveBtn) {
+        confirmSaveBtn.addEventListener("click", () => {
+          const nameInput = document.getElementById("saveFileNameInput");
+          if (nameInput) s4.fileName = nameInput.value.trim();
+
+          if (!s4.selectedFolderId) {
+            sound.playSfx("wrong");
+            updateMayCompanion("Cậu hãy nháy chọn một thư mục (gợi ý: thư mục «Bài tập») trước khi bấm Lưu nhé!", "thinking", "wrong");
+            return;
+          }
+
+          if (s4.selectedFolderId !== cfg4.correctFolderId) {
+            const wrongFolder = cfg4.folders.find((f) => f.id === s4.selectedFolderId);
+            sound.playSfx("wrong");
+            updateMayCompanion(
+              wrongFolder ? wrongFolder.reason : "Hãy chọn đúng thư mục «Bài tập» để lưu bài nhé!",
+              "thinking",
+              "wrong"
+            );
+            return;
+          }
+
+          if (s4.fileName.length < 2) {
+            sound.playSfx("wrong");
+            updateMayCompanion("Cậu hãy đặt tên tệp bài trình chiếu (ít nhất 2 ký tự) trước khi lưu nhé!", "thinking", "wrong");
+            return;
+          }
+
+          s4.savedSuccess = true;
+          awardStageCompletion(
+            4,
+            `Hoàn hảo! Bài trình chiếu «${s4.fileName}» đã được lưu vào thư mục «Bài tập» (+25 điểm). Hãy bấm 'Xem bảng thành tích' nhé!`
+          );
+          renderStage4();
+        });
+      }
+    }
+
+    /**
+     * ============================================================================
+     * HIỆU ỨNG PHÁO GIẤY CHÚC MỪNG (TỐI ĐA 2 GIÂY, TÔN TRỌNG PREFERS-REDUCED-MOTION)
+     * ============================================================================
+     */
+    let confettiAnimId = null;
+    function triggerConfetti(durationMs = 1800) {
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        return;
+      }
+      const canvas = document.getElementById("confettiCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+
+      const colors = ["#FF9850", "#40B8B3", "#8069C6", "#FFD773", "#FF85A2"];
+      const particles = Array.from({ length: 48 }, () => ({
+        x: Math.random() * canvas.width,
+        y: -20 - Math.random() * 80,
+        vx: (Math.random() - 0.5) * 4,
+        vy: 3 + Math.random() * 4,
+        size: 7 + Math.random() * 6,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rot: Math.random() * Math.PI
+      }));
+
+      const startTime = performance.now();
+      const step = (now) => {
+        const elapsed = now - startTime;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (elapsed < durationMs) {
+          particles.forEach((p) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rot += 0.08;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rot);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
+            ctx.restore();
+          });
+          confettiAnimId = requestAnimationFrame(step);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      };
+      confettiAnimId = requestAnimationFrame(step);
+    }
+
+    /**
+     * ============================================================================
+     * TẢI THẺ KỶ NIỆM BÀI TRÌNH CHIẾU THẬT TRONG TRÌNH DUYỆT (.HTML OFFLINE)
+     * ============================================================================
+     */
+    function exportStudentPresentationCard() {
+      const title = gameState.stage2.titleText || "CÁC LOÀI HOA";
+      const author = gameState.stage2.authorText || "Nhóm Hoa Hồng";
+      const fileName = (gameState.stage4.fileName || "Slide-Dau-Tay").replace(/[^a-zA-Z0-9_-]/g, "_");
+
+      const htmlContent = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Thẻ kỷ niệm: ${title}</title>
+<style>
+  body { font-family: "Segoe UI", sans-serif; background:#FFF9ED; padding:30px; text-align:center; color:#2D2640; }
+  .slide-card { max-width:640px; margin:16px auto; background:#FFF; border:4px solid #8069C6; border-radius:18px; padding:28px; box-shadow:0 8px 20px rgba(0,0,0,0.1); }
+</style>
+</head>
+<body>
+  <h1>🌟 SẢN PHẨM BÀI TRÌNH CHIẾU ĐẦU TAY 🌟</h1>
+  <p>Môn Tin học 4 – Bài 7: Tạo bài trình chiếu (Lưu từ trò chơi SLIDE ĐẦU TAY)</p>
+  <div class="slide-card">
+    <h2>Trang 1: ${title}</h2>
+    <p><strong>Nhóm thực hiện:</strong> ${author}</p>
+  </div>
+  <div class="slide-card">
+    <h2>Trang 2: ${gameState.stage3.slide2Heading}</h2>
+    <p>Đã chèn 2 ảnh minh họa SVG và lưu vào thư mục: <strong>Bài tập</strong></p>
+  </div>
+</body>
+</html>`;
+
+      const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${fileName}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    /**
+     * ============================================================================
+     * KHỞI TẠO SỰ KIỆN NÚT BẤM TOÀN CỤC (KHÔNG CÓ NÚT CHẾT)
+     * ============================================================================
+     */
+    function resetCurrentStageState(st) {
+      if (st === 1) {
+        gameState.stage1 = { stepIndex: 0, foundIds: [] };
+      } else if (st === 2) {
+        gameState.stage2 = { selectedTheme: "spring", titleText: "", authorText: "", applied: false };
+      } else if (st === 3) {
+        gameState.stage3 = {
+          slide2Created: false,
+          slide2Heading: GAME_CONFIG.stages[3].slide2DefaultHeading,
+          activePickedFlower: null,
+          slot1Flower: null,
+          slot2Flower: null,
+          imageScale: 80,
+          resizedOk: false
+        };
+      } else if (st === 4) {
+        gameState.stage4 = {
+          inSlideshow: false,
+          currentSlideShowPage: 1,
+          viewedSlide1: false,
+          viewedSlide2: false,
+          finishedSlideshow: false,
+          saveDialogOpen: false,
+          selectedFolderId: null,
+          fileName: GAME_CONFIG.stages[4].defaultFileName,
+          savedSuccess: false
+        };
+      }
+      loadStage(st);
+    }
+
+    function resetFullGame() {
+      gameState.score = 0;
+      gameState.completedStages = { 1: false, 2: false, 3: false, 4: false };
+      gameState.hintStepUsed = { 1: 0, 2: 0, 3: 0, 4: 0 };
+      resetCurrentStageState(1);
+      resetCurrentStageState(2);
+      resetCurrentStageState(3);
+      resetCurrentStageState(4);
+      loadStage(1);
+    }
+
+    function initApp() {
+      document.getElementById("uiGameTitle").textContent = GAME_CONFIG.gameTitle;
+
+      // Render danh sách ghi nhớ ở màn Tổng kết
+      const takeawaysEl = document.getElementById("summaryTakeawaysList");
+      takeawaysEl.innerHTML = GAME_CONFIG.takeaways.map((item) => `<li>${item}</li>`).join("");
+
+      // Chọn chế độ Luyện tập / Thử thách ở màn Chào mừng
+      const modePracticeBtn = document.getElementById("modePracticeBtn");
+      const modeChallengeBtn = document.getElementById("modeChallengeBtn");
+
+      modePracticeBtn.addEventListener("click", () => {
+        gameState.mode = "practice";
+        modePracticeBtn.classList.add("selected");
+        modeChallengeBtn.classList.remove("selected");
+      });
+
+      modeChallengeBtn.addEventListener("click", () => {
+        gameState.mode = "challenge";
+        modeChallengeBtn.classList.add("selected");
+        modePracticeBtn.classList.remove("selected");
+      });
+
+      // Nút Hướng dẫn trên màn chào mừng
+      document.getElementById("btnShowGuide").addEventListener("click", () => {
+        const box = document.getElementById("guideCollapseBox");
+        box.style.display = box.style.display === "none" ? "block" : "none";
+      });
+
+      // Nút BẮT ĐẦU CHƠI -> Khởi chạy nhạc nền Web Audio API
+      document.getElementById("btnStartGame").addEventListener("click", () => {
+        gameState.hasStarted = true;
+        document.getElementById("welcomeOverlay").classList.add("hidden");
+        sound.startBgm();
+        sound.playSfx("click");
+        loadStage(gameState.currentStage);
+      });
+
+      // Công tắc độc lập 1: Nhạc nền
+      const btnBgm = document.getElementById("btnToggleBgm");
+      btnBgm.addEventListener("click", () => {
+        const isOn = sound.toggleBgm();
+        btnBgm.classList.toggle("on", isOn);
+        btnBgm.classList.toggle("off", !isOn);
+        btnBgm.setAttribute("aria-pressed", String(isOn));
+      });
+
+      // Công tắc độc lập 2: Hiệu ứng (SFX)
+      const btnSfx = document.getElementById("btnToggleSfx");
+      btnSfx.addEventListener("click", () => {
+        const isOn = sound.toggleSfx();
+        btnSfx.classList.toggle("on", isOn);
+        btnSfx.classList.toggle("off", !isOn);
+        btnSfx.setAttribute("aria-pressed", String(isOn));
+        if (isOn) sound.playSfx("click");
+      });
+
+      // Nút Tắt nhanh toàn bộ âm thanh
+      document.getElementById("btnQuickMute").addEventListener("click", () => {
+        sound.toggleBgm(false);
+        sound.toggleSfx(false);
+        btnBgm.classList.remove("on");
+        btnBgm.classList.add("off");
+        btnBgm.setAttribute("aria-pressed", "false");
+        btnSfx.classList.remove("on");
+        btnSfx.classList.add("off");
+        btnSfx.setAttribute("aria-pressed", "false");
+      });
+
+      // Nút Trang chủ
+      document.getElementById("btnHome").addEventListener("click", () => {
+        sound.playSfx("click");
+        sound.stopBgm();
+        document.getElementById("welcomeOverlay").classList.remove("hidden");
+      });
+
+      // Nút Gợi ý 2 mức từng bước
+      document.getElementById("btnHint").addEventListener("click", () => {
+        sound.playSfx("click");
+        const st = gameState.currentStage;
+        const hints = GAME_CONFIG.stages[st].hints;
+        const currentStep = gameState.hintStepUsed[st] || 0;
+        const nextStep = Math.min(2, currentStep + 1);
+        gameState.hintStepUsed[st] = nextStep;
+
+        const hintBox = document.getElementById("hintDisplayBox");
+        hintBox.textContent = "💡 " + hints[nextStep - 1];
+        hintBox.classList.add("visible");
+        updateGlobalHUD();
+      });
+
+      // Nút Làm lại màn
+      document.getElementById("btnResetStage").addEventListener("click", () => {
+        sound.playSfx("click");
+        resetCurrentStageState(gameState.currentStage);
+        updateMayCompanion("Mình đã đặt lại màn chơi này. Cậu cứ bình tĩnh thực hiện lại từng bước nhé!", "normal", "normal");
+      });
+
+      // Nút Tiếp tục qua màn kế hoặc mở màn Chiến thắng
+      document.getElementById("btnNextStage").addEventListener("click", () => {
+        if (!gameState.completedStages[gameState.currentStage]) return;
+        sound.playSfx("click");
+        if (gameState.currentStage < 4) {
+          loadStage(gameState.currentStage + 1);
+        } else {
+          // Mở màn hình tổng kết chiến thắng
+          sound.playSfx("victory");
+          triggerConfetti(2000);
+          document.getElementById("finalScoreValue").textContent = gameState.score;
+          document.getElementById("victoryOverlay").classList.remove("hidden");
+        }
+      });
+
+      // Điều hướng xem lại các màn trên thanh tiến độ
+      document.querySelectorAll("#stageNavPills .stage-pill").forEach((pill) => {
+        pill.addEventListener("click", () => {
+          const targetSt = Number(pill.getAttribute("data-stage"));
+          if (!pill.disabled) {
+            sound.playSfx("click");
+            loadStage(targetSt);
+          }
+        });
+      });
+
+      // Nút Chơi lại ở màn Tổng kết
+      document.getElementById("btnPlayAgain").addEventListener("click", () => {
+        sound.playSfx("click");
+        document.getElementById("victoryOverlay").classList.add("hidden");
+        resetFullGame();
+      });
+
+      // Nút Tải thẻ kỷ niệm sản phẩm
+      document.getElementById("btnExportCard").addEventListener("click", () => {
+        sound.playSfx("correct");
+        exportStudentPresentationCard();
+      });
+
+      // Khởi tạo trước giao diện Màn 1 phía sau màn Chào mừng
+      loadStage(1);
+    }
+
+    window.addEventListener("DOMContentLoaded", initApp);
+  </script>
+</body>
+</html>

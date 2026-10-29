@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NHÀ THÁM HIỂM VŨ TRỤ VÀ THIÊN NHIÊN - Tin học 3</title>
+  <style>
+    /* ==========================================================================
+       BẢNG MÀU THIẾT KẾ V5 (PASTEL & VŨ TRỤ THIÊN NHIÊN)
+       ========================================================================== */
+    :root {
+      --bg-cream: #FFF8E9;
+      --green-main: #53B77A;
+      --green-dark: #3e915e;
+      --honey-yellow: #FFC65C;
+      --peach-pink: #EF7469;
+      --lavender: #7766B7;
+      --lavender-dark: #5a4b94;
+      --cosmic-purple: #2A1B40;
+      --cosmic-card: #3B2758;
+      --white: #FFFFFF;
+      --dark-text: #2C3E50;
+      --gray-light: #F3F4F6;
+      --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.12);
+      --shadow-btn: 0 6px 0px rgba(0, 0, 0, 0.18);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--dark-text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      padding: 10px;
+    }
+
+    /* ==========================================================================
+       CONTAINER & KHUNG GAME 16:9 RESPONSIVE
+       ========================================================================== */
+    #game-container {
+      width: 100%;
+      max-width: 1100px;
+      min-height: 680px;
+      background: #FFFFFF;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      border: 4px solid #FFE4B5;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* TOP BAR / KHUNG ĐIỀU KHIỂN */
+    .top-bar {
+      background: linear-gradient(135deg, var(--lavender), #62529E);
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      z-index: 10;
+    }
+
+    .top-bar .title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .top-bar h1 {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: var(--honey-yellow);
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .badge-mode {
+      background: rgba(255,255,255,0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .stats-group {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .stat-box {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* NÚT BẤM 3D V5 */
+    .btn-3d {
+      background-color: var(--green-main);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 5px 0px var(--green-dark);
+      transition: all 0.1s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 44px;
+      touch-action: manipulation;
+    }
+
+    .btn-3d:hover {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+      box-shadow: 0 7px 0px var(--green-dark);
+    }
+
+    .btn-3d:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0px var(--green-dark);
+    }
+
+    .btn-peach {
+      background-color: var(--peach-pink);
+      box-shadow: 0 5px 0px #C95349;
+    }
+    .btn-peach:hover { box-shadow: 0 7px 0px #C95349; }
+    .btn-peach:active { box-shadow: 0 2px 0px #C95349; }
+
+    .btn-yellow {
+      background-color: var(--honey-yellow);
+      color: #5A3E00;
+      box-shadow: 0 5px 0px #D49B2A;
+    }
+    .btn-yellow:hover { box-shadow: 0 7px 0px #D49B2A; }
+    .btn-yellow:active { box-shadow: 0 2px 0px #D49B2A; }
+
+    .btn-lavender {
+      background-color: var(--lavender);
+      box-shadow: 0 5px 0px var(--lavender-dark);
+    }
+    .btn-lavender:hover { box-shadow: 0 7px 0px var(--lavender-dark); }
+    .btn-lavender:active { box-shadow: 0 2px 0px var(--lavender-dark); }
+
+    .btn-icon {
+      padding: 8px 12px;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+    }
+
+    /* NÚT BỊ VÔ HIỆU HÓA */
+    .btn-3d:disabled {
+      background-color: #BDC3C7 !important;
+      box-shadow: 0 4px 0px #7F8C8D !important;
+      cursor: not-allowed;
+      transform: none !important;
+      opacity: 0.7;
+    }
+
+    /* VIEW MAIN AREA */
+    .main-stage-area {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(180deg, #FDFBF7 0%, #FFF5E5 100%);
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    /* ROBOT BÍP SECTION & SPEECH BUBBLE */
+    .mascot-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: white;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: 2px solid #FFE0B2;
+      margin-bottom: 20px;
+    }
+
+    .bip-svg-box {
+      width: 75px;
+      height: 75px;
+      flex-shrink: 0;
+      animation: bipFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes bipFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .speech-bubble {
+      position: relative;
+      background: var(--bg-cream);
+      border: 2px solid var(--honey-yellow);
+      border-radius: 16px;
+      padding: 12px 18px;
+      font-size: 15px;
+      color: var(--dark-text);
+      font-weight: 600;
+      flex: 1;
+      line-height: 1.4;
+    }
+
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 8px 12px 8px 0;
+      border-style: solid;
+      border-color: transparent var(--honey-yellow) transparent transparent;
+    }
+
+    /* SCREENS CONTAINER */
+    .screen {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* SCREEN 0: WELCOME SCREEN */
+    #screen-welcome {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    .welcome-card {
+      background: white;
+      padding: 30px 40px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      max-width: 650px;
+      border: 3px solid #FFE8B5;
+    }
+
+    .welcome-title {
+      font-size: 26px;
+      color: var(--lavender-dark);
+      margin-bottom: 10px;
+      font-weight: 800;
+    }
+
+    .welcome-sub {
+      font-size: 16px;
+      color: var(--green-main);
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+
+    .mode-selector {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .mode-btn {
+      padding: 12px 20px;
+      border: 2px solid var(--lavender);
+      border-radius: var(--radius-md);
+      background: white;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .mode-btn.selected {
+      background: var(--lavender);
+      color: white;
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* STAGE 1: CẤT CÁNH VŨ TRỤ */
+    .solar-system-view {
+      background: var(--cosmic-purple);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+    }
+
+    .planets-orbit {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      min-height: 220px;
+      padding: 10px;
+    }
+
+    .planet-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.2s, filter 0.2s;
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    .planet-item:hover {
+      transform: scale(1.12);
+      filter: drop-shadow(0 0 10px rgba(255,255,255,0.6));
+    }
+
+    .planet-item.explored {
+      border: 2px dashed var(--honey-yellow);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .planet-label {
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: bold;
+      color: #E2E8F0;
+    }
+
+    .info-display-box {
+      background: var(--cosmic-card);
+      border: 2px solid #5B3A8B;
+      border-radius: var(--radius-md);
+      padding: 15px 20px;
+      width: 100%;
+      min-height: 90px;
+      color: #F1F5F9;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* STAGE 2: CHỌN HÀNH TINH (QUIZ CARDS) */
+    .clue-box {
+      background: #FFF3D6;
+      border-left: 6px solid var(--honey-yellow);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #6B4700;
+    }
+
+    .planet-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .card-choice {
+      background: white;
+      border: 3px solid #E2E8F0;
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .card-choice:hover {
+      border-color: var(--lavender);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .card-choice.selected-correct {
+      border-color: var(--green-main);
+      background: #E8F8EE;
+    }
+
+    .card-choice.selected-wrong {
+      border-color: var(--peach-pink);
+      background: #FDE8E6;
+    }
+
+    /* STAGE 3: VÒNG ĐỜI BƯỚM (DRAG DROP & SEQUENCING) */
+    .butterfly-garden {
+      background: linear-gradient(180deg, #E0F2FE 0%, #DCFCE7 100%);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      border: 2px solid #BBF7D0;
+    }
+
+    .drop-slots-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .slot-card {
+      background: rgba(255, 255, 255, 0.85);
+      border: 2px dashed var(--green-main);
+      border-radius: var(--radius-md);
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      text-align: center;
+      position: relative;
+    }
+
+    .slot-number {
+      position: absolute;
+      top: 6px;
+      left: 10px;
+      background: var(--green-main);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .draggable-items-pool {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      background: white;
+      padding: 15px;
+      border-radius: var(--radius-md);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .stage-item {
+      background: var(--bg-cream);
+      border: 2px solid #FCD34D;
+      border-radius: var(--radius-md);
+      padding: 10px;
+      width: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: grab;
+      transition: transform 0.2s;
+    }
+
+    .stage-item:active {
+      cursor: grabbing;
+      transform: scale(1.05);
+    }
+
+    /* STAGE 4: BẢO TÀNG CỦA EM (DESIGN & EXPORT) */
+    .museum-builder {
+      background: white;
+      border-radius: var(--radius-md);
+      padding: 20px;
+      border: 2px solid #E2E8F0;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+      color: var(--lavender-dark);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 2px solid #CBD5E1;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--lavender);
+    }
+
+    .museum-card-preview {
+      background: linear-gradient(135deg, #FFF9EB 0%, #F3E8FF 100%);
+      border: 3px double var(--lavender);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-top: 15px;
+    }
+
+    /* END SUMMARY SCREEN */
+    .summary-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto;
+      border: 3px solid var(--honey-yellow);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .badges-row {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .badge-item {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      width: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    /* FOOTER & BOTTOM ACTIONS */
+    .bottom-actions {
+      margin-top: auto;
+      padding-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 2px dashed #E2E8F0;
+    }
+
+    /* AUDIO CONTROLS MODAL / PANEL */
+    .audio-panel {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0,0,0,0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .toggle-switch {
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    .toggle-switch.on {
+      background: var(--green-main);
+      color: white;
+    }
+
+    /* RESPONSIVE DESIGN */
+    @media (max-width: 768px) {
+      .top-bar { flex-direction: column; align-items: stretch; gap: 8px; }
+      .stats-group { justify-content: space-between; }
+      .drop-slots-container { grid-template-columns: repeat(2, 1fr); }
+      #game-container { min-height: 100vh; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       KHUNG GAME CHÍNH (MAIN GAME CONTAINER)
+       ========================================================================== -->
+  <div id="game-container">
+    
+    <!-- TOP BAR ĐIỀU KHIỂN & TIẾN ĐỘ -->
+    <header class="top-bar">
+      <div class="title-group">
+        <h1>🚀 NHÀ THÁM HIỂM VŨ TRỤ VÀ THIÊN NHIÊN</h1>
+        <span id="badge-mode-display" class="badge-mode">Luyện tập</span>
+      </div>
+
+      <div class="stats-group">
+        <div class="stat-box">📌 Màn: <span id="text-stage-progress">0/4</span></div>
+        <div class="stat-box">⭐ Điểm: <span id="text-score">0</span>/100</div>
+      </div>
+
+      <div class="controls-group">
+        <!-- CÔNG TẮC NHẠC NỀN VÀ HIỆU ỨNG -->
+        <div class="audio-panel">
+          <span id="btn-toggle-bgm" class="toggle-switch on" onclick="GameAudio.toggleBGM()">🎵 Nhạc: BẬT</span>
+          <span id="btn-toggle-sfx" class="toggle-switch on" onclick="GameAudio.toggleSFX()">🔊 SFX: BẬT</span>
+        </div>
+        <button class="btn-3d btn-yellow btn-icon" title="Trang chủ" onclick="GameEngine.goHome()">🏠</button>
+        <button class="btn-3d btn-lavender btn-icon" title="Gợi ý" onclick="GameEngine.showHint()">💡</button>
+        <button class="btn-3d btn-peach btn-icon" title="Làm lại màn" onclick="GameEngine.resetCurrentStage()">🔄</button>
+      </div>
+    </header>
+
+    <!-- TRUYỀN THÔNG & PHẢN HỒI TỪ RÔ-BỐT BÍP -->
+    <main class="main-stage-area">
+      <div class="mascot-container">
+        <div class="bip-svg-box" id="bip-mascot-svg">
+          <!-- Inline SVG của Rô-bốt Bíp -->
+        </div>
+        <div class="speech-bubble" id="bip-speech-text">
+          Xin chào! Tớ là Rô-bốt Bíp! Hãy cùng tớ khám phá vũ trụ và thiên nhiên nhé!
+        </div>
+      </div>
+
+      <!-- ==========================================================================
+           MÀN CHỜ: CHÀO MỪNG (SCREEN 0)
+           ========================================================================== -->
+      <section id="screen-welcome" class="screen active">
+        <div class="welcome-card">
+          <div style="width: 100px; height: 100px; margin: 0 auto 15px;" id="welcome-bip-preview"></div>
+          <h2 class="welcome-title">NHÀ THÁM HIỂM VŨ TRỤ VÀ THIÊN NHIÊN</h2>
+          <p class="welcome-sub">Tin học 3 - Bài 12: Tìm hiểu về thế giới tự nhiên</p>
+
+          <p style="font-size: 14px; color: #475569; margin-bottom: 15px;">
+            Sử dụng máy tính để quan sát hệ Mặt Trời và vòng đời của sinh vật trong tự nhiên!
+          </p>
+
+          <div class="mode-selector">
+            <button id="btn-mode-practice" class="mode-btn selected" onclick="GameEngine.setMode('practice')">
+              🌱 Chế độ Luyện Tập<br><small style="font-weight:normal">(Có sẵn gợi ý)</small>
+            </button>
+            <button id="btn-mode-challenge" class="mode-btn" onclick="GameEngine.setMode('challenge')">
+              ⚡ Chế độ Thử Thách<br><small style="font-weight:normal">(Tự lực khám phá)</small>
+            </button>
+          </div>
+
+          <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+            <button class="btn-3d btn-yellow" onclick="GameEngine.showGuideModal()">📖 Hướng dẫn</button>
+            <button class="btn-3d" style="font-size: 18px; padding: 12px 30px;" onclick="GameEngine.startGame()">🚀 BẮT ĐẦU KHIỂM TRÁ</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           MÀN 1: CẤT CÁNH VŨ TRỤ (SOLAR SYSTEM EXPLORATION)
+           ========================================================================== -->
+      <section id="screen-stage-1" class="screen">
+        <div class="solar-system-view">
+          <h3 style="color: var(--honey-yellow); font-size: 18px;">🌌 HỆ MẶT TRỜI GIẢ LẬP</h3>
+          <p style="font-size: 13px; color: #CBD5E1;">Nhấp vào từng hành tinh để quan sát thông tin chi tiết!</p>
+
+          <div class="planets-orbit" id="solar-planets-container">
+            <!-- Render các hành tinh qua JS -->
+          </div>
+
+          <div class="info-display-box" id="planet-info-box">
+            👉 <i>Nhấp vào một hành tinh bất kỳ ở trên để xem thông tin quan sát...</i>
+          </div>
+        </div>
+
+        <div class="bottom-actions">
+          <span style="font-size: 14px; font-weight: bold; color: var(--lavender-dark);" id="s1-progress-status">
+            Đã khám phá: 0/3 hành tinh
+          </span>
+          <button id="btn-s1-next" class="btn-3d" disabled onclick="GameEngine.finishStage(1)">
+            Hoàn thành Màn 1 ➔
+          </button>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           MÀN 2: CHỌN HÀNH TINH (PLANET QUIZ)
+           ========================================================================== -->
+      <section id="screen-stage-2" class="screen">
+        <div class="clue-box" id="s2-clue-text">
+          Manh mối 1: ...
+        </div>
+
+        <div class="planet-cards-grid" id="s2-cards-container">
+          <!-- Render thẻ hành tinh lựa chọn -->
+        </div>
+
+        <div class="bottom-actions">
+          <span style="font-size: 14px; font-weight: bold; color: var(--lavender-dark);" id="s2-step-tracker">
+            Câu hỏi: 1/3
+          </span>
+          <button id="btn-s2-next" class="btn-3d" disabled onclick="GameEngine.finishStage(2)">
+            Hoàn thành Màn 2 ➔
+          </button>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           MÀN 3: VÒNG ĐỜI BƯỚM (BUTTERFLY LIFE CYCLE)
+           ========================================================================== -->
+      <section id="screen-stage-3" class="screen">
+        <div class="butterfly-garden">
+          <h3 style="color: #15803D; margin-bottom: 10px; font-size: 16px;">
+            🦋 KHU VƯỜN THIÊN NHIÊN: SẮP XẾP VÒNG ĐỜI CỦA BƯỚM
+          </h3>
+          <p style="font-size: 13px; color: #334155; margin-bottom: 15px;">
+            Kéo thả hoặc nhấp chọn hình ảnh bên dưới vào đúng ô trình tự từ 1 đến 4!
+          </p>
+
+          <!-- 4 Ố ĐÍCH SẮP XẾP -->
+          <div class="drop-slots-container" id="s3-slots-container">
+            <!-- Slots 1..4 -->
+          </div>
+
+          <!-- KHO CÁC THẺ GIAI ĐOẠN -->
+          <div class="draggable-items-pool" id="s3-pool-container">
+            <!-- Stage Items -->
+          </div>
+        </div>
+
+        <div class="bottom-actions">
+          <button class="btn-3d btn-peach" onclick="GameEngine.resetStage3Slots()">Xếp lại ô</button>
+          <button id="btn-s3-next" class="btn-3d" disabled onclick="GameEngine.finishStage(3)">
+            Hoàn thành Màn 3 ➔
+          </button>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           MÀN 4: BẢO TÀNG CỦA EM (EXHIBITION CREATOR)
+           ========================================================================== -->
+      <section id="screen-stage-4" class="screen">
+        <div class="museum-builder">
+          <h3 style="color: var(--lavender-dark); margin-bottom: 12px; font-size: 16px;">
+            🏛️ THIẾT KẾ THẺ PHÒNG TRƯNG BÀY BẢO TÀNG THIÊN NHIÊN SỐ
+          </h3>
+
+          <div class="form-group">
+            <label for="input-explorer-name">Tên Nhà Thám Hiểm:</label>
+            <input type="text" id="input-explorer-name" class="form-control" value="Học sinh Lớp 3A" oninput="GameEngine.updateMuseumPreview()">
+          </div>
+
+          <div class="form-group">
+            <label for="select-space-fact">1. Phát hiện về Vũ Trụ:</label>
+            <select id="select-space-fact" class="form-control" onchange="GameEngine.updateMuseumPreview()">
+              <option value="Trái Đất là hành tinh xanh có nước và sự sống.">Trái Đất là hành tinh xanh có nước và sự sống.</option>
+              <option value="Sao Thổ là hành tinh nổi tiếng với vành đai băng đá rực rỡ.">Sao Thổ nổi tiếng với vành đai băng đá.</option>
+              <option value="Sao Hỏa có màu đỏ do bề mặt chứa nhiều sắt ô-xít.">Sao Hỏa có màu đỏ độc đáo.</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="select-butterfly-fact">2. Phát hiện về Thiên Nhiên:</label>
+            <select id="select-butterfly-fact" class="form-control" onchange="GameEngine.updateMuseumPreview()">
+              <option value="Vòng đời của bướm trải qua 4 giai đoạn: Trứng -> Sâu bướm -> Nhộng -> Bướm trưởng thành.">Vòng đời bướm trải qua 4 giai đoạn sinh trưởng.</option>
+              <option value="Sâu bướm ăn lá cây để lớn lên trước khi hóa thành Nhộng.">Sâu bướm ăn lá để tích lũy năng lượng.</option>
+            </select>
+          </div>
+
+          <!-- BẢN XEM TRƯỚC THẺ BẢO TÀNG -->
+          <div class="museum-card-preview" id="museum-card-display">
+            <!-- Render nội dung xem trước -->
+          </div>
+        </div>
+
+        <div class="bottom-actions">
+          <button class="btn-3d btn-yellow" onclick="GameEngine.downloadMuseumCard()">💾 Tải Thẻ Bảo Tàng (.txt)</button>
+          <button id="btn-s4-next" class="btn-3d" onclick="GameEngine.finishStage(4)">
+            Hoàn Thành & Xem Tổng Kết ➔
+          </button>
+        </div>
+      </section>
+
+      <!-- ==========================================================================
+           MÀN TỔNG KẾT & THÀNH TÍCH (SCREEN END)
+           ========================================================================== -->
+      <section id="screen-summary" class="screen">
+        <div class="summary-card">
+          <h2 style="color: var(--green-main); font-size: 24px; margin-bottom: 10px;">🎉 XIN CHÚC MỪNG NHÀ THÁM HIỂM!</h2>
+          <p style="font-size: 15px; color: #475569;">Em đã hoàn thành xuất sắc chuyến thám hiểm thế giới tự nhiên!</p>
+
+          <div style="font-size: 36px; font-weight: 800; color: var(--peach-pink); margin: 15px 0;">
+            TỔNG ĐIỂM: <span id="final-score">100</span>/100
+          </div>
+
+          <div class="badges-row">
+            <div class="badge-item">
+              <span style="font-size: 28px;">🌟</span>
+              <span>Nhà Thiên Văn Trẻ</span>
+            </div>
+            <div class="badge-item">
+              <span style="font-size: 28px;">🦋</span>
+              <span>Nhà Sinh Học Nhiệt Đới</span>
+            </div>
+            <div class="badge-item">
+              <span style="font-size: 28px;">🏛️</span>
+              <span>Bậc Thầy Bảo Tàng</span>
+            </div>
+          </div>
+
+          <p id="pedagogical-feedback" style="background: #F0FDF4; border: 1px solid #BBF7D0; padding: 12px; border-radius: 12px; font-size: 14px; color: #166534; margin-bottom: 20px;">
+            Nhận xét: Em nắm vững kiến thức quan sát Hệ Mặt Trời và vòng đời sinh vật. Hãy tiếp tục phát huy tinh thần tìm hiểu khoa học nhé!
+          </p>
+
+          <button class="btn-3d style="font-size: 18px; padding: 12px 30px;" onclick="GameEngine.restartGame()">
+            🔄 Chơi Lại Từ Đầu
+          </button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- HỘP THOẠI HƯỚNG DẪN DẠNG MODAL -->
+  <div id="guide-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:100; align-items:center; justify-content:center;">
+    <div style="background:white; padding:25px; border-radius:20px; max-width:500px; width:90%; border:3px solid var(--lavender);">
+      <h3 style="color:var(--lavender-dark); margin-bottom:10px;">📖 HƯỚNG DẪN CHƠI</h3>
+      <ul style="font-size:14px; line-height:1.6; padding-left:20px; color:#334155;">
+        <li><b>Màn 1:</b> Nhấp vào ít nhất 3 hành tinh trong Hệ Mặt Trời để khám phá đặc điểm.</li>
+        <li><b>Màn 2:</b> Đọc manh mối quan sát và nhấp chọn đúng hành tinh tương ứng.</li>
+        <li><b>Màn 3:</b> Kéo hoặc bấm chọn các giai đoạn theo trình tự vòng đời bướm (Trứng ➔ Sâu ➔ Nhộng ➔ Bướm).</li>
+        <li><b>Màn 4:</b> Tổng hợp các thông tin quan sát để tạo Thẻ Triển Lãm Bảo Tàng.</li>
+      </ul>
+      <div style="text-align:right; margin-top:20px;">
+        <button class="btn-3d btn-peach" onclick="document.getElementById('guide-modal').style.display='none'">Đã Hiểu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT GAME LOGIC & CONFIGURATION
+       ========================================================================== -->
+  <script>
+    /* ==========================================================================
+       1. GAME_CONFIG: DỮ LIỆU CẤU HÌNH BÀI HỌC DỄ DÀNG CHỈNH SỬA
+       ========================================================================== */
+    const GAME_CONFIG = {
+      title: "NHÀ THÁM HIỂM VŨ TRỤ VÀ THIÊN NHIÊN",
+      lesson: "Tin học 3 - Bài 12: Tìm hiểu về thế giới tự nhiên",
+      pointsPerStage: 25,
+      totalStages: 4,
+
+      // Dữ liệu Màn 1: Các hành tinh Hệ Mặt Trời
+      solarPlanets: [
+        { id: "sun", name: "Mặt Trời", color: "#FF4500", size: 55, info: "Mặt Trời là ngôi sao trung tâm rực rỡ, cung cấp ánh sáng và nhiệt độ cho toàn bộ Hệ Mặt Trời!" },
+        { id: "mercury", name: "Sao Thủy", color: "#A0AEC0", size: 22, info: "Sao Thủy là hành tinh gần Mặt Trời nhất, bề mặt có nhiều hố sâu giống Mặt Trăng." },
+        { id: "venus", name: "Sao Kim", color: "#E2E8F0", size: 28, info: "Sao Kim là hành tinh sáng nhất trên bầu trời đêm, có khí quyển rất nóng." },
+        { id: "earth", name: "Trái Đất", color: "#3B82F6", size: 32, info: "Trái Đất là hành tinh xanh tuyệt đẹp, hành tinh duy nhất có nước và sự sống!" },
+        { id: "mars", name: "Sao Hỏa", color: "#EF4444", size: 26, info: "Sao Hỏa được gọi là Hành tinh Đỏ do bề mặt chứa rất nhiều sắt ô-xít." },
+        { id: "jupiter", name: "Sao Mộc", color: "#F59E0B", size: 48, info: "Sao Mộc là hành tinh lớn nhất trong Hệ Mặt Trời với Vết Đỏ Lớn nổi tiếng." },
+        { id: "saturn", name: "Sao Thổ", color: "#FCD34D", size: 42, info: "Sao Thổ nổi tiếng và rực rỡ nhất nhờ vành đai bằng băng đá khổng lồ xung quanh!" }
+      ],
+
+      // Dữ liệu Màn 2: Manh mối câu hỏi chọn hành tinh
+      planetQuestions: [
+        {
+          clue: "🔍 Manh mối 1: Hành tinh xanh tươi rực rỡ, là nơi duy nhất có bầu khí quyển, nước lỏng và sự sống?",
+          correctId: "earth",
+          explanation: "Chính xác! Trái Đất là quê hương tuyệt vời có nước và sự sống của chúng ta!"
+        },
+        {
+          clue: "🔍 Manh mối 2: Hành tinh nổi tiếng với vành đai băng đá lớn và lung linh quanh thân?",
+          correctId: "saturn",
+          explanation: "Đúng rồi! Sao Thổ có vành đai vành băng đá vô cùng ấn tượng!"
+        },
+        {
+          clue: "🔍 Manh mối 3: Hành tinh có bề mặt màu đỏ gạch đặc trưng do chứa nhiều quặng sắt ô-xít?",
+          correctId: "mars",
+          explanation: "Rất giỏi! Sao Hỏa chính là Hành Tinh Đỏ trong vũ trụ!"
+        }
+      ],
+
+      // Dữ liệu Màn 3: Vòng đời Bướm
+      butterflyStages: [
+        { step: 1, name: "Trứng bướm", icon: "🥚", desc: "Trứng nhỏ nằm trên lá cây" },
+        { step: 2, name: "Sâu bướm", icon: "🐛", desc: "Sâu nở ra và ăn lá cây" },
+        { step: 3, name: "Nhộng", icon: "🟤", desc: "Sâu làm kén biến thành nhộng" },
+        { step: 4, name: "Bướm trưởng thành", icon: "🦋", desc: "Bướm xòe cánh bay lượn" }
+      ],
+
+      // Gợi ý cho các màn
+      hints: {
+        stage1: "Hãy nhấp chuột vào từng hành tinh tròn màu sắc để khám phá thông tin nhé!",
+        stage2: "Đọc kỹ từ khóa như 'sự sống', 'vành đai', 'màu đỏ' trong manh mối để chọn đúng thẻ!",
+        stage3: "Trình tự tự nhiên: Trứng nở thành Sâu -> Sâu hóa Nhộng -> Nhộng nở thành Bướm!",
+        stage4: "Lựa chọn các phát hiện em tâm đắc nhất và kiểm tra xem bản xem trước nhé!"
+      }
+    };
+
+    /* ==========================================================================
+       2. TỰ TỔNG HỢP ÂM THANH BẰNG WEB AUDIO API (KHÔNG TẢI FILE NGOÀI)
+       ========================================================================== */
+    const GameAudio = {
+      ctx: null,
+      bgmGainNode: null,
+      sfxGainNode: null,
+      bgmEnabled: true,
+      sfxEnabled: true,
+      bgmInterval: null,
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+          
+          this.bgmGainNode = this.ctx.createGain();
+          this.bgmGainNode.gain.value = 0.12; // Âm lượng nhạc nền 12%
+          this.bgmGainNode.connect(this.ctx.destination);
+
+          this.sfxGainNode = this.ctx.createGain();
+          this.sfxGainNode.gain.value = 0.25; // Âm lượng SFX 25%
+          this.sfxGainNode.connect(this.ctx.destination);
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+
+      playBGM() {
+        if (!this.bgmEnabled) return;
+        this.init();
+        if (this.bgmInterval) return;
+
+        // Giai điệu nhẹ nhàng (C4, E4, G4, A4)
+        const notes = [261.63, 329.63, 392.00, 440.00, 392.00, 329.63];
+        let step = 0;
+
+        this.bgmInterval = setInterval(() => {
+          if (!this.bgmEnabled || !this.ctx) return;
+          try {
+            const osc = this.ctx.createOscillator();
+            const noteGain = this.ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = notes[step % notes.length];
+            
+            noteGain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+            noteGain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.6);
+
+            osc.connect(noteGain);
+            noteGain.connect(this.bgmGainNode);
+
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.6);
+            step++;
+          } catch (e) {}
+        }, 700);
+      },
+
+      stopBGM() {
+        if (this.bgmInterval) {
+          clearInterval(this.bgmInterval);
+          this.bgmInterval = null;
+        }
+      },
+
+      playSFX(type) {
+        if (!this.sfxEnabled) return;
+        this.init();
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.connect(gain);
+          gain.connect(this.sfxGainNode);
+
+          if (type === 'click') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, now);
+            osc.frequency.exponentialRampToValueAtTime(300, now + 0.08);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+            osc.start(now);
+            osc.stop(now + 0.08);
+          } else if (type === 'correct') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, now); // C5
+            osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+            osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
+            osc.start(now);
+            osc.stop(now + 0.35);
+          } else if (type === 'wrong') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(180, now);
+            osc.frequency.linearRampToValueAtTime(110, now + 0.25);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+            osc.start(now);
+            osc.stop(now + 0.25);
+          } else if (type === 'win') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.setValueAtTime(554.37, now + 0.15);
+            osc.frequency.setValueAtTime(659.25, now + 0.3);
+            osc.frequency.setValueAtTime(880, now + 0.45);
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.7);
+            osc.start(now);
+            osc.stop(now + 0.7);
+          }
+        } catch(e) {}
+      },
+
+      toggleBGM() {
+        this.bgmEnabled = !this.bgmEnabled;
+        const btn = document.getElementById('btn-toggle-bgm');
+        if (this.bgmEnabled) {
+          btn.textContent = "🎵 Nhạc: BẬT";
+          btn.classList.add('on');
+          this.playBGM();
+        } else {
+          btn.textContent = "🎵 Nhạc: TẮT";
+          btn.classList.remove('on');
+          this.stopBGM();
+        }
+      },
+
+      toggleSFX() {
+        this.sfxEnabled = !this.sfxEnabled;
+        const btn = document.getElementById('btn-toggle-sfx');
+        if (this.sfxEnabled) {
+          btn.textContent = "🔊 SFX: BẬT";
+          btn.classList.add('on');
+        } else {
+          btn.textContent = "🔊 SFX: TẮT";
+          btn.classList.remove('on');
+        }
+      }
+    };
+
+    /* ==========================================================================
+       3. BÍP MASCOT SVG & QUẢN LÝ BIỂU CẢM
+       ========================================================================== */
+    const BipMascot = {
+      render(expression = 'happy') {
+        let eyeSvg = '';
+        let mouthSvg = '';
+
+        if (expression === 'happy') {
+          eyeSvg = `<circle cx="35" cy="42" r="6" fill="#2C3E50"/><circle cx="65" cy="42" r="6" fill="#2C3E50"/><circle cx="37" cy="40" r="2" fill="white"/><circle cx="67" cy="40" r="2" fill="white"/>`;
+          mouthSvg = `<path d="M 40 56 Q 50 66 60 56" stroke="#2C3E50" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+        } else if (expression === 'thinking') {
+          eyeSvg = `<circle cx="35" cy="40" r="6" fill="#2C3E50"/><line x1="58" y1="42" x2="70" y2="42" stroke="#2C3E50" stroke-width="4"/>`;
+          mouthSvg = `<line x1="42" y1="58" x2="58" y2="58" stroke="#2C3E50" stroke-width="4" stroke-linecap="round"/>`;
+        } else if (expression === 'cheering') {
+          eyeSvg = `<path d="M 28 44 L 35 36 L 42 44" stroke="#2C3E50" stroke-width="4" fill="none"/><path d="M 58 44 L 65 36 L 72 44" stroke="#2C3E50" stroke-width="4" fill="none"/>`;
+          mouthSvg = `<path d="M 38 54 Q 50 70 62 54 Z" fill="#EF7469"/>`;
+        }
+
+        return `
+          <svg viewBox="0 0 100 100" width="100%" height="100%">
+            <!-- Anten -->
+            <line x1="50" y1="20" x2="50" y2="8" stroke="#7766B7" stroke-width="4"/>
+            <circle cx="50" cy="8" r="6" fill="#FFC65C"/>
+            <!-- Đầu Robot -->
+            <rect x="15" y="20" width="70" height="55" rx="18" fill="#53B77A" stroke="#3E915E" stroke-width="4"/>
+            <!-- Màn hình mặt -->
+            <rect x="22" y="28" width="56" height="40" rx="10" fill="#FFF8E9"/>
+            <!-- Mắt & Miệng -->
+            ${eyeSvg}
+            ${mouthSvg}
+            <!-- Má hồng -->
+            <circle cx="28" cy="52" r="4" fill="#FFB6C1" opacity="0.6"/>
+            <circle cx="72" cy="52" r="4" fill="#FFB6C1" opacity="0.6"/>
+          </svg>
+        `;
+      },
+
+      setMood(expression, messageText) {
+        document.getElementById('bip-mascot-svg').innerHTML = this.render(expression);
+        if (messageText) {
+          document.getElementById('bip-speech-text').textContent = messageText;
+        }
+      }
+    };
+
+    /* ==========================================================================
+       4. GAME ENGINE & LOGIC ĐIỀU KHIỂN CHÍNH
+       ========================================================================== */
+    const GameEngine = {
+      mode: 'practice', // 'practice' hoặc 'challenge'
+      currentStage: 0,
+      score: 0,
+      completedStages: [false, false, false, false],
+
+      // Biến theo dõi Màn 1
+      s1Explored: new Set(),
+
+      // Biến theo dõi Màn 2
+      s2CurrentIndex: 0,
+
+      // Biến theo dõi Màn 3
+      s3Placements: [null, null, null, null],
+      s3SelectedItem: null,
+
+      init() {
+        document.getElementById('welcome-bip-preview').innerHTML = BipMascot.render('cheering');
+        BipMascot.setMood('happy', 'Xin chào! Tớ là Rô-bốt Bíp. Hãy bấm "BẮT ĐẦU" để cùng khám phá tự nhiên nhé!');
+        this.updateHeaderUI();
+      },
+
+      setMode(selectedMode) {
+        this.mode = selectedMode;
+        document.getElementById('btn-mode-practice').classList.toggle('selected', selectedMode === 'practice');
+        document.getElementById('btn-mode-challenge').classList.toggle('selected', selectedMode === 'challenge');
+        document.getElementById('badge-mode-display').textContent = selectedMode === 'practice' ? 'Luyện tập' : 'Thử thách';
+        GameAudio.playSFX('click');
+      },
+
+      startGame() {
+        GameAudio.init();
+        GameAudio.playBGM();
+        GameAudio.playSFX('click');
+        this.goToStage(1);
+      },
+
+      goHome() {
+        GameAudio.playSFX('click');
+        this.goToScreen('screen-welcome');
+        this.currentStage = 0;
+        this.updateHeaderUI();
+      },
+
+      goToScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+      },
+
+      goToStage(stageNum) {
+        this.currentStage = stageNum;
+        this.updateHeaderUI();
+        this.goToScreen(`screen-stage-${stageNum}`);
+
+        if (stageNum === 1) this.setupStage1();
+        else if (stageNum === 2) this.setupStage2();
+        else if (stageNum === 3) this.setupStage3();
+        else if (stageNum === 4) this.setupStage4();
+      },
+
+      updateHeaderUI() {
+        document.getElementById('text-stage-progress').textContent = `${this.currentStage}/4`;
+        document.getElementById('text-score').textContent = this.score;
+      },
+
+      showHint() {
+        GameAudio.playSFX('click');
+        if (this.currentStage === 0) return;
+        const hintMsg = GAME_CONFIG.hints[`stage${this.currentStage}`];
+        BipMascot.setMood('thinking', `💡 GỢI Ý MÀN ${this.currentStage}: ${hintMsg}`);
+      },
+
+      resetCurrentStage() {
+        GameAudio.playSFX('click');
+        if (this.currentStage === 1) this.setupStage1();
+        else if (this.currentStage === 2) this.setupStage2();
+        else if (this.currentStage === 3) this.setupStage3();
+        else if (this.currentStage === 4) this.setupStage4();
+      },
+
+      finishStage(stageNum) {
+        if (!this.completedStages[stageNum - 1]) {
+          this.completedStages[stageNum - 1] = true;
+          this.score += GAME_CONFIG.pointsPerStage;
+          this.updateHeaderUI();
+          GameAudio.playSFX('correct');
+        }
+
+        if (stageNum < 4) {
+          BipMascot.setMood('cheering', `Tuyệt vời! Em đã hoàn thành Màn ${stageNum} và nhận 25 điểm! Chuyển sang Màn ${stageNum + 1} thôi nào!`);
+          setTimeout(() => this.goToStage(stageNum + 1), 1200);
+        } else {
+          this.showSummaryScreen();
+        }
+      },
+
+      /* ------------------------------------------------------------------------
+         MÀN 1 LOGIC: CẤT CÁNH VŨ TRỤ
+         ------------------------------------------------------------------------ */
+      setupStage1() {
+        this.s1Explored.clear();
+        document.getElementById('btn-s1-next').disabled = true;
+        document.getElementById('s1-progress-status').textContent = 'Đã khám phá: 0/3 hành tinh';
+        document.getElementById('planet-info-box').innerHTML = '👉 <i>Nhấp vào một hành tinh bất kỳ ở trên để xem thông tin quan sát...</i>';
+        
+        BipMascot.setMood('happy', 'Màn 1: Hãy nhấp vào ít nhất 3 hành tinh khác nhau để khám phá thông tin nhé!');
+
+        const container = document.getElementById('solar-planets-container');
+        container.innerHTML = GAME_CONFIG.solarPlanets.map(p => `
+          <div class="planet-item" id="planet-btn-${p.id}" onclick="GameEngine.inspectPlanet('${p.id}')">
+            <svg width="${p.size * 1.5}" height="${p.size * 1.5}" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="${p.color}" stroke="#FFFFFF" stroke-width="3"/>
+              ${p.id === 'saturn' ? '<ellipse cx="50" cy="50" rx="48" ry="12" fill="none" stroke="#FDE68A" stroke-width="6"/>' : ''}
+            </svg>
+            <span class="planet-label">${p.name}</span>
+          </div>
+        `).join('');
+      },
+
+      inspectPlanet(planetId) {
+        GameAudio.playSFX('click');
+        const planet = GAME_CONFIG.solarPlanets.find(p => p.id === planetId);
+        if (!planet) return;
+
+        this.s1Explored.add(planetId);
+        document.getElementById(`planet-btn-${planetId}`).classList.add('explored');
+
+        document.getElementById('planet-info-box').innerHTML = `
+          <strong style="color: var(--honey-yellow); font-size: 16px;">🪐 ${planet.name}:</strong><br>
+          ${planet.info}
+        `;
+
+        const count = this.s1Explored.size;
+        document.getElementById('s1-progress-status').textContent = `Đã khám phá: ${count}/3 hành tinh`;
+
+        if (count >= 3) {
+          document.getElementById('btn-s1-next').disabled = false;
+          BipMascot.setMood('cheering', 'Rất giỏi! Em đã quan sát đủ 3 hành tinh! Bấm "Hoàn thành Màn 1" để tiếp tục!');
+        } else {
+          BipMascot.setMood('happy', `Em đã khám phá ${planet.name}. Hãy chọn thêm ${3 - count} hành tinh nữa nhé!`);
+        }
+      },
+
+      /* ------------------------------------------------------------------------
+         MÀN 2 LOGIC: CHỌN HÀNH TINH (QUIZ)
+         ------------------------------------------------------------------------ */
+      setupStage2() {
+        this.s2CurrentIndex = 0;
+        document.getElementById('btn-s2-next').disabled = true;
+        this.renderStage2Question();
+      },
+
+      renderStage2Question() {
+        const q = GAME_CONFIG.planetQuestions[this.s2CurrentIndex];
+        document.getElementById('s2-clue-text').textContent = q.clue;
+        document.getElementById('s2-step-tracker').textContent = `Câu hỏi: ${this.s2CurrentIndex + 1}/3`;
+
+        BipMascot.setMood('thinking', 'Đọc kỹ manh mối và chọn đúng hình ảnh hành tinh tương ứng nhé!');
+
+        const container = document.getElementById('s2-cards-container');
+        // Chọn 3 lựa chọn hành tinh đại diện
+        const options = GAME_CONFIG.solarPlanets.filter(p => ['earth', 'saturn', 'mars'].includes(p.id));
+
+        container.innerHTML = options.map(p => `
+          <div class="card-choice" onclick="GameEngine.answerStage2('${p.id}')">
+            <svg width="70" height="70" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="${p.color}"/>
+              ${p.id === 'saturn' ? '<ellipse cx="50" cy="50" rx="48" ry="12" fill="none" stroke="#FDE68A" stroke-width="6"/>' : ''}
+            </svg>
+            <span style="margin-top:10px; font-weight:bold; color:var(--dark-text);">${p.name}</span>
+          </div>
+        `).join('');
+      },
+
+      answerStage2(selectedId) {
+        const q = GAME_CONFIG.planetQuestions[this.s2CurrentIndex];
+        if (selectedId === q.correctId) {
+          GameAudio.playSFX('correct');
+          BipMascot.setMood('cheering', q.explanation);
+          
+          this.s2CurrentIndex++;
+          if (this.s2CurrentIndex < GAME_CONFIG.planetQuestions.length) {
+            setTimeout(() => this.renderStage2Question(), 1500);
+          } else {
+            document.getElementById('btn-s2-next').disabled = false;
+            document.getElementById('s2-step-tracker').textContent = 'Đã hoàn thành 3/3 câu!';
+          }
+        } else {
+          GameAudio.playSFX('wrong');
+          BipMascot.setMood('thinking', 'Chưa chính xác rồi! Em hãy đọc kỹ lại manh mối và thử lại nhé!');
+        }
+      },
+
+      /* ------------------------------------------------------------------------
+         MÀN 3 LOGIC: VÒNG ĐỜI BƯỚM (DRAG / CLICK TO PLACE)
+         ------------------------------------------------------------------------ */
+      setupStage3() {
+        this.s3Placements = [null, null, null, null];
+        this.s3SelectedItem = null;
+        document.getElementById('btn-s3-next').disabled = true;
+        
+        BipMascot.setMood('happy', 'Màn 3: Nhấp vào hình ảnh bên dưới rồi nhấp vào ô số 1, 2, 3, 4 theo đúng thứ tự vòng đời bướm!');
+
+        this.renderStage3UI();
+      },
+
+      renderStage3UI() {
+        // Render 4 Slots
+        const slotsContainer = document.getElementById('s3-slots-container');
+        slotsContainer.innerHTML = [1, 2, 3, 4].map(num => {
+          const placedItem = this.s3Placements[num - 1];
+          return `
+            <div class="slot-card" onclick="GameEngine.handleSlotClick(${num - 1})">
+              <span class="slot-number">${num}</span>
+              ${placedItem ? `
+                <span style="font-size:36px;">${placedItem.icon}</span>
+                <span style="font-weight:bold; font-size:13px; margin-top:4px;">${placedItem.name}</span>
+              ` : '<span style="color:#A0AEC0; font-size:12px;">[Chọn hình xếp vào đây]</span>'}
+            </div>
+          `;
+        }).join('');
+
+        // Render Pool
+        const poolContainer = document.getElementById('s3-pool-container');
+        const unplacedItems = GAME_CONFIG.butterflyStages.filter(st => !this.s3Placements.includes(st));
+
+        poolContainer.innerHTML = unplacedItems.map(st => `
+          <div class="stage-item ${this.s3SelectedItem === st ? 'selected' : ''}" 
+               onclick="GameEngine.handlePoolItemClick(${st.step})">
+            <span style="font-size:32px;">${st.icon}</span>
+            <span style="font-size:12px; font-weight:bold; margin-top:4px;">${st.name}</span>
+          </div>
+        `).join('');
+      },
+
+      handlePoolItemClick(step) {
+        GameAudio.playSFX('click');
+        const item = GAME_CONFIG.butterflyStages.find(st => st.step === step);
+        this.s3SelectedItem = item;
+        BipMascot.setMood('thinking', `Em đã chọn "${item.name}". Bây giờ hãy nhấp vào ô số tương ứng ở trên!`);
+        this.renderStage3UI();
+      },
+
+      handleSlotClick(slotIndex) {
+        if (!this.s3SelectedItem) return;
+        GameAudio.playSFX('click');
+
+        this.s3Placements[slotIndex] = this.s3SelectedItem;
+        this.s3SelectedItem = null;
+        this.renderStage3UI();
+
+        // Kiểm tra xem đã lấp đủ 4 ô chưa
+        if (this.s3Placements.every(p => p !== null)) {
+          this.checkStage3Completion();
+        }
+      },
+
+      resetStage3Slots() {
+        GameAudio.playSFX('click');
+        this.s3Placements = [null, null, null, null];
+        this.s3SelectedItem = null;
+        document.getElementById('btn-s3-next').disabled = true;
+        this.renderStage3UI();
+      },
+
+      checkStage3Completion() {
+        const isCorrect = this.s3Placements.every((item, idx) => item.step === idx + 1);
+
+        if (isCorrect) {
+          GameAudio.playSFX('win');
+          document.getElementById('btn-s3-next').disabled = false;
+          BipMascot.setMood('cheering', '🎉 Chính xác tuyệt đối! Vòng đời bướm gồm: Trứng ➔ Sâu ➔ Nhộng ➔ Bướm trưởng thành!');
+        } else {
+          GameAudio.playSFX('wrong');
+          BipMascot.setMood('thinking', 'Thứ tự chưa đúng rồi! Em hãy nhấn "Xếp lại ô" để thử lại nhé!');
+        }
+      },
+
+      /* ------------------------------------------------------------------------
+         MÀN 4 LOGIC: BẢO TÀNG CỦA EM
+         ------------------------------------------------------------------------ */
+      setupStage4() {
+        BipMascot.setMood('happy', 'Màn 4: Hãy chọn những thông tin quan sát tâm đắc nhất để thiết kế Thẻ Bảo Tàng Thiên Nhiên Số nhé!');
+        this.updateMuseumPreview();
+      },
+
+      updateMuseumPreview() {
+        const name = document.getElementById('input-explorer-name').value || "Học sinh Lớp 3A";
+        const spaceFact = document.getElementById('select-space-fact').value;
+        const butterflyFact = document.getElementById('select-butterfly-fact').value;
+
+        document.getElementById('museum-card-display').innerHTML = `
+          <div style="text-align:center; border-bottom:2px solid var(--lavender); padding-bottom:8px; margin-bottom:12px;">
+            <h4 style="color:var(--lavender-dark); font-size:18px;">🏛️ THẺ BẢO TÀNG THIÊN NHIÊN SỐ</h4>
+            <p style="font-size:12px; color:#64748B;">Dự án quan sát Tin học 3 - Bài 12</p>
+          </div>
+          <p style="margin-bottom:8px;"><b>👨‍🚀 Nhà Thám Hiểm:</b> <span style="color:var(--peach-pink); font-weight:bold;">${name}</span></p>
+          <p style="margin-bottom:8px;"><b>🌌 Phát hiện Vũ Trụ:</b> ${spaceFact}</p>
+          <p style="margin-bottom:8px;"><b>🦋 Phát hiện Sinh Học:</b> ${butterflyFact}</p>
+          <div style="text-align:right; font-size:11px; color:#94A3B8; margin-top:10px;">
+            Xác nhận bởi Rô-bốt Bíp 🤖
+          </div>
+        `;
+      },
+
+      downloadMuseumCard() {
+        GameAudio.playSFX('click');
+        const name = document.getElementById('input-explorer-name').value || "Hoc_Sinh";
+        const spaceFact = document.getElementById('select-space-fact').value;
+        const butterflyFact = document.getElementById('select-butterfly-fact').value;
+
+        const content = `================================================
+THẺ BẢO TÀNG THIÊN NHIÊN SỐ
+Bài 12: Tìm hiểu về thế giới tự nhiên - Tin học 3
+================================================
+
+Nhà Thám Hiểm: ${name}
+Ngày hoàn thành: ${new Date().toLocaleDateString('vi-VN')}
+
+1. KHÁM PHÁ VŨ TRỤ:
+- ${spaceFact}
+
+2. KHÁM PHÁ THIÊN NHIÊN:
+- ${butterflyFact}
+
+Xác nhận thành tích từ Rô-bốt Bíp!
+================================================`;
+
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `The_Bao_Tang_${name.replace(/\s+/g, '_')}.txt`;
+        link.click();
+
+        BipMascot.setMood('cheering', 'Đã tải thành công Thẻ Bảo Tàng về máy tính của em!');
+      },
+
+      /* ------------------------------------------------------------------------
+         MÀN KẾT THÚC & TỔNG KẾT
+         ------------------------------------------------------------------------ */
+      showSummaryScreen() {
+        GameAudio.playSFX('win');
+        document.getElementById('final-score').textContent = this.score;
+        this.goToScreen('screen-summary');
+        BipMascot.setMood('cheering', '🎉 Chúc mừng em đã xuất sắc hoàn thành toàn bộ 4 màn chơi!');
+      },
+
+      restartGame() {
+        GameAudio.playSFX('click');
+        this.score = 0;
+        this.completedStages = [false, false, false, false];
+        this.goToStage(1);
+      },
+
+      showGuideModal() {
+        GameAudio.playSFX('click');
+        document.getElementById('guide-modal').style.display = 'flex';
+      }
+    };
+
+    // Khởi chạy game khi trang web tải xong hoàn toàn
+    window.onload = () => {
+      GameEngine.init();
+    };
+  </script>
+</body>
+</html>

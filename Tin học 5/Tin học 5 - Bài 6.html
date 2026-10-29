@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Xưởng Thiết Kế Văn Bản - Tin Học 5</title>
+    <style>
+        /* === BIẾN MÀU SẮC (THEME V5) === */
+        :root {
+            --bg-cream: #F8F7FF;
+            --primary-purple: #58429B;
+            --accent-mint: #4ABDAA;
+            --accent-yellow: #F2BE4A;
+            --accent-pink: #F6B6C8;
+            --text-dark: #2D3748;
+            --text-light: #FFFFFF;
+            --shadow-soft: 0 8px 16px rgba(88, 66, 155, 0.15);
+            --shadow-btn: 0 4px 0 rgba(0,0,0,0.15);
+            --border-rad: 16px;
+        }
+
+        /* === RESET & CƠ BẢN === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none; /* Tránh chọn text vô ý khi kéo thả */
+            -webkit-user-select: none;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-cream);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            touch-action: pan-y;
+        }
+
+        /* === BỐ CỤC TRÒ CHƠI === */
+        #game-container {
+            width: 100%;
+            max-width: 1024px;
+            height: 100%;
+            position: relative;
+            background: linear-gradient(135deg, #ffffff 0%, var(--bg-cream) 100%);
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* === UI CHUNG (THANH TRẠNG THÁI, NÚT) === */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+        .status-pill {
+            background-color: var(--accent-mint);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .score-pill {
+            background-color: var(--accent-yellow);
+            color: var(--primary-purple);
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--bg-cream);
+            color: var(--primary-purple);
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: var(--shadow-btn);
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .btn-icon:active { transform: translateY(4px); box-shadow: none; }
+        .btn-icon.active { background-color: var(--primary-purple); color: white; }
+
+        .btn-primary {
+            background-color: var(--primary-purple);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: var(--shadow-btn);
+            transition: all 0.2s;
+        }
+        .btn-primary:active { transform: translateY(4px); box-shadow: none; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        .btn-action {
+            background-color: var(--accent-mint);
+        }
+
+        /* === CÁC MÀN CHƠI (SCREENS) === */
+        .screen {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+            overflow-y: auto;
+        }
+        .screen.active { display: flex; animation: fadeIn 0.5s; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Màn hình Chào mừng */
+        #welcome-screen { align-items: center; justify-content: center; text-align: center; }
+        .title-large { color: var(--primary-purple); font-size: 42px; margin-bottom: 20px; text-shadow: 2px 2px 0px var(--accent-yellow); line-height: 1.2; }
+        .hero-img { width: 200px; height: 200px; margin-bottom: 20px; }
+
+        /* === NHÂN VẬT PIXEL & BONG BÓNG === */
+        .pixel-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            z-index: 50;
+            pointer-events: none; /* Click xuyên qua */
+        }
+        .pixel-svg { width: 100px; height: 120px; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2)); transition: transform 0.3s; }
+        .bubble {
+            background: white;
+            border: 3px solid var(--primary-purple);
+            border-radius: var(--border-rad);
+            padding: 12px 16px;
+            max-width: 250px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--primary-purple);
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s;
+        }
+        .bubble::after {
+            content: ''; position: absolute; bottom: 15px; left: -10px;
+            border-width: 10px 12px 10px 0; border-style: solid;
+            border-color: transparent var(--primary-purple) transparent transparent;
+        }
+        .bubble.show { opacity: 1; transform: translateY(0); }
+
+        /* === MÀN 1: CỨU VĂN BẢN === */
+        .level-header { text-align: center; color: var(--primary-purple); margin-bottom: 15px; }
+        .l1-container { display: flex; gap: 20px; height: 100%; flex-wrap: wrap; }
+        .doc-panel {
+            flex: 1; min-width: 300px; background: white; border: 2px dashed #ccc;
+            border-radius: var(--border-rad); padding: 20px; position: relative;
+            box-shadow: var(--shadow-soft);
+        }
+        .doc-panel.target { border-color: var(--primary-purple); }
+        .doc-title { text-align: center; color: #666; font-size: 14px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;}
+        
+        .l1-error-item { cursor: pointer; border: 2px solid transparent; border-radius: 8px; transition: 0.3s; padding: 4px; position: relative;}
+        .l1-error-item:hover { border-color: var(--accent-pink); background: rgba(246, 182, 200, 0.2); }
+        
+        .err-small { font-size: 8px; }
+        .err-color { color: #f0f0f0; background: #fff; } /* Chữ chìm */
+        .err-overlap { position: relative; height: 80px;}
+        .err-overlap img { position: absolute; top: 0; left: 0; width: 60px; height: 60px; z-index: 2; }
+        .err-overlap span { position: absolute; top: 10px; left: 10px; z-index: 1; }
+
+        .fixed .err-small { font-size: 16px; transition: 0.5s; color: green; font-weight: bold;}
+        .fixed .err-color { color: var(--text-dark); background: transparent; transition: 0.5s; }
+        .fixed .err-overlap img { left: 150px; transition: 0.5s; } /* Dời ảnh ra */
+
+        /* === MÀN 2: BẢNG ĐỊNH DẠNG === */
+        .toolbar {
+            display: flex; justify-content: center; gap: 10px; background: var(--bg-cream);
+            padding: 10px; border-radius: var(--border-rad); margin-bottom: 20px;
+            border: 2px solid var(--primary-purple);
+        }
+        .tool-btn {
+            width: 40px; height: 40px; border-radius: 8px; border: none; background: white;
+            font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 0 #ccc;
+        }
+        .tool-btn:active { transform: translateY(2px); box-shadow: none; }
+        .tool-btn.b { font-weight: bold; } .tool-btn.i { font-style: italic; } .tool-btn.u { text-decoration: underline; }
+        .tool-btn.c { color: var(--accent-mint); }
+        
+        .text-block { padding: 10px; border: 2px solid transparent; cursor: pointer; border-radius: 8px; margin-bottom: 5px; transition: 0.2s;}
+        .text-block.selected { border-color: var(--accent-mint); background: rgba(74, 189, 170, 0.1); }
+        
+        /* Format classes áp dụng bằng JS */
+        .fmt-b { font-weight: bold; }
+        .fmt-i { font-style: italic; }
+        .fmt-u { text-decoration: underline; }
+        .fmt-c { color: var(--accent-mint); }
+
+        /* === MÀN 3: KÉO THẢ === */
+        .l3-container { position: relative; background: white; padding: 20px; border-radius: var(--border-rad); border: 2px solid #ddd; height: 350px;}
+        .l3-text { text-align: justify; line-height: 1.6; }
+        .l3-img-wrap { 
+            position: absolute; top: 60px; left: 20px; width: 100px; height: 100px;
+            touch-action: none; cursor: grab; z-index: 10;
+        }
+        .l3-img-wrap:active { cursor: grabbing; }
+        .drop-zone {
+            position: absolute; top: 60px; right: 20px; width: 120px; height: 120px;
+            border: 2px dashed var(--accent-mint); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; color: var(--accent-mint);
+            opacity: 0; pointer-events: none; transition: 0.3s;
+        }
+        .drop-zone.active { opacity: 1; }
+
+        /* === MÀN 4: HOÀN CHỈNH === */
+        .editor-mock {
+            background: white; border: 2px solid var(--primary-purple); border-radius: var(--border-rad);
+            padding: 0; overflow: hidden; display: flex; flex-direction: column; height: 100%;
+        }
+        .editor-content { padding: 20px; flex: 1; overflow-y: auto; position: relative;}
+        .req-list { background: var(--bg-cream); padding: 15px; border-radius: 8px; margin-bottom: 15px;}
+        .req-list ul { padding-left: 20px; }
+
+        /* Hiệu ứng Particles */
+        .particle { position: absolute; pointer-events: none; border-radius: 50%; animation: pop 1s ease-out forwards; }
+        @keyframes pop { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(2) translate(var(--tx), var(--ty)); opacity: 0; } }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .l1-container { flex-direction: column; }
+            .bubble { max-width: 180px; font-size: 13px; }
+            .pixel-svg { width: 70px; height: 84px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- THANH TRẠNG THÁI -->
+    <div class="top-bar" id="top-bar" style="display:none;">
+        <div class="status-pill">
+            <span id="level-text">Màn 1/4</span>
+        </div>
+        <div class="controls">
+            <button class="btn-icon" id="btn-hint" title="Gợi ý" onclick="Game.showHint()">💡</button>
+            <button class="btn-icon" id="btn-retry" title="Làm lại màn" onclick="Game.retryLevel()">🔄</button>
+            <button class="btn-icon" id="btn-bgm" title="Bật/Tắt Nhạc Nền" onclick="AudioSys.toggleBGM()">🎵</button>
+            <button class="btn-icon" id="btn-sfx" title="Bật/Tắt Hiệu Ứng" onclick="AudioSys.toggleSFX()">🔊</button>
+        </div>
+        <div class="status-pill score-pill">
+            Điểm: <span id="score-text">0</span>
+        </div>
+    </div>
+
+    <!-- MÀN CHÀO MỪNG -->
+    <div id="welcome-screen" class="screen active">
+        <h1 class="title-large">XƯỞNG THIẾT KẾ<br>VĂN BẢN</h1>
+        <!-- Khối SVG trang trí Logo -->
+        <svg class="hero-img" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="20" width="160" height="160" rx="20" fill="var(--bg-cream)" stroke="var(--primary-purple)" stroke-width="8"/>
+            <line x1="50" y1="60" x2="150" y2="60" stroke="var(--accent-mint)" stroke-width="8" stroke-linecap="round"/>
+            <line x1="50" y1="90" x2="110" y2="90" stroke="var(--accent-yellow)" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="130" cy="120" r="25" fill="var(--accent-pink)"/>
+            <line x1="50" y1="120" x2="90" y2="120" stroke="var(--primary-purple)" stroke-width="8" stroke-linecap="round"/>
+            <path d="M140 100 L160 80" stroke="var(--primary-purple)" stroke-width="6" stroke-linecap="round"/>
+        </svg>
+        <p style="font-size: 18px; margin-bottom: 30px; max-width: 600px;">Chào mừng bạn đến với Xưởng Thiết Kế! Hãy giúp Pixel hoàn thiện các tài liệu, định dạng chữ và căn chỉnh hình ảnh thật đẹp nhé.</p>
+        <div style="display: flex; gap: 20px;">
+            <button class="btn-primary" onclick="Game.startGame()">BẮT ĐẦU</button>
+            <button class="btn-primary" style="background-color: var(--accent-mint);" onclick="Game.showGuide()">HƯỚNG DẪN</button>
+        </div>
+    </div>
+
+    <!-- MÀN 1 -->
+    <div id="level-1" class="screen">
+        <h2 class="level-header">Màn 1: Cứu Văn Bản Khó Đọc</h2>
+        <div class="l1-container">
+            <div class="doc-panel">
+                <div class="doc-title">Bản lỗi (Bấm vào lỗi để sửa)</div>
+                <div id="l1-err-1" class="l1-error-item" onclick="Level1.fix(1)">
+                    <p class="err-small">Công thức kem chanh dây:<br>1. Chuẩn bị chanh dây, đường, đá.</p>
+                </div>
+                <hr style="margin: 10px 0; border: 1px dashed #eee;">
+                <div id="l1-err-2" class="l1-error-item" onclick="Level1.fix(2)">
+                    <p class="err-color">2. Trộn đều các nguyên liệu này lại với nhau.</p>
+                </div>
+                <hr style="margin: 10px 0; border: 1px dashed #eee;">
+                <div id="l1-err-3" class="l1-error-item err-overlap" onclick="Level1.fix(3)">
+                    <span>3. Trang trí bằng lá bạc hà và thưởng thức.</span>
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M30 40 Q50 10 70 40 L60 90 L40 90 Z" fill="var(--accent-yellow)" stroke="#d9a020" stroke-width="4"/><circle cx="50" cy="30" r="15" fill="var(--accent-pink)"/></svg>
+                </div>
+            </div>
+            <div class="doc-panel target">
+                <div class="doc-title">Bản Mẫu Cần Đạt</div>
+                <div style="padding: 4px;">
+                    <p style="font-size: 16px; font-weight: bold; color: green;">Công thức kem chanh dây:<br>1. Chuẩn bị chanh dây, đường, đá.</p>
+                </div>
+                <hr style="margin: 10px 0; border: 1px dashed transparent;">
+                <div style="padding: 4px;">
+                    <p style="color: var(--text-dark);">2. Trộn đều các nguyên liệu này lại với nhau.</p>
+                </div>
+                <hr style="margin: 10px 0; border: 1px dashed transparent;">
+                <div style="position: relative; height: 80px; padding: 4px;">
+                    <span style="position: absolute; top: 10px; left: 10px;">3. Trang trí bằng lá bạc hà...</span>
+                    <svg style="position: absolute; left: 150px; top: 0; width: 60px; height: 60px;" viewBox="0 0 100 100"><path d="M30 40 Q50 10 70 40 L60 90 L40 90 Z" fill="var(--accent-yellow)"/><circle cx="50" cy="30" r="15" fill="var(--accent-pink)"/></svg>
+                </div>
+            </div>
+        </div>
+        <button id="btn-next-1" class="btn-primary" style="margin-top:20px; align-self:center;" disabled onclick="Game.nextLevel()">TIẾP TỤC</button>
+    </div>
+
+    <!-- MÀN 2 -->
+    <div id="level-2" class="screen">
+        <h2 class="level-header">Màn 2: Bảng Định Dạng</h2>
+        <div class="toolbar">
+            <button class="tool-btn b" onclick="Level2.applyFormat('fmt-b')" title="In đậm">B</button>
+            <button class="tool-btn i" onclick="Level2.applyFormat('fmt-i')" title="In nghiêng">I</button>
+            <button class="tool-btn u" onclick="Level2.applyFormat('fmt-u')" title="Gạch chân">U</button>
+            <button class="tool-btn c" onclick="Level2.applyFormat('fmt-c')" title="Màu chữ">A</button>
+        </div>
+        <div class="doc-panel" style="margin: 0 auto; width: 80%;">
+            <p style="font-size: 13px; color: gray; margin-bottom: 10px;">Yêu cầu: Tiêu đề (Đậm, Đổi màu). Nguyên liệu (Nghiêng). Hướng dẫn (Gạch chân).</p>
+            <div id="l2-p1" class="text-block" onclick="Level2.selectBlock('l2-p1')">KEM DÂU TÂY MÙA HÈ</div>
+            <div id="l2-p2" class="text-block" onclick="Level2.selectBlock('l2-p2')">Nguyên liệu: 200g dâu tây, 50ml sữa đặc, đá bào.</div>
+            <div id="l2-p3" class="text-block" onclick="Level2.selectBlock('l2-p3')">Cách làm: Xay nhuyễn dâu tây cùng sữa đặc và đá.</div>
+        </div>
+        <button id="btn-next-2" class="btn-primary" style="margin-top:20px; align-self:center;" disabled onclick="Game.nextLevel()">TIẾP TỤC</button>
+    </div>
+
+    <!-- MÀN 3 -->
+    <div id="level-3" class="screen">
+        <h2 class="level-header">Màn 3: Hình Ảnh Biết Di Chuyển</h2>
+        <div class="toolbar">
+            <button class="btn-primary btn-action" style="font-size: 14px; padding: 8px 16px;" onclick="Level3.setWrap('inline')">Cùng dòng (In line)</button>
+            <button class="btn-primary btn-action" style="font-size: 14px; padding: 8px 16px; background-color: var(--primary-purple);" onclick="Level3.setWrap('square')">Chữ bao quanh (Square)</button>
+        </div>
+        <div class="l3-container" id="l3-container">
+            <p class="l3-text">Kem là một món tráng miệng lạnh được yêu thích trên toàn thế giới, đặc biệt là vào những ngày hè nóng bức. Nó thường được làm từ các sản phẩm từ sữa như sữa tươi và kem, kết hợp với hương liệu, trái cây hoặc các thành phần khác. Quá trình làm kem đòi hỏi phải khuấy đều trong khi làm lạnh để ngăn các tinh thể đá lớn hình thành, tạo ra kết cấu mịn màng đặc trưng. Hãy kéo hình ảnh ly kem sang bên phải để bài viết trông đẹp mắt hơn nhé!</p>
+            <div class="drop-zone" id="l3-dropzone">Thả ảnh vào đây</div>
+            <!-- Hình ảnh draggable -->
+            <div class="l3-img-wrap" id="l3-image">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" fill="white" stroke="#ccc"/>
+                    <path d="M30 50 L70 50 L50 90 Z" fill="#d4a373"/>
+                    <circle cx="40" cy="40" r="15" fill="#ffb5a7"/>
+                    <circle cx="60" cy="40" r="15" fill="#fcf6bd"/>
+                    <circle cx="50" cy="30" r="15" fill="#d0f4de"/>
+                </svg>
+            </div>
+        </div>
+        <button id="btn-next-3" class="btn-primary" style="margin-top:20px; align-self:center;" disabled onclick="Game.nextLevel()">TIẾP TỤC</button>
+    </div>
+
+    <!-- MÀN 4 -->
+    <div id="level-4" class="screen">
+        <h2 class="level-header">Màn 4: Sản Phẩm Hoàn Chỉnh</h2>
+        
+        <div class="req-list">
+            <strong>Yêu cầu nhiệm vụ:</strong>
+            <ul>
+                <li id="req-1">1. Tiêu đề in đậm.</li>
+                <li id="req-2">2. Đổi cỡ chữ nội dung lớn hơn.</li>
+                <li id="req-3">3. Ảnh được chuyển sang 'Chữ bao quanh' (Square).</li>
+            </ul>
+        </div>
+
+        <div class="editor-mock">
+            <div class="toolbar" style="margin-bottom:0; border:none; border-bottom: 2px solid var(--primary-purple); border-radius:0;">
+                <button class="tool-btn b" onclick="Level4.formatBold()">B</button>
+                <button class="tool-btn" onclick="Level4.increaseSize()" style="width:auto; padding:0 10px;">A+</button>
+                <button class="tool-btn" onclick="Level4.wrapImage()" style="width:auto; padding:0 10px;">Chữ bao quanh</button>
+            </div>
+            <div class="editor-content">
+                <div id="l4-title" class="text-block" onclick="Level4.selectBlock('l4-title')">SINH TỐ HOA QUẢ</div>
+                <div id="l4-content" class="text-block" style="font-size: 14px;" onclick="Level4.selectBlock('l4-content')">Sinh tố là thức uống giải khát, bổ dưỡng được làm từ trái cây tươi xay nhuyễn. Nhờ giữ nguyên được chất xơ, sinh tố rất tốt cho tiêu hóa.</div>
+                <div id="l4-img-box" style="display: block; margin-top: 10px;">
+                    <svg width="60" height="60" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="var(--accent-yellow)"/><circle cx="35" cy="40" r="10" fill="white"/><circle cx="65" cy="40" r="10" fill="white"/><path d="M 30 70 Q 50 90 70 70" stroke="white" stroke-width="5" fill="transparent" stroke-linecap="round"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:center; gap: 10px; margin-top:20px;">
+            <button class="btn-primary btn-action" onclick="Level4.checkResult()">KIỂM TRA</button>
+            <button id="btn-next-4" class="btn-primary" disabled onclick="Game.endGame()">HOÀN THÀNH</button>
+        </div>
+    </div>
+
+    <!-- MÀN TỔNG KẾT -->
+    <div id="summary-screen" class="screen">
+        <h1 class="title-large" style="margin-top: 50px;">CHÚC MỪNG!</h1>
+        <div style="text-align: center;">
+            <svg viewBox="0 0 100 100" style="width: 150px; height: 150px; margin: 0 auto;">
+                <circle cx="50" cy="50" r="45" fill="var(--accent-mint)"/>
+                <path d="M30 50 L45 65 L75 35" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+            <h2 style="color: var(--primary-purple); font-size: 32px; margin: 20px 0;">Tổng điểm: <span id="final-score">100</span>/100</h2>
+            <p style="font-size: 18px; margin-bottom: 30px;">Em đã xuất sắc hoàn thành các kỹ năng định dạng văn bản và bố trí hình ảnh. Xưởng thiết kế rất tự hào về em!</p>
+            <button class="btn-primary" onclick="Game.restart()">CHƠI LẠI</button>
+        </div>
+    </div>
+
+    <!-- NHÂN VẬT PIXEL -->
+    <div class="pixel-container" id="pixel-bot">
+        <div class="bubble" id="pixel-bubble">Xin chào! Nhấn Bắt đầu nhé.</div>
+        <svg class="pixel-svg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+            <!-- Antenna -->
+            <line x1="50" y1="20" x2="50" y2="5" stroke="#999" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="50" cy="5" r="5" fill="var(--accent-pink)"/>
+            <!-- Head -->
+            <rect x="20" y="20" width="60" height="50" rx="10" fill="var(--primary-purple)"/>
+            <!-- Screen -->
+            <rect x="25" y="25" width="50" height="35" rx="5" fill="var(--bg-cream)"/>
+            <!-- Eyes (Normal) -->
+            <g id="pixel-eyes-normal">
+                <circle cx="40" cy="40" r="5" fill="var(--text-dark)"/>
+                <circle cx="60" cy="40" r="5" fill="var(--text-dark)"/>
+            </g>
+            <!-- Eyes (Happy) -->
+            <g id="pixel-eyes-happy" style="display:none;">
+                <path d="M35 42 Q40 35 45 42" stroke="var(--text-dark)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <path d="M55 42 Q60 35 65 42" stroke="var(--text-dark)" stroke-width="3" fill="none" stroke-linecap="round"/>
+            </g>
+            <!-- Eyes (Sad/Hint) -->
+            <g id="pixel-eyes-sad" style="display:none;">
+                <path d="M35 38 L45 42" stroke="var(--text-dark)" stroke-width="3" stroke-linecap="round"/>
+                <path d="M55 42 L65 38" stroke="var(--text-dark)" stroke-width="3" stroke-linecap="round"/>
+            </g>
+            <!-- Mouth -->
+            <path id="pixel-mouth" d="M45 50 Q50 55 55 50" stroke="var(--text-dark)" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <!-- Body -->
+            <rect x="35" y="70" width="30" height="40" rx="5" fill="var(--accent-mint)"/>
+            <circle cx="50" cy="90" r="8" fill="var(--accent-yellow)"/>
+        </svg>
+    </div>
+
+</div>
+
+<script>
+    /** =========================================
+     * CẤU HÌNH TRÒ CHƠI (GAME_CONFIG)
+     * ========================================= */
+    const GAME_CONFIG = {
+        title: "Xưởng Thiết Kế Văn Bản",
+        maxScorePerLevel: 25,
+        totalLevels: 4,
+        messages: {
+            welcome: "Nhấn 'Bắt đầu' để vào xưởng nhé!",
+            correct: ["Chính xác!", "Giỏi quá!", "Đúng rồi đó!", "Hoàn hảo!"],
+            wrong: ["Chưa đúng, thử lại nhé.", "Hãy xem kỹ lại nào.", "Gần đúng rồi, sửa chút nữa."],
+            l1_hint: "Tìm 3 chỗ: chữ bị nhỏ, chữ bị chìm màu, và chữ bị hình che mất.",
+            l2_hint: "Bôi đen từng dòng và chọn nút B, I, U, A tương ứng theo yêu cầu.",
+            l3_hint: "Chọn 'Chữ bao quanh' trước, sau đó kéo ảnh sang ô đích bên phải.",
+            l4_hint: "Làm đủ 3 việc: In đậm tiêu đề, Tăng cỡ chữ nội dung, và Chữ bao quanh ảnh."
+        }
+    };
+
+    /** =========================================
+     * HỆ THỐNG ÂM THANH (WEB AUDIO API - OSCILLATOR)
+     * ========================================= */
+    const AudioSys = {
+        ctx: null, bgmOsc: null, bgmGain: null, isBGMPlaying: false,
+        bgmEnabled: false, sfxEnabled: false,
+        nextNoteTime: 0, noteIndex: 0, timerID: null,
+        melody: [261.63, 329.63, 392.00, 329.63], // C E G E (C major arp)
+        
+        init: function() {
+            if (!this.ctx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if(AudioContext) {
+                    this.ctx = new AudioContext();
+                    this.bgmEnabled = true;
+                    this.sfxEnabled = true;
+                    this.updateUI();
+                }
+            }
+            if(this.ctx && this.ctx.state === 'suspended') {
+                this.ctx.resume();
+            }
+        },
+        toggleBGM: function() {
+            this.init();
+            this.bgmEnabled = !this.bgmEnabled;
+            if(this.bgmEnabled) { this.playBGM(); } 
+            else { this.stopBGM(); }
+            this.updateUI();
+        },
+        toggleSFX: function() {
+            this.init();
+            this.sfxEnabled = !this.sfxEnabled;
+            this.updateUI();
+        },
+        updateUI: function() {
+            document.getElementById('btn-bgm').classList.toggle('active', this.bgmEnabled);
+            document.getElementById('btn-sfx').classList.toggle('active', this.sfxEnabled);
+        },
+        // BGM Scheduler Loop
+        scheduleNotes: function() {
+            while (this.nextNoteTime < this.ctx.currentTime + 0.1) {
+                this.playNote(this.melody[this.noteIndex], this.nextNoteTime);
+                this.nextNoteTime += 0.5; // tốc độ (0.5s mỗi nốt)
+                this.noteIndex = (this.noteIndex + 1) % this.melody.length;
+            }
+            this.timerID = requestAnimationFrame(this.scheduleNotes.bind(this));
+        },
+        playNote: function(freq, time) {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            
+            // Envelope mượt mà để âm thanh êm dịu (Pastel sound)
+            gain.gain.setValueAtTime(0, time);
+            gain.gain.linearRampToValueAtTime(0.05, time + 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.4);
+            
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(time);
+            osc.stop(time + 0.5);
+        },
+        playBGM: function() {
+            if(!this.ctx || !this.bgmEnabled || this.isBGMPlaying) return;
+            this.isBGMPlaying = true;
+            this.nextNoteTime = this.ctx.currentTime + 0.1;
+            this.scheduleNotes();
+        },
+        stopBGM: function() {
+            this.isBGMPlaying = false;
+            cancelAnimationFrame(this.timerID);
+        },
+        playSFX: function(type) {
+            if(!this.ctx || !this.sfxEnabled) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            const now = this.ctx.currentTime;
+            
+            if(type === 'click') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } 
+            else if(type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.setValueAtTime(600, now + 0.1);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.3);
+                osc.start(now); osc.stop(now + 0.3);
+            }
+            else if(type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.linearRampToValueAtTime(150, now + 0.2);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            }
+            else if(type === 'win') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.setValueAtTime(500, now + 0.1);
+                osc.frequency.setValueAtTime(600, now + 0.2);
+                osc.frequency.setValueAtTime(800, now + 0.3);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.5);
+                osc.start(now); osc.stop(now + 0.5);
+            }
+        }
+    };
+
+    /** =========================================
+     * QUẢN LÝ NHÂN VẬT & UI
+     * ========================================= */
+    const UI = {
+        bubbleTimer: null,
+        setRobot: function(state, message) {
+            document.getElementById('pixel-eyes-normal').style.display = (state==='normal') ? 'block' : 'none';
+            document.getElementById('pixel-eyes-happy').style.display = (state==='happy') ? 'block' : 'none';
+            document.getElementById('pixel-eyes-sad').style.display = (state==='sad') ? 'block' : 'none';
+            
+            const mouth = document.getElementById('pixel-mouth');
+            if(state === 'sad') mouth.setAttribute('d', 'M45 55 Q50 50 55 55');
+            else mouth.setAttribute('d', 'M45 50 Q50 55 55 50');
+
+            if(message) {
+                const bubble = document.getElementById('pixel-bubble');
+                bubble.innerText = message;
+                bubble.classList.add('show');
+                clearTimeout(this.bubbleTimer);
+                this.bubbleTimer = setTimeout(() => { bubble.classList.remove('show'); }, 4000);
+            }
+        },
+        createParticles: function(x, y) {
+            const colors = ['#4ABDAA', '#F2BE4A', '#F6B6C8'];
+            for(let i=0; i<10; i++) {
+                let p = document.createElement('div');
+                p.className = 'particle';
+                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.width = '10px'; p.style.height = '10px';
+                p.style.left = x + 'px'; p.style.top = y + 'px';
+                p.style.setProperty('--tx', (Math.random() * 100 - 50) + 'px');
+                p.style.setProperty('--ty', (Math.random() * -100) + 'px');
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 1000);
+            }
+        },
+        showScreen: function(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+    };
+
+    /** =========================================
+     * STATE GAME CHÍNH
+     * ========================================= */
+    const Game = {
+        currentLevel: 0,
+        score: 0,
+        levelDone: [false, false, false, false, false],
+        
+        startGame: function() {
+            AudioSys.init();
+            if(AudioSys.bgmEnabled) AudioSys.playBGM();
+            AudioSys.playSFX('click');
+            
+            document.getElementById('top-bar').style.display = 'flex';
+            this.currentLevel = 1;
+            this.updateTopBar();
+            UI.showScreen('level-1');
+            Level1.init();
+            UI.setRobot('normal', 'Bắt đầu nào! Tìm 3 lỗi trong văn bản bên trái nhé.');
+        },
+        showGuide: function() {
+            AudioSys.playSFX('click');
+            alert("Hướng dẫn:\n- Đọc yêu cầu trên mỗi màn.\n- Tương tác (nháy chuột/chạm) vào các thành phần để sửa định dạng.\n- Khi làm đúng, nút TIẾP TỤC sẽ sáng lên.");
+        },
+        updateTopBar: function() {
+            document.getElementById('level-text').innerText = `Màn ${this.currentLevel}/4`;
+            document.getElementById('score-text').innerText = this.score;
+        },
+        addScore: function() {
+            if(!this.levelDone[this.currentLevel]) {
+                this.score += GAME_CONFIG.maxScorePerLevel;
+                this.levelDone[this.currentLevel] = true;
+                this.updateTopBar();
+                AudioSys.playSFX('win');
+                UI.createParticles(window.innerWidth/2, window.innerHeight/2);
+            }
+        },
+        nextLevel: function() {
+            AudioSys.playSFX('click');
+            this.currentLevel++;
+            if(this.currentLevel > 4) {
+                this.endGame();
+            } else {
+                this.updateTopBar();
+                UI.showScreen(`level-${this.currentLevel}`);
+                UI.setRobot('normal', 'Tiến lên! Hoàn thành nhiệm vụ tiếp theo.');
+                if(this.currentLevel === 2) Level2.init();
+                if(this.currentLevel === 3) Level3.init();
+                if(this.currentLevel === 4) Level4.init();
+            }
+        },
+        showHint: function() {
+            AudioSys.playSFX('click');
+            let hintMsg = GAME_CONFIG.messages[`l${this.currentLevel}_hint`];
+            UI.setRobot('sad', hintMsg || "Cố lên, quan sát kỹ nhé!");
+        },
+        retryLevel: function() {
+            AudioSys.playSFX('click');
+            if(this.currentLevel === 1) Level1.init();
+            if(this.currentLevel === 2) Level2.init();
+            if(this.currentLevel === 3) Level3.init();
+            if(this.currentLevel === 4) Level4.init();
+            UI.setRobot('normal', 'Làm lại nào, bạn sẽ làm được!');
+        },
+        endGame: function() {
+            AudioSys.playSFX('win');
+            document.getElementById('top-bar').style.display = 'none';
+            UI.showScreen('summary-screen');
+            document.getElementById('final-score').innerText = this.score;
+            UI.setRobot('happy', 'Tuyệt vời! Em đã hoàn thành khóa học tại xưởng.');
+        },
+        restart: function() {
+            AudioSys.playSFX('click');
+            this.score = 0;
+            this.levelDone = [false, false, false, false, false];
+            this.startGame();
+        }
+    };
+
+    /** =========================================
+     * MÀN 1 LOGIC
+     * ========================================= */
+    const Level1 = {
+        fixedCount: 0,
+        init: function() {
+            this.fixedCount = 0;
+            for(let i=1; i<=3; i++) {
+                let el = document.getElementById(`l1-err-${i}`);
+                el.classList.remove('fixed');
+            }
+            document.getElementById('btn-next-1').disabled = true;
+        },
+        fix: function(id) {
+            let el = document.getElementById(`l1-err-${id}`);
+            if(!el.classList.contains('fixed')) {
+                el.classList.add('fixed');
+                this.fixedCount++;
+                AudioSys.playSFX('correct');
+                UI.setRobot('happy', GAME_CONFIG.messages.correct[Math.floor(Math.random()*2)]);
+                UI.createParticles(el.getBoundingClientRect().left + 50, el.getBoundingClientRect().top + 20);
+                
+                if(this.fixedCount === 3) {
+                    Game.addScore();
+                    document.getElementById('btn-next-1').disabled = false;
+                    UI.setRobot('happy', 'Giỏi quá! Đã sửa xong văn bản.');
+                }
+            }
+        }
+    };
+
+    /** =========================================
+     * MÀN 2 LOGIC
+     * ========================================= */
+    const Level2 = {
+        selectedId: null,
+        reqs: { 'l2-p1': ['fmt-b', 'fmt-c'], 'l2-p2': ['fmt-i'], 'l2-p3': ['fmt-u'] },
+        
+        init: function() {
+            this.selectedId = null;
+            ['l2-p1', 'l2-p2', 'l2-p3'].forEach(id => {
+                let el = document.getElementById(id);
+                el.className = 'text-block'; // reset
+            });
+            document.getElementById('btn-next-2').disabled = true;
+        },
+        selectBlock: function(id) {
+            AudioSys.playSFX('click');
+            document.querySelectorAll('#level-2 .text-block').forEach(el => el.classList.remove('selected'));
+            this.selectedId = id;
+            document.getElementById(id).classList.add('selected');
+        },
+        applyFormat: function(cls) {
+            if(!this.selectedId) {
+                UI.setRobot('sad', 'Em phải bấm chọn dòng chữ trước nhé!');
+                AudioSys.playSFX('wrong');
+                return;
+            }
+            AudioSys.playSFX('click');
+            document.getElementById(this.selectedId).classList.toggle(cls);
+            this.checkWin();
+        },
+        checkWin: function() {
+            let win = true;
+            for(let id in this.reqs) {
+                let el = document.getElementById(id);
+                let needed = this.reqs[id];
+                // Check all needed classes are present
+                let hasAll = needed.every(c => el.classList.contains(c));
+                // Check no extra format classes are present
+                let extraFormat = Array.from(el.classList).filter(c => c.startsWith('fmt-') && !needed.includes(c));
+                
+                if(!hasAll || extraFormat.length > 0) win = false;
+            }
+            if(win) {
+                Game.addScore();
+                document.getElementById('btn-next-2').disabled = false;
+                UI.setRobot('happy', 'Tuyệt! Các dòng đã được định dạng đúng.');
+            }
+        }
+    };
+
+    /** =========================================
+     * MÀN 3 LOGIC (Kéo Thả Pointer Events)
+     * ========================================= */
+    const Level3 = {
+        wrapMode: 'inline',
+        imgObj: null, dropZone: null, container: null,
+        isDragging: false, startX: 0, startY: 0, initialLeft: 20, initialTop: 60,
+        
+        init: function() {
+            this.wrapMode = 'inline';
+            this.imgObj = document.getElementById('l3-image');
+            this.dropZone = document.getElementById('l3-dropzone');
+            this.container = document.getElementById('l3-container');
+            
+            this.imgObj.style.left = this.initialLeft + 'px';
+            this.imgObj.style.top = this.initialTop + 'px';
+            this.dropZone.classList.remove('active');
+            document.getElementById('btn-next-3').disabled = true;
+
+            // Setup pointer events
+            this.imgObj.onpointerdown = this.onDragStart.bind(this);
+            window.onpointermove = this.onDragMove.bind(this);
+            window.onpointerup = this.onDragEnd.bind(this);
+        },
+        setWrap: function(mode) {
+            AudioSys.playSFX('click');
+            this.wrapMode = mode;
+            if(mode === 'square') {
+                this.dropZone.classList.add('active');
+                UI.setRobot('happy', 'Đúng rồi! Giờ hãy kéo ảnh sang khung bên phải.');
+            } else {
+                this.dropZone.classList.remove('active');
+                this.imgObj.style.left = this.initialLeft + 'px';
+                this.imgObj.style.top = this.initialTop + 'px';
+            }
+        },
+        onDragStart: function(e) {
+            if(this.wrapMode !== 'square') {
+                UI.setRobot('sad', 'Em phải chọn "Chữ bao quanh" trước khi di chuyển ảnh!');
+                AudioSys.playSFX('wrong');
+                return;
+            }
+            this.isDragging = true;
+            this.startX = e.clientX - this.imgObj.offsetLeft;
+            this.startY = e.clientY - this.imgObj.offsetTop;
+            this.imgObj.setPointerCapture(e.pointerId);
+            AudioSys.playSFX('click');
+        },
+        onDragMove: function(e) {
+            if(!this.isDragging) return;
+            e.preventDefault();
+            let newX = e.clientX - this.startX;
+            let newY = e.clientY - this.startY;
+            // Bounding box
+            newX = Math.max(0, Math.min(newX, this.container.offsetWidth - this.imgObj.offsetWidth));
+            newY = Math.max(0, Math.min(newY, this.container.offsetHeight - this.imgObj.offsetHeight));
+            
+            this.imgObj.style.left = newX + 'px';
+            this.imgObj.style.top = newY + 'px';
+        },
+        onDragEnd: function(e) {
+            if(!this.isDragging) return;
+            this.isDragging = false;
+            this.imgObj.releasePointerCapture(e.pointerId);
+            
+            // Check intersection with dropzone
+            let imgRect = this.imgObj.getBoundingClientRect();
+            let dropRect = this.dropZone.getBoundingClientRect();
+            
+            if (imgRect.left < dropRect.right && imgRect.right > dropRect.left &&
+                imgRect.top < dropRect.bottom && imgRect.bottom > dropRect.top) {
+                // Thành công
+                this.imgObj.style.left = (this.container.offsetWidth - 120 - 20) + 'px'; // Snap to right
+                this.imgObj.style.top = '60px';
+                Game.addScore();
+                document.getElementById('btn-next-3').disabled = false;
+                this.dropZone.classList.remove('active');
+                UI.setRobot('happy', 'Ảnh đã nằm đúng vị trí. Rất gọn gàng!');
+                AudioSys.playSFX('correct');
+            } else {
+                // Sai vị trí, snap back
+                this.imgObj.style.left = this.initialLeft + 'px';
+                this.imgObj.style.top = this.initialTop + 'px';
+                AudioSys.playSFX('wrong');
+                UI.setRobot('sad', 'Hãy kéo vào khung đứt nét bên phải nhé!');
+            }
+        }
+    };
+
+    /** =========================================
+     * MÀN 4 LOGIC
+     * ========================================= */
+    const Level4 = {
+        selectedId: null,
+        states: { titleBold: false, contentBig: false, imgWrapped: false },
+        
+        init: function() {
+            this.selectedId = null;
+            this.states = { titleBold: false, contentBig: false, imgWrapped: false };
+            document.getElementById('l4-title').className = 'text-block';
+            document.getElementById('l4-content').className = 'text-block';
+            document.getElementById('l4-content').style.fontSize = '14px';
+            document.getElementById('l4-img-box').style.cssText = 'display: block; margin-top: 10px; transition: 0.3s;';
+            
+            [1, 2, 3].forEach(i => {
+                document.getElementById(`req-${i}`).style.color = 'var(--text-dark)';
+                document.getElementById(`req-${i}`).style.textDecoration = 'none';
+            });
+            document.getElementById('btn-next-4').disabled = true;
+        },
+        selectBlock: function(id) {
+            AudioSys.playSFX('click');
+            document.querySelectorAll('#level-4 .text-block').forEach(el => el.classList.remove('selected'));
+            this.selectedId = id;
+            document.getElementById(id).classList.add('selected');
+        },
+        formatBold: function() {
+            if(this.selectedId === 'l4-title') {
+                document.getElementById('l4-title').classList.add('fmt-b');
+                this.states.titleBold = true;
+                AudioSys.playSFX('correct');
+            } else {
+                AudioSys.playSFX('wrong');
+                UI.setRobot('sad', 'Chọn Tiêu đề trước khi in đậm nhé.');
+            }
+        },
+        increaseSize: function() {
+            if(this.selectedId === 'l4-content') {
+                document.getElementById('l4-content').style.fontSize = '18px';
+                this.states.contentBig = true;
+                AudioSys.playSFX('correct');
+            } else {
+                AudioSys.playSFX('wrong');
+                UI.setRobot('sad', 'Chọn Nội dung trước khi tăng cỡ chữ.');
+            }
+        },
+        wrapImage: function() {
+            let imgBox = document.getElementById('l4-img-box');
+            imgBox.style.float = 'right';
+            imgBox.style.marginLeft = '15px';
+            this.states.imgWrapped = true;
+            AudioSys.playSFX('correct');
+        },
+        checkResult: function() {
+            AudioSys.playSFX('click');
+            let allGood = true;
+            if(this.states.titleBold) {
+                document.getElementById('req-1').style.color = 'green';
+                document.getElementById('req-1').style.textDecoration = 'line-through';
+            } else allGood = false;
+
+            if(this.states.contentBig) {
+                document.getElementById('req-2').style.color = 'green';
+                document.getElementById('req-2').style.textDecoration = 'line-through';
+            } else allGood = false;
+
+            if(this.states.imgWrapped) {
+                document.getElementById('req-3').style.color = 'green';
+                document.getElementById('req-3').style.textDecoration = 'line-through';
+            } else allGood = false;
+
+            if(allGood) {
+                Game.addScore();
+                document.getElementById('btn-next-4').disabled = false;
+                UI.setRobot('happy', 'Hoàn hảo! Văn bản đã đạt chuẩn.');
+            } else {
+                UI.setRobot('sad', 'Em xem lại danh sách yêu cầu xem còn thiếu gì không.');
+            }
+        }
+    };
+
+    // Khởi tạo trạng thái ban đầu không làm gì, đợi user click Bắt đầu
+    window.onload = () => {
+        // Prevent default touch behaviors like pull-to-refresh
+        document.body.addEventListener('touchmove', function(e) { 
+            if(Game.currentLevel === 3 && Level3.isDragging) e.preventDefault(); 
+        }, { passive: false });
+    };
+
+    // Khi tab ẩn thì tạm dừng nhạc nền
+    document.addEventListener("visibilitychange", function() {
+        if (document.hidden) {
+            AudioSys.stopBGM();
+        } else {
+            if(AudioSys.bgmEnabled) AudioSys.playBGM();
+        }
+    });
+
+</script>
+</body>
+</html>

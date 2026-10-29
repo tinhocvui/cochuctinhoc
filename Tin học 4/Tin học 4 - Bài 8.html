@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhà Thiết Kế Slide</title>
+    <style>
+        /* === CSS CƠ BẢN & MÀU SẮC PASTEL === */
+        :root {
+            --bg-cream: #FFF9ED;
+            --peach: #FF9850;
+            --mint: #40B8B3;
+            --purple: #8069C6;
+            --yellow: #FFD773;
+            --text-dark: #333333;
+            --white: #FFFFFF;
+            --gray-light: #E2E8F0;
+            --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.08);
+            --shadow-btn: 0 4px 0px rgba(0, 0, 0, 0.15);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-cream);
+            color: var(--text-dark);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Prevent scroll on small screens if possible */
+        }
+
+        /* === GIAO DIỆN CHUNG === */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: var(--white);
+            box-shadow: var(--shadow-soft);
+            z-index: 10;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--purple);
+            text-transform: uppercase;
+        }
+
+        .header-stats {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .score-badge {
+            background: var(--yellow);
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow-btn);
+        }
+
+        .audio-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .toggle-btn {
+            background: var(--gray-light);
+            border: none;
+            padding: 8px 12px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .toggle-btn.active {
+            background: var(--mint);
+            color: var(--white);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        /* === KHU VỰC NHÂN VẬT (MÂY) === */
+        .character-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            background: var(--white);
+            padding: 15px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            border-left: 8px solid var(--mint);
+        }
+
+        .avatar-container {
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
+        }
+
+        .speech-bubble {
+            background: var(--bg-cream);
+            padding: 15px 20px;
+            border-radius: var(--radius-lg);
+            border: 2px dashed var(--peach);
+            font-size: 1.1rem;
+            line-height: 1.5;
+            position: relative;
+            flex: 1;
+        }
+
+        /* === KHU VỰC MÀN CHƠI === */
+        .game-screen {
+            display: none;
+            flex: 1;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            padding: 20px;
+            flex-direction: column;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .game-screen.active {
+            display: flex;
+        }
+
+        .screen-title {
+            font-size: 1.3rem;
+            color: var(--purple);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .screen-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            position: relative;
+        }
+
+        /* === CÁC THÀNH PHẦN MÀN CHƠI === */
+        /* Màn 1: Slide So Sánh */
+        .slide-preview {
+            width: 300px;
+            height: 200px;
+            background: white;
+            border: 3px solid var(--gray-light);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+        }
+        .slide-preview:hover { transform: scale(1.05); }
+        .slide-preview.selected {
+            border-color: var(--mint);
+            box-shadow: 0 0 0 4px rgba(64, 184, 179, 0.3);
+        }
+        
+        .reasons-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: var(--bg-cream);
+            padding: 15px;
+            border-radius: var(--radius-md);
+        }
+        .reason-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        .reason-label input { width: 20px; height: 20px; accent-color: var(--mint); cursor: pointer;}
+
+        /* Fake Toolbar */
+        .fake-toolbar {
+            display: flex;
+            gap: 10px;
+            background: var(--gray-light);
+            padding: 10px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .tool-btn {
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 0 #ccc;
+        }
+        .tool-btn:active { transform: translateY(2px); box-shadow: none; }
+        
+        /* Fake Slide (Màn 2, 3, 4) */
+        .fake-slide-container {
+            width: 500px;
+            height: 300px;
+            background: white;
+            border: 2px solid var(--gray-light);
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            position: relative;
+        }
+        .editable-text {
+            border: 2px dashed transparent;
+            padding: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+        .editable-text:hover { border-color: var(--gray-light); }
+        .editable-text.active-element {
+            border-color: var(--mint);
+            background: rgba(64, 184, 179, 0.1);
+        }
+
+        /* === BẢNG ĐIỀU KHIỂN DƯỚI CÙNG === */
+        .controls-area {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px;
+            background: var(--white);
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            box-shadow: var(--shadow-btn);
+            transition: transform 0.1s, filter 0.2s;
+        }
+        .btn:active { transform: translateY(4px); box-shadow: none; }
+        .btn:disabled { filter: grayscale(1); cursor: not-allowed; transform: none; box-shadow: var(--shadow-btn); }
+        
+        .btn-hint { background-color: var(--yellow); color: var(--text-dark); }
+        .btn-retry { background-color: var(--peach); }
+        .btn-check { background-color: var(--mint); }
+        .btn-next { background-color: var(--purple); display: none; }
+
+        /* Màn hình khởi đầu / Kết thúc */
+        .overlay-screen {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 249, 237, 0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .overlay-content {
+            background: white;
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            max-width: 600px;
+        }
+        .overlay-title { color: var(--purple); font-size: 2.5rem; margin-bottom: 20px; text-shadow: 2px 2px 0px rgba(0,0,0,0.1); }
+        
+        /* Hiệu ứng */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- MÀN HÌNH CHÀO MỪNG -->
+    <div id="welcome-screen" class="overlay-screen">
+        <div class="overlay-content">
+            <h1 class="overlay-title">NHÀ THIẾT KẾ SLIDE</h1>
+            <p style="font-size: 1.2rem; margin-bottom: 20px;">Tin học 4 - Bài 8: Định dạng văn bản trên trang chiếu</p>
+            
+            <!-- Hình minh họa trang chủ (SVG) -->
+            <svg width="200" height="150" viewBox="0 0 200 150" style="margin: 0 auto 20px auto; display: block;">
+                <rect x="20" y="20" width="160" height="100" rx="10" fill="#E2E8F0" stroke="#8069C6" stroke-width="4"/>
+                <rect x="30" y="30" width="140" height="80" fill="white"/>
+                <rect x="40" y="40" width="80" height="15" fill="#40B8B3" rx="5"/>
+                <rect x="40" y="65" width="120" height="10" fill="#FF9850" rx="3"/>
+                <rect x="40" y="85" width="100" height="10" fill="#FF9850" rx="3"/>
+                <circle cx="150" cy="50" r="15" fill="#FFD773"/>
+            </svg>
+
+            <p style="margin-bottom: 30px;">Cùng Mây học cách chỉnh sửa phông chữ, cỡ chữ, màu chữ để slide đẹp và dễ đọc nhé!</p>
+            <button class="btn btn-check" style="font-size: 1.5rem; padding: 15px 40px;" onclick="startGame()">BẮT ĐẦU NÀO!</button>
+        </div>
+    </div>
+
+    <!-- MÀN HÌNH KẾT THÚC -->
+    <div id="end-screen" class="overlay-screen hidden">
+        <div class="overlay-content">
+            <h1 class="overlay-title" style="color: var(--mint);">CHÚC MỪNG!</h1>
+            <!-- Cúp SVG -->
+            <svg width="120" height="120" viewBox="0 0 120 120" style="margin: 0 auto 20px auto; display: block;">
+                <path d="M20 30 Q60 100 100 30 Z" fill="#FFD773" stroke="#FF9850" stroke-width="4"/>
+                <rect x="45" y="80" width="30" height="20" fill="#E2E8F0"/>
+                <rect x="30" y="100" width="60" height="10" fill="#8069C6" rx="5"/>
+                <circle cx="60" cy="50" r="15" fill="#FFF9ED"/>
+            </svg>
+            <p style="font-size: 1.5rem; margin-bottom: 10px;">Bạn đã hoàn thành khóa huấn luyện!</p>
+            <p style="font-size: 2rem; font-weight: bold; color: var(--peach); margin-bottom: 30px;">Tổng điểm: <span id="final-score">100</span>/100</p>
+            <p style="margin-bottom: 20px;">Ghi nhớ: Chữ trên trang chiếu cần rõ ràng, màu sắc nổi bật so với nền nhé!</p>
+            <button class="btn btn-check" onclick="location.reload()">CHƠI LẠI TỪ ĐẦU</button>
+        </div>
+    </div>
+
+    <!-- UI CHÍNH TRONG GAME -->
+    <header>
+        <div class="header-title">Thiết Kế Slide</div>
+        <div class="header-stats">
+            <div class="audio-controls">
+                <button id="btn-bgm" class="toggle-btn" onclick="toggleBGM()">🎵 Nhạc: TẮT</button>
+                <button id="btn-sfx" class="toggle-btn active" onclick="toggleSFX()">🔊 SFX: BẬT</button>
+            </div>
+            <div class="score-badge">Điểm: <span id="ui-score">0</span></div>
+        </div>
+    </header>
+
+    <main>
+        <!-- KHU VỰC NHÂN VẬT MÂY -->
+        <div class="character-area">
+            <div class="avatar-container" id="may-avatar">
+                <!-- SVG Mây sẽ được cập nhật bằng JS -->
+            </div>
+            <div class="speech-bubble" id="may-speech">
+                Chào bạn! Hãy giúp mình hoàn thành các thử thách nhé!
+            </div>
+        </div>
+
+        <!-- CONTAINER CHỨA CÁC MÀN CHƠI -->
+        <div id="screen-container">
+            
+            <!-- MÀN 1: SO SÁNH -->
+            <div id="screen-1" class="game-screen">
+                <h2 class="screen-title">Nhiệm vụ 1: Tìm trang chiếu dễ đọc</h2>
+                <div class="screen-content" style="flex-direction: row; flex-wrap: wrap;">
+                    <!-- Slide A (Đúng) -->
+                    <div class="slide-preview" id="s1-slideA" onclick="selectS1Slide('A')" style="background-color: #f0f8ff;">
+                        <h3 style="color: #333; font-size: 24px;">Hoa Hướng Dương</h3>
+                        <p style="color: #555; font-size: 16px;">Màu vàng rực rỡ, luôn hướng về phía mặt trời.</p>
+                    </div>
+                    <!-- Slide B (Sai - Chữ vàng nền trắng) -->
+                    <div class="slide-preview" id="s1-slideB" onclick="selectS1Slide('B')" style="background-color: #ffffff;">
+                        <h3 style="color: #FFFF00; font-size: 14px;">Hoa Hướng Dương</h3>
+                        <p style="color: #FFFAAA; font-size: 12px;">Màu vàng rực rỡ, luôn hướng về phía mặt trời.</p>
+                    </div>
+                    
+                    <div class="reasons-box">
+                        <p style="font-weight: bold; margin-bottom: 5px;">Vì sao trang chiếu đó dễ đọc? (Chọn 2)</p>
+                        <label class="reason-label"><input type="checkbox" id="s1-cb1"> Màu chữ và nền tương phản tốt</label>
+                        <label class="reason-label"><input type="checkbox" id="s1-cb2"> Có nhiều hình ảnh sặc sỡ</label>
+                        <label class="reason-label"><input type="checkbox" id="s1-cb3"> Cỡ chữ đủ lớn, rõ ràng</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MÀN 2: BẢNG ĐIỀU KHIỂN CHỮ -->
+            <div id="screen-2" class="game-screen">
+                <h2 class="screen-title">Nhiệm vụ 2: Sử dụng bảng điều khiển</h2>
+                
+                <div class="fake-toolbar">
+                    <button class="tool-btn" onclick="applyFormat('fontWeight', 'bold')"><b>B (Đậm)</b></button>
+                    <button class="tool-btn" onclick="applyFormat('fontSize', '32px')">Cỡ: 32</button>
+                    <button class="tool-btn" style="color: var(--peach);" onclick="applyFormat('color', 'orange')">Màu: Cam</button>
+                </div>
+
+                <div class="screen-content">
+                    <div class="fake-slide-container" style="justify-content: center; align-items: center; background: #FFF9ED;">
+                        <div id="s2-target" class="editable-text" onclick="selectElement(this)" style="font-size: 16px; color: black; font-weight: normal;">
+                            CHÀO MỪNG ĐẾN LỚP HỌC TIN HỌC
+                        </div>
+                        <p style="font-size: 14px; color: #666; margin-top: 20px;">(Nháy chuột vào dòng chữ trên để chọn, sau đó dùng công cụ)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MÀN 3: CHỮ NỔI BẬT -->
+            <div id="screen-3" class="game-screen">
+                <h2 class="screen-title">Nhiệm vụ 3: Phân biệt Tiêu đề và Nội dung</h2>
+                
+                <div class="fake-toolbar">
+                    <button class="tool-btn" onclick="applyFormat('fontWeight', 'bold')"><b>B (Đậm)</b></button>
+                    <button class="tool-btn" onclick="applyFormat('fontSize', '24px')">Cỡ: 24</button>
+                    <button class="tool-btn" onclick="applyFormat('fontSize', '36px')">Cỡ: 36</button>
+                </div>
+
+                <div class="screen-content">
+                    <div class="fake-slide-container" style="background: #E2E8F0;">
+                        <div id="s3-title" class="editable-text" onclick="selectElement(this)" style="font-size: 16px; font-weight: normal;">
+                            Thế giới động vật
+                        </div>
+                        <div id="s3-content" class="editable-text" onclick="selectElement(this)" style="font-size: 14px; margin-top: 20px;">
+                            Động vật rất đa dạng và phong phú. Chúng sống ở khắp nơi trên Trái Đất.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MÀN 4: CỨU SLIDE KHÓ ĐỌC -->
+            <div id="screen-4" class="game-screen">
+                <h2 class="screen-title">Nhiệm vụ 4: Cứu trang chiếu khó đọc</h2>
+                
+                <div class="fake-toolbar">
+                    <button class="tool-btn" onclick="s4IncreaseSize()">A+ (Tăng cỡ chữ)</button>
+                    <button class="tool-btn" onclick="s4ChangeColor()">Đổi màu tối</button>
+                    <button class="tool-btn" onclick="s4Align()">Căn giữa</button>
+                </div>
+
+                <div class="screen-content">
+                    <div class="fake-slide-container" style="background: white;">
+                        <!-- Chữ cố tình làm nhỏ, màu vàng trên nền trắng, căn trái -->
+                        <div id="s4-target" style="font-size: 12px; color: yellow; text-align: left; transition: all 0.3s;">
+                            Bảo vệ môi trường là trách nhiệm của tất cả chúng ta. Hãy vứt rác đúng nơi quy định và trồng thêm nhiều cây xanh!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- NÚT ĐIỀU KHIỂN -->
+    <div class="controls-area">
+        <button class="btn btn-hint" id="btn-hint" onclick="useHint()">💡 Gợi ý</button>
+        <button class="btn btn-retry" id="btn-retry" onclick="retryScreen()">🔄 Làm lại màn</button>
+        <button class="btn btn-check" id="btn-verify" onclick="verifyScreen()">✔️ Kiểm tra</button>
+        <button class="btn btn-next" id="btn-next" onclick="nextScreen()">Chuyển màn ➡️</button>
+    </div>
+
+<script>
+/**
+ * TOÀN BỘ LOGIC GAME NẰM TẠI ĐÂY
+ */
+
+// === 1. CẤU HÌNH TRÒ CHƠI (GAME_CONFIG) ===
+const GAME_CONFIG = {
+    totalScreens: 4,
+    pointsPerScreen: 25,
+    screens: [
+        {
+            id: 1,
+            initSpeech: "Màn 1: Theo bạn, trang chiếu nào dễ đọc hơn? Hãy nháy chọn trang chiếu đó và đánh dấu vào 2 lí do đúng ở bên dưới nhé!",
+            hints: [
+                "Hãy chọn trang chiếu bên trái vì nó rõ ràng hơn.",
+                "Lí do đúng là 'Màu chữ và nền tương phản tốt' và 'Cỡ chữ đủ lớn'."
+            ],
+        },
+        {
+            id: 2,
+            initSpeech: "Màn 2: Hãy nháy chuột để chọn dòng chữ 'CHÀO MỪNG...'. Sau đó bấm các nút trên thanh công cụ để chỉnh: Chữ Đậm, Cỡ 32 và Màu Cam.",
+            hints: [
+                "Đầu tiên, phải nháy chuột vào dòng chữ để nó hiện khung viền đứt nét.",
+                "Sau đó bấm lần lượt 3 nút: B (Đậm), Cỡ 32, Màu Cam."
+            ]
+        },
+        {
+            id: 3,
+            initSpeech: "Màn 3: Trong một trang chiếu, Tiêu đề nên to hơn Nội dung. Hãy chỉnh Tiêu đề thành Đậm, Cỡ 36. Nội dung (dòng dưới) thành Cỡ 24.",
+            hints: [
+                "Nháy chọn 'Thế giới động vật' -> Bấm B(Đậm) và Cỡ 36.",
+                "Nháy chọn dòng nội dung bên dưới -> Bấm Cỡ 24."
+            ]
+        },
+        {
+            id: 4,
+            initSpeech: "Màn cuối: Trang chiếu này chữ quá nhỏ và màu vàng trên nền trắng không thể đọc được! Hãy dùng các nút ở trên để tăng cỡ chữ (bấm vài lần), đổi màu tối và căn giữa nhé.",
+            hints: [
+                "Bấm nút 'Tăng cỡ chữ' nhiều lần cho đến khi chữ đủ to.",
+                "Nhớ bấm 'Đổi màu tối' để tạo độ tương phản, và bấm 'Căn giữa' cho đẹp."
+            ]
+        }
+    ]
+};
+
+// === 2. TRẠNG THÁI TRÒ CHƠI ===
+let currentState = {
+    currentScreenIndex: 1,
+    score: 0,
+    hintLevel: 0,
+    screenCompleted: false,
+    s1_selectedSlide: null,
+    activeElement: null, // Cho màn 2, 3
+    s4_fontSize: 12,
+    s4_isDark: false,
+    s4_isCenter: false
+};
+
+// === 3. HỆ THỐNG ÂM THANH (WEB AUDIO API TỰ TỔNG HỢP) ===
+let audioCtx;
+let bgmOsc;
+let bgmGain;
+let isBGMEnabled = false; // Tắt mặc định cho đến khi tương tác
+let isSFXEnabled = true;
+
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+// Bật/tắt BGM
+function toggleBGM() {
+    isBGMEnabled = !isBGMEnabled;
+    const btn = document.getElementById('btn-bgm');
+    if (isBGMEnabled) {
+        btn.innerText = "🎵 Nhạc: BẬT";
+        btn.classList.add('active');
+        initAudio();
+        startBGM();
+    } else {
+        btn.innerText = "🎵 Nhạc: TẮT";
+        btn.classList.remove('active');
+        stopBGM();
+    }
+}
+
+// Bật/tắt SFX
+function toggleSFX() {
+    isSFXEnabled = !isSFXEnabled;
+    const btn = document.getElementById('btn-sfx');
+    if (isSFXEnabled) {
+        btn.innerText = "🔊 SFX: BẬT";
+        btn.classList.add('active');
+    } else {
+        btn.innerText = "🔊 SFX: TẮT";
+        btn.classList.remove('active');
+    }
+}
+
+// Tổng hợp âm thanh SFX đơn giản
+function playTone(freq, type, duration) {
+    if (!isSFXEnabled || !audioCtx) return;
+    try {
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    } catch (e) { console.log(e); }
+}
+
+function playSFXCorrect() {
+    playTone(523.25, 'sine', 0.1); // C5
+    setTimeout(() => playTone(659.25, 'sine', 0.2), 100); // E5
+}
+
+function playSFXWrong() {
+    playTone(200, 'sawtooth', 0.3);
+}
+
+function playSFXClick() {
+    playTone(800, 'sine', 0.05);
+}
+
+function playSFXWin() {
+    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+        setTimeout(() => playTone(freq, 'square', 0.2), idx * 150);
+    });
+}
+
+// Nhạc nền (Loop êm dịu)
+function startBGM() {
+    if (!audioCtx || bgmOsc) return;
+    try {
+        bgmOsc = audioCtx.createOscillator();
+        bgmGain = audioCtx.createGain();
+        bgmOsc.type = 'triangle';
+        bgmGain.gain.value = 0.05; // Rất nhỏ
+        bgmOsc.connect(bgmGain);
+        bgmGain.connect(audioCtx.destination);
+        
+        // Giai điệu đơn giản lặp lại bằng setTimeOut không dùng schedule quá phức tạp để an toàn
+        let notes = [261.63, 329.63, 392.00, 329.63]; // C E G E
+        let step = 0;
+        
+        bgmOsc.start();
+        
+        function playNextNote() {
+            if (!bgmOsc) return;
+            bgmOsc.frequency.setValueAtTime(notes[step % 4], audioCtx.currentTime);
+            step++;
+            window.bgmTimer = setTimeout(playNextNote, 500);
+        }
+        playNextNote();
+    } catch(e) {}
+}
+
+function stopBGM() {
+    if (bgmOsc) {
+        bgmOsc.stop();
+        bgmOsc.disconnect();
+        bgmOsc = null;
+        clearTimeout(window.bgmTimer);
+    }
+}
+
+// === 4. ĐỒ HỌA SVG NHÂN VẬT (MÂY) ===
+function getMascotSVG(mood) {
+    let eyes = `<circle cx="35" cy="45" r="4" fill="#333"/><circle cx="65" cy="45" r="4" fill="#333"/>`;
+    let mouth = `<path d="M 40 60 Q 50 65 60 60" stroke="#333" stroke-width="2" fill="none"/>`; // neutral
+    
+    if (mood === 'happy') {
+        eyes = `<path d="M 30 45 Q 35 40 40 45" stroke="#333" stroke-width="2" fill="none"/>
+                <path d="M 60 45 Q 65 40 70 45" stroke="#333" stroke-width="2" fill="none"/>`;
+        mouth = `<path d="M 40 60 Q 50 70 60 60 Z" fill="#FF9850" stroke="#333" stroke-width="1"/>`; // smile open
+    } else if (mood === 'sad') {
+        mouth = `<path d="M 40 65 Q 50 60 60 65" stroke="#333" stroke-width="2" fill="none"/>`;
+    } else if (mood === 'thinking') {
+        mouth = `<circle cx="50" cy="62" r="3" fill="#333"/>`;
+    }
+
+    return `
+    <svg viewBox="0 0 100 100" width="100%" height="100%">
+        <!-- Tóc sau -->
+        <circle cx="50" cy="50" r="35" fill="#4a3b32"/>
+        <!-- Mặt -->
+        <circle cx="50" cy="50" r="30" fill="#FFE0BD"/>
+        <!-- Tóc mái -->
+        <path d="M 20 50 Q 50 10 80 50 Q 50 30 20 50" fill="#4a3b32"/>
+        <!-- Kính bảo hộ trên trán -->
+        <rect x="25" y="15" width="20" height="12" rx="3" fill="#40B8B3" stroke="#fff" stroke-width="2"/>
+        <rect x="55" y="15" width="20" height="12" rx="3" fill="#40B8B3" stroke="#fff" stroke-width="2"/>
+        <path d="M 45 21 L 55 21" stroke="#fff" stroke-width="2"/>
+        <!-- Mắt & Miệng (Động) -->
+        ${eyes}
+        ${mouth}
+        <!-- Má hồng -->
+        <circle cx="30" cy="55" r="4" fill="#FF9850" opacity="0.5"/>
+        <circle cx="70" cy="55" r="4" fill="#FF9850" opacity="0.5"/>
+    </svg>`;
+}
+
+function updateMascot(mood, text) {
+    document.getElementById('may-avatar').innerHTML = getMascotSVG(mood);
+    if(text) {
+        document.getElementById('may-speech').innerHTML = text;
+        // Animation bong bóng thoại
+        const bubble = document.getElementById('may-speech');
+        bubble.style.animation = 'none';
+        bubble.offsetHeight; /* trigger reflow */
+        bubble.style.animation = 'pop 0.3s ease-out';
+    }
+}
+
+// === 5. ĐIỀU KHIỂN LUỒNG TRÒ CHƠI ===
+
+function startGame() {
+    initAudio();
+    if(isBGMEnabled) startBGM();
+    document.getElementById('welcome-screen').classList.add('hidden');
+    loadScreen(1);
+    playSFXClick();
+}
+
+function loadScreen(index) {
+    // Ẩn tất cả
+    document.querySelectorAll('.game-screen').forEach(el => el.classList.remove('active'));
+    
+    // Reset state màn
+    currentState.hintLevel = 0;
+    currentState.screenCompleted = false;
+    document.getElementById('btn-verify').style.display = 'block';
+    document.getElementById('btn-next').style.display = 'none';
+    
+    // Hiển thị màn mới
+    const screenDiv = document.getElementById(`screen-${index}`);
+    if (screenDiv) {
+        screenDiv.classList.add('active');
+        const config = GAME_CONFIG.screens[index - 1];
+        updateMascot('neutral', config.initSpeech);
+        resetScreenUI(index);
+    }
+}
+
+function updateScore(points) {
+    if(!currentState.screenCompleted) {
+        currentState.score += points;
+        document.getElementById('ui-score').innerText = currentState.score;
+        const badge = document.querySelector('.score-badge');
+        badge.style.animation = 'pop 0.5s';
+        setTimeout(() => badge.style.animation = '', 500);
+    }
+}
+
+// === CÁC HÀM XỬ LÝ CHO TỪNG MÀN ===
+
+// -- Màn 1 --
+function selectS1Slide(choice) {
+    if(currentState.screenCompleted) return;
+    playSFXClick();
+    currentState.s1_selectedSlide = choice;
+    document.getElementById('s1-slideA').classList.remove('selected');
+    document.getElementById('s1-slideB').classList.remove('selected');
+    document.getElementById(`s1-slide${choice}`).classList.add('selected');
+}
+
+// -- Màn 2 & 3: Quản lý chọn Element và Format --
+function selectElement(el) {
+    if(currentState.screenCompleted) return;
+    playSFXClick();
+    // Bỏ chọn cũ
+    if(currentState.activeElement) {
+        currentState.activeElement.classList.remove('active-element');
+    }
+    // Chọn mới
+    currentState.activeElement = el;
+    el.classList.add('active-element');
+}
+
+function applyFormat(property, value) {
+    if(currentState.screenCompleted) return;
+    playSFXClick();
+    if(currentState.activeElement) {
+        currentState.activeElement.style[property] = value;
+    } else {
+        updateMascot('sad', "Bạn chưa nháy chọn đoạn chữ nào cả. Hãy nháy vào chữ trước nhé!");
+    }
+}
+
+// -- Màn 4 --
+function s4IncreaseSize() {
+    if(currentState.screenCompleted) return;
+    playSFXClick();
+    if(currentState.s4_fontSize < 24) {
+        currentState.s4_fontSize += 4;
+        document.getElementById('s4-target').style.fontSize = currentState.s4_fontSize + 'px';
+    }
+}
+function s4ChangeColor() {
+    if(currentState.screenCompleted) return;
+    playSFXClick();
+    currentState.s4_isDark = true;
+    document.getElementById('s4-target').style.color = '#1E3A8A'; // Xanh đậm
+}
+function s4Align() {
+    if(currentState.screenCompleted) return;
+    playSFXClick();
+    currentState.s4_isCenter = true;
+    document.getElementById('s4-target').style.textAlign = 'center';
+}
+
+// === LOGIC KIỂM TRA ĐÚNG/SAI ===
+function verifyScreen() {
+    if(currentState.screenCompleted) return;
+    let isCorrect = false;
+    let failMsg = "";
+
+    const idx = currentState.currentScreenIndex;
+
+    if (idx === 1) {
+        const cb1 = document.getElementById('s1-cb1').checked;
+        const cb2 = document.getElementById('s1-cb2').checked;
+        const cb3 = document.getElementById('s1-cb3').checked;
+        
+        if (currentState.s1_selectedSlide === 'A' && cb1 && !cb2 && cb3) {
+            isCorrect = true;
+        } else {
+            failMsg = "Chưa đúng rồi! Hãy chọn trang chiếu bên trái và 2 lí do: Tương phản tốt + Chữ đủ lớn.";
+        }
+    } 
+    else if (idx === 2) {
+        const target = document.getElementById('s2-target');
+        const isBold = target.style.fontWeight === 'bold' || target.style.fontWeight === '700';
+        const isSize32 = target.style.fontSize === '32px';
+        // Trình duyệt tự convert color name sang rgb
+        const c = target.style.color;
+        const isOrange = c === 'orange' || c === 'rgb(255, 165, 0)'; 
+
+        if (isBold && isSize32 && isOrange) {
+            isCorrect = true;
+        } else {
+            failMsg = "Chưa đủ định dạng. Kiểm tra xem bạn đã chọn chữ, rồi bấm đủ nút Đậm, Cỡ 32 và Màu Cam chưa nhé.";
+        }
+    }
+    else if (idx === 3) {
+        const title = document.getElementById('s3-title');
+        const content = document.getElementById('s3-content');
+        
+        const tBold = title.style.fontWeight === 'bold' || title.style.fontWeight === '700';
+        const tSize36 = title.style.fontSize === '36px';
+        const cSize24 = content.style.fontSize === '24px';
+
+        if (tBold && tSize36 && cSize24) {
+            isCorrect = true;
+        } else {
+            failMsg = "Chưa đúng. Tiêu đề cần Đậm và cỡ 36. Nội dung (dòng dưới) chỉ cần cỡ 24 thôi.";
+        }
+    }
+    else if (idx === 4) {
+        if (currentState.s4_fontSize >= 20 && currentState.s4_isDark && currentState.s4_isCenter) {
+            isCorrect = true;
+        } else {
+            failMsg = "Trang chiếu vẫn chưa đẹp. Bạn đã tăng cỡ chữ đủ lớn, đổi màu tối và căn giữa chưa?";
+        }
+    }
+
+    // Xử lý kết quả
+    if (isCorrect) {
+        playSFXCorrect();
+        updateMascot('happy', "Tuyệt vời! Bạn đã làm rất đúng.");
+        updateScore(GAME_CONFIG.pointsPerScreen);
+        currentState.screenCompleted = true;
+        
+        // Cập nhật UI nút
+        document.getElementById('btn-verify').style.display = 'none';
+        document.getElementById('btn-next').style.display = 'block';
+    } else {
+        playSFXWrong();
+        updateMascot('sad', failMsg);
+    }
+}
+
+// === CÁC NÚT HỖ TRỢ ===
+function useHint() {
+    playSFXClick();
+    const config = GAME_CONFIG.screens[currentState.currentScreenIndex - 1];
+    if (currentState.hintLevel < config.hints.length) {
+        updateMascot('thinking', "Gợi ý: " + config.hints[currentState.hintLevel]);
+        currentState.hintLevel++;
+    } else {
+        updateMascot('thinking', "Hết gợi ý rồi. Hãy cố gắng tự làm theo yêu cầu nhé!");
+    }
+}
+
+function resetScreenUI(index) {
+    if(index === 1) {
+        currentState.s1_selectedSlide = null;
+        document.getElementById('s1-slideA').classList.remove('selected');
+        document.getElementById('s1-slideB').classList.remove('selected');
+        document.getElementById('s1-cb1').checked = false;
+        document.getElementById('s1-cb2').checked = false;
+        document.getElementById('s1-cb3').checked = false;
+    } 
+    else if (index === 2) {
+        if(currentState.activeElement) currentState.activeElement.classList.remove('active-element');
+        currentState.activeElement = null;
+        const t = document.getElementById('s2-target');
+        t.style.fontWeight = 'normal';
+        t.style.fontSize = '16px';
+        t.style.color = 'black';
+    }
+    else if (index === 3) {
+        if(currentState.activeElement) currentState.activeElement.classList.remove('active-element');
+        currentState.activeElement = null;
+        const t = document.getElementById('s3-title');
+        t.style.fontWeight = 'normal';
+        t.style.fontSize = '16px';
+        const c = document.getElementById('s3-content');
+        c.style.fontSize = '14px';
+    }
+    else if (index === 4) {
+        currentState.s4_fontSize = 12;
+        currentState.s4_isDark = false;
+        currentState.s4_isCenter = false;
+        const t = document.getElementById('s4-target');
+        t.style.fontSize = '12px';
+        t.style.color = 'yellow';
+        t.style.textAlign = 'left';
+    }
+}
+
+function retryScreen() {
+    if(currentState.screenCompleted) return; // Không cho làm lại nếu đã qua màn
+    playSFXClick();
+    resetScreenUI(currentState.currentScreenIndex);
+    updateMascot('neutral', "Đã đặt lại màn chơi. Làm lại từ đầu nào!");
+    currentState.hintLevel = 0;
+}
+
+function nextScreen() {
+    playSFXClick();
+    if (currentState.currentScreenIndex < GAME_CONFIG.totalScreens) {
+        currentState.currentScreenIndex++;
+        loadScreen(currentState.currentScreenIndex);
+    } else {
+        // Hoàn thành Game
+        document.getElementById('final-score').innerText = currentState.score;
+        document.getElementById('end-screen').classList.remove('hidden');
+        playSFXWin();
+        stopBGM(); // Tắt nhạc nền khi kết thúc
+    }
+}
+
+// Khởi tạo ban đầu
+window.onload = () => {
+    updateMascot('happy', ""); // Vẽ sẵn SVG
+    
+    // Ngắt nhạc khi ẩn tab
+    document.addEventListener("visibilitychange", function() {
+        if (document.hidden) {
+            if(audioCtx) audioCtx.suspend();
+        } else {
+            if(audioCtx && isBGMEnabled) audioCtx.resume();
+        }
+    });
+};
+
+</script>
+</body>
+</html>

@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biên Tập Viên Tài Ba - Tin Học 4</title>
+    <style>
+        /* CSS Variables - V5 Palette */
+        :root {
+            --bg-color: #FFF9ED;
+            --primary: #FF9850;
+            --primary-hover: #e58847;
+            --secondary: #40B8B3;
+            --secondary-hover: #37a09c;
+            --accent: #8069C6;
+            --highlight: #FFD773;
+            --text-main: #333333;
+            --text-light: #ffffff;
+            --error: #ff4d4d;
+            --success: #28a745;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+            --box-shadow-hover: 0 6px 12px rgba(0,0,0,0.15), 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 900px;
+            height: 95vh;
+            max-height: 650px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* HEADER & CONTROLS */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--secondary);
+            color: var(--text-light);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .audio-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .toggle-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn:hover { background: rgba(255,255,255,0.4); }
+        .toggle-btn.off { background: rgba(255,0,0,0.4); }
+
+        /* SCREENS */
+        .screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            padding: 20px;
+            height: 100%;
+        }
+        .screen.active { display: flex; }
+
+        /* WELCOME SCREEN */
+        #welcome-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #FFF9ED, #FFD773);
+        }
+        #welcome-screen h1 {
+            color: var(--accent);
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.8);
+        }
+        #welcome-screen p { font-size: 1.2rem; margin-bottom: 30px; color: var(--primary); font-weight: bold; }
+        
+        .big-svg { width: 250px; height: 250px; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* MAIN GAME LAYOUT */
+        .game-layout {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            height: calc(100% - 140px); /* Adjust for header/footer */
+        }
+
+        .editor-area {
+            flex: 2;
+            background: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .editor-toolbar {
+            background: #eee;
+            padding: 10px;
+            border-bottom: 2px solid #ddd;
+            display: flex;
+            gap: 10px;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .tool-btn {
+            background: white;
+            border: 1px solid #ccc;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .tool-btn:hover { background: #e0e0e0; }
+        .tool-btn.active { background: var(--highlight); border-color: var(--primary); }
+        .tool-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .editor-content {
+            padding: 20px;
+            flex: 1;
+            font-size: 1.4rem;
+            line-height: 1.8;
+            overflow-y: auto;
+            background: white;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .character-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .speech-bubble {
+            background: white;
+            border: 2px solid var(--accent);
+            padding: 15px;
+            border-radius: 20px;
+            position: relative;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            text-align: center;
+        }
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 12px 12px 0;
+            border-style: solid;
+            border-color: var(--accent) transparent transparent transparent;
+        }
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: white transparent transparent transparent;
+            z-index: 1;
+        }
+
+        .character-svg {
+            width: 150px;
+            height: 150px;
+        }
+
+        /* FOOTER / NAV */
+        .game-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0 0 0;
+            margin-top: auto;
+            border-top: 2px dashed #ddd;
+        }
+
+        .score-board {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent);
+            background: var(--highlight);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .controls { display: flex; gap: 10px; }
+
+        /* BUTTONS */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+            transition: all 0.2s;
+            color: white;
+        }
+        .btn:active { transform: translateY(2px); box-shadow: none; }
+        .btn-primary { background-color: var(--primary); }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-secondary { background-color: var(--secondary); }
+        .btn-secondary:hover { background-color: var(--secondary-hover); }
+        .btn-accent { background-color: var(--accent); }
+        .btn-hidden { display: none; }
+
+        /* INTERACTIVE ELEMENTS IN EDITOR */
+        .err-word {
+            cursor: pointer;
+            border-bottom: 2px dashed #999;
+            transition: all 0.2s;
+            padding: 0 2px;
+        }
+        .err-word:hover { background: #ffe6e6; }
+        .err-word.fixed {
+            color: var(--error);
+            text-decoration: line-through;
+            border-bottom: none;
+            cursor: default;
+            background: transparent;
+        }
+
+        .interactive-sentence {
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            display: inline-block;
+            margin: 5px 0;
+        }
+        .interactive-sentence:hover { background: #f0f8ff; border-color: var(--secondary); }
+        .interactive-sentence.selected { background: #e0f0ff; border-color: var(--primary); box-shadow: 0 0 5px rgba(255,152,80,0.5); }
+        .interactive-sentence.cut-target { opacity: 0.5; border-style: dashed; }
+        
+        .drop-zone {
+            display: inline-block;
+            min-width: 100px;
+            height: 30px;
+            border: 2px dashed #ccc;
+            border-radius: 5px;
+            background: #fafafa;
+            vertical-align: middle;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .drop-zone:hover { border-color: var(--primary); background: #fff5e6; }
+        .drop-zone.filled { border: none; background: transparent; height: auto; min-width: auto; }
+
+        /* VIRTUAL KEYBOARD POPUP */
+        .v-keyboard-popup {
+            position: absolute;
+            background: white;
+            border: 2px solid var(--accent);
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: var(--box-shadow-hover);
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+        .v-kb-row { display: flex; gap: 5px; justify-content: center; }
+        .v-kb-btn {
+            background: #eee; border: 1px solid #ccc; padding: 5px 10px; border-radius: 5px; cursor: pointer;
+        }
+        .v-kb-btn:hover { background: #ddd; }
+        .v-kb-btn.action { background: #ffcccc; }
+
+        /* RESULTS SCREEN */
+        #result-screen { text-align: center; justify-content: center; align-items: center; }
+        .medal-svg { width: 150px; height: 150px; margin: 20px 0; }
+        .final-score { font-size: 4rem; color: var(--primary); font-weight: bold; margin-bottom: 20px;}
+
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <header>
+        <div class="header-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            BIÊN TẬP VIÊN TÀI BA
+        </div>
+        <div class="audio-controls">
+            <button id="btn-bgm" class="toggle-btn" onclick="toggleBGM()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Nhạc
+            </button>
+            <button id="btn-sfx" class="toggle-btn" onclick="toggleSFX()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Hiệu ứng
+            </button>
+        </div>
+    </header>
+
+    <!-- WELCOME SCREEN -->
+    <div id="welcome-screen" class="screen active">
+        <!-- SVG Minh họa tòa soạn -->
+        <svg class="big-svg" viewBox="0 0 200 200">
+            <rect x="20" y="40" width="160" height="120" rx="10" fill="#fff" stroke="#8069C6" stroke-width="6"/>
+            <line x1="40" y1="60" x2="160" y2="60" stroke="#ddd" stroke-width="4" stroke-linecap="round"/>
+            <line x1="40" y1="80" x2="140" y2="80" stroke="#ddd" stroke-width="4" stroke-linecap="round"/>
+            <line x1="40" y1="100" x2="160" y2="100" stroke="#FF9850" stroke-width="4" stroke-linecap="round"/>
+            <line x1="40" y1="120" x2="100" y2="120" stroke="#ddd" stroke-width="4" stroke-linecap="round"/>
+            <!-- Mây Icon mini -->
+            <circle cx="160" cy="140" r="25" fill="#40B8B3"/>
+            <circle cx="150" cy="135" r="5" fill="#fff"/><circle cx="170" cy="135" r="5" fill="#fff"/>
+            <path d="M 150 145 Q 160 155 170 145" stroke="#fff" stroke-width="2" fill="none"/>
+        </svg>
+        <h1>Biên Tập Viên Tài Ba</h1>
+        <p>Bài 11: Chỉnh sửa văn bản - Tin học 4</p>
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button class="btn btn-primary" style="font-size: 1.3rem; padding: 15px 30px;" onclick="startGame()">Bắt đầu ngay</button>
+        </div>
+    </div>
+
+    <!-- GAME LEVEL SCREEN -->
+    <div id="level-screen" class="screen">
+        <h2 id="level-title" style="color: var(--accent); margin-bottom: 15px;">Màn 1: Tìm lỗi</h2>
+        
+        <div class="game-layout">
+            <!-- Khu vực giả lập phần mềm soạn thảo -->
+            <div class="editor-area">
+                <div class="editor-toolbar" id="toolbar">
+                    <!-- Toolbar content injected by JS based on level -->
+                </div>
+                <div class="editor-content" id="editor-content" style="position: relative;">
+                    <!-- Content injected by JS -->
+                    <div id="v-keyboard" class="v-keyboard-popup">
+                        <div style="font-size: 0.9rem; text-align: center; color: var(--accent); font-weight:bold;">Bàn phím</div>
+                        <div class="v-kb-row">
+                            <button class="v-kb-btn action" onclick="handleVirtualKey('Backspace')">Backspace ←</button>
+                            <button class="v-kb-btn action" onclick="handleVirtualKey('Delete')">Delete ⌦</button>
+                        </div>
+                        <div class="v-kb-row" id="v-kb-options">
+                            <!-- Từ đúng sẽ hiện ở đây -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khu vực nhân vật hướng dẫn -->
+            <div class="character-area">
+                <div class="speech-bubble" id="speech-bubble">
+                    Chào bạn! Hãy giúp mình tìm và sửa lỗi nhé!
+                </div>
+                <!-- SVG Mây Chibi -->
+                <svg class="character-svg" viewBox="0 0 100 100">
+                    <!-- Tóc -->
+                    <path d="M 20 50 Q 50 10 80 50 L 80 80 Q 50 90 20 80 Z" fill="#6c4f3d"/>
+                    <!-- Mặt -->
+                    <circle cx="50" cy="50" r="30" fill="#ffe0bd"/>
+                    <!-- Kính bảo hộ -->
+                    <rect x="25" y="40" width="50" height="15" rx="5" fill="#40B8B3" opacity="0.8"/>
+                    <circle cx="35" cy="47" r="10" fill="#fff" stroke="#FF9850" stroke-width="2"/>
+                    <circle cx="65" cy="47" r="10" fill="#fff" stroke="#FF9850" stroke-width="2"/>
+                    <!-- Mắt -->
+                    <circle cx="35" cy="47" r="3" fill="#000"/>
+                    <circle cx="65" cy="47" r="3" fill="#000"/>
+                    <!-- Miệng -->
+                    <path id="char-mouth" d="M 40 60 Q 50 70 60 60" stroke="#000" stroke-width="2" fill="none"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="game-footer">
+            <div class="score-board">Điểm: <span id="score">0</span>/100</div>
+            <div class="controls">
+                <button class="btn btn-secondary" onclick="showHint()">Gợi ý</button>
+                <button class="btn btn-accent" onclick="resetLevel()">Làm lại</button>
+                <button id="btn-next" class="btn btn-primary btn-hidden" onclick="nextLevel()">Tiếp tục ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULT SCREEN -->
+    <div id="result-screen" class="screen">
+        <h1 style="color: var(--accent);">Hoàn Thành Nhiệm Vụ!</h1>
+        <svg class="medal-svg" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="45" fill="#FFD773" stroke="#FF9850" stroke-width="5"/>
+            <path d="M 30 50 L 45 65 L 75 35" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <div class="final-score">Điểm: <span id="final-score-text">100</span></div>
+        <p style="font-size: 1.2rem; max-width: 600px; margin-bottom: 30px;">Tuyệt vời! Em đã thành thạo các thao tác chỉnh sửa văn bản: chọn, xóa, chèn, sao chép và di chuyển.</p>
+        <button class="btn btn-primary" style="font-size: 1.2rem;" onclick="location.reload()">Chơi lại từ đầu</button>
+    </div>
+</div>
+
+<script>
+    /* =========================================
+       AUDIO SYSTEM (WEB AUDIO API) - NO TTS
+       ========================================= */
+    let audioCtx = null;
+    let bgmOsc = null;
+    let bgmGain = null;
+    
+    let isBgmOn = true;
+    let isSfxOn = true;
+
+    function initAudio() {
+        if (!audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    function toggleBGM() {
+        isBgmOn = !isBgmOn;
+        const btn = document.getElementById('btn-bgm');
+        btn.classList.toggle('off', !isBgmOn);
+        
+        if (isBgmOn) {
+            startBGM();
+        } else {
+            stopBGM();
+        }
+    }
+
+    function toggleSFX() {
+        isSfxOn = !isSfxOn;
+        const btn = document.getElementById('btn-sfx');
+        btn.classList.toggle('off', !isSfxOn);
+    }
+
+    function startBGM() {
+        if (!isBgmOn || !audioCtx) return;
+        if (bgmOsc) stopBGM();
+
+        bgmOsc = audioCtx.createOscillator();
+        bgmGain = audioCtx.createGain();
+        
+        bgmOsc.type = 'triangle';
+        bgmGain.gain.value = 0.05; // Âm lượng thấp
+
+        bgmOsc.connect(bgmGain);
+        bgmGain.connect(audioCtx.destination);
+        bgmOsc.start();
+        
+        // Tạo giai điệu lặp đơn giản (pentatonic scale giả lập)
+        let noteIdx = 0;
+        const notes = [261.63, 293.66, 329.63, 392.00, 440.00]; // C4, D4, E4, G4, A4
+        
+        bgmOsc.noteInterval = setInterval(() => {
+            if(!isBgmOn || !bgmOsc) { clearInterval(bgmOsc.noteInterval); return; }
+            bgmOsc.frequency.setValueAtTime(notes[noteIdx % notes.length], audioCtx.currentTime);
+            noteIdx++;
+        }, 500);
+    }
+
+    function stopBGM() {
+        if (bgmOsc) {
+            clearInterval(bgmOsc.noteInterval);
+            bgmOsc.stop();
+            bgmOsc.disconnect();
+            bgmGain.disconnect();
+            bgmOsc = null;
+        }
+    }
+
+    function playSFX(type) {
+        if (!isSfxOn || !audioCtx) return;
+        
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+        if (type === 'correct') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, now);
+            osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        } else if (type === 'wrong') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, now);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        }
+    }
+
+    /* =========================================
+       GAME CONFIGURATION & STATE
+       ========================================= */
+    const GAME_CONFIG = {
+        levels: [
+            {
+                id: 1,
+                title: "Màn 1: Tìm lỗi",
+                instruction: "Hãy nháy chuột vào 3 từ viết sai hoặc thừa trong đoạn văn sau.",
+                hint: "Tìm các từ: trờii, líuu, đua đua.",
+                content: `Bầu <span class="err-word" data-word="trờii">trờii</span> xanh, chim hót <span class="err-word" data-word="líuu">líuu</span> lo. Các bạn nhỏ đang thi chạy <span class="err-word" data-word="đua đua">đua đua</span> ngoài sân.`,
+                tools: [],
+                targetCount: 3,
+                type: 'find_error'
+            },
+            {
+                id: 2,
+                title: "Màn 2: Xóa và Thêm",
+                instruction: "Nháy chuột vào từ sai, dùng phím Backspace hoặc Delete trên bàn phím ảo để xóa, sau đó chọn từ đúng.",
+                hint: "Sửa 'xấuu' thành 'xóa', 'thiếo' thành 'thiếu', 'dưr' thành 'dư'.",
+                content: `1. Chữ viết <span class="err-word editable" data-correct="xấu">xấuu</span>.<br><br>2. Bài <span class="err-word editable" data-correct="thiếu">thiếo</span> dấu chấm.<br><br>3. <span class="err-word editable" data-correct="Dư">Dưr</span> khoảng trắng.`,
+                tools: [],
+                targetCount: 3,
+                type: 'delete_insert'
+            },
+            {
+                id: 3,
+                title: "Màn 3: Sao chép / Di chuyển",
+                instruction: "Nháy chọn câu màu xanh, chọn nút 'Cắt', nháy vào ô trống rồi chọn nút 'Dán' để di chuyển câu.",
+                hint: "1. Chọn câu. 2. Bấm Cắt. 3. Chọn ô trống. 4. Bấm Dán.",
+                content: `
+                    <div>Khối 4 có nhiều môn học.</div>
+                    <div class="drop-zone" id="drop1"></div>
+                    <div><span class="interactive-sentence" id="sent1">Em đang học Tin học.</span></div>
+                `,
+                tools: [
+                    { id: 'btn-copy', text: 'Sao chép', icon: '⧉' },
+                    { id: 'btn-cut', text: 'Cắt', icon: '✂' },
+                    { id: 'btn-paste', text: 'Dán', icon: '📋', disabled: true }
+                ],
+                targetCount: 1,
+                type: 'copy_paste'
+            },
+            {
+                id: 4,
+                title: "Màn 4: Hoàn thiện",
+                instruction: "1. Nháy xóa từ 'thừa thừa'.<br>2. Kéo thả để đổi chỗ Câu 2 và Câu 1 cho đúng thứ tự.",
+                hint: "Xóa từ sai trước, sau đó nháy chọn Câu 2 rồi nháy vào Câu 1 để đổi chỗ.",
+                content: `
+                    <div>Đoạn văn này có từ <span class="err-word" data-word="thừa thừa">thừa thừa</span>.</div>
+                    <div style="margin-top:20px;">
+                        <div class="interactive-sentence swap-item" data-order="2">Đây là Câu 2.</div><br>
+                        <div class="interactive-sentence swap-item" data-order="1">Đây là Câu 1.</div>
+                    </div>
+                `,
+                tools: [],
+                targetCount: 2, // 1 lỗi xóa, 1 lần đổi chỗ
+                type: 'combo'
+            }
+        ]
+    };
+
+    let currentLevel = 0;
+    let score = 0;
+    let currentProgress = 0;
+    
+    // States for interactives
+    let clipboard = null; // null, {type: 'cut', content: element}
+    let selectedElement = null;
+    let editingTarget = null;
+    let swapFirstSelected = null;
+
+    // DOM Elements
+    const screenWelcome = document.getElementById('welcome-screen');
+    const screenLevel = document.getElementById('level-screen');
+    const screenResult = document.getElementById('result-screen');
+    const speechBubble = document.getElementById('speech-bubble');
+    const charMouth = document.getElementById('char-mouth');
+    const editorContent = document.getElementById('editor-content');
+    const toolbar = document.getElementById('toolbar');
+    const btnNext = document.getElementById('btn-next');
+    const scoreEl = document.getElementById('score');
+    const vKeyboard = document.getElementById('v-keyboard');
+    const vKbOptions = document.getElementById('v-kb-options');
+
+    /* =========================================
+       GAME LOGIC
+       ========================================= */
+
+    function startGame() {
+        initAudio();
+        startBGM();
+        screenWelcome.classList.remove('active');
+        screenLevel.classList.add('active');
+        loadLevel(0);
+    }
+
+    function setSpeech(text, isHappy = false) {
+        speechBubble.innerHTML = text;
+        if (isHappy) {
+            charMouth.setAttribute('d', 'M 35 55 Q 50 75 65 55'); // Cười
+        } else {
+            charMouth.setAttribute('d', 'M 40 60 Q 50 70 60 60'); // Bình thường
+        }
+    }
+
+    function showHint() {
+        const lvl = GAME_CONFIG.levels[currentLevel];
+        setSpeech("<b>Gợi ý:</b> " + lvl.hint);
+    }
+
+    function updateScore(points) {
+        score += points;
+        scoreEl.innerText = score;
+    }
+
+    function resetLevel() {
+        loadLevel(currentLevel);
+    }
+
+    function nextLevel() {
+        if (currentLevel < GAME_CONFIG.levels.length - 1) {
+            currentLevel++;
+            loadLevel(currentLevel);
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        screenLevel.classList.remove('active');
+        screenResult.classList.add('active');
+        document.getElementById('final-score-text').innerText = score;
+        stopBGM();
+        playSFX('correct');
+    }
+
+    function loadLevel(index) {
+        currentLevel = index;
+        const lvl = GAME_CONFIG.levels[index];
+        currentProgress = 0;
+        clipboard = null;
+        selectedElement = null;
+        swapFirstSelected = null;
+        vKeyboard.style.display = 'none';
+
+        document.getElementById('level-title').innerText = lvl.title;
+        setSpeech(lvl.instruction);
+        btnNext.classList.add('btn-hidden');
+
+        // Render Toolbar
+        toolbar.innerHTML = '';
+        if (lvl.tools.length > 0) {
+            lvl.tools.forEach(tool => {
+                const btn = document.createElement('button');
+                btn.className = 'tool-btn';
+                btn.id = tool.id;
+                btn.innerHTML = `${tool.icon} ${tool.text}`;
+                if (tool.disabled) btn.disabled = true;
+                btn.onclick = () => handleToolClick(tool.id);
+                toolbar.appendChild(btn);
+            });
+            toolbar.style.display = 'flex';
+        } else {
+            toolbar.style.display = 'none';
+        }
+
+        // Render Content
+        editorContent.innerHTML = lvl.content;
+        
+        // Append keyboard popup back (since innerHTML overwrote it)
+        editorContent.appendChild(vKeyboard);
+
+        // Bind Events based on level type
+        bindLevelEvents(lvl.type);
+    }
+
+    function checkLevelComplete() {
+        const lvl = GAME_CONFIG.levels[currentLevel];
+        if (currentProgress >= lvl.targetCount) {
+            playSFX('correct');
+            setSpeech("Tuyệt vời! Em đã hoàn thành xuất sắc nhiệm vụ này!", true);
+            btnNext.classList.remove('btn-hidden');
+            updateScore(25);
+        }
+    }
+
+    /* =========================================
+       LEVEL SPECIFIC INTERACTION LOGIC
+       ========================================= */
+
+    function bindLevelEvents(type) {
+        if (type === 'find_error' || type === 'combo') {
+            const errWords = editorContent.querySelectorAll('.err-word:not(.editable)');
+            errWords.forEach(word => {
+                word.onclick = function() {
+                    if (!this.classList.contains('fixed')) {
+                        this.classList.add('fixed');
+                        playSFX('correct');
+                        currentProgress++;
+                        checkLevelComplete();
+                    }
+                };
+            });
+        }
+
+        if (type === 'delete_insert') {
+            const editWords = editorContent.querySelectorAll('.err-word.editable');
+            editWords.forEach(word => {
+                word.onclick = function(e) {
+                    if (this.classList.contains('fixed')) return;
+                    editingTarget = this;
+                    
+                    // Show virtual keyboard
+                    vKeyboard.style.display = 'flex';
+                    const rect = this.getBoundingClientRect();
+                    const containerRect = editorContent.getBoundingClientRect();
+                    vKeyboard.style.left = (rect.left - containerRect.left) + 'px';
+                    vKeyboard.style.top = (rect.bottom - containerRect.top + 10) + 'px';
+                    
+                    // Setup correct word option
+                    const correctWord = this.getAttribute('data-correct');
+                    vKbOptions.innerHTML = `<button class="btn btn-secondary" onclick="applyCorrection('${correctWord}')">${correctWord}</button>`;
+                };
+            });
+        }
+
+        if (type === 'copy_paste') {
+            const sentence = document.getElementById('sent1');
+            const dropZone = document.getElementById('drop1');
+
+            sentence.onclick = function(e) {
+                e.stopPropagation();
+                if (clipboard) return; // Đã cắt thì ko chọn lại dc
+                document.querySelectorAll('.interactive-sentence').forEach(el => el.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedElement = this;
+            };
+
+            dropZone.onclick = function(e) {
+                if (clipboard && clipboard.type === 'cut') {
+                    // Paste action via click on zone
+                    this.appendChild(clipboard.content);
+                    clipboard.content.style.opacity = '1';
+                    this.classList.add('filled');
+                    clipboard = null;
+                    document.getElementById('btn-paste').disabled = true;
+                    playSFX('correct');
+                    currentProgress++;
+                    checkLevelComplete();
+                }
+            };
+        }
+
+        if (type === 'combo') {
+            const swapItems = editorContent.querySelectorAll('.swap-item');
+            swapItems.forEach(item => {
+                item.onclick = function() {
+                    if (swapFirstSelected === null) {
+                        swapFirstSelected = this;
+                        this.classList.add('selected');
+                    } else {
+                        if (swapFirstSelected !== this) {
+                            // Swap content
+                            const tempHTML = swapFirstSelected.innerHTML;
+                            const tempOrder = swapFirstSelected.getAttribute('data-order');
+                            
+                            swapFirstSelected.innerHTML = this.innerHTML;
+                            swapFirstSelected.setAttribute('data-order', this.getAttribute('data-order'));
+                            
+                            this.innerHTML = tempHTML;
+                            this.setAttribute('data-order', tempOrder);
+                            
+                            swapFirstSelected.classList.remove('selected');
+                            swapFirstSelected = null;
+
+                            // Check order
+                            const currentItems = editorContent.querySelectorAll('.swap-item');
+                            if(currentItems[0].getAttribute('data-order') === '1' && 
+                               currentItems[1].getAttribute('data-order') === '2') {
+                                playSFX('correct');
+                                currentProgress++;
+                                currentItems.forEach(el => el.onclick = null); // disable further clicking
+                                checkLevelComplete();
+                            } else {
+                                playSFX('wrong');
+                                setSpeech("Thứ tự chưa đúng, em hãy đổi lại nhé.");
+                            }
+                        } else {
+                            this.classList.remove('selected');
+                            swapFirstSelected = null;
+                        }
+                    }
+                };
+            });
+        }
+        
+        // Hide keyboard when clicking outside
+        editorContent.addEventListener('click', function(e) {
+            if (e.target.classList.contains('editor-content')) {
+                vKeyboard.style.display = 'none';
+                if(selectedElement) selectedElement.classList.remove('selected');
+                selectedElement = null;
+            }
+        });
+    }
+
+    // Handlers for Level 2 Virtual Keyboard
+    function handleVirtualKey(key) {
+        if (!editingTarget) return;
+        if (key === 'Backspace' || key === 'Delete') {
+            editingTarget.innerText = "___";
+            editingTarget.style.color = '#ccc';
+            playSFX('correct');
+        }
+    }
+
+    function applyCorrection(word) {
+        if (!editingTarget) return;
+        editingTarget.innerText = word;
+        editingTarget.classList.add('fixed');
+        editingTarget.style.color = 'var(--success)';
+        vKeyboard.style.display = 'none';
+        playSFX('correct');
+        currentProgress++;
+        checkLevelComplete();
+    }
+
+    // Handlers for Level 3 Toolbar
+    function handleToolClick(toolId) {
+        if (toolId === 'btn-cut') {
+            if (selectedElement) {
+                clipboard = { type: 'cut', content: selectedElement };
+                selectedElement.style.opacity = '0'; // Hide original
+                selectedElement.classList.remove('selected');
+                document.getElementById('btn-paste').disabled = false;
+                playSFX('correct');
+                setSpeech("Đã cắt đoạn văn. Bây giờ hãy nháy chuột vào ô trống để dán nhé!");
+            } else {
+                playSFX('wrong');
+                setSpeech("Em phải nháy chọn đoạn văn trước khi Cắt!");
+            }
+        }
+        if (toolId === 'btn-copy') {
+             if (selectedElement) {
+                 playSFX('wrong');
+                 setSpeech("Màn này chúng ta thực hành lệnh Cắt (Di chuyển) nhé!");
+             }
+        }
+        if (toolId === 'btn-paste') {
+             playSFX('wrong');
+             setSpeech("Hãy nháy chuột trực tiếp vào ô đứt nét để dán vào đúng vị trí!");
+        }
+    }
+
+</script>
+</body>
+</html>

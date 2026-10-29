@@ -1,0 +1,3543 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tin học 5 - Bài 16: Nhà Phát Triển Game Mèo Bắt Bóng</title>
+  <style>
+    /* =========================================================================
+       TIÊU CHUẨN MỸ THUẬT V5 - BẢNG MÀU PASTEL XỨ SỞ CÔNG NGHỆ
+       Hoàn toàn độc lập, hoạt động ngoại tuyến 100%, không dùng CDN ngoài
+       ========================================================================= */
+    :root {
+      --bg-cream: #F8F7FF;
+      --bg-warm: #FFF9F5;
+      --primary-purple: #58429B;
+      --primary-purple-dark: #3F2D75;
+      --primary-purple-light: #EBE4FF;
+      --mint-teal: #4ABDAA;
+      --mint-teal-dark: #2E8F7F;
+      --mint-teal-light: #E0F7F4;
+      --warm-gold: #F2BE4A;
+      --warm-gold-dark: #C88A14;
+      --warm-gold-light: #FFF4D6;
+      --peach-pink: #F6B6C8;
+      --peach-pink-dark: #D46A89;
+      --peach-pink-light: #FFEBF0;
+      --text-main: #2B234A;
+      --text-muted: #5E5482;
+      --card-bg: #FFFFFF;
+      --border-soft: #DCD4F5;
+      --success-green: #239B6C;
+      --success-bg: #E3F9EF;
+      --error-red: #D94E5A;
+      --error-bg: #FFEBEF;
+
+      /* Màu khối lệnh mô phỏng Scratch */
+      --block-event: #FFBF00;
+      --block-control: #FFAB19;
+      --block-motion: #4C97FF;
+      --block-sensing: #5CB1D6;
+      --block-variable: #FF8C1A;
+      --block-looks: #9966FF;
+
+      --shadow-soft: 0 8px 24px rgba(88, 66, 155, 0.10);
+      --shadow-card: 0 6px 16px rgba(88, 66, 155, 0.08);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg-cream) 0%, #EFEAFF 50%, var(--mint-teal-light) 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.45;
+    }
+
+    /* Tôn trọng cấu hình giảm chuyển động */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    button, [tabindex="0"], input, select {
+      font-family: inherit;
+    }
+
+    button:focus-visible, [tabindex="0"]:focus-visible, input:focus-visible {
+      outline: 3px solid var(--warm-gold-dark);
+      outline-offset: 2px;
+    }
+
+    /* =========================================================================
+       THANH ĐIỀU HƯỚNG TRÊN CÙNG (TOP HEADER)
+       ========================================================================= */
+    .top-header {
+      background: rgba(255, 255, 255, 0.95);
+      border-bottom: 2px solid var(--border-soft);
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 12px rgba(88, 66, 155, 0.06);
+      z-index: 30;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lesson-badge {
+      background: var(--primary-purple);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: 999px;
+      letter-spacing: 0.3px;
+      box-shadow: 0 3px 0 var(--primary-purple-dark);
+    }
+
+    .game-header-title {
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: var(--primary-purple);
+    }
+
+    /* Cụm tiến độ 4 màn */
+    .stage-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-cream);
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border-soft);
+    }
+
+    .stage-pill {
+      min-height: 36px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1.5px solid transparent;
+      font-size: 0.86rem;
+      font-weight: 700;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .stage-pill:disabled {
+      opacity: 0.48;
+      cursor: not-allowed;
+    }
+
+    .stage-pill.active {
+      background: var(--primary-purple);
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(88, 66, 155, 0.28);
+    }
+
+    .stage-pill.completed {
+      background: var(--mint-teal-light);
+      color: var(--mint-teal-dark);
+      border-color: var(--mint-teal);
+    }
+
+    .stage-pill.completed.active {
+      background: var(--primary-purple);
+      color: #FFFFFF;
+    }
+
+    /* Cụm điểm số & âm thanh */
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .score-pill {
+      background: var(--warm-gold-light);
+      border: 2px solid var(--warm-gold);
+      color: #7D5200;
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 6px 14px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 44px;
+    }
+
+    .mode-pill {
+      background: var(--peach-pink-light);
+      border: 1.5px solid var(--peach-pink);
+      color: #8E304E;
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 6px 11px;
+      border-radius: 999px;
+    }
+
+    /* Nút chuẩn V5 >= 44x44px */
+    .btn-v5 {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 15px;
+      border-radius: 14px;
+      border: 2px solid transparent;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.15s ease;
+    }
+
+    .btn-v5:active:not(:disabled) {
+      transform: translateY(2px);
+    }
+
+    .btn-v5:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none !important;
+    }
+
+    .btn-primary {
+      background: var(--primary-purple);
+      color: #FFFFFF;
+      box-shadow: 0 4px 0 var(--primary-purple-dark);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #674EB3;
+    }
+
+    .btn-mint {
+      background: var(--mint-teal);
+      color: #FFFFFF;
+      box-shadow: 0 4px 0 var(--mint-teal-dark);
+    }
+
+    .btn-mint:hover:not(:disabled) {
+      background: #3CA997;
+    }
+
+    .btn-gold {
+      background: var(--warm-gold);
+      color: #3E2A00;
+      box-shadow: 0 4px 0 var(--warm-gold-dark);
+    }
+
+    .btn-gold:hover:not(:disabled) {
+      background: #F6C961;
+    }
+
+    .btn-peach {
+      background: var(--peach-pink-light);
+      color: #872D4A;
+      border-color: var(--peach-pink);
+      box-shadow: 0 3px 0 #E49AB0;
+    }
+
+    .btn-outline {
+      background: #FFFFFF;
+      color: var(--primary-purple);
+      border-color: var(--border-soft);
+      box-shadow: 0 3px 0 #DFD7F7;
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background: var(--primary-purple-light);
+    }
+
+    .btn-audio.off {
+      background: #F2F0F7;
+      color: #79728F;
+      border-color: #D5CFE6;
+      box-shadow: none;
+    }
+
+    .btn-audio.on {
+      background: var(--mint-teal-light);
+      color: var(--mint-teal-dark);
+      border-color: var(--mint-teal);
+      box-shadow: 0 3px 0 #B3E8DF;
+    }
+
+    .volume-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #FFF;
+      padding: 4px 10px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border-soft);
+      min-height: 44px;
+    }
+
+    .volume-slider {
+      width: 68px;
+      accent-color: var(--primary-purple);
+      cursor: pointer;
+    }
+
+    /* =========================================================================
+       KHUNG CHÍNH TRÒ CHƠI (MAIN CONTAINER 16:9 LINH HOẠT)
+       ========================================================================= */
+    .app-container {
+      flex: 1;
+      max-width: 1420px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 12px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Băng rôn bối cảnh Sân thi đấu Mèo bắt bóng thay đổi theo màn */
+    .arena-banner {
+      background: linear-gradient(90deg, #4B358B 0%, #58429B 55%, #3D9B8B 100%);
+      border-radius: var(--radius-lg);
+      padding: 12px 18px;
+      color: #FFFFFF;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pixel-companion {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      z-index: 2;
+    }
+
+    .pixel-avatar-box {
+      width: 82px;
+      height: 82px;
+      background: rgba(255, 255, 255, 0.16);
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      border-radius: 20px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+
+    .speech-bubble {
+      background: #FFFFFF;
+      color: var(--text-main);
+      padding: 10px 16px;
+      border-radius: 16px;
+      border: 2px solid var(--warm-gold);
+      position: relative;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      flex: 1;
+    }
+
+    .speech-bubble::before {
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: 26px;
+      border-width: 8px 10px 8px 0;
+      border-style: solid;
+      border-color: transparent #FFFFFF transparent transparent;
+    }
+
+    .speech-speaker {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--primary-purple);
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .speech-text {
+      font-size: 0.96rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .arena-progress-visual {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      border-radius: 16px;
+      padding: 6px 10px;
+      height: 86px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    /* =========================================================================
+       KHU VỰC MÀN HÌNH CHÍNH (SCREENS)
+       ========================================================================= */
+    .screen-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
+      padding: 20px;
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .screen-card.active {
+      display: flex;
+      animation: fadeSlideIn 0.28s ease-out;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* MÀN HÌNH CHÀO MỪNG */
+    .welcome-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 24px;
+      align-items: center;
+      margin: auto 0;
+    }
+
+    .welcome-tag {
+      display: inline-block;
+      background: var(--primary-purple-light);
+      color: var(--primary-purple);
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+
+    .welcome-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--primary-purple);
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .welcome-subtitle {
+      font-size: 1.03rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .objective-list {
+      background: var(--bg-warm);
+      border: 2px solid var(--warm-gold);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: 18px;
+    }
+
+    .objective-list h3 {
+      font-size: 1rem;
+      color: #875800;
+      margin-bottom: 8px;
+    }
+
+    .objective-list ul {
+      list-style: none;
+      display: grid;
+      gap: 6px;
+    }
+
+    .objective-list li {
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .mode-selector-box {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .mode-option {
+      flex: 1;
+      min-width: 200px;
+      background: var(--bg-cream);
+      border: 2px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .mode-option.selected {
+      background: var(--mint-teal-light);
+      border-color: var(--mint-teal-dark);
+      box-shadow: 0 4px 10px rgba(74, 189, 170, 0.2);
+    }
+
+    .mode-option-title {
+      font-weight: 800;
+      font-size: 0.96rem;
+      color: var(--primary-purple);
+      margin-bottom: 3px;
+    }
+
+    .mode-option-desc {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+    }
+
+    .welcome-illustration-card {
+      background: linear-gradient(180deg, #EBE4FF 0%, #E0F7F4 100%);
+      border: 3px solid var(--border-soft);
+      border-radius: 24px;
+      padding: 16px;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+    }
+
+    .sim-disclaimer {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.85);
+      padding: 4px 10px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+
+    /* TIÊU ĐỀ & THANH CÔNG CỤ MỖI MÀN CHƠI */
+    .stage-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding-bottom: 10px;
+      border-bottom: 2px dashed var(--border-soft);
+    }
+
+    .stage-heading-wrap h2 {
+      font-size: 1.32rem;
+      font-weight: 900;
+      color: var(--primary-purple);
+    }
+
+    .stage-heading-wrap p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .stage-action-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* KHUNG PHẢN HỒI ĐÚNG / SAI / GỢI Ý */
+    .feedback-banner {
+      padding: 11px 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 2px solid var(--border-soft);
+      background: var(--bg-cream);
+    }
+
+    .feedback-banner.success {
+      background: var(--success-bg);
+      border-color: var(--success-green);
+      color: #126142;
+    }
+
+    .feedback-banner.error {
+      background: var(--error-bg);
+      border-color: var(--error-red);
+      color: #96212D;
+    }
+
+    .feedback-banner.hint {
+      background: var(--warm-gold-light);
+      border-color: var(--warm-gold);
+      color: #6B4700;
+    }
+
+    /* =========================================================================
+       MÀN 1: PHÂN TÍCH KỊCH BẢN (BẢNG THIẾT KẾ + SÂN KHẤU TRỰC QUAN)
+       ========================================================================= */
+    .stage1-layout {
+      display: grid;
+      grid-template-columns: 1.25fr 0.95fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .scenario-slots-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .scenario-slot-row {
+      background: var(--bg-cream);
+      border: 2px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: grid;
+      grid-template-columns: 195px 1fr;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .scenario-slot-row.filled-correct {
+      background: var(--success-bg);
+      border-color: var(--success-green);
+    }
+
+    .scenario-slot-row.active-target {
+      border-color: var(--warm-gold-dark);
+      background: var(--warm-gold-light);
+    }
+
+    .slot-label {
+      font-weight: 800;
+      font-size: 0.92rem;
+      color: var(--primary-purple);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .drop-zone {
+      min-height: 46px;
+      background: #FFFFFF;
+      border: 2px dashed #B5A6E0;
+      border-radius: 11px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .drop-zone:hover {
+      border-color: var(--primary-purple);
+      background: #F9F7FF;
+    }
+
+    .drop-zone.correct {
+      border-style: solid;
+      border-color: var(--success-green);
+      background: #FFFFFF;
+      color: #146947;
+    }
+
+    .card-pool {
+      margin-top: 12px;
+      background: var(--bg-warm);
+      border: 2px solid #F2D8A7;
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .card-pool-title {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #825600;
+      margin-bottom: 8px;
+    }
+
+    .draggable-cards-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .choice-chip {
+      min-height: 44px;
+      padding: 8px 13px;
+      background: #FFFFFF;
+      border: 2px solid var(--primary-purple);
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--text-main);
+      cursor: grab;
+      box-shadow: 0 3px 0 #D3C6F7;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .choice-chip:hover {
+      background: var(--primary-purple-light);
+    }
+
+    .choice-chip.selected-chip {
+      background: var(--warm-gold);
+      border-color: var(--warm-gold-dark);
+      color: #2B1D00;
+      transform: translateY(-2px);
+    }
+
+    .choice-chip.used-chip {
+      opacity: 0.4;
+      pointer-events: none;
+      border-style: dashed;
+    }
+
+    /* Khung sân khấu mô phỏng trực quan */
+    .preview-stage-card {
+      background: var(--bg-cream);
+      border: 2px solid var(--border-soft);
+      border-radius: 18px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .preview-stage-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: var(--primary-purple);
+    }
+
+    .svg-stage-box {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: #E9F5FF;
+      border-radius: 14px;
+      border: 2px solid #C8BDEE;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* =========================================================================
+       MÀN 2: CHIA NHỎ VIỆC LẬP TRÌNH (SẮP XẾP 5 BƯỚC & PHÂN CÔNG ĐỐI TƯỢNG)
+       ========================================================================= */
+    .stage2-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .step-order-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .step-item {
+      background: #FFFFFF;
+      border: 2px solid var(--border-soft);
+      border-radius: 14px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: all 0.18s ease;
+    }
+
+    .step-item.selected-swap {
+      border-color: var(--warm-gold-dark);
+      background: var(--warm-gold-light);
+    }
+
+    .step-item.step-correct {
+      border-color: var(--success-green);
+      background: var(--success-bg);
+    }
+
+    .step-item.step-wrong {
+      border-color: var(--error-red);
+      background: var(--error-bg);
+    }
+
+    .step-index-badge {
+      background: var(--primary-purple);
+      color: #FFF;
+      font-weight: 800;
+      font-size: 0.82rem;
+      padding: 6px 10px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
+    .step-text-btn {
+      flex: 1;
+      text-align: left;
+      background: transparent;
+      border: none;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--text-main);
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .step-move-btns {
+      display: flex;
+      gap: 4px;
+    }
+
+    .mini-icon-btn {
+      min-width: 38px;
+      min-height: 38px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border-soft);
+      background: var(--bg-cream);
+      color: var(--primary-purple);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .mini-icon-btn:hover:not(:disabled) {
+      background: var(--primary-purple-light);
+    }
+
+    .assign-task-card {
+      background: var(--bg-cream);
+      border: 2px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .assign-row {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .assign-row.correct {
+      border-color: var(--success-green);
+      background: var(--success-bg);
+    }
+
+    .assign-row.wrong {
+      border-color: var(--error-red);
+      background: var(--error-bg);
+    }
+
+    .assign-btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .assign-choice-btn {
+      flex: 1;
+      min-height: 40px;
+      border-radius: 10px;
+      border: 2px solid var(--border-soft);
+      background: var(--bg-cream);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 6px 10px;
+      transition: all 0.15s ease;
+    }
+
+    .assign-choice-btn.active {
+      background: var(--primary-purple);
+      color: #FFFFFF;
+      border-color: var(--primary-purple-dark);
+    }
+
+    /* =========================================================================
+       MÀN 3: LẮP GHÉP CHƯƠNG TRÌNH SCRATCH (KHỐI LỆNH MÔ PHỎNG)
+       ========================================================================= */
+    .stage3-layout {
+      display: grid;
+      grid-template-columns: 0.95fr 1.15fr 0.9fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .scratch-palette-box, .scratch-script-box {
+      background: var(--bg-cream);
+      border: 2px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sprite-tabs {
+      display: flex;
+      gap: 8px;
+    }
+
+    .sprite-tab {
+      flex: 1;
+      min-height: 44px;
+      border-radius: 12px;
+      border: 2px solid var(--border-soft);
+      background: #FFFFFF;
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .sprite-tab.active {
+      background: var(--primary-purple);
+      color: #FFFFFF;
+      border-color: var(--primary-purple-dark);
+    }
+
+    /* Hình dáng khối lệnh Scratch */
+    .scratch-block {
+      min-height: 44px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 0.86rem;
+      cursor: pointer;
+      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.22);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      transition: transform 0.12s ease;
+    }
+
+    .scratch-block:hover {
+      transform: translateY(-1px);
+    }
+
+    .scratch-block.selected-block {
+      outline: 3px solid #2B234A;
+      transform: scale(1.02);
+    }
+
+    .scratch-block.used-block {
+      opacity: 0.38;
+      pointer-events: none;
+    }
+
+    .block-event { background: #E6A800; }
+    .block-control { background: #E8930C; }
+    .block-motion { background: #3B82F6; }
+    .block-sensing { background: #2FA3C7; }
+    .block-variable { background: #EA6C13; }
+    .block-looks { background: #8B5CF6; }
+
+    .script-stack {
+      background: #FFFFFF;
+      border: 2px solid #D5CBF0;
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .script-indent {
+      margin-left: 22px;
+      padding-left: 10px;
+      border-left: 6px solid var(--block-control);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .script-indent.sensing-indent {
+      border-left-color: var(--block-sensing);
+    }
+
+    .block-slot {
+      min-height: 44px;
+      border: 2px dashed #A597D1;
+      border-radius: 10px;
+      background: #F7F5FF;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .block-slot:hover {
+      border-color: var(--primary-purple);
+      background: #EFEAFF;
+    }
+
+    /* =========================================================================
+       MÀN 4: CHƠI THỬ & SỬA LỖI (DEBUG + GAMEPLAY THẬT + NÂNG CẤP)
+       ========================================================================= */
+    .stage4-layout {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .debug-card {
+      background: var(--bg-cream);
+      border: 2px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bug-item {
+      background: #FFFFFF;
+      border: 2px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bug-item.fixed {
+      border-color: var(--success-green);
+      background: var(--success-bg);
+    }
+
+    .bug-title {
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: var(--error-red);
+    }
+
+    .bug-item.fixed .bug-title {
+      color: var(--success-green);
+    }
+
+    .bug-options {
+      display: grid;
+      gap: 6px;
+    }
+
+    .bug-opt-btn {
+      min-height: 44px;
+      text-align: left;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border-soft);
+      background: var(--bg-cream);
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .bug-opt-btn.correct-pick {
+      background: var(--mint-teal-light);
+      border-color: var(--mint-teal-dark);
+      color: #0D594D;
+    }
+
+    .live-game-canvas-wrap {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: #DDF3FF;
+      border-radius: 16px;
+      border: 3px solid var(--primary-purple);
+      position: relative;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    #catchGameCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: pointer;
+    }
+
+    .onscreen-dpad {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    /* =========================================================================
+       MÀN TỔNG KẾT & MODAL HƯỚNG DẪN
+       ========================================================================= */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .badge-item {
+      background: var(--bg-cream);
+      border: 2px solid var(--warm-gold);
+      border-radius: 16px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    /* Modal Hướng dẫn */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(43, 35, 74, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #FFFFFF;
+      border-radius: 22px;
+      border: 3px solid var(--primary-purple);
+      max-width: 720px;
+      width: 100%;
+      padding: 22px;
+      box-shadow: var(--shadow-soft);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    /* Hiệu ứng pháo giấy ngôi sao ngắn khi hoàn thành màn */
+    #celebrationOverlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 90;
+      display: none;
+    }
+
+    @media (max-width: 1024px) {
+      .welcome-grid, .stage1-layout, .stage2-layout, .stage3-layout, .stage4-layout, .summary-grid, .arena-banner {
+        grid-template-columns: 1fr;
+      }
+      .scenario-slot-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =======================================================================
+       THANH ĐIỀU HƯỚNG TRÊN CÙNG (TOP HEADER)
+       ======================================================================= -->
+  <header class="top-header" role="banner">
+    <div class="brand-group">
+      <span class="lesson-badge">TIN HỌC 5 • BÀI 16</span>
+      <span class="game-header-title">NHÀ PHÁT TRIỂN GAME MÈO BẮT BÓNG</span>
+    </div>
+
+    <!-- Tiến độ 4 màn (Nhấn để xem lại màn đã hoàn thành) -->
+    <nav class="stage-pills" aria-label="Tiến độ các màn chơi">
+      <button type="button" class="stage-pill" id="navStage1" onclick="app.goToStage(1)" disabled>1. Kịch bản</button>
+      <button type="button" class="stage-pill" id="navStage2" onclick="app.goToStage(2)" disabled>2. Chia việc</button>
+      <button type="button" class="stage-pill" id="navStage3" onclick="app.goToStage(3)" disabled>3. Lắp khối</button>
+      <button type="button" class="stage-pill" id="navStage4" onclick="app.goToStage(4)" disabled>4. Chạy &amp; Sửa lỗi</button>
+    </nav>
+
+    <!-- Cụm điểm, chế độ và 2 công tắc âm thanh độc lập -->
+    <div class="header-controls">
+      <span class="mode-pill" id="headerModeLabel">Chế độ: Luyện tập</span>
+      <div class="score-pill" aria-live="polite">
+        <span>⭐ Điểm:</span>
+        <span id="headerScoreText">0 / 100</span>
+      </div>
+
+      <!-- ĐÚNG 2 CÔNG TẮC ÂM THANH ĐỘC LẬP: NHẠC NỀN & HIỆU ỨNG (TUYỆT ĐỐI KHÔNG GIỌNG ĐỌC) -->
+      <button type="button" class="btn-v5 btn-audio on" id="btnToggleBgm" onclick="soundManager.toggleBgm()" aria-pressed="true">
+        🎵 Nhạc nền: BẬT
+      </button>
+      <button type="button" class="btn-v5 btn-audio on" id="btnToggleSfx" onclick="soundManager.toggleSfx()" aria-pressed="true">
+        🔔 Hiệu ứng: BẬT
+      </button>
+
+      <div class="volume-wrap" title="Âm lượng chung">
+        <span style="font-size:0.85rem;font-weight:700;">🔊</span>
+        <input type="range" id="masterVolumeSlider" class="volume-slider" min="0" max="100" value="70"
+               aria-label="Thanh chỉnh âm lượng" oninput="soundManager.setMasterVolume(this.value)" />
+      </div>
+
+      <button type="button" class="btn-v5 btn-outline" onclick="app.showHome()" title="Về màn hình chào mừng">
+        🏠 Trang chủ
+      </button>
+    </div>
+  </header>
+
+  <!-- =======================================================================
+       KHUNG NỘI DUNG CHÍNH
+       ======================================================================= -->
+  <main class="app-container">
+
+    <!-- BĂNG RÔN NHÂN VẬT ĐỒNG HÀNH PIXEL & SÂN THI ĐẤU MỞ KHÓA DẦN -->
+    <section class="arena-banner" aria-label="Trợ lí lập trình Pixel và tiến độ Sân thi đấu">
+      <div class="pixel-companion">
+        <div class="pixel-avatar-box" id="pixelAvatarContainer" aria-hidden="true">
+          <!-- SVG Linh vật Pixel tự dựng bằng mã, thay đổi biểu cảm -->
+        </div>
+        <div class="speech-bubble">
+          <div class="speech-speaker">
+            <span>🤖 TRỢ LÍ LẬP TRÌNH PIXEL</span>
+            <span id="stageProgressBadge" style="background:var(--primary-purple-light);padding:2px 8px;border-radius:99px;">Màn chào mừng</span>
+          </div>
+          <div class="speech-text" id="pixelSpeechText">
+            Chào mừng nhà phát triển nhí! Hãy cùng Pixel biến ý tưởng trò chơi "Mèo bắt bóng" thành chương trình hoàn chỉnh nhé!
+          </div>
+        </div>
+      </div>
+
+      <!-- Bối cảnh Sân thi đấu Mèo bắt bóng mở khóa qua 4 màn -->
+      <div class="arena-progress-visual" id="arenaBannerSvgWrap" aria-label="Bối cảnh sân thi đấu mở khóa theo tiến độ">
+        <!-- Được vẽ động bằng SVG theo số màn hoàn thành -->
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         MÀN HÌNH 0: CHÀO MỪNG (WELCOME SCREEN)
+         ===================================================================== -->
+    <section class="screen-card active" id="screenWelcome">
+      <div class="welcome-grid">
+        <div>
+          <span class="welcome-tag">TIN HỌC LỚP 5 • KẾT NỐI TRI THỨC VỚI CUỘC SỐNG (TRANG 78–82)</span>
+          <h1 class="welcome-title">BÀI 16: TỪ KỊCH BẢN ĐẾN CHƯƠNG TRÌNH<br/>NHÀ PHÁT TRIỂN GAME MÈO BẮT BÓNG</h1>
+          <p class="welcome-subtitle">
+            Đồng hành cùng trợ lí <strong>Pixel</strong> hoàn thành 4 bước phát triển trò chơi: từ phân tích kịch bản, chia nhỏ công việc, lắp ghép khối lệnh đến chạy thử và sửa lỗi!
+          </p>
+
+          <div class="objective-list">
+            <h3>🎯 Sau bài học này em sẽ:</h3>
+            <ul>
+              <li>✅ Xác định được sân khấu, nhân vật, cách điều khiển và quy tắc tính điểm từ kịch bản trò chơi.</li>
+              <li>✅ Chia nhỏ công việc lập trình thành các bước rõ ràng cho từng nhân vật (Mèo, Quả bóng).</li>
+              <li>✅ Lắp ghép được các khối lệnh sự kiện, vòng lặp, điều kiện, cảm biến và biến nhớ <code>Điểm</code>.</li>
+              <li>✅ Chạy thử trò chơi "Mèo bắt bóng", phát hiện và sửa được lỗi chương trình.</li>
+            </ul>
+          </div>
+
+          <div style="margin-bottom:8px;font-weight:800;color:var(--primary-purple);font-size:0.92rem;">
+            🎮 Chọn chế độ tham gia:
+          </div>
+          <div class="mode-selector-box" role="radiogroup" aria-label="Chọn chế độ chơi">
+            <div class="mode-option selected" id="modeOptPractice" tabindex="0" role="radio" aria-checked="true"
+                 onclick="app.selectMode('practice')" onkeydown="if(event.key==='Enter'||event.key===' ') app.selectMode('practice')">
+              <div class="mode-option-title">🌱 Chế độ Luyện tập</div>
+              <div class="mode-option-desc">Hiển thị gợi ý từng bước ngay từ đầu, phù hợp khi mới làm quen bài học.</div>
+            </div>
+            <div class="mode-option" id="modeOptChallenge" tabindex="0" role="radio" aria-checked="false"
+                 onclick="app.selectMode('challenge')" onkeydown="if(event.key==='Enter'||event.key===' ') app.selectMode('challenge')">
+              <div class="mode-option-title">🚀 Chế độ Thử thách</div>
+              <div class="mode-option-desc">Ẩn gợi ý ban đầu để tự suy luận (vẫn có thể bấm nút Gợi ý khi cần).</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button type="button" class="btn-v5 btn-primary" style="font-size:1.05rem;padding:12px 26px;" onclick="app.startGame()">
+              ▶️ Bắt đầu làm game
+            </button>
+            <button type="button" class="btn-v5 btn-gold" style="font-size:1rem;padding:12px 20px;" onclick="app.toggleHelpModal(true)">
+              📖 Hướng dẫn cách chơi
+            </button>
+          </div>
+        </div>
+
+        <!-- Tranh minh họa SVG lớn Màn chào mừng -->
+        <div class="welcome-illustration-card">
+          <svg viewBox="0 0 500 340" width="100%" height="auto" role="img" aria-label="Minh họa Sân thi đấu Mèo bắt bóng và các khối lệnh">
+            <defs>
+              <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#D9F2FF"/>
+                <stop offset="100%" stop-color="#F8F7FF"/>
+              </linearGradient>
+              <linearGradient id="grassGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#6EE7B7"/>
+                <stop offset="100%" stop-color="#34D399"/>
+              </linearGradient>
+            </defs>
+            <!-- Nền sân cỏ -->
+            <rect x="10" y="10" width="480" height="320" rx="20" fill="url(#skyGrad)" stroke="#58429B" stroke-width="4"/>
+            <path d="M10 220 Q250 195 490 220 L490 330 L10 330 Z" fill="url(#grassGrad)"/>
+            <!-- Cổng lệnh lập trình -->
+            <rect x="35" y="32" width="140" height="36" rx="10" fill="#FFBF00" stroke="#FFF" stroke-width="2"/>
+            <text x="50" y="55" fill="#2B234A" font-size="14" font-weight="800">⚑ Khi bấm Cờ xanh</text>
+            <rect x="35" y="74" width="165" height="36" rx="10" fill="#FF8C1A" stroke="#FFF" stroke-width="2"/>
+            <text x="50" y="97" fill="#FFF" font-size="14" font-weight="800">Đặt [Điểm] thành 0</text>
+            <!-- Bảng điểm sân đấu -->
+            <rect x="330" y="28" width="135" height="54" rx="12" fill="#58429B" stroke="#F2BE4A" stroke-width="3"/>
+            <text x="350" y="50" fill="#FFF4D6" font-size="12" font-weight="700">BIẾN NHỚ</text>
+            <text x="350" y="71" fill="#FFFFFF" font-size="18" font-weight="900">Điểm: 10 ⭐</text>
+
+            <!-- Nhân vật Chú Mèo Scratch SVG -->
+            <g transform="translate(135, 165)">
+              <ellipse cx="45" cy="95" rx="38" ry="10" fill="rgba(0,0,0,0.12)"/>
+              <!-- Đuôi mèo -->
+              <path d="M12 65 Q-18 45 -8 28 Q0 18 14 38" fill="none" stroke="#F59E0B" stroke-width="10" stroke-linecap="round"/>
+              <!-- Thân mèo -->
+              <rect x="20" y="42" width="50" height="46" rx="20" fill="#F59E0B" stroke="#B45309" stroke-width="3"/>
+              <ellipse cx="45" cy="65" rx="16" ry="18" fill="#FEF3C7"/>
+              <!-- Đầu mèo -->
+              <circle cx="45" cy="22" r="28" fill="#F59E0B" stroke="#B45309" stroke-width="3"/>
+              <!-- Tai mèo -->
+              <polygon points="22,4 16,-20 38,-2" fill="#F59E0B" stroke="#B45309" stroke-width="3"/>
+              <polygon points="68,4 74,-20 52,-2" fill="#F59E0B" stroke="#B45309" stroke-width="3"/>
+              <!-- Mắt & Mũi -->
+              <ellipse cx="35" cy="18" rx="6" ry="8" fill="#FFF"/>
+              <ellipse cx="55" cy="18" rx="6" ry="8" fill="#FFF"/>
+              <circle cx="36" cy="19" r="3.5" fill="#1F2937"/>
+              <circle cx="54" cy="19" r="3.5" fill="#1F2937"/>
+              <polygon points="45,25 40,31 50,31" fill="#EC4899"/>
+              <path d="M36 35 Q45 43 54 35" fill="none" stroke="#78350F" stroke-width="3" stroke-linecap="round"/>
+            </g>
+
+            <!-- Đường bay của Quả bóng -->
+            <path d="M245 200 Q305 110 365 175" fill="none" stroke="#58429B" stroke-width="4" stroke-dasharray="8 6"/>
+            <!-- Quả bóng nghệ thuật -->
+            <g transform="translate(345, 150)">
+              <circle cx="30" cy="30" r="26" fill="#F43F5E" stroke="#881337" stroke-width="3"/>
+              <path d="M12 18 Q30 32 48 18" fill="none" stroke="#FFE4E6" stroke-width="4"/>
+              <path d="M12 42 Q30 28 48 42" fill="none" stroke="#FFE4E6" stroke-width="4"/>
+              <polygon points="30,15 34,25 45,25 36,31 39,41 30,35 21,41 24,31 15,25 26,25" fill="#FDE047"/>
+            </g>
+          </svg>
+          <div class="sim-disclaimer">
+            💡 Giao diện mô phỏng phục vụ học tập (Không xuất tệp .sb3 thật)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         MÀN 1: PHÂN TÍCH KỊCH BẢN (25 ĐIỂM)
+         ===================================================================== -->
+    <section class="screen-card" id="screenStage1">
+      <div class="stage-top-bar">
+        <div class="stage-heading-wrap">
+          <h2>MÀN 1/4: PHÂN TÍCH KỊCH BẢN TRÒ CHƠI (25 điểm)</h2>
+          <p>Nhiệm vụ: Chọn (hoặc kéo thả) đúng 5 thành phần của kịch bản "Mèo bắt bóng" vào Bảng thiết kế để dựng Sân khấu.</p>
+        </div>
+        <div class="stage-action-bar">
+          <button type="button" class="btn-v5 btn-gold" onclick="app.showHint(1)">💡 Gợi ý (<span id="hintCount1">0/2</span>)</button>
+          <button type="button" class="btn-v5 btn-peach" onclick="app.resetStage(1)">🔄 Làm lại màn</button>
+          <button type="button" class="btn-v5 btn-mint" id="btnNextStage1" onclick="app.goToStage(2)" disabled>Tiếp tục Màn 2 ➡️</button>
+        </div>
+      </div>
+
+      <div class="feedback-banner" id="feedbackStage1" role="status" aria-live="polite">
+        <span>👉 Hãy bấm chọn một thẻ ở kho bên dưới rồi bấm vào ô tương ứng trong Bảng thiết kế (hoặc kéo thả trực tiếp).</span>
+      </div>
+
+      <div class="stage1-layout">
+        <!-- Cột trái: 5 ô phân tích kịch bản + Kho thẻ lựa chọn -->
+        <div>
+          <div class="scenario-slots-grid" id="stage1SlotsContainer">
+            <!-- Được tạo động từ GAME_CONFIG.stage1 -->
+          </div>
+
+          <div class="card-pool">
+            <div class="card-pool-title">📦 KHO THẺ THÀNH PHẦN KỊCH BẢN (Có bao gồm thẻ gây nhiễu - hãy đọc kỹ nhé!):</div>
+            <div class="draggable-cards-wrap" id="stage1CardsContainer">
+              <!-- Được tạo động từ GAME_CONFIG.stage1 -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột phải: Sân khấu mô phỏng trực quan thay đổi theo từng mục chọn đúng -->
+        <div class="preview-stage-card">
+          <div class="preview-stage-header">
+            <span>🖥️ SÂN KHẤU MÔ PHỎNG (Cập nhật trực tiếp)</span>
+            <span id="stage1ProgressCounter">Đã hoàn thành: 0/5</span>
+          </div>
+          <div class="svg-stage-box" id="stage1PreviewSvgWrap">
+            <!-- SVG Sân khấu cập nhật động khi học sinh gắn đúng từng phần -->
+          </div>
+          <div class="sim-disclaimer" style="text-align:center;">
+            Giao diện mô phỏng phục vụ học tập • Mỗi mục chọn đúng sẽ xuất hiện ngay trên sân khấu!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         MÀN 2: CHIA NHỎ VIỆC LẬP TRÌNH (25 ĐIỂM)
+         ===================================================================== -->
+    <section class="screen-card" id="screenStage2">
+      <div class="stage-top-bar">
+        <div class="stage-heading-wrap">
+          <h2>MÀN 2/4: CHIA NHỎ VIỆC LẬP TRÌNH (25 điểm)</h2>
+          <p>Nhiệm vụ: Sắp xếp 5 bước xây dựng chương trình theo thứ tự hợp lí và phân công đúng việc cho Mèo &amp; Quả bóng.</p>
+        </div>
+        <div class="stage-action-bar">
+          <button type="button" class="btn-v5 btn-primary" onclick="app.verifyStage2()">✅ Kiểm tra quy trình</button>
+          <button type="button" class="btn-v5 btn-gold" onclick="app.showHint(2)">💡 Gợi ý (<span id="hintCount2">0/2</span>)</button>
+          <button type="button" class="btn-v5 btn-peach" onclick="app.resetStage(2)">🔄 Làm lại màn</button>
+          <button type="button" class="btn-v5 btn-mint" id="btnNextStage2" onclick="app.goToStage(3)" disabled>Tiếp tục Màn 3 ➡️</button>
+        </div>
+      </div>
+
+      <div class="feedback-banner" id="feedbackStage2" role="status" aria-live="polite">
+        <span>👉 Hoàn thành cả Phần A (Sắp xếp 5 bước) và Phần B (Phân công nhiệm vụ), sau đó nhấn "Kiểm tra quy trình".</span>
+      </div>
+
+      <div class="stage2-layout">
+        <!-- Phần A: Sắp xếp 5 bước -->
+        <div class="assign-task-card">
+          <div style="font-weight:900;color:var(--primary-purple);font-size:1rem;">
+            📋 PHẦN A: Sắp xếp thứ tự 5 bước từ kịch bản đến chương trình
+            <div style="font-size:0.82rem;font-weight:600;color:var(--text-muted);">
+              (Bấm vào 2 bước để đổi chỗ cho nhau, hoặc dùng nút ⬆️ ⬇️ ở bên phải mỗi bước)
+            </div>
+          </div>
+          <div class="step-order-list" id="stage2StepsContainer">
+            <!-- Render từ GAME_CONFIG.stage2.steps -->
+          </div>
+        </div>
+
+        <!-- Phần B: Phân công nhiệm vụ cho Nhân vật Mèo hay Quả bóng -->
+        <div class="assign-task-card">
+          <div style="font-weight:900;color:var(--primary-purple);font-size:1rem;">
+            🎯 PHẦN B: Phân công kịch bản cho đúng nhân vật
+            <div style="font-size:0.82rem;font-weight:600;color:var(--text-muted);">
+              (Theo SGK trang 79–81, mỗi hành động dưới đây thuộc kịch bản của Mèo hay Quả bóng?)
+            </div>
+          </div>
+          <div id="stage2AssignContainer" style="display:grid;gap:8px;">
+            <!-- Render từ GAME_CONFIG.stage2.assignments -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         MÀN 3: LẮP GHÉP CHƯƠNG TRÌNH SCRATCH (25 ĐIỂM)
+         ===================================================================== -->
+    <section class="screen-card" id="screenStage3">
+      <div class="stage-top-bar">
+        <div class="stage-heading-wrap">
+          <h2>MÀN 3/4: LẮP GHÉP CHƯƠNG TRÌNH (25 điểm)</h2>
+          <p>Nhiệm vụ: Lắp đúng 3 khối lệnh cho <strong>Chú Mèo</strong> và 4 khối lệnh cho <strong>Quả Bóng</strong>, sau đó bấm <strong>"⚑ Chạy thử kịch bản"</strong>.</p>
+        </div>
+        <div class="stage-action-bar">
+          <button type="button" class="btn-v5 btn-primary" onclick="app.runStage3Simulation()">⚑ Chạy thử kịch bản</button>
+          <button type="button" class="btn-v5 btn-gold" onclick="app.showHint(3)">💡 Gợi ý (<span id="hintCount3">0/2</span>)</button>
+          <button type="button" class="btn-v5 btn-peach" onclick="app.resetStage(3)">🔄 Làm lại màn</button>
+          <button type="button" class="btn-v5 btn-mint" id="btnNextStage3" onclick="app.goToStage(4)" disabled>Tiếp tục Màn 4 ➡️</button>
+        </div>
+      </div>
+
+      <div class="feedback-banner" id="feedbackStage3" role="status" aria-live="polite">
+        <span>👉 Chọn khối lệnh ở Kho khối lệnh rồi bấm vào vị trí cần lắp trong Kịch bản của Mèo và Quả bóng!</span>
+      </div>
+
+      <div class="stage3-layout">
+        <!-- Cột 1: Kho khối lệnh mô phỏng Scratch -->
+        <div class="scratch-palette-box">
+          <div style="font-weight:900;color:var(--primary-purple);font-size:0.95rem;">
+            🧩 KHO KHỐI LỆNH SCRATCH
+          </div>
+          <div style="font-size:0.8rem;color:var(--text-muted);font-weight:600;">
+            Bấm chọn khối lệnh rồi bấm vào ô trống bên phải (chú ý các khối gây nhiễu):
+          </div>
+          <div id="stage3PaletteContainer" style="display:flex;flex-direction:column;gap:7px;">
+            <!-- Render các khối lệnh từ GAME_CONFIG.stage3 -->
+          </div>
+          <div class="sim-disclaimer">Giao diện mô phỏng phục vụ học tập</div>
+        </div>
+
+        <!-- Cột 2: Vùng lắp ghép kịch bản cho Mèo và Quả bóng -->
+        <div class="scratch-script-box">
+          <div class="sprite-tabs" role="tablist">
+            <button type="button" class="sprite-tab active" id="tabSpriteCat" onclick="app.switchStage3Tab('cat')">
+              🐱 Kịch bản المèo (<span id="catSlotProgress">0/3</span>)
+            </button>
+            <button type="button" class="sprite-tab" id="tabSpriteBall" onclick="app.switchStage3Tab('ball')">
+              ⚽ Kịch bản Quả bóng (<span id="ballSlotProgress">0/4</span>)
+            </button>
+          </div>
+
+          <!-- Khung lắp khối của Mèo -->
+          <div id="scriptPanelCat" class="script-stack">
+            <div style="font-size:0.84rem;font-weight:800;color:var(--primary-purple);margin-bottom:4px;">
+              Mục tiêu: Khi bấm Cờ xanh, Mèo liên tục đi tới vị trí con trỏ chuột.
+            </div>
+            <div class="block-slot" id="slot_M1" onclick="app.handleStage3SlotClick('M1')"></div>
+            <div class="block-slot" id="slot_M2" onclick="app.handleStage3SlotClick('M2')"></div>
+            <div class="script-indent">
+              <div class="block-slot" id="slot_M3" onclick="app.handleStage3SlotClick('M3')"></div>
+            </div>
+          </div>
+
+          <!-- Khung lắp khối của Quả bóng -->
+          <div id="scriptPanelBall" class="script-stack" style="display:none;">
+            <div style="font-size:0.84rem;font-weight:800;color:var(--primary-purple);margin-bottom:4px;">
+              Mục tiêu: Đặt Điểm thành 0, lặp liên tục di chuyển bóng, nếu chạm Mèo thì tăng Điểm thêm 1 và đổi hướng.
+            </div>
+            <div class="scratch-block block-event" style="cursor:default;">⚑ Khi bấm vào Cờ xanh</div>
+            <div class="block-slot" id="slot_B1" onclick="app.handleStage3SlotClick('B1')"></div>
+            <div class="scratch-block block-control" style="cursor:default;">🔁 Lặp liên tục</div>
+            <div class="script-indent">
+              <div class="block-slot" id="slot_B2" onclick="app.handleStage3SlotClick('B2')"></div>
+              <div class="block-slot" id="slot_B3" onclick="app.handleStage3SlotClick('B3')"></div>
+              <div class="script-indent sensing-indent">
+                <div class="block-slot" id="slot_B4" onclick="app.handleStage3SlotClick('B4')"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột 3: Sân khấu mô phỏng kiểm tra kịch bản Màn 3 -->
+        <div class="preview-stage-card">
+          <div class="preview-stage-header">
+            <span>🎬 MÔ PHỎNG KỊCH BẢN</span>
+            <span id="stage3SimStatus">Chờ lắp xong...</span>
+          </div>
+          <div class="svg-stage-box" id="stage3PreviewSvgWrap">
+            <svg viewBox="0 0 360 270" width="100%" height="100%">
+              <rect width="360" height="270" fill="#E0F7F4"/>
+              <path d="M0 190 Q180 170 360 190 L360 270 L0 270 Z" fill="#6EE7B7"/>
+              <rect x="12" y="12" width="110" height="34" rx="8" fill="#58429B"/>
+              <text x="22" y="34" fill="#FFF" font-size="14" font-weight="800" id="stage3SimScoreText">Điểm: 0</text>
+              <!-- Mèo mô phỏng Màn 3 -->
+              <g id="stage3SimCat" transform="translate(80, 145)">
+                <circle cx="28" cy="28" r="24" fill="#F59E0B" stroke="#B45309" stroke-width="2.5"/>
+                <polygon points="10,12 6,-6 22,8" fill="#F59E0B" stroke="#B45309" stroke-width="2"/>
+                <polygon points="46,12 50,-6 34,8" fill="#F59E0B" stroke="#B45309" stroke-width="2"/>
+                <circle cx="20" cy="24" r="4" fill="#FFF"/><circle cx="20" cy="24" r="2" fill="#000"/>
+                <circle cx="36" cy="24" r="4" fill="#FFF"/><circle cx="36" cy="24" r="2" fill="#000"/>
+                <polygon points="28,29 24,34 32,34" fill="#EC4899"/>
+              </g>
+              <!-- Bóng mô phỏng Màn 3 -->
+              <g id="stage3SimBall" transform="translate(240, 150)">
+                <circle cx="20" cy="20" r="18" fill="#F43F5E" stroke="#881337" stroke-width="2.5"/>
+                <circle cx="20" cy="20" r="7" fill="#FDE047"/>
+              </g>
+            </svg>
+          </div>
+          <div style="font-size:0.83rem;color:var(--text-muted);font-weight:600;">
+            Khi lắp đúng cả 7 ô và bấm <strong>"⚑ Chạy thử kịch bản"</strong>, Mèo và Bóng sẽ chuyển động và tính điểm trên sân khấu!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         MÀN 4: CHƠI THỬ VÀ SỬA LỖI (DEBUG + CHƠI THẬT + NÂNG CẤP) (25 ĐIỂM)
+         ===================================================================== -->
+    <section class="screen-card" id="screenStage4">
+      <div class="stage-top-bar">
+        <div class="stage-heading-wrap">
+          <h2>MÀN 4/4: CHƠI THỬ VÀ SỬA LỖI CHƯƠNG TRÌNH (25 điểm)</h2>
+          <p>Nhiệm vụ: (1) Sửa 2 lỗi kịch bản, (2) Chọn 1 nâng cấp sáng tạo, và (3) Điều khiển Mèo bắt đủ <strong>5 quả bóng</strong>!</p>
+        </div>
+        <div class="stage-action-bar">
+          <button type="button" class="btn-v5 btn-gold" onclick="app.showHint(4)">💡 Gợi ý (<span id="hintCount4">0/2</span>)</button>
+          <button type="button" class="btn-v5 btn-peach" onclick="app.resetStage(4)">🔄 Làm lại màn</button>
+          <button type="button" class="btn-v5 btn-mint" id="btnFinishGame" onclick="app.showSummary()" disabled>🏆 Xem Tổng kết &amp; Huy hiệu</button>
+        </div>
+      </div>
+
+      <div class="feedback-banner" id="feedbackStage4" role="status" aria-live="polite">
+        <span>👉 Hãy sửa 2 lỗi bên trái trước, hoặc bấm "⚑ Chạy thử" để quan sát lỗi rồi sửa và bắt đủ 5 quả bóng nhé!</span>
+      </div>
+
+      <div class="stage4-layout">
+        <!-- Cột trái: Trạm sửa lỗi (Debug) & Nâng cấp sáng tạo (Vận dụng SGK trang 82) -->
+        <div class="debug-card">
+          <div style="font-weight:900;color:var(--primary-purple);font-size:0.98rem;">
+            🛠️ BƯỚC 1: PHÁT HIỆN &amp; SỬA 2 LỖI TRONG CHƯƠNG TRÌNH
+          </div>
+          <div id="stage4BugsContainer" style="display:grid;gap:10px;">
+            <!-- Render 2 lỗi từ GAME_CONFIG.stage4.bugs -->
+          </div>
+
+          <div style="font-weight:900;color:var(--primary-purple);font-size:0.98rem;margin-top:6px;">
+            ✨ BƯỚC 2: VẬN DỤNG – CHỌN 1 NÂNG CẤP CHO GAME (SGK trang 82)
+          </div>
+          <div id="stage4UpgradeContainer" style="display:flex;gap:8px;flex-wrap:wrap;">
+            <!-- Render 3 nâng cấp từ GAME_CONFIG.stage4.upgrades -->
+          </div>
+        </div>
+
+        <!-- Cột phải: Sân khấu chơi thật Mèo bắt bóng (Chuột / Cảm ứng / Phím mũi tên) -->
+        <div class="preview-stage-card">
+          <div class="preview-stage-header">
+            <span>🎮 BƯỚC 3: SÂN ĐẤU CHƠI THỬ (Mục tiêu: Bắt &ge; 5 quả bóng)</span>
+            <span id="stage4CatchStatus" style="color:var(--mint-teal-dark);">Điểm bắt bóng: 0 / 5</span>
+          </div>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+            <button type="button" class="btn-v5 btn-primary" id="btnTogglePlayStage4" onclick="catchGame.togglePlay()">
+              ⚑ Chạy trò chơi
+            </button>
+            <button type="button" class="btn-v5 btn-outline" id="btnControlModeStage4" onclick="catchGame.toggleControlMode()">
+              🖱️ Điều khiển: Theo con trỏ chuột (Chuẩn SGK)
+            </button>
+          </div>
+
+          <div class="live-game-canvas-wrap">
+            <canvas id="catchGameCanvas" width="520" height="390" aria-label="Sân khấu trò chơi Mèo bắt bóng"></canvas>
+          </div>
+
+          <!-- Phím mũi tên hỗ trợ trên màn hình (hoặc dùng bàn phím Arrow Keys / WASD) -->
+          <div class="onscreen-dpad" aria-label="Nút điều khiển hướng đi cho Mèo">
+            <span style="font-size:0.82rem;font-weight:700;color:var(--text-muted);">Phím điều khiển nhanh:</span>
+            <button type="button" class="mini-icon-btn" onpointerdown="catchGame.nudgeCat(-28, 0)" aria-label="Sang trái">⬅️</button>
+            <button type="button" class="mini-icon-btn" onpointerdown="catchGame.nudgeCat(0, -28)" aria-label="Lên trên">⬆️</button>
+            <button type="button" class="mini-icon-btn" onpointerdown="catchGame.nudgeCat(0, 28)" aria-label="Xuống dưới">⬇️</button>
+            <button type="button" class="mini-icon-btn" onpointerdown="catchGame.nudgeCat(28, 0)" aria-label="Sang phải">➡️</button>
+          </div>
+          <div class="sim-disclaimer" style="text-align:center;">
+            Di chuyển chuột trên sân cỏ (hoặc nhấn phím mũi tên) để điều khiển Mèo chạm vào Quả bóng!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         MÀN HÌNH TỔNG KẾT & HUY HIỆU (SUMMARY SCREEN)
+         ===================================================================== -->
+    <section class="screen-card" id="screenSummary">
+      <div class="summary-grid">
+        <div>
+          <span class="welcome-tag">HOÀN THÀNH XUẤT SẮC DỰ ÁN!</span>
+          <h2 class="welcome-title" style="font-size:1.85rem;">CHÚC MỪNG NHÀ PHÁT TRIỂN GAME MÈO BẮT BÓNG!</h2>
+          <p class="welcome-subtitle" id="summaryScoreHeadline">
+            Tổng điểm đạt được: <strong>100 / 100 điểm</strong>
+          </p>
+
+          <div class="objective-list">
+            <h3>📌 3 Ghi nhớ kiến thức trọng tâm Bài 16:</h3>
+            <ul>
+              <li>🌟 <strong>1. Từ kịch bản đến thuật toán:</strong> Trước khi lập trình, cần xác định rõ sân khấu, nhân vật, thao tác điều khiển và điều kiện tính điểm/kết thúc.</li>
+              <li>🌟 <strong>2. Cấu trúc chương trình Scratch:</strong> Sử dụng khối <code>Khi bấm vào Cờ xanh</code>, khởi tạo biến <code>Đặt [Điểm] thành 0</code> ở ngoài vòng lặp, và dùng <code>Lặp liên tục</code> kết hợp điều kiện <code>Nếu đang chạm [Mèo]</code>.</li>
+              <li>🌟 <strong>3. Chạy thử và sửa lỗi (Debug):</strong> Luôn chạy thử chương trình để kiểm tra xem điểm số và chuyển động của nhân vật đã đúng với kịch bản chưa để kịp thời điều chỉnh.</li>
+            </ul>
+          </div>
+
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button type="button" class="btn-v5 btn-primary" onclick="app.playAgainFull()">🔄 Chơi lại từ đầu</button>
+            <button type="button" class="btn-v5 btn-outline" onclick="app.goToStage(1)">🔍 Xem lại các màn đã làm</button>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="color:var(--primary-purple);font-weight:900;margin-bottom:10px;text-align:center;">
+            🏅 BỘ SƯU TẬP HUY HIỆU NHÀ PHÁT TRIỂN NHÍ
+          </h3>
+          <div class="badge-grid" id="summaryBadgesContainer">
+            <!-- Render 4 huy hiệu -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =======================================================================
+       MODAL HƯỚNG DẪN BẰNG CHỮ & MINH HỌA TRỰC QUAN (KHÔNG GIỌNG ĐỌC)
+       ======================================================================= -->
+  <div class="modal-backdrop" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
+    <div class="modal-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h2 id="helpModalTitle" style="color:var(--primary-purple);font-weight:900;">📖 HƯỚNG DẪN CHƠI &amp; THAO TÁC</h2>
+        <button type="button" class="btn-v5 btn-peach" onclick="app.toggleHelpModal(false)">✖ Đóng</button>
+      </div>
+      <div style="display:grid;gap:10px;font-size:0.95rem;">
+        <div style="background:var(--bg-cream);padding:12px;border-radius:12px;border:1.5px solid var(--border-soft);">
+          <strong>1. Quy tắc tính điểm:</strong> Trò chơi gồm <strong>4 màn tương tác</strong>, mỗi màn hoàn thành đúng được cộng <strong>25 điểm</strong> (Tổng 100 điểm). Em có thể thử lại không giới hạn và không bị trừ điểm khi thao tác nhầm.
+        </div>
+        <div style="background:var(--bg-cream);padding:12px;border-radius:12px;border:1.5px solid var(--border-soft);">
+          <strong>2. Cách thao tác thuận tiện trên mọi thiết bị:</strong>
+          <ul style="margin-left:18px;margin-top:4px;">
+            <li>Ở <strong>Màn 1 &amp; Màn 3</strong>: Em có thể kéo thả thẻ/khối lệnh, HOẶC <strong>nháy chuột vào thẻ rồi nháy vào ô trống</strong> để gắn nhanh.</li>
+            <li>Ở <strong>Màn 2</strong>: Nháy vào 2 bước để đổi chỗ hoặc dùng nút mũi tên ⬆️ ⬇️; chọn nhân vật Mèo hoặc Quả bóng cho từng công việc.</li>
+            <li>Ở <strong>Màn 4</strong>: Sửa 2 lỗi chương trình, chọn 1 nâng cấp rồi di chuyển chuột (hoặc nhấn phím mũi tên) điều khiển Mèo bắt đủ 5 quả bóng.</li>
+          </ul>
+        </div>
+        <div style="background:var(--warm-gold-light);padding:12px;border-radius:12px;border:1.5px solid var(--warm-gold);">
+          <strong>3. Âm thanh &amp; Trợ giúp:</strong> Em có thể bật/tắt riêng <strong>Nhạc nền</strong> và <strong>Hiệu ứng âm thanh</strong> ở góc trên cùng. Khi gặp câu khó, hãy nhấn nút <strong>💡 Gợi ý</strong> để xem hướng dẫn 2 mức từ trợ lí Pixel!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lớp phủ hiệu ứng ngôi sao chúc mừng (~1.8 giây) -->
+  <canvas id="celebrationOverlay"></canvas>
+
+  <!-- =======================================================================
+       MÃ NGUỒN JAVASCRIPT: TÁCH BIỆT GAME_CONFIG, ÂM THANH WEB AUDIO & LOGIC
+       ======================================================================= -->
+  <script>
+    /**
+     * =========================================================================
+     * PHẦN 1: CẤU HÌNH NỘI DUNG DẠY HỌC (GAME_CONFIG)
+     * Giáo viên có thể dễ dàng chỉnh sửa câu hỏi, đáp án, giải thích và gợi ý tại đây.
+     * =========================================================================
+     */
+    const GAME_CONFIG = {
+      lessonInfo: {
+        grade: "Tin học 5 - Kết nối tri thức với cuộc sống",
+        lessonNumber: 16,
+        lessonTitle: "Từ kịch bản đến chương trình",
+        gameTitle: "NHÀ PHÁT TRIỂN GAME MÈO BẮT BÓNG",
+        pointsPerStage: 25,
+        totalPoints: 100
+      },
+      audioDefaults: {
+        bgmEnabled: true,
+        sfxEnabled: true,
+        masterVolume: 0.7,
+        bgmBaseGain: 0.12 // Âm lượng nhạc nền nhẹ nhàng 12%
+      },
+
+      // --- DỮ LIỆU MÀN 1: PHÂN TÍCH KỊCH BẢN ---
+      stage1: {
+        pixelIntro: "Màn 1: Trước khi lập trình, chúng mình hãy phân tích kịch bản trò chơi 'Mèo bắt bóng' (SGK trang 78) thành 5 yếu tố cốt lõi nhé!",
+        hints: [
+          "Gợi ý 1: Trong trò chơi 'Mèo bắt bóng', người chơi dùng chuột điều khiển Chú Mèo chạy trên Sân cỏ để đón bắt Quả bóng đang bay.",
+          "Gợi ý 2: Sân khấu là 'Sân cỏ ngoài trời'; Nhân vật điều khiển là 'Chú Mèo'; Nhân vật tự di chuyển là 'Quả bóng'; Cách điều khiển là 'Đi theo con trỏ chuột'; Quy tắc điểm là 'Chạm bóng tăng 1 Điểm và bóng đổi hướng'."
+        ],
+        slots: [
+          {
+            id: "backdrop",
+            label: "1. Phông nền Sân khấu",
+            placeholder: "Chọn phông nền phù hợp...",
+            correctCardId: "c_grass"
+          },
+          {
+            id: "playerSprite",
+            label: "2. Nhân vật điều khiển",
+            placeholder: "Ai do người chơi điều khiển?",
+            correctCardId: "c_cat"
+          },
+          {
+            id: "targetSprite",
+            label: "3. Nhân vật mục tiêu",
+            placeholder: "Đối tượng nào tự bay trên sân?",
+            correctCardId: "c_ball"
+          },
+          {
+            id: "controlRule",
+            label: "4. Thao tác điều khiển",
+            placeholder: "Điều khiển nhân vật bằng cách nào?",
+            correctCardId: "c_mouse"
+          },
+          {
+            id: "scoreRule",
+            label: "5. Quy tắc tính điểm",
+            placeholder: "Khi nào điểm tăng lên?",
+            correctCardId: "c_score"
+          }
+        ],
+        cards: [
+          {
+            id: "c_grass",
+            text: "🌿 Bãi cỏ / Sân cỏ ngoài trời",
+            explanationCorrect: "Chính xác! Phông nền bãi cỏ ngoài trời rất phù hợp cho sân thi đấu Mèo bắt bóng.",
+            explanationWrong: "Thẻ này là phông nền Sân khấu, hãy đặt vào mục '1. Phông nền Sân khấu' nhé!"
+          },
+          {
+            id: "c_cat",
+            text: "🐱 Chú Mèo (Nhân vật bắt bóng)",
+            explanationCorrect: "Đúng rồi! Chú Mèo là nhân vật chính do người chơi điều khiển để đi bắt bóng.",
+            explanationWrong: "Chú Mèo là nhân vật do người chơi điều khiển, hãy gắn vào mục số 2 nhé!"
+          },
+          {
+            id: "c_ball",
+            text: "⚽ Quả bóng (Bay và bật lại khi chạm cạnh)",
+            explanationCorrect: "Tuyệt vời! Quả bóng tự di chuyển liên tục trên sân khấu và bật lại nếu chạm cạnh.",
+            explanationWrong: "Quả bóng là nhân vật mục tiêu tự di chuyển, hãy đặt vào mục số 3 nhé!"
+          },
+          {
+            id: "c_mouse",
+            text: "🖱️ Mèo luôn di chuyển theo con trỏ chuột",
+            explanationCorrect: "Chuẩn xác! Trong kịch bản SGK trang 78, chú Mèo di chuyển theo vị trí con trỏ chuột.",
+            explanationWrong: "Đây là cách người chơi điều khiển Mèo, hãy đặt vào mục '4. Thao tác điều khiển'!"
+          },
+          {
+            id: "c_score",
+            text: "⭐ Mèo chạm bóng: Điểm tăng 1, bóng đổi hướng",
+            explanationCorrect: "Xuất sắc! Mỗi lần Mèo chạm bóng thì biến Điểm tăng thêm 1 và bóng nảy sang hướng khác.",
+            explanationWrong: "Đây là quy tắc tính điểm khi va chạm, hãy đặt vào mục '5. Quy tắc tính điểm' nhé!"
+          },
+          {
+            id: "c_distract1",
+            text: "❌ Gõ văn bản Word để cộng điểm",
+            isDistractor: true,
+            explanationWrong: "Chưa đúng! Trong trò chơi Mèo bắt bóng, điểm chỉ tăng khi Mèo chạm vào Quả bóng trên sân khấu."
+          },
+          {
+            id: "c_distract2",
+            text: "❌ Quả bóng đứng yên một chỗ mãi mãi",
+            isDistractor: true,
+            explanationWrong: "Chưa đúng! Theo kịch bản, quả bóng phải liên tục di chuyển và bật lại khi chạm cạnh."
+          }
+        ]
+      },
+
+      // --- DỮ LIỆU MÀN 2: CHIA NHỎ VIỆC LẬP TRÌNH ---
+      stage2: {
+        pixelIntro: "Màn 2: Một nhà phát triển giỏi biết chia nhỏ kịch bản lớn thành từng bước rõ ràng và phân công đúng nhiệm vụ cho từng đối tượng!",
+        hints: [
+          "Gợi ý 1: Hãy luôn bắt đầu bằng 'Thiết lập sân khấu, nhân vật và biến Điểm' (Bước 1) và kết thúc bằng 'Chạy thử, kiểm tra lỗi và hoàn thiện' (Bước 5).",
+          "Gợi ý 2: Ở Phần B: Mèo chỉ có nhiệm vụ 'Đi tới vị trí con trỏ chuột'. Các lệnh khởi tạo Điểm, di chuyển bóng, kiểm tra chạm Mèo để tăng Điểm đều được viết trong kịch bản của Quả bóng (theo SGK trang 80)."
+        ],
+        stepsCorrectOrder: [
+          {
+            id: "step1",
+            text: "Thêm phông nền sân cỏ, hai nhân vật Mèo, Quả bóng và tạo biến nhớ Điểm."
+          },
+          {
+            id: "step2",
+            text: "Lập trình cho nhân vật Mèo liên tục đi tới vị trí con trỏ chuột khi bấm Cờ xanh."
+          },
+          {
+            id: "step3",
+            text: "Lập trình cho Quả bóng đặt Điểm thành 0, liên tục di chuyển và bật lại nếu chạm cạnh."
+          },
+          {
+            id: "step4",
+            text: "Bổ sung điều kiện: Nếu Quả bóng chạm Mèo thì tăng Điểm thêm 1 và xoay đổi hướng."
+          },
+          {
+            id: "step5",
+            text: "Chạy thử toàn bộ chương trình, phát hiện lỗi sai (nếu có) và chỉnh sửa hoàn thiện."
+          }
+        ],
+        assignments: [
+          {
+            id: "as1",
+            taskText: "1. Liên tục đi tới vị trí con trỏ chuột",
+            correctTarget: "cat",
+            explanation: "Mèo di chuyển theo con trỏ chuột của người chơi nên lệnh này thuộc kịch bản của Mèo."
+          },
+          {
+            id: "as2",
+            taskText: "2. Đặt biến [Điểm] thành 0 khi bắt đầu và liên tục di chuyển 10 bước, chạm cạnh bật lại",
+            correctTarget: "ball",
+            explanation: "Theo SGK trang 80, kịch bản của Quả bóng đảm nhận việc khởi tạo Điểm = 0 và tự di chuyển nảy trên sân."
+          },
+          {
+            id: "as3",
+            taskText: "3. Kiểm tra: Nếu đang chạm [Mèo] thì thay đổi [Điểm] một lượng 1 và xoay hướng khác",
+            correctTarget: "ball",
+            explanation: "Đặt điều kiện 'Nếu đang chạm Mèo' ngay trong vòng lặp của Quả bóng giúp bóng vừa tăng Điểm vừa đổi hướng nảy đi ngay."
+          }
+        ]
+      },
+
+      // --- DỮ LIỆU MÀN 3: LẮP GHÉP CHƯƠNG TRÌNH SCRATCH ---
+      stage3: {
+        pixelIntro: "Màn 3: Giờ hãy lắp các khối lệnh vào Kịch bản của Mèo (3 ô) và Kịch bản của Quả bóng (4 ô), rồi nhấn 'Chạy thử kịch bản' nhé!",
+        hints: [
+          "Gợi ý 1: Ở kịch bản của Mèo: Bắt đầu bằng 'Khi bấm vào Cờ xanh' -> 'Lặp liên tục' -> bên trong là 'Đi tới vị trí con trỏ chuột'.",
+          "Gợi ý 2: Ở kịch bản của Quả bóng: Ngay dưới Cờ xanh là 'Đặt Điểm thành 0'. Trong vòng lặp là 'Di chuyển 10 bước, nếu chạm cạnh bật lại', tiếp theo là 'Nếu đang chạm Mèo thì' -> 'Thay đổi Điểm một lượng 1 và xoay 180 độ'."
+        ],
+        slots: {
+          M1: { sprite: "cat", label: "Ô M1 (Sự kiện bắt đầu)", correctBlockId: "b_flag" },
+          M2: { sprite: "cat", label: "Ô M2 (Vòng lặp cho Mèo)", correctBlockId: "b_forever" },
+          M3: { sprite: "cat", label: "Ô M3 (Hành động của Mèo)", correctBlockId: "b_goto_mouse" },
+          B1: { sprite: "ball", label: "Ô B1 (Khởi tạo biến Điểm)", correctBlockId: "b_set_score_0" },
+          B2: { sprite: "ball", label: "Ô B2 (Chuyển động của bóng)", correctBlockId: "b_move_bounce" },
+          B3: { sprite: "ball", label: "Ô B3 (Kiểm tra va chạm)", correctBlockId: "b_if_touch_cat" },
+          B4: { sprite: "ball", label: "Ô B4 (Cộng điểm & đổi hướng)", correctBlockId: "b_add_score_turn" }
+        },
+        blocks: [
+          {
+            id: "b_flag",
+            category: "block-event",
+            text: "⚑ Khi bấm vào Cờ xanh",
+            explanationCorrect: "Chính xác! Khối sự kiện Khi bấm vào Cờ xanh luôn đứng đầu kịch bản.",
+            explanationWrong: "Khối Cờ xanh dùng để bắt đầu kịch bản ở Ô M1 của Mèo nhé!"
+          },
+          {
+            id: "b_forever",
+            category: "block-control",
+            text: "🔁 Lặp liên tục",
+            explanationCorrect: "Đúng rồi! Vòng lặp liên tục giúp Mèo luôn đi theo chuột trong suốt lúc chơi.",
+            explanationWrong: "Khối Lặp liên tục cần lắp vào Ô M2 (bên ngoài hành động di chuyển của Mèo)."
+          },
+          {
+            id: "b_goto_mouse",
+            category: "block-motion",
+            text: "🖱️ Đi tới [vị trí con trỏ chuột ▾]",
+            explanationCorrect: "Tuyệt vời! Khối lệnh này giúp Mèo luôn bám theo con trỏ chuột.",
+            explanationWrong: "Khối 'Đi tới vị trí con trỏ chuột' dành cho nhân vật Mèo ở Ô M3 nhé!"
+          },
+          {
+            id: "b_set_score_0",
+            category: "block-variable",
+            text: "📊 Đặt [Điểm ▾] thành (0)",
+            explanationCorrect: "Chuẩn xác! Khi mới bấm Cờ xanh, cần đặt Điểm về 0 trước khi vào vòng lặp.",
+            explanationWrong: "Khối 'Đặt Điểm thành 0' phải lắp ở Ô B1 (ngay dưới Cờ xanh của Quả bóng, ngoài vòng lặp)."
+          },
+          {
+            id: "b_move_bounce",
+            category: "block-motion",
+            text: "👟 Di chuyển (10) bước + Nếu chạm cạnh, bật lại",
+            explanationCorrect: "Chính xác! Quả bóng sẽ bay liên tục và tự nảy lại khi chạm mép sân khấu.",
+            explanationWrong: "Khối di chuyển và bật lại khi chạm cạnh cần đặt ở Ô B2 trong vòng lặp của Quả bóng."
+          },
+          {
+            id: "b_if_touch_cat",
+            category: "block-sensing",
+            text: "❓ Nếu <đang chạm [Mèo ▾]?> thì",
+            explanationCorrect: "Đúng rồi! Khối điều kiện kết hợp cảm biến giúp phát hiện lúc bóng chạm vào Mèo.",
+            explanationWrong: "Khối điều kiện 'Nếu đang chạm Mèo thì' cần lắp vào Ô B3 của Quả bóng."
+          },
+          {
+            id: "b_add_score_turn",
+            category: "block-variable",
+            text: "➕ Thay đổi [Điểm ▾] một lượng (1) & Xoay (180) độ",
+            explanationCorrect: "Xuất sắc! Khi chạm Mèo, điểm tăng thêm 1 và bóng xoay hướng nảy ra xa.",
+            explanationWrong: "Khối cộng 1 điểm và xoay hướng cần đặt bên trong nhánh Nếu chạm Mèo (Ô B4)."
+          },
+          {
+            id: "b_wrong_stop",
+            category: "block-control",
+            text: "🛑 Dừng lại [tất cả ▾] ngay khi chạm bóng",
+            isDistractor: true,
+            explanationWrong: "Chưa đúng! Nếu dừng lại tất cả ngay lần chạm đầu tiên thì người chơi chỉ bắt được 1 quả bóng thôi."
+          },
+          {
+            id: "b_wrong_set1",
+            category: "block-variable",
+            text: "📊 Đặt [Điểm ▾] thành (1) mãi mãi",
+            isDistractor: true,
+            explanationWrong: "Chưa đúng! Nếu dùng lệnh 'Đặt Điểm thành 1' thay vì 'Thay đổi Điểm một lượng 1', điểm sẽ không bao giờ tăng lên 2, 3..."
+          }
+        ]
+      },
+
+      // --- DỮ LIỆU MÀN 4: CHƠI THỬ & SỬA LỖI ---
+      stage4: {
+        pixelIntro: "Màn 4: Trò chơi đang có 2 lỗi kinh điển khiến điểm bị về 0 và bóng bị kẹt! Hãy sửa 2 lỗi, chọn 1 nâng cấp rồi điều khiển Mèo bắt đủ 5 quả bóng nhé!",
+        targetCatches: 5,
+        hints: [
+          "Gợi ý 1: Lỗi 1 là do lệnh 'Đặt Điểm thành 0' nằm BÊN TRONG vòng lặp liên tục nên điểm cứ bị xóa về 0. Hãy chuyển nó ra NGOÀI vòng lặp (ngay dưới Cờ xanh)!",
+          "Gợi ý 2: Lỗi 2 là sau khi chạm Mèo, bóng không đổi hướng nên đứng yên cộng điểm liên tục. Hãy thêm lệnh 'Xoay hướng khác và nhảy ra xa' sau khi cộng điểm, rồi bấm 'Chạy trò chơi' bắt 5 quả bóng!"
+        ],
+        bugs: [
+          {
+            id: "bug1",
+            title: "🐞 Lỗi 1: Bắt trúng bóng nhưng Điểm cứ bị quay về 0 ngay lập tức!",
+            problemDesc: "Nguyên nhân: Khối `Đặt [Điểm] thành 0` đang bị đặt nhầm ở BÊN TRONG khối `Lặp liên tục`.",
+            options: [
+              {
+                id: "b1_wrong",
+                text: "Xóa luôn biến Điểm khỏi chương trình",
+                correct: false,
+                explanation: "Nếu xóa biến Điểm thì trò chơi sẽ không có bảng điểm nữa!"
+              },
+              {
+                id: "b1_right",
+                text: "✅ Đưa khối `Đặt [Điểm] thành 0` lên ngay dưới `Khi bấm vào Cờ xanh` (ở NGOÀI vòng lặp)",
+                correct: true,
+                explanation: "Chính xác! Chỉ đặt Điểm thành 0 một lần duy nhất khi bắt đầu trò chơi."
+              }
+            ]
+          },
+          {
+            id: "bug2",
+            title: "🐞 Lỗi 2: Khi chạm Mèo, bóng bị dính chặt vào Mèo và cộng điểm nhảy vọt!",
+            problemDesc: "Nguyên nhân: Trong nhánh `Nếu đang chạm Mèo`, chỉ có lệnh cộng điểm mà thiếu lệnh đổi hướng di chuyển.",
+            options: [
+              {
+                id: "b2_right",
+                text: "✅ Thêm khối `Xoay (150..180) độ và Di chuyển ra xa` ngay sau khi tăng Điểm thêm 1",
+                correct: true,
+                explanation: "Tuyệt vời! Sau khi chạm Mèo và cộng 1 điểm, bóng sẽ nảy sang hướng khác để người chơi tiếp tục đuổi bắt."
+              },
+              {
+                id: "b2_wrong",
+                text: "Giảm tốc độ di chuyển của bóng về 0 bước",
+                correct: false,
+                explanation: "Nếu di chuyển 0 bước thì quả bóng sẽ đứng im một chỗ!"
+              }
+            ]
+          }
+        ],
+        upgrades: [
+          {
+            id: "up_speed",
+            label: "⚡ Nâng cấp 1: Tăng tốc độ bóng khi điểm cao",
+            desc: "Bóng bay nhanh hơn một chút sau mỗi lần bắt trúng, giúp trò chơi gay cấn hơn!"
+          },
+          {
+            id: "up_color",
+            label: "🌈 Nâng cấp 2: Đổi màu bóng mỗi lần bắt trúng",
+            desc: "Quả bóng đổi màu sắc rực rỡ kèm hiệu ứng ngôi sao mỗi khi Mèo chạm bóng!"
+          },
+          {
+            id: "up_cheer",
+            label: "💬 Nâng cấp 3: Mèo hiện bóng chữ khen ngợi",
+            desc: "Chú Mèo hiện bóng chữ 'Tuyệt quá!', 'Siêu đỉnh!' trên sân khấu khi bắt được bóng!"
+          }
+        ]
+      },
+
+      // --- HUY HIỆU TỔNG KẾT ---
+      badges: [
+        { stage: 1, icon: "📐", title: "Nhà Phân Tích Kịch Bản", desc: "Xác định chuẩn xác 5 yếu tố kịch bản game Mèo bắt bóng." },
+        { stage: 2, icon: "🧭", title: "Kiến Trúc Sư Thuật Toán", desc: "Chia nhỏ quy trình 5 bước và phân công đúng nhiệm vụ cho nhân vật." },
+        { stage: 3, icon: "🧩", title: "Kỹ Sư Scratch Nhí", desc: "Lắp ghép hoàn chỉnh kịch bản khối lệnh cho Mèo và Quả bóng." },
+        { stage: 4, icon: "🛠️", title: "Chuyên Gia Kiểm Thử & Debug", desc: "Sửa thành công 2 lỗi chương trình và bắt bóng xuất sắc." }
+      ]
+    };
+
+    /**
+     * =========================================================================
+     * PHẦN 2: BỘ TỔNG HỢP ÂM THANH NGUYÊN GỐC (WEB AUDIO API)
+     * Chỉ gồm Nhạc nền & Hiệu ứng SFX nhẹ nhàng. TUYỆT ĐỐI KHÔNG GIỌNG ĐỌC / TTS.
+     * =========================================================================
+     */
+    const soundManager = {
+      ctx: null,
+      bgmEnabled: GAME_CONFIG.audioDefaults.bgmEnabled,
+      sfxEnabled: GAME_CONFIG.audioDefaults.sfxEnabled,
+      masterVolume: GAME_CONFIG.audioDefaults.masterVolume,
+      bgmTimer: null,
+      bgmNoteIndex: 0,
+      isPlayingBgm: false,
+
+      // Giai điệu pentatonic vui tươi nguyên gốc (tần số Hz)
+      melodyNotes: [523.25, 587.33, 659.25, 783.99, 659.25, 880.00, 783.99, 659.25, 587.33, 659.25, 523.25, 392.00],
+
+      initContext() {
+        try {
+          if (!this.ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) {
+              this.ctx = new AudioCtx();
+            }
+          }
+          if (this.ctx && this.ctx.state === "suspended") {
+            this.ctx.resume();
+          }
+        } catch (err) {
+          // Nếu trình duyệt không hỗ trợ âm thanh, trò chơi vẫn hoạt động bình thường
+        }
+      },
+
+      setMasterVolume(val) {
+        this.masterVolume = Math.max(0, Math.min(1, Number(val) / 100));
+      },
+
+      toggleBgm() {
+        this.initContext();
+        this.bgmEnabled = !this.bgmEnabled;
+        const btn = document.getElementById("btnToggleBgm");
+        if (this.bgmEnabled) {
+          btn.textContent = "🎵 Nhạc nền: BẬT";
+          btn.className = "btn-v5 btn-audio on";
+          btn.setAttribute("aria-pressed", "true");
+          this.startBgm();
+        } else {
+          btn.textContent = "🎵 Nhạc nền: TẮT";
+          btn.className = "btn-v5 btn-audio off";
+          btn.setAttribute("aria-pressed", "false");
+          this.stopBgm();
+        }
+        this.playSfx("click");
+      },
+
+      toggleSfx() {
+        this.initContext();
+        this.sfxEnabled = !this.sfxEnabled;
+        const btn = document.getElementById("btnToggleSfx");
+        if (this.sfxEnabled) {
+          btn.textContent = "🔔 Hiệu ứng: BẬT";
+          btn.className = "btn-v5 btn-audio on";
+          btn.setAttribute("aria-pressed", "true");
+          this.playSfx("click");
+        } else {
+          btn.textContent = "🔔 Hiệu ứng: TẮT";
+          btn.className = "btn-v5 btn-audio off";
+          btn.setAttribute("aria-pressed", "false");
+        }
+      },
+
+      startBgm() {
+        this.stopBgm();
+        if (!this.bgmEnabled || document.hidden) return;
+        this.initContext();
+        if (!this.ctx) return;
+        this.isPlayingBgm = true;
+
+        const playNextNote = () => {
+          if (!this.bgmEnabled || !this.isPlayingBgm || document.hidden || !this.ctx) return;
+          try {
+            const now = this.ctx.currentTime;
+            const freq = this.melodyNotes[this.bgmNoteIndex % this.melodyNotes.length];
+            this.bgmNoteIndex++;
+
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(freq, now);
+
+            const peakGain = GAME_CONFIG.audioDefaults.bgmBaseGain * this.masterVolume;
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.linearRampToValueAtTime(Math.max(0.0002, peakGain), now + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.42);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.44);
+          } catch (e) {}
+          this.bgmTimer = setTimeout(playNextNote, 480);
+        };
+
+        playNextNote();
+      },
+
+      stopBgm() {
+        this.isPlayingBgm = false;
+        if (this.bgmTimer) {
+          clearTimeout(this.bgmTimer);
+          this.bgmTimer = null;
+        }
+      },
+
+      playSfx(type) {
+        if (!this.sfxEnabled || this.masterVolume <= 0.01) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        try {
+          const now = this.ctx.currentTime;
+          const vol = 0.22 * this.masterVolume;
+
+          if (type === "click") {
+            this.tone(660, now, 0.06, "sine", vol * 0.7);
+          } else if (type === "correct") {
+            this.tone(523.25, now, 0.10, "triangle", vol);
+            this.tone(659.25, now + 0.09, 0.14, "triangle", vol);
+            this.tone(783.99, now + 0.18, 0.18, "triangle", vol);
+          } else if (type === "wrong") {
+            this.tone(240, now, 0.14, "sine", vol * 0.8);
+            this.tone(195, now + 0.12, 0.18, "sine", vol * 0.8);
+          } else if (type === "catch") {
+            this.tone(587.33, now, 0.07, "sine", vol);
+            this.tone(880.00, now + 0.06, 0.12, "triangle", vol);
+          } else if (type === "stageClear") {
+            const notes = [523.25, 659.25, 783.99, 1046.5];
+            notes.forEach((n, idx) => {
+              this.tone(n, now + idx * 0.1, 0.18, "triangle", vol * 1.1);
+            });
+          }
+        } catch (e) {}
+      },
+
+      tone(freq, startTime, duration, waveType, peakGain) {
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        osc.type = waveType;
+        osc.frequency.setValueAtTime(freq, startTime);
+        g.gain.setValueAtTime(0.0001, startTime);
+        g.gain.linearRampToValueAtTime(Math.max(0.0002, peakGain), startTime + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+        osc.connect(g);
+        g.connect(this.ctx.destination);
+        osc.start(startTime);
+        osc.stop(startTime + duration + 0.02);
+      }
+    };
+
+    // Tự động tạm dừng nhạc nền khi ẩn tab và bật lại khi quay về tab
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        soundManager.stopBgm();
+      } else if (app.hasStarted && soundManager.bgmEnabled) {
+        soundManager.startBgm();
+      }
+    });
+
+    /**
+     * =========================================================================
+     * PHẦN 3: HỌA SĨ SVG ĐỘNG (PIXEL MASCOT, BỐI CẢNH SÂN THI ĐẤU & SÂN KHẤU)
+     * =========================================================================
+     */
+    const svgArtist = {
+      // Vẽ linh vật Pixel với 4 biểu cảm: happy, thinking, excited, encouraging
+      renderPixelAvatar(mood = "happy") {
+        let eyeMarkup = "";
+        let mouthMarkup = "";
+        let badgeColor = "#4ABDAA";
+
+        if (mood === "happy") {
+          eyeMarkup = `<circle cx="33" cy="38" r="4.5" fill="#4ABDAA"/><circle cx="57" cy="38" r="4.5" fill="#4ABDAA"/>`;
+          mouthMarkup = `<path d="M36 48 Q45 55 54 48" fill="none" stroke="#4ABDAA" stroke-width="3" stroke-linecap="round"/>`;
+        } else if (mood === "thinking") {
+          badgeColor = "#F2BE4A";
+          eyeMarkup = `<rect x="28" y="36" width="10" height="4" rx="2" fill="#F2BE4A"/><circle cx="57" cy="37" r="4.5" fill="#F2BE4A"/>`;
+          mouthMarkup = `<line x1="37" y1="50" x2="53" y2="48" stroke="#F2BE4A" stroke-width="3" stroke-linecap="round"/>`;
+        } else if (mood === "excited") {
+          badgeColor = "#F6B6C8";
+          eyeMarkup = `<path d="M28 40 L33 34 L38 40" fill="none" stroke="#F2BE4A" stroke-width="3" stroke-linecap="round"/><path d="M52 40 L57 34 L62 40" fill="none" stroke="#F2BE4A" stroke-width="3" stroke-linecap="round"/>`;
+          mouthMarkup = `<path d="M34 46 Q45 58 56 46 Z" fill="#F6B6C8"/>`;
+        } else {
+          // encouraging
+          badgeColor = "#F6B6C8";
+          eyeMarkup = `<circle cx="33" cy="38" r="4.5" fill="#FFEBF0"/><circle cx="57" cy="38" r="4.5" fill="#FFEBF0"/>`;
+          mouthMarkup = `<path d="M38 49 Q45 53 52 49" fill="none" stroke="#FFEBF0" stroke-width="3" stroke-linecap="round"/>`;
+        }
+
+        const svg = `
+          <svg viewBox="0 0 90 90" width="72" height="72" role="img" aria-label="Linh vật Pixel">
+            <!-- Ăng-ten -->
+            <line x1="45" y1="6" x2="45" y2="16" stroke="#F2BE4A" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="45" cy="6" r="5" fill="${badgeColor}"/>
+            <!-- Tai rô-bốt -->
+            <rect x="8" y="32" width="8" height="20" rx="4" fill="#F2BE4A"/>
+            <rect x="74" y="32" width="8" height="20" rx="4" fill="#F2BE4A"/>
+            <!-- Đầu rô-bốt -->
+            <rect x="14" y="16" width="62" height="50" rx="16" fill="#FFFFFF" stroke="#58429B" stroke-width="3.5"/>
+            <!-- Màn hình khuôn mặt -->
+            <rect x="21" y="24" width="48" height="34" rx="10" fill="#2B234A"/>
+            ${eyeMarkup}
+            ${mouthMarkup}
+            <!-- Bảng điều khiển mini trước ngực -->
+            <rect x="24" y="68" width="42" height="16" rx="6" fill="${badgeColor}" stroke="#58429B" stroke-width="2.5"/>
+            <circle cx="34" cy="76" r="2.5" fill="#FFF"/>
+            <circle cx="45" cy="76" r="2.5" fill="#FFF"/>
+            <circle cx="56" cy="76" r="2.5" fill="#FFF"/>
+          </svg>
+        `;
+        document.getElementById("pixelAvatarContainer").innerHTML = svg;
+      },
+
+      // Vẽ Bối cảnh Sân thi đấu Mèo bắt bóng trên Banner mở khóa dần theo 4 màn
+      renderArenaBanner(completedStages) {
+        const s1 = completedStages.includes(1);
+        const s2 = completedStages.includes(2);
+        const s3 = completedStages.includes(3);
+        const s4 = completedStages.includes(4);
+
+        const svg = `
+          <svg viewBox="0 0 460 72" width="100%" height="70">
+            <!-- Cột mốc 1: Sân khấu & Nhân vật -->
+            <g transform="translate(8, 6)">
+              <rect width="102" height="60" rx="10" fill="${s1 ? '#4ABDAA' : 'rgba(255,255,255,0.15)'}" stroke="#FFF" stroke-width="1.5"/>
+              <text x="51" y="23" text-anchor="middle" fill="#FFF" font-size="11" font-weight="800">1. SÂN KHẤU</text>
+              <text x="51" y="45" text-anchor="middle" fill="${s1 ? '#FFF4D6' : '#DDD'}" font-size="12" font-weight="900">${s1 ? '🐱 Đã mở!' : '🔒 Chờ mở'}</text>
+            </g>
+            <!-- Cột mốc 2: Sơ đồ Chia việc -->
+            <g transform="translate(122, 6)">
+              <rect width="102" height="60" rx="10" fill="${s2 ? '#4ABDAA' : 'rgba(255,255,255,0.15)'}" stroke="#FFF" stroke-width="1.5"/>
+              <text x="51" y="23" text-anchor="middle" fill="#FFF" font-size="11" font-weight="800">2. THUẬT TOÁN</text>
+              <text x="51" y="45" text-anchor="middle" fill="${s2 ? '#FFF4D6' : '#DDD'}" font-size="12" font-weight="900">${s2 ? '📋 Đã mở!' : '🔒 Chờ mở'}</text>
+            </g>
+            <!-- Cột mốc 3: Cổng Khối lệnh -->
+            <g transform="translate(236, 6)">
+              <rect width="102" height="60" rx="10" fill="${s3 ? '#4ABDAA' : 'rgba(255,255,255,0.15)'}" stroke="#FFF" stroke-width="1.5"/>
+              <text x="51" y="23" text-anchor="middle" fill="#FFF" font-size="11" font-weight="800">3. KHỐI LỆNH</text>
+              <text x="51" y="45" text-anchor="middle" fill="${s3 ? '#FFF4D6' : '#DDD'}" font-size="12" font-weight="900">${s3 ? '🧩 Đã mở!' : '🔒 Chờ mở'}</text>
+            </g>
+            <!-- Cột mốc 4: Cúp Phát triển Game -->
+            <g transform="translate(350, 6)">
+              <rect width="102" height="60" rx="10" fill="${s4 ? '#F2BE4A' : 'rgba(255,255,255,0.15)'}" stroke="#FFF" stroke-width="1.5"/>
+              <text x="51" y="23" text-anchor="middle" fill="${s4 ? '#2B234A' : '#FFF'}" font-size="11" font-weight="800">4. GAME HOÀNCHỈNH</text>
+              <text x="51" y="45" text-anchor="middle" fill="${s4 ? '#2B234A' : '#DDD'}" font-size="12" font-weight="900">${s4 ? '🏆 Xuất sắc!' : '🔒 Chờ mở'}</text>
+            </g>
+          </svg>
+        `;
+        document.getElementById("arenaBannerSvgWrap").innerHTML = svg;
+      },
+
+      // Vẽ Sân khấu mô phỏng trực quan của Màn 1 thay đổi theo từng mục học sinh làm đúng
+      renderStage1Preview(filledState) {
+        const hasBackdrop = Boolean(filledState.backdrop);
+        const hasCat = Boolean(filledState.playerSprite);
+        const hasBall = Boolean(filledState.targetSprite);
+        const hasControl = Boolean(filledState.controlRule);
+        const hasScore = Boolean(filledState.scoreRule);
+
+        const svg = `
+          <svg viewBox="0 0 400 300" width="100%" height="100%">
+            <!-- 1. Phông nền -->
+            ${hasBackdrop ? `
+              <rect width="400" height="300" fill="#D8F3DC"/>
+              <circle cx="345" cy="48" r="24" fill="#FDE047"/>
+              <path d="M0 190 Q200 165 400 195 L400 300 L0 300 Z" fill="#52B788"/>
+              <path d="M0 235 Q200 215 400 240 L400 300 L0 300 Z" fill="#40916C"/>
+            ` : `
+              <rect width="400" height="300" fill="#F4F1FF"/>
+              <line x1="0" y1="150" x2="400" y2="150" stroke="#DCD4F5" stroke-dasharray="6 6" stroke-width="2"/>
+              <line x1="200" y1="0" x2="200" y2="300" stroke="#DCD4F5" stroke-dasharray="6 6" stroke-width="2"/>
+              <text x="200" y="145" text-anchor="middle" fill="#8C82B0" font-size="14" font-weight="700">Chưa chọn Phông nền sân khấu</text>
+            `}
+
+            <!-- 5. Quy tắc tính điểm (Bảng biến Điểm) -->
+            ${hasScore ? `
+              <g transform="translate(14, 14)">
+                <rect width="148" height="42" rx="10" fill="#58429B" stroke="#F2BE4A" stroke-width="2.5"/>
+                <text x="14" y="26" fill="#FFFFFF" font-size="14" font-weight="800">⭐ Biến Điểm: +1</text>
+              </g>
+            ` : ``}
+
+            <!-- 4. Đường dẫn con trỏ chuột -->
+            ${hasControl ? `
+              <g>
+                <path d="M125 210 Q180 185 225 195" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-dasharray="6 5"/>
+                <polygon points="230,190 245,205 237,206 240,215 234,217 231,208 225,212" fill="#2B234A" stroke="#FFF" stroke-width="1.5"/>
+                <text x="200" y="236" text-anchor="middle" fill="#FFFFFF" font-size="12" font-weight="800">Đi theo con trỏ chuột</text>
+              </g>
+            ` : ``}
+
+            <!-- 2. Nhân vật Chú Mèo -->
+            ${hasCat ? `
+              <g transform="translate(75, 165)">
+                <ellipse cx="35" cy="70" rx="28" ry="8" fill="rgba(0,0,0,0.18)"/>
+                <rect x="16" y="32" width="38" height="36" rx="14" fill="#F59E0B" stroke="#B45309" stroke-width="2.5"/>
+                <circle cx="35" cy="18" r="22" fill="#F59E0B" stroke="#B45309" stroke-width="2.5"/>
+                <polygon points="17,4 12,-14 30,0" fill="#F59E0B" stroke="#B45309" stroke-width="2.5"/>
+                <polygon points="53,4 58,-14 40,0" fill="#F59E0B" stroke="#B45309" stroke-width="2.5"/>
+                <circle cx="27" cy="15" r="4.5" fill="#FFF"/><circle cx="28" cy="15" r="2.2" fill="#1F2937"/>
+                <circle cx="43" cy="15" r="4.5" fill="#FFF"/><circle cx="42" cy="15" r="2.2" fill="#1F2937"/>
+                <polygon points="35,20 31,25 39,25" fill="#EC4899"/>
+                <path d="M28 28 Q35 34 42 28" fill="none" stroke="#78350F" stroke-width="2.5" stroke-linecap="round"/>
+              </g>
+            ` : ``}
+
+            <!-- 3. Nhân vật Quả bóng -->
+            ${hasBall ? `
+              <g transform="translate(275, 120)">
+                <path d="M-30 25 L0 25" stroke="#F43F5E" stroke-width="3" stroke-dasharray="4 4"/>
+                <circle cx="26" cy="26" r="22" fill="#F43F5E" stroke="#881337" stroke-width="2.5"/>
+                <polygon points="26,12 30,20 39,20 32,26 34,35 26,30 18,35 20,26 13,20 22,20" fill="#FDE047"/>
+              </g>
+            ` : ``}
+          </svg>
+        `;
+        document.getElementById("stage1PreviewSvgWrap").innerHTML = svg;
+      }
+    };
+
+    /**
+     * =========================================================================
+     * PHẦN 4: MINI-GAME CHƠI THẬT "MÈO BẮT BÓNG" Ở MÀN 4 (CANVAS 2D)
+     * Hỗ trợ điều khiển theo Con trỏ chuột (chuẩn SGK) VÀ Phím mũi tên / Nút bấm
+     * =========================================================================
+     */
+    const catchGame = {
+      canvas: null,
+      ctx: null,
+      isRunning: false,
+      animId: null,
+      controlMode: "mouse", // "mouse" hoặc "keys"
+      cat: { x: 160, y: 270, targetX: 160, targetY: 270, radius: 32, cheerText: "", cheerTimer: 0 },
+      ball: { x: 260, y: 110, vx: 3.4, vy: 2.9, radius: 20, colorIndex: 0 },
+      ballColors: ["#F43F5E", "#8B5CF6", "#10B981", "#F59E0B", "#3B82F6"],
+      score: 0,
+      particles: [],
+      keysPressed: {},
+
+      init() {
+        this.canvas = document.getElementById("catchGameCanvas");
+        if (!this.canvas) return;
+        this.ctx = this.canvas.getContext("2d");
+
+        // Sự kiện di chuyển chuột / cảm ứng trên sân khấu
+        this.canvas.addEventListener("pointermove", (e) => {
+          if (this.controlMode !== "mouse") return;
+          const rect = this.canvas.getBoundingClientRect();
+          const scaleX = this.canvas.width / rect.width;
+          const scaleY = this.canvas.height / rect.height;
+          this.cat.targetX = Math.max(36, Math.min(this.canvas.width - 36, (e.clientX - rect.left) * scaleX));
+          this.cat.targetY = Math.max(55, Math.min(this.canvas.height - 36, (e.clientY - rect.top) * scaleY));
+        });
+
+        this.canvas.addEventListener("pointerdown", (e) => {
+          const rect = this.canvas.getBoundingClientRect();
+          const scaleX = this.canvas.width / rect.width;
+          const scaleY = this.canvas.height / rect.height;
+          this.cat.targetX = Math.max(36, Math.min(this.canvas.width - 36, (e.clientX - rect.left) * scaleX));
+          this.cat.targetY = Math.max(55, Math.min(this.canvas.height - 36, (e.clientY - rect.top) * scaleY));
+        });
+
+        // Bàn phím mũi tên / WASD
+        window.addEventListener("keydown", (e) => {
+          if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key) && app.currentStage === 4 && this.isRunning) {
+            e.preventDefault();
+          }
+          this.keysPressed[e.key] = true;
+        });
+        window.addEventListener("keyup", (e) => {
+          this.keysPressed[e.key] = false;
+        });
+
+        this.resetState();
+        this.drawFrame();
+      },
+
+      resetState() {
+        this.stop();
+        this.score = 0;
+        this.cat.x = 160;
+        this.cat.y = 260;
+        this.cat.targetX = 160;
+        this.cat.targetY = 260;
+        this.cat.cheerText = "";
+        this.cat.cheerTimer = 0;
+        this.ball.x = 340;
+        this.ball.y = 110;
+        this.ball.vx = 3.5;
+        this.ball.vy = 2.8;
+        this.ball.colorIndex = 0;
+        this.particles = [];
+        this.updateStatusText();
+        this.drawFrame();
+      },
+
+      toggleControlMode() {
+        soundManager.playSfx("click");
+        this.controlMode = this.controlMode === "mouse" ? "keys" : "mouse";
+        const btn = document.getElementById("btnControlModeStage4");
+        if (this.controlMode === "mouse") {
+          btn.textContent = "🖱️ Điều khiển: Theo con trỏ chuột (Chuẩn SGK)";
+        } else {
+          btn.textContent = "⌨️ Điều khiển: Phím mũi tên / Nút bấm";
+        }
+      },
+
+      nudgeCat(dx, dy) {
+        this.cat.targetX = Math.max(36, Math.min(this.canvas.width - 36, this.cat.targetX + dx));
+        this.cat.targetY = Math.max(55, Math.min(this.canvas.height - 36, this.cat.targetY + dy));
+        if (!this.isRunning) {
+          this.cat.x = this.cat.targetX;
+          this.cat.y = this.cat.targetY;
+          this.drawFrame();
+        }
+      },
+
+      togglePlay() {
+        soundManager.playSfx("click");
+        if (this.isRunning) {
+          this.stop();
+        } else {
+          this.start();
+        }
+      },
+
+      start() {
+        if (this.isRunning) return;
+        this.isRunning = true;
+        const btn = document.getElementById("btnTogglePlayStage4");
+        if (btn) btn.textContent = "⏸️ Tạm dừng trò chơi";
+        const loop = () => {
+          if (!this.isRunning) return;
+          this.updatePhysics();
+          this.drawFrame();
+          this.animId = requestAnimationFrame(loop);
+        };
+        this.animId = requestAnimationFrame(loop);
+      },
+
+      stop() {
+        this.isRunning = false;
+        if (this.animId) {
+          cancelAnimationFrame(this.animId);
+          this.animId = null;
+        }
+        const btn = document.getElementById("btnTogglePlayStage4");
+        if (btn) btn.textContent = "⚑ Chạy trò chơi";
+      },
+
+      updatePhysics() {
+        // Điều khiển bằng bàn phím
+        const step = 5.5;
+        if (this.keysPressed["ArrowLeft"] || this.keysPressed["a"] || this.keysPressed["A"]) this.cat.targetX -= step;
+        if (this.keysPressed["ArrowRight"] || this.keysPressed["d"] || this.keysPressed["D"]) this.cat.targetX += step;
+        if (this.keysPressed["ArrowUp"] || this.keysPressed["w"] || this.keysPressed["W"]) this.cat.targetY -= step;
+        if (this.keysPressed["ArrowDown"] || this.keysPressed["s"] || this.keysPressed["S"]) this.cat.targetY += step;
+
+        this.cat.targetX = Math.max(36, Math.min(this.canvas.width - 36, this.cat.targetX));
+        this.cat.targetY = Math.max(55, Math.min(this.canvas.height - 36, this.cat.targetY));
+
+        // Mèo di chuyển mượt về phía vị trí đích
+        this.cat.x += (this.cat.targetX - this.cat.x) * 0.22;
+        this.cat.y += (this.cat.targetY - this.cat.y) * 0.22;
+
+        // Kiểm tra trạng thái sửa 2 lỗi ở Màn 4
+        const bug1Fixed = app.state.stage4.bugsFixed.bug1;
+        const bug2Fixed = app.state.stage4.bugsFixed.bug2;
+        const upgradeId = app.state.stage4.selectedUpgrade;
+
+        // Nếu Lỗi 1 chưa sửa: Điểm bị đặt về 0 liên tục trong vòng lặp!
+        if (!bug1Fixed && this.score > 0) {
+          this.score = 0;
+          this.updateStatusText();
+        }
+
+        // Di chuyển quả bóng
+        this.ball.x += this.ball.vx;
+        this.ball.y += this.ball.vy;
+
+        // Chạm cạnh sân khấu thì bật lại
+        if (this.ball.x - this.ball.radius < 8) {
+          this.ball.x = 8 + this.ball.radius;
+          this.ball.vx = Math.abs(this.ball.vx);
+        } else if (this.ball.x + this.ball.radius > this.canvas.width - 8) {
+          this.ball.x = this.canvas.width - 8 - this.ball.radius;
+          this.ball.vx = -Math.abs(this.ball.vx);
+        }
+
+        if (this.ball.y - this.ball.radius < 48) {
+          this.ball.y = 48 + this.ball.radius;
+          this.ball.vy = Math.abs(this.ball.vy);
+        } else if (this.ball.y + this.ball.radius > this.canvas.height - 8) {
+          this.ball.y = this.canvas.height - 8 - this.ball.radius;
+          this.ball.vy = -Math.abs(this.ball.vy);
+        }
+
+        // Kiểm tra va chạm giữa Quả bóng và Chú Mèo
+        const dx = this.ball.x - this.cat.x;
+        const dy = this.ball.y - this.cat.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < this.ball.radius + this.cat.radius - 4) {
+          soundManager.playSfx("catch");
+
+          if (!bug1Fixed) {
+            // Minh họa rõ Lỗi 1
+            app.setFeedback(4, "error", "⚠️ LỖI 1 ĐANG XẢY RA: Mèo vừa chạm bóng nhưng khối 'Đặt Điểm thành 0' nằm trong vòng lặp nên Điểm lại bị xóa về 0! Hãy sửa Lỗi 1 ở cột bên trái nhé.");
+          } else if (!bug2Fixed) {
+            // Minh họa rõ Lỗi 2
+            app.setFeedback(4, "error", "⚠️ LỖI 2 ĐANG XẢY RA: Bóng chạm Mèo nhưng chưa có lệnh đổi hướng nảy ra xa! Hãy sửa tiếp Lỗi 2 ở cột bên trái để tính điểm chuẩn xác nhé.");
+          } else {
+            // Đã sửa cả 2 lỗi -> Tăng điểm thật!
+            this.score += 1;
+            this.spawnStars(this.ball.x, this.ball.y);
+            this.updateStatusText();
+
+            // Áp dụng nâng cấp Vận dụng
+            if (upgradeId === "up_speed") {
+              const speedMult = 1.07;
+              this.ball.vx = Math.max(-7.5, Math.min(7.5, this.ball.vx * speedMult));
+              this.ball.vy = Math.max(-7.5, Math.min(7.5, this.ball.vy * speedMult));
+            } else if (upgradeId === "up_color") {
+              this.ball.colorIndex = (this.ball.colorIndex + 1) % this.ballColors.length;
+            } else if (upgradeId === "up_cheer") {
+              const cheers = ["Tuyệt quá! +1", "Bắt chuẩn lắm!", "Siêu đỉnh! ⭐", "Giỏi quá!"];
+              this.cat.cheerText = cheers[this.score % cheers.length];
+              this.cat.cheerTimer = 50;
+            }
+
+            app.checkStage4Completion();
+          }
+
+          // Đẩy quả bóng nảy sang hướng khác
+          const angle = Math.atan2(dy, dx) + (Math.random() * 0.5 - 0.25);
+          const speed = Math.hypot(this.ball.vx, this.ball.vy);
+          this.ball.vx = Math.cos(angle) * speed;
+          this.ball.vy = Math.sin(angle) * speed;
+          this.ball.x = this.cat.x + Math.cos(angle) * (this.cat.radius + this.ball.radius + 8);
+          this.ball.y = this.cat.y + Math.sin(angle) * (this.cat.radius + this.ball.radius + 8);
+        }
+
+        if (this.cat.cheerTimer > 0) this.cat.cheerTimer--;
+
+        // Cập nhật hạt ngôi sao
+        this.particles.forEach((p) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= 1;
+        });
+        this.particles = this.particles.filter((p) => p.life > 0);
+      },
+
+      spawnStars(x, y) {
+        for (let i = 0; i < 8; i++) {
+          const ang = (Math.PI * 2 * i) / 8;
+          this.particles.push({
+            x,
+            y,
+            vx: Math.cos(ang) * 2.5,
+            vy: Math.sin(ang) * 2.5,
+            life: 22
+          });
+        }
+      },
+
+      updateStatusText() {
+        const el = document.getElementById("stage4CatchStatus");
+        if (el) {
+          el.textContent = `Điểm bắt bóng: ${this.score} / ${GAME_CONFIG.stage4.targetCatches}`;
+        }
+      },
+
+      drawFrame() {
+        if (!this.ctx) return;
+        const ctx = this.ctx;
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+
+        // Nền bầu trời và sân cỏ
+        ctx.fillStyle = "#D8F3FF";
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.fillStyle = "#6EE7B7";
+        ctx.beginPath();
+        ctx.moveTo(0, 175);
+        ctx.quadraticCurveTo(w / 2, 145, w, 175);
+        ctx.lineTo(w, h);
+        ctx.lineTo(0, h);
+        ctx.closePath();
+        ctx.fill();
+
+        // Thanh trạng thái trên sân khấu
+        ctx.fillStyle = "#58429B";
+        ctx.fillRect(0, 0, w, 42);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.font = "bold 15px 'Segoe UI', sans-serif";
+        ctx.fillText(`⭐ Biến [Điểm]: ${this.score}`, 14, 26);
+
+        const bug1Fixed = app.state ? app.state.stage4.bugsFixed.bug1 : false;
+        const bug2Fixed = app.state ? app.state.stage4.bugsFixed.bug2 : false;
+        ctx.fillStyle = bug1Fixed && bug2Fixed ? "#A7F3D0" : "#FECDD3";
+        ctx.font = "bold 13px 'Segoe UI', sans-serif";
+        ctx.fillText(
+          bug1Fixed && bug2Fixed ? "✅ Đã sửa sạch lỗi kịch bản" : "⚠️ Chưa sửa hết 2 lỗi kịch bản",
+          w - 220,
+          26
+        );
+
+        // Vẽ Nhân vật Chú Mèo
+        ctx.save();
+        ctx.translate(this.cat.x, this.cat.y);
+        // Bóng đổ dưới chân
+        ctx.fillStyle = "rgba(0,0,0,0.15)";
+        ctx.beginPath();
+        ctx.ellipse(0, 26, 26, 8, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Tai mèo
+        ctx.fillStyle = "#F59E0B";
+        ctx.strokeStyle = "#B45309";
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(-20, -10);
+        ctx.lineTo(-26, -32);
+        ctx.lineTo(-6, -20);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(20, -10);
+        ctx.lineTo(26, -32);
+        ctx.lineTo(6, -20);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Đầu & thân mèo
+        ctx.beginPath();
+        ctx.arc(0, 0, 26, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Mắt
+        ctx.fillStyle = "#FFFFFF";
+        ctx.beginPath();
+        ctx.arc(-9, -4, 5, 0, Math.PI * 2);
+        ctx.arc(9, -4, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#1F2937";
+        ctx.beginPath();
+        ctx.arc(-9, -4, 2.5, 0, Math.PI * 2);
+        ctx.arc(9, -4, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Mũi hồng & miệng cười
+        ctx.fillStyle = "#EC4899";
+        ctx.beginPath();
+        ctx.moveTo(0, 1);
+        ctx.lineTo(-4, 6);
+        ctx.lineTo(4, 6);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = "#78350F";
+        ctx.beginPath();
+        ctx.arc(0, 7, 7, 0.15 * Math.PI, 0.85 * Math.PI);
+        ctx.stroke();
+
+        // Bóng chữ khen ngợi nếu chọn Nâng cấp 3
+        if (this.cat.cheerTimer > 0 && this.cat.cheerText) {
+          ctx.fillStyle = "#FFFFFF";
+          ctx.strokeStyle = "#58429B";
+          ctx.lineWidth = 2;
+          ctx.fillRect(-52, -58, 104, 24);
+          ctx.strokeRect(-52, -58, 104, 24);
+          ctx.fillStyle = "#58429B";
+          ctx.font = "bold 12px 'Segoe UI', sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(this.cat.cheerText, 0, -42);
+          ctx.textAlign = "start";
+        }
+        ctx.restore();
+
+        // Vẽ Quả bóng
+        ctx.save();
+        ctx.translate(this.ball.x, this.ball.y);
+        ctx.fillStyle = this.ballColors[this.ball.colorIndex];
+        ctx.strokeStyle = "#881337";
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.ball.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#FDE047";
+        ctx.beginPath();
+        ctx.arc(0, 0, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // Vẽ hiệu ứng ngôi sao khi bắt trúng
+        this.particles.forEach((p) => {
+          ctx.fillStyle = "#FDE047";
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+    };
+
+    /**
+     * =========================================================================
+     * PHẦN 5: ĐIỀU KHIỂN LUỒNG TRÒ CHƠI CHÍNH (APP CONTROLLER)
+     * =========================================================================
+     */
+    const app = {
+      hasStarted: false,
+      playMode: "practice", // "practice" hoặc "challenge"
+      currentStage: 0,
+      score: 0,
+      completedStages: [],
+      stage3Timer: null,
+
+      state: {
+        hintsUsed: { 1: 0, 2: 0, 3: 0, 4: 0 },
+        stage1: {
+          selectedCardId: null,
+          filledSlots: {} // slotId -> cardId
+        },
+        stage2: {
+          stepsOrder: [],
+          swapIndex: null,
+          assignments: {} // asId -> "cat" | "ball"
+        },
+        stage3: {
+          activeTab: "cat",
+          selectedBlockId: null,
+          filledSlots: {} // slotId -> blockId
+        },
+        stage4: {
+          bugsFixed: { bug1: false, bug2: false },
+          selectedUpgrade: null
+        }
+      },
+
+      init() {
+        svgArtist.renderPixelAvatar("happy");
+        svgArtist.renderArenaBanner([]);
+        catchGame.init();
+        this.resetAllData();
+      },
+
+      resetAllData() {
+        this.score = 0;
+        this.completedStages = [];
+        this.state.hintsUsed = { 1: 0, 2: 0, 3: 0, 4: 0 };
+        this.initStage1State();
+        this.initStage2State();
+        this.initStage3State();
+        this.initStage4State();
+        this.updateHeaderUI();
+        svgArtist.renderArenaBanner(this.completedStages);
+      },
+
+      selectMode(mode) {
+        soundManager.playSfx("click");
+        this.playMode = mode;
+        document.getElementById("modeOptPractice").classList.toggle("selected", mode === "practice");
+        document.getElementById("modeOptPractice").setAttribute("aria-checked", mode === "practice");
+        document.getElementById("modeOptChallenge").classList.toggle("selected", mode === "challenge");
+        document.getElementById("modeOptChallenge").setAttribute("aria-checked", mode === "challenge");
+        document.getElementById("headerModeLabel").textContent =
+          mode === "practice" ? "Chế độ: Luyện tập" : "Chế độ: Thử thách";
+      },
+
+      toggleHelpModal(open) {
+        soundManager.playSfx("click");
+        document.getElementById("helpModal").classList.toggle("open", open);
+      },
+
+      startGame() {
+        this.hasStarted = true;
+        soundManager.initContext();
+        soundManager.playSfx("click");
+        if (soundManager.bgmEnabled) {
+          soundManager.startBgm();
+        }
+        this.goToStage(1);
+      },
+
+      showHome() {
+        soundManager.playSfx("click");
+        catchGame.stop();
+        this.stopStage3Sim();
+        this.currentStage = 0;
+        this.switchScreen("screenWelcome");
+        svgArtist.renderPixelAvatar("happy");
+        document.getElementById("stageProgressBadge").textContent = "Màn chào mừng";
+        document.getElementById("pixelSpeechText").textContent =
+          "Chào mừng nhà phát triển nhí! Hãy bấm 'Bắt đầu làm game' để tiếp tục hành trình nhé!";
+        this.updateHeaderUI();
+      },
+
+      goToStage(stageNum) {
+        soundManager.playSfx("click");
+        catchGame.stop();
+        this.stopStage3Sim();
+        this.currentStage = stageNum;
+
+        this.switchScreen(`screenStage${stageNum}`);
+        document.getElementById("stageProgressBadge").textContent = `Màn ${stageNum} / 4`;
+
+        const stageConfig = GAME_CONFIG[`stage${stageNum}`];
+        if (stageConfig) {
+          document.getElementById("pixelSpeechText").textContent = stageConfig.pixelIntro;
+        }
+        svgArtist.renderPixelAvatar("happy");
+
+        // Nếu ở chế độ Luyện tập và chưa dùng gợi ý nào, hiển thị ngay Gợi ý 1 thân thiện
+        if (this.playMode === "practice" && this.state.hintsUsed[stageNum] === 0 && !this.completedStages.includes(stageNum)) {
+          this.showHint(stageNum, true);
+        }
+
+        if (stageNum === 1) this.renderStage1();
+        if (stageNum === 2) this.renderStage2();
+        if (stageNum === 3) this.renderStage3();
+        if (stageNum === 4) {
+          this.renderStage4();
+          catchGame.drawFrame();
+        }
+
+        this.updateHeaderUI();
+      },
+
+      switchScreen(screenId) {
+        document.querySelectorAll(".screen-card").forEach((el) => {
+          el.classList.toggle("active", el.id === screenId);
+        });
+      },
+
+      updateHeaderUI() {
+        document.getElementById("headerScoreText").textContent = `${this.score} / 100`;
+
+        for (let i = 1; i <= 4; i++) {
+          const btn = document.getElementById(`navStage${i}`);
+          const isCompleted = this.completedStages.includes(i);
+          const isUnlocked = i === 1 || this.completedStages.includes(i - 1) || isCompleted || this.currentStage === i;
+          btn.disabled = !isUnlocked;
+          btn.classList.toggle("active", this.currentStage === i);
+          btn.classList.toggle("completed", isCompleted);
+        }
+      },
+
+      awardStagePoints(stageNum) {
+        if (!this.completedStages.includes(stageNum)) {
+          this.completedStages.push(stageNum);
+          this.score += GAME_CONFIG.lessonInfo.pointsPerStage;
+        }
+        soundManager.playSfx("stageClear");
+        svgArtist.renderPixelAvatar("excited");
+        svgArtist.renderArenaBanner(this.completedStages);
+        this.updateHeaderUI();
+        this.triggerCelebration();
+      },
+
+      setFeedback(stageNum, type, message) {
+        const box = document.getElementById(`feedbackStage${stageNum}`);
+        if (!box) return;
+        box.className = `feedback-banner ${type}`;
+        box.innerHTML = `<span>${message}</span>`;
+      },
+
+      showHint(stageNum, silent = false) {
+        if (!silent) soundManager.playSfx("click");
+        const hints = GAME_CONFIG[`stage${stageNum}`].hints;
+        const currentIdx = Math.min(2, (this.state.hintsUsed[stageNum] || 0) + 1);
+        this.state.hintsUsed[stageNum] = currentIdx;
+
+        const counterEl = document.getElementById(`hintCount${stageNum}`);
+        if (counterEl) counterEl.textContent = `${currentIdx}/2`;
+
+        const hintText = hints[currentIdx - 1];
+        this.setFeedback(stageNum, "hint", `💡 ${hintText}`);
+        document.getElementById("pixelSpeechText").textContent = hintText;
+        svgArtist.renderPixelAvatar("encouraging");
+      },
+
+      resetStage(stageNum) {
+        soundManager.playSfx("click");
+        if (stageNum === 1) {
+          this.initStage1State();
+          this.renderStage1();
+          this.setFeedback(1, "", "🔄 Đã làm mới Màn 1. Hãy chọn thẻ và gắn vào 5 ô phân tích kịch bản nhé!");
+        } else if (stageNum === 2) {
+          this.initStage2State();
+          this.renderStage2();
+          this.setFeedback(2, "", "🔄 Đã làm mới Màn 2. Hãy sắp xếp 5 bước và phân công nhiệm vụ cho nhân vật!");
+        } else if (stageNum === 3) {
+          this.stopStage3Sim();
+          this.initStage3State();
+          this.renderStage3();
+          this.setFeedback(3, "", "🔄 Đã làm mới Màn 3. Hãy lắp lại các khối lệnh cho Mèo và Quả bóng nhé!");
+        } else if (stageNum === 4) {
+          this.initStage4State();
+          catchGame.resetState();
+          this.renderStage4();
+          this.setFeedback(4, "", "🔄 Đã làm mới Màn 4. Hãy sửa 2 lỗi, chọn nâng cấp và bắt đủ 5 quả bóng!");
+        }
+      },
+
+      /* =====================================================================
+         LOGIC MÀN 1: PHÂN TÍCH KỊCH BẢN
+         ===================================================================== */
+      initStage1State() {
+        this.state.stage1.selectedCardId = null;
+        this.state.stage1.filledSlots = {};
+      },
+
+      renderStage1() {
+        const slotsWrap = document.getElementById("stage1SlotsContainer");
+        const cardsWrap = document.getElementById("stage1CardsContainer");
+        const filled = this.state.stage1.filledSlots;
+        const selectedId = this.state.stage1.selectedCardId;
+
+        slotsWrap.innerHTML = GAME_CONFIG.stage1.slots.map((slot) => {
+          const cardId = filled[slot.id];
+          const cardObj = GAME_CONFIG.stage1.cards.find((c) => c.id === cardId);
+          return `
+            <div class="scenario-slot-row ${cardObj ? 'filled-correct' : ''} ${selectedId && !cardObj ? 'active-target' : ''}">
+              <div class="slot-label">${slot.label}</div>
+              <div class="drop-zone ${cardObj ? 'correct' : ''}" tabindex="0" role="button"
+                   onclick="app.handleStage1SlotClick('${slot.id}')"
+                   onkeydown="if(event.key==='Enter'||event.key===' ') app.handleStage1SlotClick('${slot.id}')"
+                   ondragover="event.preventDefault()"
+                   ondrop="app.handleStage1Drop(event, '${slot.id}')">
+                <span>${cardObj ? cardObj.text : slot.placeholder}</span>
+                <span>${cardObj ? '✅' : '➕ Chọn vào đây'}</span>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        const usedCardIds = Object.values(filled);
+        cardsWrap.innerHTML = GAME_CONFIG.stage1.cards.map((card) => {
+          const isUsed = usedCardIds.includes(card.id);
+          const isSelected = selectedId === card.id;
+          return `
+            <div class="choice-chip ${isSelected ? 'selected-chip' : ''} ${isUsed ? 'used-chip' : ''}"
+                 tabindex="${isUsed ? -1 : 0}" role="button" draggable="${!isUsed}"
+                 ondragstart="app.handleStage1DragStart(event, '${card.id}')"
+                 onclick="app.selectStage1Card('${card.id}')"
+                 onkeydown="if(event.key==='Enter'||event.key===' ') app.selectStage1Card('${card.id}')">
+              ${card.text}
+            </div>
+          `;
+        }).join("");
+
+        const count = usedCardIds.length;
+        document.getElementById("stage1ProgressCounter").textContent = `Đã hoàn thành: ${count}/5`;
+        document.getElementById("btnNextStage1").disabled = !this.completedStages.includes(1);
+        svgArtist.renderStage1Preview(filled);
+      },
+
+      selectStage1Card(cardId) {
+        soundManager.playSfx("click");
+        this.state.stage1.selectedCardId = cardId;
+        this.renderStage1();
+      },
+
+      handleStage1DragStart(e, cardId) {
+        this.state.stage1.selectedCardId = cardId;
+        e.dataTransfer.setData("text/plain", cardId);
+      },
+
+      handleStage1Drop(e, slotId) {
+        e.preventDefault();
+        const cardId = e.dataTransfer.getData("text/plain") || this.state.stage1.selectedCardId;
+        if (cardId) {
+          this.state.stage1.selectedCardId = cardId;
+          this.handleStage1SlotClick(slotId);
+        }
+      },
+
+      handleStage1SlotClick(slotId) {
+        const cardId = this.state.stage1.selectedCardId;
+        if (!cardId) {
+          this.setFeedback(1, "hint", "👉 Em hãy bấm chọn một thẻ trong Kho thẻ bên dưới trước, rồi bấm vào ô này nhé!");
+          return;
+        }
+
+        const slotObj = GAME_CONFIG.stage1.slots.find((s) => s.id === slotId);
+        const cardObj = GAME_CONFIG.stage1.cards.find((c) => c.id === cardId);
+
+        if (slotObj.correctCardId === cardId) {
+          this.state.stage1.filledSlots[slotId] = cardId;
+          this.state.stage1.selectedCardId = null;
+          soundManager.playSfx("correct");
+          svgArtist.renderPixelAvatar("happy");
+          this.setFeedback(1, "success", `🎉 ${cardObj.explanationCorrect}`);
+          this.renderStage1();
+
+          if (Object.keys(this.state.stage1.filledSlots).length === GAME_CONFIG.stage1.slots.length) {
+            this.awardStagePoints(1);
+            document.getElementById("btnNextStage1").disabled = false;
+            this.setFeedback(1, "success", "🏆 Tuyệt vời! Em đã phân tích hoàn chỉnh kịch bản 'Mèo bắt bóng' và đạt 25 điểm Màn 1! Hãy nhấn 'Tiếp tục Màn 2'.");
+            document.getElementById("pixelSpeechText").textContent =
+              "Xuất sắc! Sân khấu đã hiện lên đầy đủ. Hãy nhấn 'Tiếp tục Màn 2' để chia nhỏ công việc lập trình nhé!";
+          }
+        } else {
+          soundManager.playSfx("wrong");
+          svgArtist.renderPixelAvatar("thinking");
+          this.setFeedback(1, "error", `❌ Chưa khớp: ${cardObj.explanationWrong}`);
+        }
+      },
+
+      /* =====================================================================
+         LOGIC MÀN 2: CHIA NHỎ VIỆC LẬP TRÌNH
+         ===================================================================== */
+      initStage2State() {
+        // Xáo trộn thứ tự ban đầu cố định để học sinh sắp xếp
+        const initialOrder = ["step3", "step1", "step5", "step2", "step4"];
+        this.state.stage2.stepsOrder = initialOrder.map((id) =>
+          GAME_CONFIG.stage2.stepsCorrectOrder.find((s) => s.id === id)
+        );
+        this.state.stage2.swapIndex = null;
+        this.state.stage2.assignments = {};
+        this.state.stage2.verified = false;
+      },
+
+      renderStage2() {
+        const stepsContainer = document.getElementById("stage2StepsContainer");
+        const swapIdx = this.state.stage2.swapIndex;
+
+        stepsContainer.innerHTML = this.state.stage2.stepsOrder.map((step, idx) => {
+          const isCorrectPos = this.state.stage2.verified && step.id === GAME_CONFIG.stage2.stepsCorrectOrder[idx].id;
+          const isWrongPos = this.state.stage2.verified && !isCorrectPos;
+          return `
+            <div class="step-item ${swapIdx === idx ? 'selected-swap' : ''} ${isCorrectPos ? 'step-correct' : ''} ${isWrongPos ? 'step-wrong' : ''}">
+              <span class="step-index-badge">Bước ${idx + 1}</span>
+              <button type="button" class="step-text-btn" onclick="app.handleStage2SwapClick(${idx})">
+                ${step.text}
+              </button>
+              <div class="step-move-btns">
+                <button type="button" class="mini-icon-btn" onclick="app.moveStage2Step(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} aria-label="Đưa lên">⬆️</button>
+                <button type="button" class="mini-icon-btn" onclick="app.moveStage2Step(${idx}, 1)" ${idx === 4 ? 'disabled' : ''} aria-label="Đưa xuống">⬇️</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        const assignContainer = document.getElementById("stage2AssignContainer");
+        const assigns = this.state.stage2.assignments;
+        assignContainer.innerHTML = GAME_CONFIG.stage2.assignments.map((item) => {
+          const picked = assigns[item.id];
+          const isRight = this.state.stage2.verified && picked === item.correctTarget;
+          const isWrong = this.state.stage2.verified && picked !== item.correctTarget;
+          return `
+            <div class="assign-row ${isRight ? 'correct' : ''} ${isWrong ? 'wrong' : ''}">
+              <div style="font-weight:700;font-size:0.9rem;">${item.taskText}</div>
+              <div class="assign-btn-group">
+                <button type="button" class="assign-choice-btn ${picked === 'cat' ? 'active' : ''}"
+                        onclick="app.pickStage2Assign('${item.id}', 'cat')">
+                  🐱 Kịch bản của Mèo
+                </button>
+                <button type="button" class="assign-choice-btn ${picked === 'ball' ? 'active' : ''}"
+                        onclick="app.pickStage2Assign('${item.id}', 'ball')">
+                  ⚽ Kịch bản của Quả bóng
+                </button>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        document.getElementById("btnNextStage2").disabled = !this.completedStages.includes(2);
+      },
+
+      handleStage2SwapClick(idx) {
+        soundManager.playSfx("click");
+        this.state.stage2.verified = false;
+        if (this.state.stage2.swapIndex === null) {
+          this.state.stage2.swapIndex = idx;
+        } else {
+          const first = this.state.stage2.swapIndex;
+          const temp = this.state.stage2.stepsOrder[first];
+          this.state.stage2.stepsOrder[first] = this.state.stage2.stepsOrder[idx];
+          this.state.stage2.stepsOrder[idx] = temp;
+          this.state.stage2.swapIndex = null;
+        }
+        this.renderStage2();
+      },
+
+      moveStage2Step(idx, dir) {
+        soundManager.playSfx("click");
+        this.state.stage2.verified = false;
+        const target = idx + dir;
+        if (target < 0 || target >= this.state.stage2.stepsOrder.length) return;
+        const temp = this.state.stage2.stepsOrder[idx];
+        this.state.stage2.stepsOrder[idx] = this.state.stage2.stepsOrder[target];
+        this.state.stage2.stepsOrder[target] = temp;
+        this.state.stage2.swapIndex = null;
+        this.renderStage2();
+      },
+
+      pickStage2Assign(asId, target) {
+        soundManager.playSfx("click");
+        this.state.stage2.verified = false;
+        this.state.stage2.assignments[asId] = target;
+        this.renderStage2();
+      },
+
+      verifyStage2() {
+        this.state.stage2.verified = true;
+        let correctSteps = 0;
+        this.state.stage2.stepsOrder.forEach((s, i) => {
+          if (s.id === GAME_CONFIG.stage2.stepsCorrectOrder[i].id) correctSteps++;
+        });
+
+        let correctAssigns = 0;
+        let wrongExplanation = "";
+        GAME_CONFIG.stage2.assignments.forEach((item) => {
+          if (this.state.stage2.assignments[item.id] === item.correctTarget) {
+            correctAssigns++;
+          } else if (!wrongExplanation) {
+            wrongExplanation = item.explanation;
+          }
+        });
+
+        this.renderStage2();
+
+        if (correctSteps === 5 && correctAssigns === 3) {
+          this.awardStagePoints(2);
+          document.getElementById("btnNextStage2").disabled = false;
+          this.setFeedback(2, "success", "🏆 Chính xác 100%! Em đã sắp xếp đúng quy trình 5 bước và phân công chuẩn xác nhiệm vụ cho Mèo và Quả bóng (+25 điểm)!");
+          document.getElementById("pixelSpeechText").textContent =
+            "Tuyệt vời! Quy trình đã sẵn sàng. Hãy nhấn 'Tiếp tục Màn 3' để lắp ghép các khối lệnh Scratch nhé!";
+        } else {
+          soundManager.playSfx("wrong");
+          svgArtist.renderPixelAvatar("thinking");
+          let msg = `⚠️ Kết quả kiểm tra: Phần A đúng ${correctSteps}/5 bước; Phần B đúng ${correctAssigns}/3 nhiệm vụ. `;
+          if (wrongExplanation) msg += `Lưu ý: ${wrongExplanation}`;
+          this.setFeedback(2, "error", msg);
+        }
+      },
+
+      /* =====================================================================
+         LOGIC MÀN 3: LẮP GHÉP CHƯƠNG TRÌNH SCRATCH
+         ===================================================================== */
+      initStage3State() {
+        this.state.stage3.activeTab = "cat";
+        this.state.stage3.selectedBlockId = null;
+        this.state.stage3.filledSlots = {};
+      },
+
+      switchStage3Tab(tab) {
+        soundManager.playSfx("click");
+        this.state.stage3.activeTab = tab;
+        document.getElementById("tabSpriteCat").classList.toggle("active", tab === "cat");
+        document.getElementById("tabSpriteBall").classList.toggle("active", tab === "ball");
+        document.getElementById("scriptPanelCat").style.display = tab === "cat" ? "flex" : "none";
+        document.getElementById("scriptPanelBall").style.display = tab === "ball" ? "flex" : "none";
+      },
+
+      renderStage3() {
+        const palette = document.getElementById("stage3PaletteContainer");
+        const filled = this.state.stage3.filledSlots;
+        const usedIds = Object.values(filled);
+        const selectedId = this.state.stage3.selectedBlockId;
+
+        palette.innerHTML = GAME_CONFIG.stage3.blocks.map((b) => {
+          const isUsed = usedIds.includes(b.id);
+          const isSelected = selectedId === b.id;
+          return `
+            <div class="scratch-block ${b.category} ${isSelected ? 'selected-block' : ''} ${isUsed ? 'used-block' : ''}"
+                 tabindex="${isUsed ? -1 : 0}" role="button"
+                 onclick="app.selectStage3Block('${b.id}')"
+                 onkeydown="if(event.key==='Enter'||event.key===' ') app.selectStage3Block('${b.id}')">
+              ${b.text}
+            </div>
+          `;
+        }).join("");
+
+        Object.keys(GAME_CONFIG.stage3.slots).forEach((slotKey) => {
+          const slotDef = GAME_CONFIG.stage3.slots[slotKey];
+          const slotEl = document.getElementById(`slot_${slotKey}`);
+          const blockId = filled[slotKey];
+          const blockObj = GAME_CONFIG.stage3.blocks.find((b) => b.id === blockId);
+
+          if (blockObj) {
+            slotEl.className = `scratch-block ${blockObj.category}`;
+            slotEl.innerHTML = `<span>${blockObj.text}</span><span>✅</span>`;
+          } else {
+            slotEl.className = "block-slot";
+            slotEl.innerHTML = `<span>${slotDef.label}</span><span>➕ Lắp vào đây</span>`;
+          }
+        });
+
+        const catDone = ["M1", "M2", "M3"].filter((k) => filled[k]).length;
+        const ballDone = ["B1", "B2", "B3", "B4"].filter((k) => filled[k]).length;
+        document.getElementById("catSlotProgress").textContent = `${catDone}/3`;
+        document.getElementById("ballSlotProgress").textContent = `${ballDone}/4`;
+        document.getElementById("btnNextStage3").disabled = !this.completedStages.includes(3);
+      },
+
+      selectStage3Block(blockId) {
+        soundManager.playSfx("click");
+        this.state.stage3.selectedBlockId = blockId;
+        this.renderStage3();
+      },
+
+      handleStage3SlotClick(slotKey) {
+        const blockId = this.state.stage3.selectedBlockId;
+        if (!blockId) {
+          this.setFeedback(3, "hint", "👉 Em hãy nháy chọn một khối lệnh ở Kho khối lệnh bên trái trước nhé!");
+          return;
+        }
+
+        const slotDef = GAME_CONFIG.stage3.slots[slotKey];
+        const blockObj = GAME_CONFIG.stage3.blocks.find((b) => b.id === blockId);
+
+        if (slotDef.correctBlockId === blockId) {
+          this.state.stage3.filledSlots[slotKey] = blockId;
+          this.state.stage3.selectedBlockId = null;
+          soundManager.playSfx("correct");
+          this.setFeedback(3, "success", `🎉 ${blockObj.explanationCorrect}`);
+          this.renderStage3();
+
+          // Tự động chuyển sang tab Quả bóng nếu lắp xong 3 ô của Mèo
+          const filled = this.state.stage3.filledSlots;
+          if (filled.M1 && filled.M2 && filled.M3 && this.state.stage3.activeTab === "cat" && (!filled.B1 || !filled.B2)) {
+            setTimeout(() => this.switchStage3Tab("ball"), 350);
+          }
+
+          if (Object.keys(filled).length === 7) {
+            this.setFeedback(3, "hint", "🌟 Em đã lắp đủ 7 vị trí khối lệnh! Hãy nhấn nút '⚑ Chạy thử kịch bản' ở góc trên để kiểm nghiệm và nhận điểm nhé!");
+          }
+        } else {
+          soundManager.playSfx("wrong");
+          svgArtist.renderPixelAvatar("thinking");
+          this.setFeedback(3, "error", `❌ Chưa khớp: ${blockObj.explanationWrong}`);
+        }
+      },
+
+      runStage3Simulation() {
+        const filled = this.state.stage3.filledSlots;
+        if (Object.keys(filled).length < 7) {
+          soundManager.playSfx("wrong");
+          this.setFeedback(3, "error", "⚠️ Em cần lắp đủ cả 3 ô kịch bản của Mèo và 4 ô kịch bản của Quả bóng trước khi Chạy thử nhé!");
+          return;
+        }
+
+        this.stopStage3Sim();
+        document.getElementById("stage3SimStatus").textContent = "Đang chạy...";
+
+        let step = 0;
+        let simScore = 0;
+        const catEl = document.getElementById("stage3SimCat");
+        const ballEl = document.getElementById("stage3SimBall");
+        const scoreEl = document.getElementById("stage3SimScoreText");
+
+        this.stage3Timer = setInterval(() => {
+          step++;
+          const catX = 95 + Math.sin(step * 0.25) * 55;
+          const ballX = 115 + Math.cos(step * 0.35) * 65;
+          const ballY = 140 + Math.sin(step * 0.4) * 25;
+
+          if (catEl) catEl.setAttribute("transform", `translate(${catX}, 145)`);
+          if (ballEl) ballEl.setAttribute("transform", `translate(${ballX}, ${ballY})`);
+
+          if (Math.abs(catX - ballX) < 28) {
+            simScore++;
+            if (scoreEl) scoreEl.textContent = `Điểm: ${simScore}`;
+            soundManager.playSfx("catch");
+          }
+
+          if (step >= 22) {
+            this.stopStage3Sim();
+            document.getElementById("stage3SimStatus").textContent = "Hoàn thành ✅";
+            this.awardStagePoints(3);
+            document.getElementById("btnNextStage3").disabled = false;
+            this.setFeedback(3, "success", "🏆 Tuyệt vời! Kịch bản của Mèo và Quả bóng đã hoạt động hoàn hảo (+25 điểm)! Hãy nhấn 'Tiếp tục Màn 4'.");
+          }
+        }, 90);
+      },
+
+      stopStage3Sim() {
+        if (this.stage3Timer) {
+          clearInterval(this.stage3Timer);
+          this.stage3Timer = null;
+        }
+      },
+
+      /* =====================================================================
+         LOGIC MÀN 4: CHƠI THỬ, SỬA LỖI & NÂNG CẤP
+         ===================================================================== */
+      initStage4State() {
+        this.state.stage4.bugsFixed = { bug1: false, bug2: false };
+        this.state.stage4.selectedUpgrade = null;
+      },
+
+      renderStage4() {
+        const bugsWrap = document.getElementById("stage4BugsContainer");
+        const fixed = this.state.stage4.bugsFixed;
+
+        bugsWrap.innerHTML = GAME_CONFIG.stage4.bugs.map((bug) => {
+          const isFixed = fixed[bug.id];
+          return `
+            <div class="bug-item ${isFixed ? 'fixed' : ''}">
+              <div class="bug-title">${isFixed ? '✅ Đã sửa: ' : ''}${bug.title}</div>
+              <div style="font-size:0.83rem;color:var(--text-muted);font-weight:600;">${bug.problemDesc}</div>
+              <div class="bug-options">
+                ${bug.options.map((opt) => `
+                  <button type="button" class="bug-opt-btn ${isFixed && opt.correct ? 'correct-pick' : ''}"
+                          onclick="app.pickStage4BugFix('${bug.id}', '${opt.id}')">
+                    ${opt.text}
+                  </button>
+                `).join("")}
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        const upWrap = document.getElementById("stage4UpgradeContainer");
+        const selUp = this.state.stage4.selectedUpgrade;
+        upWrap.innerHTML = GAME_CONFIG.stage4.upgrades.map((up) => `
+          <button type="button" class="assign-choice-btn ${selUp === up.id ? 'active' : ''}"
+                  onclick="app.pickStage4Upgrade('${up.id}')">
+            ${up.label}
+          </button>
+        `).join("");
+
+        document.getElementById("btnFinishGame").disabled = !this.completedStages.includes(4);
+      },
+
+      pickStage4BugFix(bugId, optId) {
+        const bugObj = GAME_CONFIG.stage4.bugs.find((b) => b.id === bugId);
+        const optObj = bugObj.options.find((o) => o.id === optId);
+
+        if (optObj.correct) {
+          this.state.stage4.bugsFixed[bugId] = true;
+          soundManager.playSfx("correct");
+          svgArtist.renderPixelAvatar("happy");
+          this.setFeedback(4, "success", `🎉 ${optObj.explanation}`);
+          this.renderStage4();
+          catchGame.drawFrame();
+          this.checkStage4Completion();
+        } else {
+          soundManager.playSfx("wrong");
+          svgArtist.renderPixelAvatar("thinking");
+          this.setFeedback(4, "error", `❌ Chưa đúng: ${optObj.explanation}`);
+        }
+      },
+
+      pickStage4Upgrade(upId) {
+        soundManager.playSfx("correct");
+        this.state.stage4.selectedUpgrade = upId;
+        const upObj = GAME_CONFIG.stage4.upgrades.find((u) => u.id === upId);
+        this.setFeedback(4, "success", `✨ Đã kích hoạt nâng cấp: ${upObj.desc}`);
+        this.renderStage4();
+        this.checkStage4Completion();
+      },
+
+      checkStage4Completion() {
+        const b1 = this.state.stage4.bugsFixed.bug1;
+        const b2 = this.state.stage4.bugsFixed.bug2;
+        const hasUp = Boolean(this.state.stage4.selectedUpgrade);
+        const enoughCatches = catchGame.score >= GAME_CONFIG.stage4.targetCatches;
+
+        if (b1 && b2 && hasUp && enoughCatches && !this.completedStages.includes(4)) {
+          this.awardStagePoints(4);
+          document.getElementById("btnFinishGame").disabled = false;
+          this.setFeedback(4, "success", "🏆 CHÚC MỪNG! Em đã sửa sạch 2 lỗi, nâng cấp trò chơi và điều khiển Mèo bắt đủ 5 quả bóng (+25 điểm)! Hãy nhấn 'Xem Tổng kết & Huy hiệu'!");
+          document.getElementById("pixelSpeechText").textContent =
+            "Tuyệt đỉnh! Em đã hoàn thành cả 4 màn với 100/100 điểm. Hãy bấm nút 'Xem Tổng kết & Huy hiệu' nhé!";
+        }
+      },
+
+      /* =====================================================================
+         MÀN HÌNH TỔNG KẾT & PHÁO GIẤY NGÔI SAO
+         ===================================================================== */
+      showSummary() {
+        soundManager.playSfx("stageClear");
+        catchGame.stop();
+        this.switchScreen("screenSummary");
+        document.getElementById("stageProgressBadge").textContent = "Tổng kết dự án";
+        document.getElementById("summaryScoreHeadline").innerHTML =
+          `Tổng điểm đạt được: <strong>${this.score} / 100 điểm</strong> (${this.completedStages.length}/4 màn hoàn thành)`;
+
+        const badgeContainer = document.getElementById("summaryBadgesContainer");
+        badgeContainer.innerHTML = GAME_CONFIG.badges.map((b) => {
+          const earned = this.completedStages.includes(b.stage);
+          return `
+            <div class="badge-item" style="opacity:${earned ? '1' : '0.45'};">
+              <div style="font-size:2.2rem;margin-bottom:4px;">${b.icon}</div>
+              <div style="font-weight:900;color:var(--primary-purple);font-size:0.95rem;">${b.title}</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin-top:4px;">${b.desc}</div>
+              <div style="margin-top:6px;font-weight:800;font-size:0.8rem;color:${earned ? 'var(--success-green)' : 'var(--text-muted)'};">
+                ${earned ? '✅ ĐÃ ĐẠT HUY HIỆU' : '🔒 Chưa mở'}
+              </div>
+            </div>
+          `;
+        }).join("");
+      },
+
+      playAgainFull() {
+        soundManager.playSfx("click");
+        this.resetAllData();
+        catchGame.resetState();
+        this.goToStage(1);
+      },
+
+      triggerCelebration() {
+        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        const canvas = document.getElementById("celebrationOverlay");
+        if (!canvas) return;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        canvas.style.display = "block";
+        const ctx = canvas.getContext("2d");
+
+        const pieces = Array.from({ length: 38 }, () => ({
+          x: Math.random() * canvas.width,
+          y: -20 - Math.random() * 80,
+          vx: (Math.random() - 0.5) * 4,
+          vy: 3 + Math.random() * 4,
+          size: 7 + Math.random() * 6,
+          color: ["#58429B", "#4ABDAA", "#F2BE4A", "#F6B6C8"][Math.floor(Math.random() * 4)]
+        }));
+
+        let frames = 0;
+        const anim = () => {
+          frames++;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          pieces.forEach((p) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+          });
+          if (frames < 85) {
+            requestAnimationFrame(anim);
+          } else {
+            canvas.style.display = "none";
+          }
+        };
+        requestAnimationFrame(anim);
+      }
+    };
+
+    window.addEventListener("DOMContentLoaded", () => {
+      app.init();
+    });
+  </script>
+</body>
+</html>
